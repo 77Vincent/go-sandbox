@@ -39,21 +39,25 @@ export default function Component() {
     }
 
     return (
-        <>
-            <div className="flex justify-between items-center py-2 px-3 dark:bg-gray-800 dark:text-white">
+        <div className="dark:bg-gray-800">
+            <div className="flex justify-between items-center py-2 px-3  dark:text-white">
                 <h1 className="text-2xl font-bold">Best Go Playground</h1>
 
                 <div className="flex gap-2 justify-end items-center">
-                    <Button onClick={onVimMode} size={"xs"} color={isVimMode ? "purple" : ""}>VIM mode</Button>
-                    <Button onClick={onAutoRun} size={"xs"} color={isAutoRun ? "purple" : ""}>Auto Run</Button>
-                    <Button size={"xs"} gradientDuoTone={"greenToBlue"}>Export</Button>
+                    <Button className={"shadow"} size={"xs"} gradientDuoTone={"purpleToBlue"}>
+                        Run
+                    </Button>
+
+                    <Button className={"shadow"} onClick={onVimMode} size={"xs"} color={isVimMode ? "purple" : "gray"}>VIM mode</Button>
+                    <Button className={"shadow"} onClick={onAutoRun} size={"xs"} color={isAutoRun ? "purple" : "gray"}>Auto Run</Button>
+                    <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Export</Button>
 
                     <DarkThemeToggle onClick={onDarkThemeToggle}/>
                 </div>
             </div>
 
             <Editor
-                className={"border m-2 rounded"}
+                className={"border dark:border-gray-400 m-2 rounded"}
                 theme={mode === "dark" ? "vs-dark" : "vs"}
                 height="calc(100vh - 100px)"
                 defaultLanguage="go"
@@ -75,6 +79,6 @@ export default function Component() {
                     fontFamily: "monospace",
                 }}
             />
-        </>
+        </div>
     );
 }

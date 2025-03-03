@@ -3,11 +3,9 @@ import Editor from "./modules/Editor";
 
 function App() {
     return (
-        <>
-            <main className="h-screen">
-                <Editor/>
-            </main>
-        </>
+        <main className="h-screen">
+            <Editor/>
+        </main>
     );
 }
 
