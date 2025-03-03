@@ -1,15 +1,16 @@
-import {useRef, useState} from "react";
+import {useState} from "react";
 import {Button, DarkThemeToggle, useThemeMode} from "flowbite-react";
 import {AUTO_RUN_KEY, DEFAULT_CODE, DEFAULT_LINE, VIM_MODE_KEY} from "../constants.ts";
 import AceEditor from "react-ace";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/theme-github_dark";
 import "ace-builds/src-noconflict/ext-language_tools";
+import "ace-builds/src-noconflict/keybinding-vim"
 
 export default function Component() {
     const {mode, toggleMode} = useThemeMode();
-    const statusBarRef = useRef<HTMLDivElement | null>(null);
 
     const [code, setCode] = useState(DEFAULT_CODE)
     const [line, setLine] = useState(DEFAULT_LINE)
@@ -21,10 +22,13 @@ export default function Component() {
         setCode(code);
     }
 
+    function onCursorChange(cursor: any) {
+        setLine(cursor.row);
+    }
+
     function onVimMode() {
         localStorage.setItem(VIM_MODE_KEY, JSON.stringify(!isVimMode));
         setIsVimMode(!isVimMode);
-        location.reload();
     }
 
     function onAutoRun() {
@@ -46,8 +50,8 @@ export default function Component() {
                         Run
                     </Button>
 
-                    <Button className={"shadow"} onClick={onVimMode} size={"xs"} color={isVimMode ? "purple" : "gray"}>VIM mode</Button>
                     <Button className={"shadow"} onClick={onAutoRun} size={"xs"} color={isAutoRun ? "purple" : "gray"}>Auto Run</Button>
+                    <Button className={"shadow"} onClick={onVimMode} size={"xs"} color={isVimMode ? "purple" : "gray"}>VIM</Button>
                     <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Export</Button>
 
                     <DarkThemeToggle onClick={onDarkThemeToggle}/>
@@ -56,12 +60,24 @@ export default function Component() {
 
             <div className={"m-3"}>
                 <AceEditor
-                    mode="go"
-                    theme="github"
+                    mode="golang"
+                    width={"100%"}
+                    cursorStart={line}
+                    height={"calc(100vh - 100px)"}
+                    theme={mode === "dark" ? "github_dark" : "github"}
                     value={code}
                     onChange={onChange}
+                    onCursorChange={onCursorChange}
+                    focus={true}
+                    fontSize={14}
                     name="UNIQUE_ID_OF_DIV"
+                    keyboardHandler={isVimMode ? "vim" : ""}
                     editorProps={{ $blockScrolling: true }}
+                    setOptions={{
+                        enableBasicAutocompletion: true,
+                        enableLiveAutocompletion: true,
+                        enableSnippets: true
+                    }}
                 />
             </div>
         </div>
