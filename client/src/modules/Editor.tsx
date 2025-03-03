@@ -1,33 +1,29 @@
-import {useEffect, useState} from "react";
-import MonacoEditor from "react-monaco-editor/lib/editor";
-import * as monaco from "monaco-editor";
+import {Editor} from "@monaco-editor/react";
+import {useState} from "react";
 
-function editorDidMount(editor: monaco.editor.IStandaloneCodeEditor) {
-    editor.focus();
+const defaultCode = `package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, World!")
 }
+`;
 
 export default function Component() {
-    const [code, setcode] = useState("")
-    const options: monaco.editor.IStandaloneEditorConstructionOptions = {
-        selectOnLineNumbers: true
-    };
+    const [code, setCode] = useState(defaultCode);
 
-    function onChange(newValue: string, e: monaco.editor.IModelContentChangedEvent) {
-        setcode(newValue)
-        console.log('onChange', newValue, e);
+    function onChange(value: string | undefined) {
+        setCode(value || "")
     }
 
-    return (
-        <>
-            <MonacoEditor
-                height="100vh"
-                language="go"
-                theme="vs-dark"
-                value={code}
-                options={options}
-                onChange={onChange}
-                editorDidMount={editorDidMount}
-            />
-        </>
-    )
+    return <Editor
+        theme="vs-dark"
+        defaultLanguage="go"
+        onChange={onChange}
+        value={code}
+        options={{
+            fontSize: 14,
+        }}
+    />;
 }
