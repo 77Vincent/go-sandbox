@@ -101,4 +101,5 @@ typings/
 tmp/
 temp/
 
+.idea
 .idea/
