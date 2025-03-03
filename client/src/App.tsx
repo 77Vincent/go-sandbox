@@ -1,12 +1,13 @@
-import Editor from './modules/Editor'
-import './App.css'
+import {DarkThemeToggle} from "flowbite-react";
+import Editor from "./modules/Editor";
 
 function App() {
     return (
-        <main className="h-screen">
+        <main>
+            <DarkThemeToggle/>
             <Editor/>
         </main>
-    )
+    );
 }
 
-export default App
+export default App;
