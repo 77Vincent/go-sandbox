@@ -15,10 +15,14 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
+    "ace-builds": "^1.39.0",
+    "codemirror": "^5.65.18",
     "flowbite-react": "^0.8.0",
     "monaco-editor": "^0.52.2",
     "monaco-vim": "^0.4.2",
     "react": "^18.2.0",
+    "react-ace": "^14.0.1",
+    "react-codemirror2": "^8.0.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.2.0"
   },

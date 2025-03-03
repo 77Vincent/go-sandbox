@@ -1,23 +1,21 @@
-import {Editor} from "@monaco-editor/react";
 import {useRef, useState} from "react";
 import {Button, DarkThemeToggle, useThemeMode} from "flowbite-react";
-import * as monaco from "monaco-editor";
-import {AUTO_RUN_KEY, DEFAULT_CODE, VIM_MODE_KEY} from "../constants.ts";
+import {AUTO_RUN_KEY, DEFAULT_CODE, DEFAULT_LINE, VIM_MODE_KEY} from "../constants.ts";
+import AceEditor from "react-ace";
+
+import "ace-builds/src-noconflict/mode-golang";
+import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/ext-language_tools";
 
 export default function Component() {
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef<HTMLDivElement | null>(null);
+
     const [code, setCode] = useState(DEFAULT_CODE)
+    const [line, setLine] = useState(DEFAULT_LINE)
+
     const [isVimMode, setIsVimMode] = useState(JSON.parse(localStorage.getItem(VIM_MODE_KEY) || "false"))
     const [isAutoRun, setIsAutoRun] = useState(JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || "false"))
-
-    async function onEditorMount(editor: monaco.editor.IStandaloneCodeEditor) {
-        const monacoVim = await import("monaco-vim");
-
-        if (isVimMode && statusBarRef.current) {
-            monacoVim.initVimMode(editor, statusBarRef.current);
-        }
-    }
 
     function onChange(code: string = "") {
         setCode(code);
@@ -39,7 +37,7 @@ export default function Component() {
     }
 
     return (
-        <div className="dark:bg-gray-800">
+        <div className="dark:bg-gray-800 bg-stone-100">
             <div className="flex justify-between items-center py-2 px-3  dark:text-white">
                 <h1 className="text-2xl font-bold">Best Go Playground</h1>
 
@@ -56,29 +54,16 @@ export default function Component() {
                 </div>
             </div>
 
-            <Editor
-                className={"border dark:border-gray-400 m-2 rounded"}
-                theme={mode === "dark" ? "vs-dark" : "vs"}
-                height="calc(100vh - 100px)"
-                defaultLanguage="go"
-                defaultValue={code}
-                options={{
-                    fontSize: 14,
-                    minimap: {enabled: false}
-                }}
-                onChange={onChange}
-                onMount={onEditorMount}
-            />
-
-            <div
-                ref={statusBarRef}
-                style={{
-                    height: "30px",
-                    backgroundColor: "#f0f0f0",
-                    padding: "5px",
-                    fontFamily: "monospace",
-                }}
-            />
+            <div className={"m-3"}>
+                <AceEditor
+                    mode="go"
+                    theme="github"
+                    value={code}
+                    onChange={onChange}
+                    name="UNIQUE_ID_OF_DIV"
+                    editorProps={{ $blockScrolling: true }}
+                />
+            </div>
         </div>
     );
 }
