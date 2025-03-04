@@ -5,10 +5,10 @@ import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
 
 import {
-    AUTO_RUN_KEY,
+    AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY,
     DEFAULT_AUTO_RUN,
     DEFAULT_CODE,
-    DEFAULT_LINE, DEFAULT_SIZE, DEFAULT_VIM_MODE,
+    DEFAULT_CURSOR_POSITION, DEFAULT_SIZE, DEFAULT_VIM_MODE,
     EDITOR_SIZE_KEY,
     VIM_MODE_KEY
 } from "../constants.ts";
@@ -20,32 +20,56 @@ import "ace-builds/src-noconflict/theme-one_dark";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim"
 import "ace-builds/src-noconflict/ext-statusbar";
+import {debounce} from "react-ace/lib/editorOptions";
 
 export default function Component() {
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef(null);
 
     const [result, setResult] = useState("");
-    const [code, setCode] = useState(DEFAULT_CODE)
-    const [line, setLine] = useState(DEFAULT_LINE)
 
+    // editor status
+    const [code, setCode] = useState(localStorage.getItem(CODE_CONTENT_KEY) || DEFAULT_CODE);
     const [editorSize, setEditorSize] = useState(JSON.parse(localStorage.getItem(EDITOR_SIZE_KEY) || DEFAULT_SIZE))
+
+    // cursor status
+    const [row, setRow] = useState(Number(localStorage.getItem(CURSOR_ROW_KEY)) || DEFAULT_CURSOR_POSITION);
+    const [column, setColumn] = useState(Number(localStorage.getItem(CURSOR_COLUMN_KEY)) || DEFAULT_CURSOR_POSITION);
+
+    // mode status
     const [isVimMode, setIsVimMode] = useState(JSON.parse(localStorage.getItem(VIM_MODE_KEY) || DEFAULT_VIM_MODE))
     const [isAutoRun, setIsAutoRun] = useState(JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || DEFAULT_AUTO_RUN))
 
-    const editorDidMount = (editor: Ace.Editor) => {
+    const onEditorLoad = (editor: Ace.Editor) => {
         if (statusBarRef.current) {
             const StatusBar = window.ace.require("ace/ext/statusbar").StatusBar;
             new StatusBar(editor, statusBarRef.current);
         }
+        editor.focus();
+        editor.moveCursorTo(row, column);
     };
 
-    function onChange(code: string = "") {
-        setCode(code);
+    function run() {
+        console.log("Running code")
     }
 
-    function onCursorChange(cursor: any) {
-        setLine(cursor.row);
+    function onChange(code: string = "") {
+        localStorage.setItem(CODE_CONTENT_KEY, code);
+        setCode(code);
+        run();
+    }
+
+    const debouncedOnChange = debounce(onChange, 1000);
+
+    function onCursorChange(value: any) {
+        const row = value.cursor.row;
+        const column = value.cursor.column;
+
+        localStorage.setItem(CURSOR_ROW_KEY, row);
+        localStorage.setItem(CURSOR_COLUMN_KEY, column);
+
+        setRow(row);
+        setColumn(column);
     }
 
     function onVimMode() {
@@ -121,10 +145,9 @@ export default function Component() {
                             className={"rounded-t-lg flex-1"}
                             mode="golang"
                             width={"100%"}
-                            cursorStart={line}
                             theme={mode === "dark" ? "one_dark" : "dawn"}
                             value={code}
-                            onChange={onChange}
+                            onChange={debouncedOnChange}
                             onCursorChange={onCursorChange}
                             focus={true}
                             fontSize={14}
@@ -136,7 +159,7 @@ export default function Component() {
                                 enableLiveAutocompletion: true,
                                 enableSnippets: true
                             }}
-                            onLoad={editorDidMount}
+                            onLoad={onEditorLoad}
                         />
 
                         <div ref={statusBarRef}
