@@ -2,6 +2,7 @@ import {useRef, useState} from "react";
 import {Button, DarkThemeToggle, useThemeMode} from "flowbite-react";
 import {AUTO_RUN_KEY, DEFAULT_CODE, DEFAULT_LINE, VIM_MODE_KEY} from "../constants.ts";
 import AceEditor from "react-ace";
+import {Ace} from "ace-builds";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -20,7 +21,7 @@ export default function Component() {
     const [isVimMode, setIsVimMode] = useState(JSON.parse(localStorage.getItem(VIM_MODE_KEY) || "false"))
     const [isAutoRun, setIsAutoRun] = useState(JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || "false"))
 
-    const editorDidMount = (editor) => {
+    const editorDidMount = (editor: Ace.Editor) => {
         if (statusBarRef.current) {
             const StatusBar = window.ace.require("ace/ext/statusbar").StatusBar;
             new StatusBar(editor, statusBarRef.current);
