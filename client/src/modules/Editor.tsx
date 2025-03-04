@@ -10,6 +10,8 @@ import "ace-builds/src-noconflict/theme-one_dark";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim"
 import "ace-builds/src-noconflict/ext-statusbar";
+import {Resizable} from "re-resizable";
+import {Wrapper} from "./Common.tsx";
 
 export default function Component() {
     const {mode, toggleMode} = useThemeMode();
@@ -17,6 +19,7 @@ export default function Component() {
 
     const [code, setCode] = useState(DEFAULT_CODE)
     const [line, setLine] = useState(DEFAULT_LINE)
+    const [editorSize, setEditorSize] = useState(50)
 
     const [isVimMode, setIsVimMode] = useState(JSON.parse(localStorage.getItem(VIM_MODE_KEY) || "false"))
     const [isAutoRun, setIsAutoRun] = useState(JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || "false"))
@@ -70,31 +73,49 @@ export default function Component() {
                 </div>
             </div>
 
-            <div className={"flex-1 m-3 rounded-lg border overflow-hidden border-stone-400 dark:border-gray-500"}>
-                <div className={"h-full flex flex-col"}>
-                    <AceEditor
-                        className={"rounded-t-lg flex-1"}
-                        mode="golang"
-                        width={"100%"}
-                        cursorStart={line}
-                        theme={mode === "dark" ? "one_dark" : "dawn"}
-                        value={code}
-                        onChange={onChange}
-                        onCursorChange={onCursorChange}
-                        focus={true}
-                        fontSize={14}
-                        name="UNIQUE_ID_OF_DIV"
-                        keyboardHandler={isVimMode ? "vim" : ""}
-                        editorProps={{$blockScrolling: true}}
-                        setOptions={{
-                            enableBasicAutocompletion: true,
-                            enableLiveAutocompletion: true,
-                            enableSnippets: true
-                        }}
-                        onLoad={editorDidMount}
-                    />
-                    <div ref={statusBarRef} className={"px-3 border-t border-t-stone-400 dark:border-t-stone-500 bg-stone-200 dark:text-white dark:bg-stone-700"}/>
-                </div>
+            <div className={"px-3 pb-3 py-1 gap-2 flex flex-1"}>
+                <Resizable
+                    minWidth={"20%"}
+                    maxWidth={"80%"}
+                    enable={{
+                        right: true
+                    }}
+                    defaultSize={{
+                        width: `${editorSize}%`,
+                        height: "100%"
+                    }}
+                >
+                    <Wrapper className={"h-full flex flex-col"}>
+                        <AceEditor
+                            className={"rounded-t-lg flex-1"}
+                            mode="golang"
+                            width={"100%"}
+                            cursorStart={line}
+                            theme={mode === "dark" ? "one_dark" : "dawn"}
+                            value={code}
+                            onChange={onChange}
+                            onCursorChange={onCursorChange}
+                            focus={true}
+                            fontSize={14}
+                            name="UNIQUE_ID_OF_DIV"
+                            keyboardHandler={isVimMode ? "vim" : ""}
+                            editorProps={{$blockScrolling: true}}
+                            setOptions={{
+                                enableBasicAutocompletion: true,
+                                enableLiveAutocompletion: true,
+                                enableSnippets: true
+                            }}
+                            onLoad={editorDidMount}
+                        />
+
+                        <div ref={statusBarRef}
+                             className={"px-3 border-t border-t-stone-400 dark:border-t-stone-500 bg-stone-200 dark:text-white dark:bg-stone-700"}/>
+                    </Wrapper>
+                </Resizable>
+
+                <Wrapper>
+                    jjjjjjjjj
+                </Wrapper>
             </div>
         </div>
     );
