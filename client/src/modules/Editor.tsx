@@ -12,7 +12,7 @@ import {
     EDITOR_SIZE_KEY, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
     VIM_MODE_KEY
 } from "../constants.ts";
-import {Divider, Wrapper} from "./Common.tsx";
+import {Divider, MyToast, Wrapper} from "./Common.tsx";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -21,6 +21,7 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim"
 import "ace-builds/src-noconflict/ext-statusbar";
 import {debounce} from "react-ace/lib/editorOptions";
+import {formatCode} from "../api/api.ts";
 
 export default function Component() {
     const {mode, toggleMode} = useThemeMode();
@@ -29,6 +30,7 @@ export default function Component() {
     const [result, setResult] = useState<string>("");
 
     // editor status
+    const [error, setError] = useState<string>("");
     const [code, setCode] = useState<string>(localStorage.getItem(CODE_CONTENT_KEY) || DEFAULT_CODE);
     const [editorSize, setEditorSize] = useState<number>(Number(localStorage.getItem(EDITOR_SIZE_KEY)) || DEFAULT_SIZE)
 
@@ -54,12 +56,27 @@ export default function Component() {
         console.log("Running code")
     }
 
-    function onChange(code: string = "") {
+    function storeCode(code: string) {
         localStorage.setItem(CODE_CONTENT_KEY, code);
         setCode(code);
+    }
+
+    async function format() {
+        try {
+            const data = await formatCode(code)
+            storeCode(data)
+        } catch (e) {
+            setError((e as Error).message)
+        }
+    }
+
+    function onChange(code: string = "") {
+        storeCode(code);
 
         // run with debounce
-        debouncedRun();
+        if (isAutoRun) {
+            debouncedRun();
+        }
     }
 
     const debouncedRun = useCallback(debounce(run, RUN_DEBOUNCE_TIME), []);
@@ -102,7 +119,9 @@ export default function Component() {
     }
 
     return (
-        <div className="h-screen flex flex-col dark:bg-gray-800 bg-stone-100">
+        <div className="relative h-screen flex flex-col dark:bg-gray-800 bg-stone-100">
+            <MyToast>{error}</MyToast>
+
             <div className="flex justify-between items-center py-2 px-3  dark:text-white">
                 <h1 className="text-2xl font-bold">Golang Sandbox</h1>
 
@@ -111,7 +130,7 @@ export default function Component() {
                         Run
                     </Button>
 
-                    <Button disabled={isAutoRun} className={"shadow"} size={"xs"} gradientMonochrome={"lime"}>
+                    <Button onClick={format} disabled={false} className={"shadow"} size={"xs"} gradientMonochrome={"lime"}>
                         Format
                     </Button>
 

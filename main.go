@@ -1,6 +1,7 @@
 package main
 
 import (
+	"go/format"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,14 +17,22 @@ func main() {
 	})
 
 	r.POST("/format", func(c *gin.Context) {
-		var json map[string]interface{}
+		var req struct {
+			Code string `json:"code" binding:"required"`
+		}
 
-		if err := c.ShouldBindJSON(&json); err != nil {
+		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusOK, json)
+		formatted, err := format.Source([]byte(req.Code))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, string(formatted))
 	})
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
