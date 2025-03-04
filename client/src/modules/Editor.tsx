@@ -51,7 +51,7 @@ export default function Component() {
     }
 
     return (
-        <div className="dark:bg-gray-800 bg-stone-100">
+        <div className="h-screen flex flex-col dark:bg-gray-800 bg-stone-100">
             <div className="flex justify-between items-center py-2 px-3  dark:text-white">
                 <h1 className="text-2xl font-bold">Golang Sandbox</h1>
 
@@ -70,29 +70,31 @@ export default function Component() {
                 </div>
             </div>
 
-            <div className={"m-3 border rounded-lg border-gray-300 dark:border-gray-700"}>
-                <AceEditor
-                    mode="golang"
-                    width={"100%"}
-                    cursorStart={line}
-                    height={"calc(100vh - 100px)"}
-                    theme={mode === "dark" ? "one_dark" : "dawn"}
-                    value={code}
-                    onChange={onChange}
-                    onCursorChange={onCursorChange}
-                    focus={true}
-                    fontSize={14}
-                    name="UNIQUE_ID_OF_DIV"
-                    keyboardHandler={isVimMode ? "vim" : ""}
-                    editorProps={{$blockScrolling: true}}
-                    setOptions={{
-                        enableBasicAutocompletion: true,
-                        enableLiveAutocompletion: true,
-                        enableSnippets: true
-                    }}
-                    onLoad={editorDidMount}
-                />
-                <div ref={statusBarRef}></div>
+            <div className={"flex-1 m-3 rounded-lg border overflow-hidden border-stone-400 dark:border-gray-500"}>
+                <div className={"h-full flex flex-col"}>
+                    <AceEditor
+                        className={"rounded-t-lg flex-1"}
+                        mode="golang"
+                        width={"100%"}
+                        cursorStart={line}
+                        theme={mode === "dark" ? "one_dark" : "dawn"}
+                        value={code}
+                        onChange={onChange}
+                        onCursorChange={onCursorChange}
+                        focus={true}
+                        fontSize={14}
+                        name="UNIQUE_ID_OF_DIV"
+                        keyboardHandler={isVimMode ? "vim" : ""}
+                        editorProps={{$blockScrolling: true}}
+                        setOptions={{
+                            enableBasicAutocompletion: true,
+                            enableLiveAutocompletion: true,
+                            enableSnippets: true
+                        }}
+                        onLoad={editorDidMount}
+                    />
+                    <div ref={statusBarRef} className={"px-3 border-t border-t-stone-400 dark:border-t-stone-500 bg-stone-200 dark:text-white dark:bg-stone-700"}/>
+                </div>
             </div>
         </div>
     );

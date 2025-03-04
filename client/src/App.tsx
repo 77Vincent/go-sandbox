@@ -3,7 +3,7 @@ import Editor from "./modules/Editor";
 
 function App() {
     return (
-        <main className="h-screen">
+        <main>
             <Editor/>
         </main>
     );
