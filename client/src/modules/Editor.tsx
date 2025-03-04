@@ -8,8 +8,8 @@ import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY,
     DEFAULT_AUTO_RUN,
     DEFAULT_CODE,
-    DEFAULT_CURSOR_POSITION, DEFAULT_SIZE, DEFAULT_VIM_MODE,
-    EDITOR_SIZE_KEY,
+    DEFAULT_CURSOR_POSITION, DEFAULT_LINT_ON, DEFAULT_SIZE, DEFAULT_VIM_MODE,
+    EDITOR_SIZE_KEY, LINT_ON_KEY,
     VIM_MODE_KEY
 } from "../constants.ts";
 import {Divider, Wrapper} from "./Common.tsx";
@@ -26,19 +26,20 @@ export default function Component() {
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef(null);
 
-    const [result, setResult] = useState("");
+    const [result, setResult] = useState<string>("");
 
     // editor status
-    const [code, setCode] = useState(localStorage.getItem(CODE_CONTENT_KEY) || DEFAULT_CODE);
-    const [editorSize, setEditorSize] = useState(JSON.parse(localStorage.getItem(EDITOR_SIZE_KEY) || DEFAULT_SIZE))
+    const [code, setCode] = useState<string>(localStorage.getItem(CODE_CONTENT_KEY) || DEFAULT_CODE);
+    const [editorSize, setEditorSize] = useState<number>(Number(localStorage.getItem(EDITOR_SIZE_KEY)) || DEFAULT_SIZE)
 
     // cursor status
-    const [row, setRow] = useState(Number(localStorage.getItem(CURSOR_ROW_KEY)) || DEFAULT_CURSOR_POSITION);
-    const [column, setColumn] = useState(Number(localStorage.getItem(CURSOR_COLUMN_KEY)) || DEFAULT_CURSOR_POSITION);
+    const [row, setRow] = useState<number>(Number(localStorage.getItem(CURSOR_ROW_KEY)) || DEFAULT_CURSOR_POSITION);
+    const [column, setColumn] = useState<number>(Number(localStorage.getItem(CURSOR_COLUMN_KEY)) || DEFAULT_CURSOR_POSITION);
 
     // mode status
-    const [isVimMode, setIsVimMode] = useState(JSON.parse(localStorage.getItem(VIM_MODE_KEY) || DEFAULT_VIM_MODE))
-    const [isAutoRun, setIsAutoRun] = useState(JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || DEFAULT_AUTO_RUN))
+    const [isVimMode, setIsVimMode] = useState<boolean>(JSON.parse(localStorage.getItem(VIM_MODE_KEY) || DEFAULT_VIM_MODE))
+    const [isAutoRun, setIsAutoRun] = useState<boolean>(JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || DEFAULT_AUTO_RUN))
+    const [isLintOn, setIsLintOn] = useState<boolean>(JSON.parse(localStorage.getItem(LINT_ON_KEY) || DEFAULT_LINT_ON))
 
     const onEditorLoad = (editor: Ace.Editor) => {
         if (statusBarRef.current) {
@@ -69,6 +70,11 @@ export default function Component() {
 
         setRow(row);
         setColumn(column);
+    }
+
+    function onLint() {
+        localStorage.setItem(LINT_ON_KEY, JSON.stringify(!isLintOn));
+        setIsLintOn(!isLintOn);
     }
 
     function onVimMode() {
@@ -105,6 +111,11 @@ export default function Component() {
                     <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Export</Button>
 
                     <Divider/>
+
+                    <Tooltip content={"Turn on/off lint"}>
+                        <Button className={"shadow"} onClick={onLint} size={"xs"}
+                                color={isLintOn ? "purple" : "gray"}>Lint</Button>
+                    </Tooltip>
 
                     <Tooltip content={"VIM mode"}>
                         <Button className={"shadow"} onClick={onVimMode} size={"xs"}
@@ -148,14 +159,13 @@ export default function Component() {
                             value={code}
                             onChange={onChange}
                             onCursorChange={debouncedOnCursorChange}
-                            focus={true}
                             fontSize={14}
                             name="UNIQUE_ID_OF_DIV"
                             keyboardHandler={isVimMode ? "vim" : ""}
                             editorProps={{$blockScrolling: true}}
                             setOptions={{
                                 enableBasicAutocompletion: true,
-                                enableLiveAutocompletion: true,
+                                enableLiveAutocompletion: isLintOn,
                                 enableSnippets: true
                             }}
                             onLoad={onEditorLoad}
