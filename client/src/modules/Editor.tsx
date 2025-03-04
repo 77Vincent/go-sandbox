@@ -1,5 +1,9 @@
 import {useRef, useState} from "react";
-import {Button, DarkThemeToggle, useThemeMode} from "flowbite-react";
+import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
+import AceEditor from "react-ace";
+import {Ace} from "ace-builds";
+import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
+
 import {
     AUTO_RUN_KEY,
     DEFAULT_AUTO_RUN,
@@ -8,8 +12,7 @@ import {
     EDITOR_SIZE_KEY,
     VIM_MODE_KEY
 } from "../constants.ts";
-import AceEditor from "react-ace";
-import {Ace} from "ace-builds";
+import {Divider, Wrapper} from "./Common.tsx";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -17,13 +20,12 @@ import "ace-builds/src-noconflict/theme-one_dark";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim"
 import "ace-builds/src-noconflict/ext-statusbar";
-import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
-import {Wrapper} from "./Common.tsx";
 
 export default function Component() {
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef(null);
 
+    const [result, setResult] = useState("");
     const [code, setCode] = useState(DEFAULT_CODE)
     const [line, setLine] = useState(DEFAULT_LINE)
 
@@ -72,17 +74,31 @@ export default function Component() {
                 <h1 className="text-2xl font-bold">Golang Sandbox</h1>
 
                 <div className="flex gap-2 justify-end items-center">
-                    <Button className={"shadow"} size={"xs"} gradientDuoTone={"purpleToBlue"}>
+                    <Button disabled={isAutoRun} className={"shadow"} size={"xs"} gradientDuoTone={"purpleToBlue"}>
                         Run
                     </Button>
 
-                    <Button className={"shadow"} onClick={onAutoRun} size={"xs"} color={isAutoRun ? "purple" : "gray"}>Auto
-                        Run</Button>
-                    <Button className={"shadow"} onClick={onVimMode} size={"xs"}
-                            color={isVimMode ? "purple" : "gray"}>VIM</Button>
+
                     <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Export</Button>
 
-                    <DarkThemeToggle onClick={onDarkThemeToggle}/>
+                    <Divider/>
+
+                    <Tooltip content={"VIM mode"}>
+                        <Button className={"shadow"} onClick={onVimMode} size={"xs"}
+                                color={isVimMode ? "purple" : "gray"}>VIM</Button>
+                    </Tooltip>
+
+
+                    <Tooltip content={"Auto Run"}>
+                        <Button className={"shadow"} onClick={onAutoRun} size={"xs"}
+                                color={isAutoRun ? "purple" : "gray"}>Auto</Button>
+                    </Tooltip>
+
+                    <Divider/>
+
+                    <Tooltip content={"Dark mode"}>
+                        <DarkThemeToggle onClick={onDarkThemeToggle}/>
+                    </Tooltip>
                 </div>
             </div>
 
@@ -97,7 +113,7 @@ export default function Component() {
                         width: `${editorSize}%`,
                         height: "100%"
                     }}
-                    grid={[10,1]}
+                    grid={[10, 1]}
                     onResizeStop={onResizeStop}
                 >
                     <Wrapper className={"h-full flex flex-col"}>
@@ -128,8 +144,8 @@ export default function Component() {
                     </Wrapper>
                 </Resizable>
 
-                <Wrapper>
-                    jjjjjjjjj
+                <Wrapper className={"py-2 px-2 bg-stone-200"}>
+                    {result}
                 </Wrapper>
             </div>
         </div>
