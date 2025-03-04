@@ -1,15 +1,15 @@
-import {useRef, useState} from "react";
+import {useCallback, useRef, useState} from "react";
 import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
 
 import {
-    AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY,
+    AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
     DEFAULT_AUTO_RUN,
     DEFAULT_CODE,
     DEFAULT_CURSOR_POSITION, DEFAULT_LINT_ON, DEFAULT_SIZE, DEFAULT_VIM_MODE,
-    EDITOR_SIZE_KEY, LINT_ON_KEY,
+    EDITOR_SIZE_KEY, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
     VIM_MODE_KEY
 } from "../constants.ts";
 import {Divider, Wrapper} from "./Common.tsx";
@@ -57,9 +57,13 @@ export default function Component() {
     function onChange(code: string = "") {
         localStorage.setItem(CODE_CONTENT_KEY, code);
         setCode(code);
+
+        // run with debounce
+        debouncedRun();
     }
 
-    const debouncedOnCursorChange = debounce(onCursorChange, 500);
+    const debouncedRun = useCallback(debounce(run, RUN_DEBOUNCE_TIME), []);
+    const debouncedOnCursorChange = debounce(onCursorChange, CURSOR_UPDATE_DEBOUNCE_TIME);
 
     function onCursorChange(value: any) {
         const row = value.cursor.row;
@@ -107,6 +111,10 @@ export default function Component() {
                         Run
                     </Button>
 
+                    <Button disabled={isAutoRun} className={"shadow"} size={"xs"} gradientMonochrome={"lime"}>
+                        Format
+                    </Button>
+
 
                     <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Export</Button>
 
@@ -123,7 +131,7 @@ export default function Component() {
                     </Tooltip>
 
 
-                    <Tooltip content={"Auto Run"}>
+                    <Tooltip content={"Auto Run & Format"}>
                         <Button className={"shadow"} onClick={onAutoRun} size={"xs"}
                                 color={isAutoRun ? "purple" : "gray"}>Auto</Button>
                     </Tooltip>
@@ -172,7 +180,7 @@ export default function Component() {
                         />
 
                         <div ref={statusBarRef}
-                             className={"px-3 border-t border-t-stone-400 dark:border-t-stone-500 bg-stone-200 dark:text-white dark:bg-stone-700"}/>
+                             className={"px-3 border-t border-t-stone-400 dark:border-t-stone-500 text-gray-800 bg-stone-200 dark:text-white dark:bg-stone-700"}/>
                     </Wrapper>
                 </Resizable>
 

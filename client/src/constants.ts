@@ -11,8 +11,11 @@ export const DEFAULT_AUTO_RUN = "true";
 export const DEFAULT_LINT_ON = "false";
 export const DEFAULT_SIZE = 60;
 export const DEFAULT_CURSOR_POSITION = 0;
-export const DEFAULT_CODE = `package main
 
+export const CURSOR_UPDATE_DEBOUNCE_TIME = 500;
+export const RUN_DEBOUNCE_TIME = 1000;
+
+export const DEFAULT_CODE = `package main
 import (
 	"encoding/json"
 	"fmt"
