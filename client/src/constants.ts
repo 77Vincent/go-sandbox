@@ -1,7 +1,12 @@
 export const VIM_MODE_KEY = "isVimMode";
 export const AUTO_RUN_KEY = "isAutoRum";
 export const DARK_MODE_KEY = "isDarkMode";
+export const EDITOR_SIZE_KEY = "editorSize";
 
+
+export const DEFAULT_VIM_MODE = "false";
+export const DEFAULT_AUTO_RUN = "true";
+export const DEFAULT_SIZE = "50";
 export const DEFAULT_LINE = 1;
 export const DEFAULT_CODE = `package main
 

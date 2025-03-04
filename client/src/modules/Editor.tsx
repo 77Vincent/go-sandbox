@@ -1,6 +1,13 @@
 import {useRef, useState} from "react";
 import {Button, DarkThemeToggle, useThemeMode} from "flowbite-react";
-import {AUTO_RUN_KEY, DEFAULT_CODE, DEFAULT_LINE, VIM_MODE_KEY} from "../constants.ts";
+import {
+    AUTO_RUN_KEY,
+    DEFAULT_AUTO_RUN,
+    DEFAULT_CODE,
+    DEFAULT_LINE, DEFAULT_SIZE, DEFAULT_VIM_MODE,
+    EDITOR_SIZE_KEY,
+    VIM_MODE_KEY
+} from "../constants.ts";
 import AceEditor from "react-ace";
 import {Ace} from "ace-builds";
 
@@ -10,7 +17,7 @@ import "ace-builds/src-noconflict/theme-one_dark";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim"
 import "ace-builds/src-noconflict/ext-statusbar";
-import {Resizable} from "re-resizable";
+import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
 import {Wrapper} from "./Common.tsx";
 
 export default function Component() {
@@ -19,10 +26,10 @@ export default function Component() {
 
     const [code, setCode] = useState(DEFAULT_CODE)
     const [line, setLine] = useState(DEFAULT_LINE)
-    const [editorSize, setEditorSize] = useState(50)
 
-    const [isVimMode, setIsVimMode] = useState(JSON.parse(localStorage.getItem(VIM_MODE_KEY) || "false"))
-    const [isAutoRun, setIsAutoRun] = useState(JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || "false"))
+    const [editorSize, setEditorSize] = useState(JSON.parse(localStorage.getItem(EDITOR_SIZE_KEY) || DEFAULT_SIZE))
+    const [isVimMode, setIsVimMode] = useState(JSON.parse(localStorage.getItem(VIM_MODE_KEY) || DEFAULT_VIM_MODE))
+    const [isAutoRun, setIsAutoRun] = useState(JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || DEFAULT_AUTO_RUN))
 
     const editorDidMount = (editor: Ace.Editor) => {
         if (statusBarRef.current) {
@@ -51,6 +58,12 @@ export default function Component() {
 
     function onDarkThemeToggle() {
         toggleMode();
+    }
+
+    function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement, _deltas: NumberSize) {
+        const size = (refToElement.clientWidth / window.innerWidth) * 100
+        localStorage.setItem(EDITOR_SIZE_KEY, JSON.stringify(size))
+        setEditorSize(size)
     }
 
     return (
@@ -84,6 +97,8 @@ export default function Component() {
                         width: `${editorSize}%`,
                         height: "100%"
                     }}
+                    grid={[10,1]}
+                    onResizeStop={onResizeStop}
                 >
                     <Wrapper className={"h-full flex flex-col"}>
                         <AceEditor
