@@ -9,7 +9,7 @@ export const CURSOR_COLUMN_KEY = "cursorPositionColumn";
 export const DEFAULT_VIM_MODE = "false";
 export const DEFAULT_AUTO_RUN = "true";
 export const DEFAULT_SIZE = "60";
-export const DEFAULT_CURSOR_POSITION = 1;
+export const DEFAULT_CURSOR_POSITION = 0;
 export const DEFAULT_CODE = `package main
 
 import (

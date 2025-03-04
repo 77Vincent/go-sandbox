@@ -56,10 +56,9 @@ export default function Component() {
     function onChange(code: string = "") {
         localStorage.setItem(CODE_CONTENT_KEY, code);
         setCode(code);
-        run();
     }
 
-    const debouncedOnChange = debounce(onChange, 1000);
+    const debouncedOnCursorChange = debounce(onCursorChange, 500);
 
     function onCursorChange(value: any) {
         const row = value.cursor.row;
@@ -147,8 +146,8 @@ export default function Component() {
                             width={"100%"}
                             theme={mode === "dark" ? "one_dark" : "dawn"}
                             value={code}
-                            onChange={debouncedOnChange}
-                            onCursorChange={onCursorChange}
+                            onChange={onChange}
+                            onCursorChange={debouncedOnCursorChange}
                             focus={true}
                             fontSize={14}
                             name="UNIQUE_ID_OF_DIV"
