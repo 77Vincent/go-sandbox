@@ -138,7 +138,7 @@ export default function Component() {
                         Run
                     </Button>
 
-                    <FormatButton format={format}/>
+                    <FormatButton disabled={isAutoRun} format={format}/>
 
                     <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Export</Button>
 
