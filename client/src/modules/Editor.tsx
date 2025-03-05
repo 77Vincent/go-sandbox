@@ -7,8 +7,8 @@ import {VscSettings as SettingsIcon} from "react-icons/vsc";
 import {MdTextDecrease as TextDecreaseIcon, MdTextIncrease as TextIncreaseIcon} from "react-icons/md";
 
 import {
-    AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
-    EDITOR_SIZE_KEY, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
+    AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME, DEFAULT_FONT_SIZE,
+    EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
     VIM_MODE_KEY
 } from "../constants.ts";
 import {Divider, MyToast, Wrapper, ToggleSwitch} from "./Common.tsx";
@@ -27,7 +27,7 @@ import {
     getCursorColumn,
     getCursorRow,
     getEditorMode,
-    getEditorSize,
+    getEditorSize, getFontSize,
     getLintOn
 } from "../utils.ts";
 
@@ -41,17 +41,20 @@ export default function Component() {
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef(null);
 
+    // error state
+    const [error, setError] = useState<string>("");
+
     // settings
-    const [fontSize, setFontSize] = useState<number>(14);
+    const [fontSize, setFontSize] = useState<number>(getFontSize());
+    const [editorSize, setEditorSize] = useState<number>(getEditorSize())
 
     // editor status
-    const [error, setError] = useState<string>("");
-    const [result, setResult] = useState<string>("");
     const [code, setCode] = useState<string>(getCodeContent());
-    const [editorSize, setEditorSize] = useState<number>(getEditorSize())
+    const [result, setResult] = useState<string>("");
 
     // manage code
     const latestCodeRef = useRef(code);
+
     function storeCode(code: string) {
         setCode(code);
         localStorage.setItem(CODE_CONTENT_KEY, code);
@@ -150,6 +153,28 @@ export default function Component() {
         setEditorSize(size)
     }
 
+    function onFontSizeUp() {
+        let size = 0
+        if (fontSize === FONT_SIZE_L) {
+            size = DEFAULT_FONT_SIZE
+        } else {
+            size = FONT_SIZE_L
+        }
+        setFontSize(size)
+        localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(size))
+    }
+
+    function onFontSizeDown() {
+        let size = 0
+        if (fontSize === FONT_SIZE_S) {
+            size = DEFAULT_FONT_SIZE
+        } else {
+            size = FONT_SIZE_S
+        }
+        setFontSize(size)
+        localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(size))
+    }
+
     return (
         <div className="relative h-screen flex flex-col dark:bg-gray-800 bg-stone-100">
             <MyToast>{error}</MyToast>
@@ -193,8 +218,8 @@ export default function Component() {
                             Settings
                         </Dropdown.Header>
                         <Dropdown.Item className={"flex justify-between items-center gap-2"}>
-                            <TextDecreaseIcon className={"hover:opacity-50 text-md"} />
-                            <TextIncreaseIcon className={"hover:opacity-50 text-lg"} />
+                            <TextDecreaseIcon color={fontSize === FONT_SIZE_S ? "purple" : ""} onClick={onFontSizeDown} className={"hover:opacity-50 text-md"}/>
+                            <TextIncreaseIcon color={fontSize === FONT_SIZE_L ? "purple" : ""} onClick={onFontSizeUp} className={"hover:opacity-50 text-lg"}/>
                         </Dropdown.Item>
                     </Dropdown>
 

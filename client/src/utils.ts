@@ -2,10 +2,22 @@ import {
     AUTO_RUN_KEY,
     CODE_CONTENT_KEY,
     CURSOR_COLUMN_KEY,
-    CURSOR_ROW_KEY, DEFAULT_AUTO_RUN,
+    CURSOR_ROW_KEY,
+    DEFAULT_AUTO_RUN,
     DEFAULT_CODE_CONTENT,
-    DEFAULT_CURSOR_POSITION, DEFAULT_LINT_ON, DEFAULT_SIZE, DEFAULT_VIM_MODE, EDITOR_SIZE_KEY, LINT_ON_KEY, VIM_MODE_KEY
+    DEFAULT_CURSOR_POSITION,
+    DEFAULT_LINT_ON,
+    DEFAULT_EDITOR_SIZE,
+    DEFAULT_VIM_MODE,
+    EDITOR_SIZE_KEY,
+    LINT_ON_KEY,
+    VIM_MODE_KEY,
+    DEFAULT_FONT_SIZE, FONT_SIZE_KEY
 } from "./constants.ts";
+
+export function getFontSize(): number {
+    return Number(localStorage.getItem(FONT_SIZE_KEY)) || DEFAULT_FONT_SIZE
+}
 
 export function getCursorRow(): number {
     return Number(localStorage.getItem(CURSOR_ROW_KEY)) || DEFAULT_CURSOR_POSITION
@@ -24,7 +36,7 @@ export function getEditorMode(): boolean {
 }
 
 export function getEditorSize(): number {
-    return Number(localStorage.getItem(EDITOR_SIZE_KEY)) || DEFAULT_SIZE
+    return Number(localStorage.getItem(EDITOR_SIZE_KEY)) || DEFAULT_EDITOR_SIZE
 }
 
 export function getAutoRun(): boolean {
