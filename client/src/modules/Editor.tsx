@@ -119,15 +119,27 @@ export default function Component() {
             // actual run
             const {output} = await executeCode(latestCodeRef.current);
             setResult(output);
+
+            // clear error markers
             setErrorRows([])
         } catch (e) {
             const err = e as Error
-            const {row, col} = parseExecutionError(err.message)
-            setErrorRows([{
-                startRow: row-1, endRow: row-1, startCol: 0, endCol: col, className: "error-marker", type: "text"
-            }])
-            setResult(err.message)
+            const errs = parseExecutionError(err.message)
+            const markers: IMarker[] = []
+            for (const {row, col} of errs) {
+                markers.push({
+                    startRow: row - 1,
+                    endRow: row - 1,
+                    startCol: 0,
+                    endCol: col,
+                    className: "error-marker",
+                    type: "text"
+                })
+            }
+            setErrorRows(markers)
 
+            // show raw error message
+            setResult(err.message)
         }
     }, []);
     const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
@@ -140,7 +152,7 @@ export default function Component() {
         const col = value.cursor.column;
 
         if (statusBarRef.current) {
-            statusBarRef.current.textContent = `${row+1}:${col}`;
+            statusBarRef.current.textContent = `${row + 1}:${col}`;
         }
 
         localStorage.setItem(CURSOR_ROW_KEY, row);

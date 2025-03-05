@@ -57,13 +57,14 @@ interface executionErrorI {
     col: number;
 }
 
-export function parseExecutionError(error: string): executionErrorI {
+export function parseExecutionError(error: string): executionErrorI[] {
     const matches = error.match(ERROR_PARSING_REGEX);
-    if (matches) {
-        const [, row, col] = matches;
+
+    return (matches || []).map((match) => {
+        const arr = match.split(":");
         return {
-            row: Number(row),
-            col: Number(col)
+            row: Number(arr[1]),
+            col: Number(arr[2])
         }
-    }
+    });
 }
