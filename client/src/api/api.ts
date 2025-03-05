@@ -6,6 +6,24 @@ export async function healthCheck() {
     return await res.json();
 }
 
+export async function executeCode(code: string): Promise<string> {
+    const res = await fetch("/api/execute", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({code}),
+    })
+
+    if (!res.ok) {
+        // how to throw structured error here?
+        const {error} = await res.json();
+        throw new Error(error);
+    }
+
+    return await res.json();
+}
+
 export async function formatCode(code: string): Promise<string> {
     const res = await fetch("/api/format", {
         method: "POST",
