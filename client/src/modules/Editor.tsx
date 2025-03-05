@@ -1,15 +1,15 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
+import {Button, DarkThemeToggle, Dropdown, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
 import {VscSettings as SettingsIcon} from "react-icons/vsc";
+import {MdTextDecrease as TextDecreaseIcon, MdTextIncrease as TextIncreaseIcon} from "react-icons/md";
 
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
     DEFAULT_AUTO_RUN,
-    DEFAULT_CODE,
-    DEFAULT_CURSOR_POSITION, DEFAULT_LINT_ON, DEFAULT_SIZE, DEFAULT_VIM_MODE,
+    DEFAULT_LINT_ON,
     EDITOR_SIZE_KEY, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
     VIM_MODE_KEY
 } from "../constants.ts";
@@ -23,6 +23,7 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim"
 import "ace-builds/src-noconflict/ext-statusbar";
 import {debounce} from "react-ace/lib/editorOptions";
+import {getCodeContent, getCursorColumn, getCursorRow, getEditorMode, getEditorSize} from "../utils.ts";
 
 
 export default function Component() {
@@ -34,16 +35,17 @@ export default function Component() {
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef(null);
 
+    // settings
+    const [fontSize, setFontSize] = useState<number>(14);
 
     // editor status
     const [error, setError] = useState<string>("");
     const [result, setResult] = useState<string>("");
-    const [code, setCode] = useState<string>(localStorage.getItem(CODE_CONTENT_KEY) || DEFAULT_CODE);
-    const [editorSize, setEditorSize] = useState<number>(Number(localStorage.getItem(EDITOR_SIZE_KEY)) || DEFAULT_SIZE)
+    const [code, setCode] = useState<string>(getCodeContent());
+    const [editorSize, setEditorSize] = useState<number>(getEditorSize())
 
     // manage code
     const latestCodeRef = useRef(code);
-
     function storeCode(code: string) {
         setCode(code);
         localStorage.setItem(CODE_CONTENT_KEY, code);
@@ -51,11 +53,11 @@ export default function Component() {
     }
 
     // cursor status
-    const [row, setRow] = useState<number>(Number(localStorage.getItem(CURSOR_ROW_KEY)) || DEFAULT_CURSOR_POSITION);
-    const [column, setColumn] = useState<number>(Number(localStorage.getItem(CURSOR_COLUMN_KEY)) || DEFAULT_CURSOR_POSITION);
+    const [row, setRow] = useState<number>(getCursorRow());
+    const [column, setColumn] = useState<number>(getCursorColumn());
 
     // mode status
-    const [isVimMode, setIsVimMode] = useState<boolean>(JSON.parse(localStorage.getItem(VIM_MODE_KEY) || DEFAULT_VIM_MODE))
+    const [isVimMode, setIsVimMode] = useState<boolean>(getEditorMode())
     const [isAutoRun, setIsAutoRun] = useState<boolean>(JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || DEFAULT_AUTO_RUN))
     const [isLintOn, setIsLintOn] = useState<boolean>(JSON.parse(localStorage.getItem(LINT_ON_KEY) || DEFAULT_LINT_ON))
 
@@ -178,9 +180,17 @@ export default function Component() {
 
                     <Divider/>
 
-                    <Tooltip content={"Settings"}>
-                        <SettingsIcon color={"gray"} className={"text-lg cursor-pointer hover:opacity-50"}/>
-                    </Tooltip>
+                    <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
+                        <SettingsIcon color={"gray"} className={"text-base cursor-pointer hover:opacity-50"}/>
+                    }>
+                        <Dropdown.Header>
+                            Settings
+                        </Dropdown.Header>
+                        <Dropdown.Item className={"flex justify-between items-center gap-2"}>
+                            <TextDecreaseIcon className={"hover:opacity-50 text-md"} />
+                            <TextIncreaseIcon className={"hover:opacity-50 text-lg"} />
+                        </Dropdown.Item>
+                    </Dropdown>
 
                     <Tooltip content={"Dark mode"}>
                         <DarkThemeToggle onClick={onDarkThemeToggle}/>
@@ -188,7 +198,7 @@ export default function Component() {
                 </div>
             </div>
 
-            <div className={"px-3 pb-3 py-1 gap-2 flex flex-1"}>
+            <div className={"px-3 pb-3 py-1 gap-0.5 flex flex-1"}>
                 <Resizable
                     minWidth={"20%"}
                     maxWidth={"80%"}
@@ -212,7 +222,7 @@ export default function Component() {
                             value={code}
                             onChange={onChange}
                             onCursorChange={debouncedOnCursorChange}
-                            fontSize={14}
+                            fontSize={fontSize}
                             name="UNIQUE_ID_OF_DIV"
                             keyboardHandler={isVimMode ? "vim" : ""}
                             editorProps={{$blockScrolling: true}}
