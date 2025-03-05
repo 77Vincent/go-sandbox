@@ -13,7 +13,7 @@ export const DEFAULT_SIZE = 60;
 export const DEFAULT_CURSOR_POSITION = 0;
 
 export const CURSOR_UPDATE_DEBOUNCE_TIME = 200;
-export const RUN_DEBOUNCE_TIME = 500;
+export const RUN_DEBOUNCE_TIME = 750;
 
 export const DEFAULT_CODE = `package main
 import "fmt"

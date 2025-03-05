@@ -43,6 +43,7 @@ export default function Component() {
 
     // manage code
     const latestCodeRef = useRef(code);
+
     function storeCode(code: string) {
         setCode(code);
         localStorage.setItem(CODE_CONTENT_KEY, code);
@@ -94,7 +95,7 @@ export default function Component() {
             storeCode(formatted)
 
             // actual run
-            const { output } = await executeCode(latestCodeRef.current);
+            const {output} = await executeCode(latestCodeRef.current);
             setResult(output);
         } catch (e) {
             setResult((e as Error).message)
@@ -102,7 +103,9 @@ export default function Component() {
     }, []);
     const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
 
+    // manage debounced cursor position update
     const debouncedOnCursorChange = debounce(onCursorChange, CURSOR_UPDATE_DEBOUNCE_TIME);
+
     function onCursorChange(value: any) {
         const row = value.cursor.row;
         const column = value.cursor.column;
@@ -147,17 +150,15 @@ export default function Component() {
                 <h1 className="text-2xl font-bold">Golang Sandbox</h1>
 
                 <div className="flex gap-2 justify-end items-center">
-                    <Button onClick={debouncedRun} disabled={isAutoRun} className={"shadow"} size={"xs"} gradientDuoTone={"purpleToBlue"}>
+                    <Button onClick={debouncedRun} disabled={isAutoRun} className={"shadow"} size={"xs"}
+                            gradientDuoTone={"purpleToBlue"}>
                         Run
                     </Button>
 
-                    <Tooltip content={
-                        <div className={"flex gap-1 items-center"}> Format code </div>
-                    }>
-                        <Button onClick={debouncedFormat} disabled={isAutoRun} className={"shadow"} size={"xs"} gradientMonochrome={"info"}>
-                            Format
-                        </Button>
-                    </Tooltip>
+                    <Button onClick={debouncedFormat} disabled={isAutoRun} className={"shadow"} size={"xs"}
+                            gradientMonochrome={"info"}>
+                        Format
+                    </Button>
 
                     <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Export</Button>
 
@@ -178,11 +179,11 @@ export default function Component() {
                     <Divider/>
 
                     <Tooltip content={"Settings"}>
-                        <SettingsIcon className={"text-lg cursor-pointer hover:opacity-50"}/>
+                        <SettingsIcon color={"gray"} className={"text-lg cursor-pointer hover:opacity-50"}/>
                     </Tooltip>
 
                     <Tooltip content={"Dark mode"}>
-                        <DarkThemeToggle className={"hover:opacity-50"} onClick={onDarkThemeToggle}/>
+                        <DarkThemeToggle onClick={onDarkThemeToggle}/>
                     </Tooltip>
                 </div>
             </div>
