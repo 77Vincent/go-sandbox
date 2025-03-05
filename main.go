@@ -39,7 +39,7 @@ func main() {
 			return
 		}
 
-		c.JSON(http.StatusOK, string(formatted))
+		c.JSON(http.StatusOK, gin.H{"output": string(formatted)})
 	})
 
 	r.POST("/execute", func(c *gin.Context) {
@@ -63,7 +63,10 @@ func main() {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 			return
 		}
-		tmp.Close()
+		if err = tmp.Close(); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		// execute the code in a new process
 		cmd := exec.Command("go", "run", tmp.Name())

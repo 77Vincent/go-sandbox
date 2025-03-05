@@ -6,8 +6,15 @@ export async function healthCheck() {
     return await res.json();
 }
 
-interface ExecuteResultI {
-    error: string;
+interface BaseResultI {
+    error?: string;
+}
+
+interface ExecuteResultI extends BaseResultI {
+    output: string;
+}
+
+interface FormatResultI extends BaseResultI {
     output: string;
 }
 
@@ -29,7 +36,7 @@ export async function executeCode(code: string): Promise<ExecuteResultI> {
     return await res.json();
 }
 
-export async function formatCode(code: string): Promise<string> {
+export async function formatCode(code: string): Promise<FormatResultI> {
     const res = await fetch("/api/format", {
         method: "POST",
         headers: {
