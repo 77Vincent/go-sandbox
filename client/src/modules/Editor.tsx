@@ -14,7 +14,7 @@ import {
     VIM_MODE_KEY
 } from "../constants.ts";
 import {Divider, MyToast, Wrapper, ToggleSwitch} from "./Common.tsx";
-import {formatCode} from "../api/api.ts";
+import {executeCode, formatCode} from "../api/api.ts";
 import {FormatButton} from "./Buttons.tsx";
 
 import "ace-builds/src-noconflict/mode-golang";
@@ -35,10 +35,10 @@ export default function Component() {
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef(null);
 
-    const [result, setResult] = useState<string>("");
 
     // editor status
     const [error, setError] = useState<string>("");
+    const [result, setResult] = useState<string>("");
     const [code, setCode] = useState<string>(localStorage.getItem(CODE_CONTENT_KEY) || DEFAULT_CODE);
     const [editorSize, setEditorSize] = useState<number>(Number(localStorage.getItem(EDITOR_SIZE_KEY)) || DEFAULT_SIZE)
 
@@ -60,8 +60,13 @@ export default function Component() {
         editor.moveCursorTo(row, column);
     };
 
-    function run() {
-        console.log("Running code")
+    async function run() {
+        try {
+            const {output} = await executeCode(code);
+            setResult(output);
+        } catch (e) {
+            setError((e as Error).message)
+        }
     }
 
     function storeCode(code: string) {
@@ -209,7 +214,9 @@ export default function Component() {
                 </Resizable>
 
                 <Wrapper className={"py-2 px-2 bg-stone-200"}>
-                    {result}
+                    <div className={"font-mono"}>
+                        {result}
+                    </div>
                 </Wrapper>
             </div>
         </div>

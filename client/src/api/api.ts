@@ -6,7 +6,12 @@ export async function healthCheck() {
     return await res.json();
 }
 
-export async function executeCode(code: string): Promise<string> {
+interface ExecuteResultI {
+    error: string;
+    output: string;
+}
+
+export async function executeCode(code: string): Promise<ExecuteResultI> {
     const res = await fetch("/api/execute", {
         method: "POST",
         headers: {

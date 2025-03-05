@@ -64,7 +64,7 @@ func main() {
 		defer os.Remove(tmp.Name()) // remove the file when we're done
 
 		// write the formatted code to the file
-		if _, err := tmp.Write(formatted); err != nil {
+		if _, err = tmp.Write(formatted); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -75,6 +75,11 @@ func main() {
 		var out bytes.Buffer
 		cmd.Stdout = &out
 		cmd.Stderr = &out
+
+		if err = cmd.Run(); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "output": out.String()})
+			return
+		}
 
 		c.JSON(http.StatusOK, gin.H{"output": out.String()})
 	})
