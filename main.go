@@ -75,7 +75,7 @@ func main() {
 		cmd.Stderr = &out
 
 		if err = cmd.Run(); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("%s: %v", err, out.String())})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("%s: %v", err, out.String())})
 			return
 		}
 

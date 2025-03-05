@@ -34,10 +34,19 @@ import {
 
 
 export default function Component() {
-
     useEffect(() => {
-
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
     }, []);
+
+    function handleKeyDown(event: KeyboardEvent) {
+        if (event.key.toLowerCase() === "enter" && event.metaKey) {
+            event.preventDefault();
+            debouncedRun()
+        }
+    }
 
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef(null);
