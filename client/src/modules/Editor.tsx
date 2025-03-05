@@ -42,6 +42,14 @@ export default function Component() {
     const [code, setCode] = useState<string>(localStorage.getItem(CODE_CONTENT_KEY) || DEFAULT_CODE);
     const [editorSize, setEditorSize] = useState<number>(Number(localStorage.getItem(EDITOR_SIZE_KEY)) || DEFAULT_SIZE)
 
+    // manage code
+    const latestCodeRef = useRef(code);
+    function storeCode(code: string) {
+        setCode(code);
+        localStorage.setItem(CODE_CONTENT_KEY, code);
+        latestCodeRef.current = code;
+    }
+
     // cursor status
     const [row, setRow] = useState<number>(Number(localStorage.getItem(CURSOR_ROW_KEY)) || DEFAULT_CURSOR_POSITION);
     const [column, setColumn] = useState<number>(Number(localStorage.getItem(CURSOR_COLUMN_KEY)) || DEFAULT_CURSOR_POSITION);
@@ -60,20 +68,6 @@ export default function Component() {
         editor.moveCursorTo(row, column);
     };
 
-    async function run() {
-        try {
-            const {output} = await executeCode(code);
-            setResult(output);
-        } catch (e) {
-            setError((e as Error).message)
-        }
-    }
-
-    function storeCode(code: string) {
-        localStorage.setItem(CODE_CONTENT_KEY, code);
-        setCode(code);
-    }
-
     async function format() {
         try {
             const data = await formatCode(code)
@@ -86,15 +80,23 @@ export default function Component() {
     function onChange(code: string = "") {
         storeCode(code);
 
-        // run with debounce
         if (isAutoRun) {
             debouncedRun();
         }
     }
 
-    const debouncedRun = useCallback(debounce(run, RUN_DEBOUNCE_TIME), []);
-    const debouncedOnCursorChange = debounce(onCursorChange, CURSOR_UPDATE_DEBOUNCE_TIME);
+    // manage debounced run
+    const runCallback = useCallback(async () => {
+        try {
+            const { output } = await executeCode(latestCodeRef.current);
+            setResult(output);
+        } catch (e) {
+            setError((e as Error).message)
+        }
+    }, []);
+    const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
 
+    const debouncedOnCursorChange = debounce(onCursorChange, CURSOR_UPDATE_DEBOUNCE_TIME);
     function onCursorChange(value: any) {
         const row = value.cursor.row;
         const column = value.cursor.column;
@@ -193,7 +195,7 @@ export default function Component() {
                             mode="golang"
                             width={"100%"}
                             theme={mode === "dark" ? "one_dark" : "dawn"}
-                            value={code}
+                            defaultValue={code}
                             onChange={onChange}
                             onCursorChange={debouncedOnCursorChange}
                             fontSize={14}
