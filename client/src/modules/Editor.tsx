@@ -8,8 +8,6 @@ import {MdTextDecrease as TextDecreaseIcon, MdTextIncrease as TextIncreaseIcon} 
 
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
-    DEFAULT_AUTO_RUN,
-    DEFAULT_LINT_ON,
     EDITOR_SIZE_KEY, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
     VIM_MODE_KEY
 } from "../constants.ts";
@@ -23,7 +21,15 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim"
 import "ace-builds/src-noconflict/ext-statusbar";
 import {debounce} from "react-ace/lib/editorOptions";
-import {getCodeContent, getCursorColumn, getCursorRow, getEditorMode, getEditorSize} from "../utils.ts";
+import {
+    getAutoRun,
+    getCodeContent,
+    getCursorColumn,
+    getCursorRow,
+    getEditorMode,
+    getEditorSize,
+    getLintOn
+} from "../utils.ts";
 
 
 export default function Component() {
@@ -58,8 +64,8 @@ export default function Component() {
 
     // mode status
     const [isVimMode, setIsVimMode] = useState<boolean>(getEditorMode())
-    const [isAutoRun, setIsAutoRun] = useState<boolean>(JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || DEFAULT_AUTO_RUN))
-    const [isLintOn, setIsLintOn] = useState<boolean>(JSON.parse(localStorage.getItem(LINT_ON_KEY) || DEFAULT_LINT_ON))
+    const [isAutoRun, setIsAutoRun] = useState<boolean>(getAutoRun())
+    const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
 
     const onEditorLoad = (editor: Ace.Editor) => {
         if (statusBarRef.current) {
