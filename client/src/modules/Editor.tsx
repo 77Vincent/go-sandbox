@@ -70,8 +70,8 @@ export default function Component() {
 
     async function format() {
         try {
-            const data = await formatCode(code)
-            storeCode(data)
+            const {output} = await formatCode(code)
+            storeCode(output)
         } catch (e) {
             setError((e as Error).message)
         }
@@ -88,6 +88,11 @@ export default function Component() {
     // manage debounced run
     const runCallback = useCallback(async () => {
         try {
+            // try format code as a validation
+            const {output: formatted} = await formatCode(latestCodeRef.current);
+            storeCode(formatted)
+
+            // actual run
             const { output } = await executeCode(latestCodeRef.current);
             setResult(output);
         } catch (e) {
@@ -141,7 +146,7 @@ export default function Component() {
                 <h1 className="text-2xl font-bold">Golang Sandbox</h1>
 
                 <div className="flex gap-2 justify-end items-center">
-                    <Button disabled={isAutoRun} className={"shadow"} size={"xs"} gradientDuoTone={"purpleToBlue"}>
+                    <Button onClick={debouncedRun} disabled={isAutoRun} className={"shadow"} size={"xs"} gradientDuoTone={"purpleToBlue"}>
                         Run
                     </Button>
 
@@ -196,6 +201,7 @@ export default function Component() {
                             width={"100%"}
                             theme={mode === "dark" ? "one_dark" : "dawn"}
                             defaultValue={code}
+                            value={code}
                             onChange={onChange}
                             onCursorChange={debouncedOnCursorChange}
                             fontSize={14}
