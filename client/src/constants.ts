@@ -20,6 +20,9 @@ export const DEFAULT_CURSOR_POSITION = 0;
 export const CURSOR_UPDATE_DEBOUNCE_TIME = 200;
 export const RUN_DEBOUNCE_TIME = 750;
 
+export const ACTIVE_COLOR_LIGHT = "purple";
+export const ACTIVE_COLOR_DARK = "lime";
+
 export const DEFAULT_CODE_CONTENT = `package main
 import "fmt"
 

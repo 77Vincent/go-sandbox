@@ -22,6 +22,7 @@ import "ace-builds/src-noconflict/keybinding-vim"
 import "ace-builds/src-noconflict/ext-statusbar";
 import {debounce} from "react-ace/lib/editorOptions";
 import {
+    getActiveColor,
     getAutoRun,
     getCodeContent,
     getCursorColumn,
@@ -218,8 +219,8 @@ export default function Component() {
                             Settings
                         </Dropdown.Header>
                         <Dropdown.Item className={"flex justify-between items-center gap-2"}>
-                            <TextDecreaseIcon color={fontSize === FONT_SIZE_S ? "purple" : ""} onClick={onFontSizeDown} className={"hover:opacity-50 text-md"}/>
-                            <TextIncreaseIcon color={fontSize === FONT_SIZE_L ? "purple" : ""} onClick={onFontSizeUp} className={"hover:opacity-50 text-lg"}/>
+                            <TextDecreaseIcon color={fontSize === FONT_SIZE_S ? getActiveColor(mode) : ""} onClick={onFontSizeDown} className={"hover:opacity-50 text-md"}/>
+                            <TextIncreaseIcon color={fontSize === FONT_SIZE_L ? getActiveColor(mode) : ""} onClick={onFontSizeUp} className={"hover:opacity-50 text-lg"}/>
                         </Dropdown.Item>
                     </Dropdown>
 

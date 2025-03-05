@@ -12,8 +12,13 @@ import {
     EDITOR_SIZE_KEY,
     LINT_ON_KEY,
     VIM_MODE_KEY,
-    DEFAULT_FONT_SIZE, FONT_SIZE_KEY
+    DEFAULT_FONT_SIZE, FONT_SIZE_KEY, ACTIVE_COLOR_DARK, ACTIVE_COLOR_LIGHT
 } from "./constants.ts";
+import {ThemeMode} from "flowbite-react";
+
+export function getActiveColor(mode: ThemeMode = "light"): string {
+    return mode === "dark" ? ACTIVE_COLOR_DARK : ACTIVE_COLOR_LIGHT
+}
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || DEFAULT_FONT_SIZE
