@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"go/format"
 	"net/http"
 	"os"
@@ -45,27 +46,21 @@ func main() {
 		var req reqPayload
 
 		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		formatted, err := format.Source([]byte(req.Code))
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		// generate a temporary file for the code
 		tmp, err := os.CreateTemp("", "code-*.go")
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		defer os.Remove(tmp.Name()) // remove the file when we're done
 
 		// write the formatted code to the file
-		if _, err = tmp.Write(formatted); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if _, err = tmp.Write([]byte(req.Code)); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 			return
 		}
 		tmp.Close()
@@ -77,7 +72,7 @@ func main() {
 		cmd.Stderr = &out
 
 		if err = cmd.Run(); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "output": out.String()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("%s: %v", err, out.String())})
 			return
 		}
 

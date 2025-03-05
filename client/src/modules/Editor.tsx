@@ -91,7 +91,7 @@ export default function Component() {
             const { output } = await executeCode(latestCodeRef.current);
             setResult(output);
         } catch (e) {
-            setError((e as Error).message)
+            setResult((e as Error).message)
         }
     }, []);
     const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
