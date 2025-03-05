@@ -17,7 +17,7 @@ export function Wrapper(props: {
 }
 
 export function Divider() {
-    return <div className={"h-4 w-1 border-r border-gray-300 dark:border-stone-500"}/>
+    return <div className={"mx-1 h-4 w-1 border-r border-gray-300 dark:border-stone-500"}/>
 }
 
 export function MyToast(props: {
@@ -41,5 +41,25 @@ export function MyToast(props: {
 
             <Toast.Toggle/>
         </Toast>
+    )
+}
+
+export function ToggleSwitch(props: {
+    label?: string,
+    checked: boolean,
+    onChange: () => void
+}) {
+    const {checked, onChange, label} = props
+
+    return (
+        <label className="mx-0.5 inline-flex flex-col items-center cursor-pointer">
+            <div>
+                <input checked={checked} onChange={onChange} type="checkbox" value="" className="sr-only peer"/>
+                <div
+                    className="relative w-7 h-4 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600 dark:peer-checked:bg-purple-600"></div>
+            </div>
+
+            <span className="text-xs font-light text-gray-800 dark:text-gray-300">{label}</span>
+        </label>
     )
 }

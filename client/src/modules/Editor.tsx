@@ -1,8 +1,9 @@
-import {useCallback, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
+import {VscSettings as SettingsIcon} from "react-icons/vsc";
 
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
@@ -12,7 +13,9 @@ import {
     EDITOR_SIZE_KEY, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
     VIM_MODE_KEY
 } from "../constants.ts";
-import {Divider, MyToast, Wrapper} from "./Common.tsx";
+import {Divider, MyToast, Wrapper, ToggleSwitch} from "./Common.tsx";
+import {formatCode} from "../api/api.ts";
+import {FormatButton} from "./Buttons.tsx";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -21,9 +24,14 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim"
 import "ace-builds/src-noconflict/ext-statusbar";
 import {debounce} from "react-ace/lib/editorOptions";
-import {formatCode} from "../api/api.ts";
+
 
 export default function Component() {
+
+    useEffect(() => {
+
+    }, []);
+
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef(null);
 
@@ -130,35 +138,32 @@ export default function Component() {
                         Run
                     </Button>
 
-                    <Button onClick={format} disabled={false} className={"shadow"} size={"xs"} gradientMonochrome={"lime"}>
-                        Format
-                    </Button>
-
+                    <FormatButton format={format}/>
 
                     <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Export</Button>
 
                     <Divider/>
 
                     <Tooltip content={"Turn on/off lint"}>
-                        <Button className={"shadow"} onClick={onLint} size={"xs"}
-                                color={isLintOn ? "purple" : "gray"}>Lint</Button>
+                        <ToggleSwitch label={"Lint"} checked={isLintOn} onChange={onLint}/>
                     </Tooltip>
 
                     <Tooltip content={"VIM mode"}>
-                        <Button className={"shadow"} onClick={onVimMode} size={"xs"}
-                                color={isVimMode ? "purple" : "gray"}>VIM</Button>
+                        <ToggleSwitch label={"VIM"} checked={isVimMode} onChange={onVimMode}/>
                     </Tooltip>
 
-
                     <Tooltip content={"Auto Run & Format"}>
-                        <Button className={"shadow"} onClick={onAutoRun} size={"xs"}
-                                color={isAutoRun ? "purple" : "gray"}>Auto</Button>
+                        <ToggleSwitch label={"Auto"} checked={isAutoRun} onChange={onAutoRun}/>
                     </Tooltip>
 
                     <Divider/>
 
+                    <Tooltip content={"Settings"}>
+                        <SettingsIcon className={"text-lg cursor-pointer hover:opacity-50"}/>
+                    </Tooltip>
+
                     <Tooltip content={"Dark mode"}>
-                        <DarkThemeToggle onClick={onDarkThemeToggle}/>
+                        <DarkThemeToggle className={"hover:opacity-50"} onClick={onDarkThemeToggle}/>
                     </Tooltip>
                 </div>
             </div>
