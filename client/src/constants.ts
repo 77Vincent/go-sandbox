@@ -17,7 +17,7 @@ export const FONT_SIZE_S = 12;
 
 export const DEFAULT_CURSOR_POSITION = 0;
 
-export const CURSOR_UPDATE_DEBOUNCE_TIME = 200;
+export const CURSOR_UPDATE_DEBOUNCE_TIME = 100;
 export const RUN_DEBOUNCE_TIME = 750;
 
 export const ACTIVE_COLOR_LIGHT = "purple";
@@ -29,3 +29,6 @@ import "fmt"
 func main() {
     fmt.Println("Hello, playground")
 }`
+
+
+export const ERROR_PARSING_REGEX = /\.go:(\d+):(\d+):/;

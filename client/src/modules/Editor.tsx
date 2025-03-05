@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {Button, DarkThemeToggle, Dropdown, Tooltip, useThemeMode} from "flowbite-react";
-import AceEditor from "react-ace";
+import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
 import {VscSettings as SettingsIcon} from "react-icons/vsc";
@@ -29,7 +29,7 @@ import {
     getCursorRow,
     getEditorMode,
     getEditorSize, getFontSize,
-    getLintOn
+    getLintOn, parseExecutionError
 } from "../utils.ts";
 
 
@@ -49,10 +49,11 @@ export default function Component() {
     }
 
     const {mode, toggleMode} = useThemeMode();
-    const statusBarRef = useRef(null);
+    const statusBarRef = useRef<HTMLDivElement | null>(null);
 
     // error state
     const [error, setError] = useState<string>("");
+    const [errorRows, setErrorRows] = useState<IMarker[]>([]);
 
     // settings
     const [fontSize, setFontSize] = useState<number>(getFontSize());
@@ -118,8 +119,15 @@ export default function Component() {
             // actual run
             const {output} = await executeCode(latestCodeRef.current);
             setResult(output);
+            setErrorRows([])
         } catch (e) {
-            setResult((e as Error).message)
+            const err = e as Error
+            const {row, col} = parseExecutionError(err.message)
+            setErrorRows([{
+                startRow: row-1, endRow: row-1, startCol: 0, endCol: col, className: "error-marker", type: "text"
+            }])
+            setResult(err.message)
+
         }
     }, []);
     const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
@@ -129,13 +137,17 @@ export default function Component() {
 
     function onCursorChange(value: any) {
         const row = value.cursor.row;
-        const column = value.cursor.column;
+        const col = value.cursor.column;
+
+        if (statusBarRef.current) {
+            statusBarRef.current.textContent = `${row+1}:${col}`;
+        }
 
         localStorage.setItem(CURSOR_ROW_KEY, row);
-        localStorage.setItem(CURSOR_COLUMN_KEY, column);
+        localStorage.setItem(CURSOR_COLUMN_KEY, col);
 
         setRow(row);
-        setColumn(column);
+        setColumn(col);
     }
 
     function onLint() {
@@ -271,18 +283,11 @@ export default function Component() {
                             setOptions={{
                                 enableBasicAutocompletion: true,
                                 enableLiveAutocompletion: isLintOn,
-                                enableSnippets: true
+                                enableSnippets: true,
                             }}
                             onChange={onChange}
                             onLoad={onEditorLoad}
-                            markers={[{
-                                startRow: 6,
-                                startCol: 0,
-                                endRow: 6,
-                                endCol: 1,
-                                className: 'error-marker',
-                                type: 'fullLine',
-                            },]}
+                            markers={errorRows}
                         />
 
                         <div ref={statusBarRef}

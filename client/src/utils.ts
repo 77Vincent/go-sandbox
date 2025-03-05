@@ -12,7 +12,7 @@ import {
     EDITOR_SIZE_KEY,
     LINT_ON_KEY,
     VIM_MODE_KEY,
-    DEFAULT_FONT_SIZE, FONT_SIZE_KEY, ACTIVE_COLOR_DARK, ACTIVE_COLOR_LIGHT
+    DEFAULT_FONT_SIZE, FONT_SIZE_KEY, ACTIVE_COLOR_DARK, ACTIVE_COLOR_LIGHT, ERROR_PARSING_REGEX
 } from "./constants.ts";
 import {ThemeMode} from "flowbite-react";
 
@@ -50,4 +50,20 @@ export function getAutoRun(): boolean {
 
 export function getLintOn(): boolean {
     return JSON.parse(localStorage.getItem(LINT_ON_KEY) || DEFAULT_LINT_ON)
+}
+
+interface executionErrorI {
+    row: number;
+    col: number;
+}
+
+export function parseExecutionError(error: string): executionErrorI {
+    const matches = error.match(ERROR_PARSING_REGEX);
+    if (matches) {
+        const [, row, col] = matches;
+        return {
+            row: Number(row),
+            col: Number(col)
+        }
+    }
 }

@@ -4,5 +4,5 @@
 
 .error-marker {
     position: absolute;
-    background-color: rgba(255, 0, 0, 0.15); /* 半透明红色背景 */
+    background-color: rgba(255, 0, 0, 0.2); /* 半透明红色背景 */
 }
