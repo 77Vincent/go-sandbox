@@ -15,7 +15,6 @@ import {
 } from "../constants.ts";
 import {Divider, MyToast, Wrapper, ToggleSwitch} from "./Common.tsx";
 import {executeCode, formatCode} from "../api/api.ts";
-import {FormatButton} from "./Buttons.tsx";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -68,15 +67,6 @@ export default function Component() {
         editor.moveCursorTo(row, column);
     };
 
-    async function format() {
-        try {
-            const {output} = await formatCode(code)
-            storeCode(output)
-        } catch (e) {
-            setError((e as Error).message)
-        }
-    }
-
     function onChange(code: string = "") {
         storeCode(code);
 
@@ -84,6 +74,17 @@ export default function Component() {
             debouncedRun();
         }
     }
+
+    // managed debounced format
+    const formatCallback = useCallback(async () => {
+        try {
+            const {output} = await formatCode(latestCodeRef.current);
+            storeCode(output)
+        } catch (e) {
+            setError((e as Error).message)
+        }
+    }, []);
+    const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
 
     // manage debounced run
     const runCallback = useCallback(async () => {
@@ -150,7 +151,13 @@ export default function Component() {
                         Run
                     </Button>
 
-                    <FormatButton disabled={isAutoRun} format={format}/>
+                    <Tooltip content={
+                        <div className={"flex gap-1 items-center"}> Format code </div>
+                    }>
+                        <Button onClick={debouncedFormat} disabled={isAutoRun} className={"shadow"} size={"xs"} gradientMonochrome={"info"}>
+                            Format
+                        </Button>
+                    </Tooltip>
 
                     <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Export</Button>
 
