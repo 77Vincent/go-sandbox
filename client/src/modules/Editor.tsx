@@ -228,8 +228,10 @@ export default function Component() {
                             Settings
                         </Dropdown.Header>
                         <Dropdown.Item className={"flex justify-between items-center gap-2"}>
-                            <TextDecreaseIcon color={fontSize === FONT_SIZE_S ? getActiveColor(mode) : ""} onClick={onFontSizeDown} className={"hover:opacity-50 text-md"}/>
-                            <TextIncreaseIcon color={fontSize === FONT_SIZE_L ? getActiveColor(mode) : ""} onClick={onFontSizeUp} className={"hover:opacity-50 text-lg"}/>
+                            <TextDecreaseIcon color={fontSize === FONT_SIZE_S ? getActiveColor(mode) : ""}
+                                              onClick={onFontSizeDown} className={"hover:opacity-50 text-md"}/>
+                            <TextIncreaseIcon color={fontSize === FONT_SIZE_L ? getActiveColor(mode) : ""}
+                                              onClick={onFontSizeUp} className={"hover:opacity-50 text-lg"}/>
                         </Dropdown.Item>
                     </Dropdown>
 
@@ -261,7 +263,6 @@ export default function Component() {
                             theme={mode === "dark" ? "one_dark" : "dawn"}
                             defaultValue={code}
                             value={code}
-                            onChange={onChange}
                             onCursorChange={debouncedOnCursorChange}
                             fontSize={fontSize}
                             name="UNIQUE_ID_OF_DIV"
@@ -272,7 +273,16 @@ export default function Component() {
                                 enableLiveAutocompletion: isLintOn,
                                 enableSnippets: true
                             }}
+                            onChange={onChange}
                             onLoad={onEditorLoad}
+                            markers={[{
+                                startRow: 6,
+                                startCol: 0,
+                                endRow: 6,
+                                endCol: 1,
+                                className: 'error-marker',
+                                type: 'fullLine',
+                            },]}
                         />
 
                         <div ref={statusBarRef}
