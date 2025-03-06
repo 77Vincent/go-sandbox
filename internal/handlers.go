@@ -2,7 +2,6 @@ package internal
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"go/format"
 	"net/http"
@@ -71,7 +70,9 @@ func Execute(c *gin.Context) {
 	cmd.Stderr = &out
 
 	if err = cmd.Run(); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("%s: %v", err, out.String())})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": parseErrorMessages(out.String()),
+		})
 		return
 	}
 
