@@ -31,4 +31,5 @@ func main() {
 }`
 
 
-export const ERROR_PARSING_REGEX = /\.go:(\d+):(\d+):/g;
+export const ERROR_PARSING_REGEX = /tmp\.go:(\d+)/g;
+export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;

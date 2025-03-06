@@ -29,7 +29,7 @@ import {
     getCursorRow,
     getEditorMode,
     getEditorSize, getFontSize,
-    getLintOn, parseExecutionError
+    getLintOn, mapFontSize, parseExecutionError
 } from "../utils.ts";
 
 
@@ -126,14 +126,14 @@ export default function Component() {
             const err = e as Error
             const errs = parseExecutionError(err.message)
             const markers: IMarker[] = []
-            for (const {row, col} of errs) {
+            for (const row of errs) {
                 markers.push({
                     startRow: row - 1,
                     endRow: row - 1,
                     startCol: 0,
-                    endCol: col,
+                    endCol: 1,
                     className: "error-marker",
-                    type: "text"
+                    type: "fullLine"
                 })
             }
             setErrorRows(markers)
@@ -308,9 +308,9 @@ export default function Component() {
                 </Resizable>
 
                 <Wrapper className={"py-2 px-2 bg-stone-200"}>
-                    <div className={"font-mono"}>
+                    <pre className={`font-mono text-${mapFontSize(fontSize)}`}>
                         {result}
-                    </div>
+                    </pre>
                 </Wrapper>
             </div>
         </div>

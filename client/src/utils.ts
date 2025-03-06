@@ -12,7 +12,12 @@ import {
     EDITOR_SIZE_KEY,
     LINT_ON_KEY,
     VIM_MODE_KEY,
-    DEFAULT_FONT_SIZE, FONT_SIZE_KEY, ACTIVE_COLOR_DARK, ACTIVE_COLOR_LIGHT, ERROR_PARSING_REGEX
+    DEFAULT_FONT_SIZE,
+    FONT_SIZE_KEY,
+    ACTIVE_COLOR_DARK,
+    ACTIVE_COLOR_LIGHT,
+    ERROR_PARSING_REGEX,
+    BUILD_ERROR_PARSING_REGEX
 } from "./constants.ts";
 import {ThemeMode} from "flowbite-react";
 
@@ -52,19 +57,26 @@ export function getLintOn(): boolean {
     return JSON.parse(localStorage.getItem(LINT_ON_KEY) || DEFAULT_LINT_ON)
 }
 
-interface executionErrorI {
-    row: number;
-    col: number;
+export function parseExecutionError(error: string): number[] {
+    const rows: number[] = []
+
+    let matches = error.match(ERROR_PARSING_REGEX);
+    rows.push(...(matches || []).map((match) => {
+        const arr = match.split(":");
+        return Number(arr[1])
+    }))
+
+    matches = error.match(BUILD_ERROR_PARSING_REGEX);
+    rows.push(...(matches || []).map((match) => {
+        const arr = match.split(":");
+        return Number(arr[0])
+    }))
+
+    return rows
 }
 
-export function parseExecutionError(error: string): executionErrorI[] {
-    const matches = error.match(ERROR_PARSING_REGEX);
-
-    return (matches || []).map((match) => {
-        const arr = match.split(":");
-        return {
-            row: Number(arr[1]),
-            col: Number(arr[2])
-        }
-    });
+export function mapFontSize(size: number): "sm" | "md" | "lg" {
+    if (size < 14) return "sm";
+    if (size >= 16) return "lg";
+    return "md";
 }
