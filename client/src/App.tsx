@@ -1,6 +1,7 @@
 import Editor from "./modules/Editor";
 import {useEffect} from "react";
 import {healthCheck} from "./api/api.ts";
+import {BrowserRouter} from "react-router-dom";
 
 
 function App() {
@@ -16,9 +17,11 @@ function App() {
     }, []);
 
     return (
-        <main>
-            <Editor/>
-        </main>
+        <BrowserRouter>
+            <main>
+                <Editor/>
+            </main>
+        </BrowserRouter>
     );
 }
 

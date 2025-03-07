@@ -31,6 +31,7 @@ import {
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings} from "../types";
+import {Link} from "react-router";
 
 
 export default function Component() {
@@ -233,11 +234,16 @@ export default function Component() {
             <MyToast>{error}</MyToast>
 
             <div className="flex justify-between items-center py-2 px-3  dark:text-white">
-                <h1 className="text-2xl font-bold">Golang Sandbox</h1>
+                <Link to={"/"}>
+                    <h1 className="text-2xl font-bold">
+                        Golang Sandbox
+                    </h1>
+                </Link>
 
                 <div className="flex gap-2 justify-end items-center">
                     <Tooltip content={"cmd/win + enter"}>
-                        <Button onClick={debouncedRun} disabled={isAutoRun || isRunning} className={"shadow"} size={"xs"}
+                        <Button onClick={debouncedRun} disabled={isAutoRun || isRunning} className={"shadow"}
+                                size={"xs"}
                                 gradientDuoTone={"purpleToBlue"}>
                             Run
                         </Button>
