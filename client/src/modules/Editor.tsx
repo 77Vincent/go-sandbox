@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef, useState, ChangeEvent} from "react";
+import {useCallback, useRef, useState, ChangeEvent} from "react";
 import {Button, DarkThemeToggle, Progress, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
@@ -34,20 +34,6 @@ import {KeyBindings} from "../types";
 
 
 export default function Component() {
-    useEffect(() => {
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, []);
-
-    function handleKeyDown(event: KeyboardEvent) {
-        if (event.key.toLowerCase() === "enter" && event.metaKey) {
-            event.preventDefault();
-            debouncedRun()
-        }
-    }
-
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef<HTMLDivElement | null>(null);
 
@@ -95,6 +81,19 @@ export default function Component() {
 
         // read to run
         setIsRunning(false);
+
+        // register keydown event
+        function handleKeyDown(event: KeyboardEvent) {
+            if (event.key.toLowerCase() === "enter" && event.metaKey) {
+                event.preventDefault();
+                debouncedRun()
+            }
+            if (event.key.toLowerCase() === "escape") {
+                editor.focus();
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown);
     };
 
     function onChange(code: string = "") {
