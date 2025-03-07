@@ -220,10 +220,12 @@ export default function Component() {
                 <h1 className="text-2xl font-bold">Golang Sandbox</h1>
 
                 <div className="flex gap-2 justify-end items-center">
-                    <Button onClick={debouncedRun} disabled={isAutoRun} className={"shadow"} size={"xs"}
-                            gradientDuoTone={"purpleToBlue"}>
-                        Run
-                    </Button>
+                    <Tooltip content={"cmd/win + enter"}>
+                        <Button onClick={debouncedRun} disabled={isAutoRun} className={"shadow"} size={"xs"}
+                                gradientDuoTone={"purpleToBlue"}>
+                            Run
+                        </Button>
+                    </Tooltip>
 
                     <Button onClick={debouncedFormat} disabled={isAutoRun} className={"shadow"} size={"xs"}
                             gradientMonochrome={"info"}>
