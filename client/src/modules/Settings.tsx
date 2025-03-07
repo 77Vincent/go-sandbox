@@ -25,6 +25,9 @@ export default function Component(props: {
     // for lint
     isLintOn: boolean;
     onLint: () => void;
+    // for auto run
+    isAutoRun: boolean;
+    onAutoRun: () => void;
 }) {
     const {
         // for key bindings
@@ -41,6 +44,10 @@ export default function Component(props: {
         // for lint
         isLintOn,
         onLint,
+
+        // for auto run
+        isAutoRun,
+        onAutoRun,
     } = props;
     const layoutClasses = "cursor-auto flex justify-between items-center gap-7";
     const handleSelectClick = (e: MouseEvent<HTMLSelectElement>) => {
@@ -88,6 +95,14 @@ export default function Component(props: {
                 <span className={"font-semibold"}>Lint</span>
 
                 <ToggleSwitch checked={isLintOn} onChange={onLint}/>
+            </Dropdown.Item>
+
+            <Dropdown.Divider/>
+
+            <Dropdown.Item as={"div"} className={layoutClasses}>
+                <span className={"font-semibold"}>Auto Run</span>
+
+                <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
             </Dropdown.Item>
         </Dropdown>
     );

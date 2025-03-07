@@ -9,7 +9,7 @@ import {
     EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
     KEY_BINDINGS_KEY, FONT_SIZE_M
 } from "../constants.ts";
-import {Divider, MyToast, Wrapper, ToggleSwitch} from "./Common.tsx";
+import {Divider, MyToast, Wrapper} from "./Common.tsx";
 import {executeCode, formatCode} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
@@ -232,12 +232,6 @@ export default function Component() {
 
                     <Divider/>
 
-                    <Tooltip content={"Auto Run & Format"}>
-                        <ToggleSwitch label={"Auto"} checked={isAutoRun} onChange={onAutoRun}/>
-                    </Tooltip>
-
-                    <Divider/>
-
                     <Settings
                         fontSize={fontSize}
                         onFontL={onFontL}
@@ -248,6 +242,8 @@ export default function Component() {
                         keyBindings={keyBindings}
                         isLintOn={isLintOn}
                         onLint={onLint}
+                        isAutoRun={isAutoRun}
+                        onAutoRun={onAutoRun}
                     />
 
                     <Tooltip content={"Dark mode"}>
