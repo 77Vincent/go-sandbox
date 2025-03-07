@@ -54,7 +54,6 @@ export default function Component(props: {
     const handleSelectClick = (e: MouseEvent<HTMLSelectElement>) => {
         e.stopPropagation();
     };
-    console.log("fontSize", keyBindings);
 
     return (
         <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={

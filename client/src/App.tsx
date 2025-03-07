@@ -6,8 +6,12 @@ import {healthCheck} from "./api/api.ts";
 function App() {
     useEffect(() => {
         (async () => {
-            const data = await healthCheck();
-            console.log(1111111, data);
+            try {
+                await healthCheck();
+                console.log("backend api connected");
+            } catch (e) {
+                console.error("backend api connection failed");
+            }
         })();
     }, []);
 
