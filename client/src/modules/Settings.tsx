@@ -1,6 +1,7 @@
 import {Dropdown, Label, Select, ThemeMode} from "flowbite-react";
-import {VscSettings as SettingsIcon} from "react-icons/vsc";
 import {ChangeEventHandler, MouseEvent} from "react";
+
+import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
 import {
     MdTextDecrease as TextSIcon,
     MdTextIncrease as TextLIcon,
@@ -57,12 +58,8 @@ export default function Component(props: {
 
     return (
         <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
-            <SettingsIcon color={"gray"} className={"text-base cursor-pointer hover:opacity-50"}/>
+            <SettingsIcon className={"text-neutral-600 text-lg cursor-pointer hover:opacity-50"}/>
         }>
-            <Dropdown.Header className={"font-light text-neutral-700"}>
-                Settings
-            </Dropdown.Header>
-
             <Dropdown.Item as={"div"} className={layoutClasses}>
                 <span className={"font-semibold"}>Font Size</span>
 
