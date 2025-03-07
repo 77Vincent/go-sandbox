@@ -1,4 +1,6 @@
-export const VIM_MODE_KEY = "isVimMode";
+import {KeyBindings} from "./types";
+
+export const KEY_BINDINGS_KEY = "keyBindings";
 export const AUTO_RUN_KEY = "isAutoRum";
 export const LINT_ON_KEY = "isLintOn";
 export const EDITOR_SIZE_KEY = "editorSize";
@@ -7,7 +9,7 @@ export const CODE_CONTENT_KEY = "codeContent";
 export const CURSOR_ROW_KEY = "cursorPositionRow";
 export const CURSOR_COLUMN_KEY = "cursorPositionColumn";
 
-export const DEFAULT_VIM_MODE = "false";
+export const DEFAULT_KEY_BINDINGS: KeyBindings = "";
 export const DEFAULT_AUTO_RUN = "true";
 export const DEFAULT_LINT_ON = "false";
 export const DEFAULT_EDITOR_SIZE = 60;

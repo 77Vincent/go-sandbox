@@ -1,15 +1,13 @@
-import {useCallback, useEffect, useRef, useState} from "react";
-import {Button, DarkThemeToggle, Dropdown, Tooltip, useThemeMode} from "flowbite-react";
+import {useCallback, useEffect, useRef, useState, ChangeEvent} from "react";
+import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
-import {VscSettings as SettingsIcon} from "react-icons/vsc";
-import {MdTextDecrease as TextDecreaseIcon, MdTextIncrease as TextIncreaseIcon} from "react-icons/md";
 
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME, DEFAULT_FONT_SIZE,
     EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
-    VIM_MODE_KEY
+    KEY_BINDINGS_KEY
 } from "../constants.ts";
 import {Divider, MyToast, Wrapper, ToggleSwitch} from "./Common.tsx";
 import {executeCode, formatCode} from "../api/api.ts";
@@ -19,18 +17,20 @@ import "ace-builds/src-noconflict/theme-dawn";
 import "ace-builds/src-noconflict/theme-one_dark";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim"
+import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/ext-statusbar";
 import {debounce} from "react-ace/lib/editorOptions";
 import {
-    getActiveColor,
     getAutoRun,
     getCodeContent,
     getCursorColumn,
     getCursorRow,
-    getEditorMode,
+    getKeyBindings,
     getEditorSize, getFontSize,
     getLintOn, mapFontSize, parseExecutionError
 } from "../utils.ts";
+import Settings from "./Settings.tsx";
+import {KeyBindings} from "../types";
 
 
 export default function Component() {
@@ -77,7 +77,7 @@ export default function Component() {
     const [column, setColumn] = useState<number>(getCursorColumn());
 
     // mode status
-    const [isVimMode, setIsVimMode] = useState<boolean>(getEditorMode())
+    const [keyBindings, setKeyBindings] = useState<KeyBindings>(getKeyBindings())
     const [isAutoRun, setIsAutoRun] = useState<boolean>(getAutoRun())
     const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
 
@@ -167,9 +167,11 @@ export default function Component() {
         setIsLintOn(!isLintOn);
     }
 
-    function onVimMode() {
-        localStorage.setItem(VIM_MODE_KEY, JSON.stringify(!isVimMode));
-        setIsVimMode(!isVimMode);
+    function onKeyBindingsChange(event: ChangeEvent<HTMLSelectElement>) {
+        event.stopPropagation();
+        const value = event.target.value as KeyBindings
+        localStorage.setItem(KEY_BINDINGS_KEY, value);
+        setKeyBindings(value)
     }
 
     function onAutoRun() {
@@ -235,29 +237,20 @@ export default function Component() {
                         <ToggleSwitch label={"Lint"} checked={isLintOn} onChange={onLint}/>
                     </Tooltip>
 
-                    <Tooltip content={"VIM mode"}>
-                        <ToggleSwitch label={"VIM"} checked={isVimMode} onChange={onVimMode}/>
-                    </Tooltip>
-
                     <Tooltip content={"Auto Run & Format"}>
                         <ToggleSwitch label={"Auto"} checked={isAutoRun} onChange={onAutoRun}/>
                     </Tooltip>
 
                     <Divider/>
 
-                    <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
-                        <SettingsIcon color={"gray"} className={"text-base cursor-pointer hover:opacity-50"}/>
-                    }>
-                        <Dropdown.Header>
-                            Settings
-                        </Dropdown.Header>
-                        <Dropdown.Item className={"flex justify-between items-center gap-2"}>
-                            <TextDecreaseIcon color={fontSize === FONT_SIZE_S ? getActiveColor(mode) : ""}
-                                              onClick={onFontSizeDown} className={"hover:opacity-50 text-md"}/>
-                            <TextIncreaseIcon color={fontSize === FONT_SIZE_L ? getActiveColor(mode) : ""}
-                                              onClick={onFontSizeUp} className={"hover:opacity-50 text-lg"}/>
-                        </Dropdown.Item>
-                    </Dropdown>
+                    <Settings
+                        fontSize={fontSize}
+                        themeMode={mode}
+                        onFontSizeUp={onFontSizeUp}
+                        onFontSizeDown={onFontSizeDown}
+                        onKeyBindingsChange={onKeyBindingsChange}
+                        keyBindings={keyBindings}
+                    />
 
                     <Tooltip content={"Dark mode"}>
                         <DarkThemeToggle onClick={onDarkThemeToggle}/>
@@ -290,7 +283,7 @@ export default function Component() {
                             onCursorChange={debouncedOnCursorChange}
                             fontSize={fontSize}
                             name="UNIQUE_ID_OF_DIV"
-                            keyboardHandler={isVimMode ? "vim" : ""}
+                            keyboardHandler={keyBindings}
                             editorProps={{$blockScrolling: true}}
                             setOptions={{
                                 enableBasicAutocompletion: true,

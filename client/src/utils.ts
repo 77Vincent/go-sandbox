@@ -8,10 +8,10 @@ import {
     DEFAULT_CURSOR_POSITION,
     DEFAULT_LINT_ON,
     DEFAULT_EDITOR_SIZE,
-    DEFAULT_VIM_MODE,
+    DEFAULT_KEY_BINDINGS,
     EDITOR_SIZE_KEY,
     LINT_ON_KEY,
-    VIM_MODE_KEY,
+    KEY_BINDINGS_KEY,
     DEFAULT_FONT_SIZE,
     FONT_SIZE_KEY,
     ACTIVE_COLOR_DARK,
@@ -20,6 +20,7 @@ import {
     BUILD_ERROR_PARSING_REGEX
 } from "./constants.ts";
 import {ThemeMode} from "flowbite-react";
+import {KeyBindings} from "./types";
 
 export function getActiveColor(mode: ThemeMode = "light"): string {
     return mode === "dark" ? ACTIVE_COLOR_DARK : ACTIVE_COLOR_LIGHT
@@ -41,8 +42,8 @@ export function getCodeContent(): string {
     return localStorage.getItem(CODE_CONTENT_KEY) || DEFAULT_CODE_CONTENT
 }
 
-export function getEditorMode(): boolean {
-    return JSON.parse(localStorage.getItem(VIM_MODE_KEY) || DEFAULT_VIM_MODE)
+export function getKeyBindings(): KeyBindings {
+    return localStorage.getItem(KEY_BINDINGS_KEY) as KeyBindings || DEFAULT_KEY_BINDINGS
 }
 
 export function getEditorSize(): number {

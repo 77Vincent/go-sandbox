@@ -9,4 +9,6 @@ declare global {
     }
 }
 
+export type KeyBindings = "" | "vim" | "emacs";
+
 export {};
