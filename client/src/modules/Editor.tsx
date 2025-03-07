@@ -7,7 +7,7 @@ import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
     EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
-    KEY_BINDINGS_KEY, FONT_SIZE_M
+    KEY_BINDINGS_KEY, FONT_SIZE_M, RUNNING_INFO, AUTO_RUN_DEBOUNCE_TIME
 } from "../constants.ts";
 import {Divider, MyToast, Wrapper} from "./Common.tsx";
 import {executeCode, formatCode} from "../api/api.ts";
@@ -101,7 +101,7 @@ export default function Component() {
         storeCode(code);
 
         if (isAutoRun) {
-            debouncedRun();
+            debouncedAutoRun();
         }
     }
 
@@ -109,6 +109,7 @@ export default function Component() {
     const formatCallback = useCallback(async () => {
         try {
             setIsRunning(true)
+            setResult(RUNNING_INFO)
 
             const {output} = await formatCode(latestCodeRef.current);
             storeCode(output)
@@ -124,6 +125,7 @@ export default function Component() {
     const runCallback = useCallback(async () => {
         try {
             setIsRunning(true)
+            setResult(RUNNING_INFO)
 
             // try format code as a validation
             const {output: formatted} = await formatCode(latestCodeRef.current);
@@ -159,6 +161,7 @@ export default function Component() {
         }
     }, []);
     const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
+    const debouncedAutoRun = useRef(debounce(runCallback, AUTO_RUN_DEBOUNCE_TIME)).current;
 
     // manage debounced cursor position update
     const debouncedOnCursorChange = debounce(onCursorChange, CURSOR_UPDATE_DEBOUNCE_TIME);

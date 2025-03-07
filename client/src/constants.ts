@@ -17,10 +17,13 @@ export const FONT_SIZE_L = 16;
 export const FONT_SIZE_M = 14;
 export const FONT_SIZE_S = 12;
 
+export const RUNNING_INFO = "waiting the remote server...";
+
 export const DEFAULT_CURSOR_POSITION = 0;
 
 export const CURSOR_UPDATE_DEBOUNCE_TIME = 100;
-export const RUN_DEBOUNCE_TIME = 750;
+export const RUN_DEBOUNCE_TIME = 100;
+export const AUTO_RUN_DEBOUNCE_TIME = 750;
 
 export const ACTIVE_COLOR_LIGHT = "purple";
 export const ACTIVE_COLOR_DARK = "lime";
