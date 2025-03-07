@@ -114,11 +114,13 @@ export default function Component() {
         try {
             // try format code as a validation
             const {output: formatted} = await formatCode(latestCodeRef.current);
-            storeCode(formatted)
 
             // actual run
             const {output} = await executeCode(latestCodeRef.current);
             setResult(output);
+
+            // only set the formatted code if the execution is successful!
+            storeCode(formatted)
 
             // clear error markers
             setErrorRows([])
