@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState, ChangeEvent} from "react";
-import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
+import {Button, DarkThemeToggle, Progress, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
@@ -60,6 +60,7 @@ export default function Component() {
     const [editorSize, setEditorSize] = useState<number>(getEditorSize())
 
     // editor status
+    const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(getCodeContent());
     const [result, setResult] = useState<string>("");
 
@@ -82,12 +83,18 @@ export default function Component() {
     const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
 
     const onEditorLoad = (editor: Ace.Editor) => {
+        // not ready to run
+        setIsRunning(true);
+
         if (statusBarRef.current) {
             const StatusBar = window.ace.require("ace/ext/statusbar").StatusBar;
             new StatusBar(editor, statusBarRef.current);
         }
         editor.focus();
         editor.moveCursorTo(row, column);
+
+        // read to run
+        setIsRunning(false);
     };
 
     function onChange(code: string = "") {
@@ -101,8 +108,12 @@ export default function Component() {
     // managed debounced format
     const formatCallback = useCallback(async () => {
         try {
+            setIsRunning(true)
+
             const {output} = await formatCode(latestCodeRef.current);
             storeCode(output)
+
+            setIsRunning(false)
         } catch (e) {
             setError((e as Error).message)
         }
@@ -112,18 +123,21 @@ export default function Component() {
     // manage debounced run
     const runCallback = useCallback(async () => {
         try {
+            setIsRunning(true)
+
             // try format code as a validation
             const {output: formatted} = await formatCode(latestCodeRef.current);
 
             // actual run
             const {output} = await executeCode(latestCodeRef.current);
-            setResult(output);
 
+            // after run
+            setResult(output);
             // only set the formatted code if the execution is successful!
             storeCode(formatted)
-
             // clear error markers
             setErrorRows([])
+            setIsRunning(false)
         } catch (e) {
             const err = e as Error
             const errs = parseExecutionError(err.message)
@@ -221,13 +235,13 @@ export default function Component() {
 
                 <div className="flex gap-2 justify-end items-center">
                     <Tooltip content={"cmd/win + enter"}>
-                        <Button onClick={debouncedRun} disabled={isAutoRun} className={"shadow"} size={"xs"}
+                        <Button onClick={debouncedRun} disabled={isAutoRun || isRunning} className={"shadow"} size={"xs"}
                                 gradientDuoTone={"purpleToBlue"}>
                             Run
                         </Button>
                     </Tooltip>
 
-                    <Button onClick={debouncedFormat} disabled={isAutoRun} className={"shadow"} size={"xs"}
+                    <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning} className={"shadow"} size={"xs"}
                             gradientMonochrome={"info"}>
                         Format
                     </Button>
@@ -304,6 +318,7 @@ export default function Component() {
                     </pre>
                 </Wrapper>
             </div>
+            <Progress size={"sm"} progress={10}/>
         </div>
     );
 }
