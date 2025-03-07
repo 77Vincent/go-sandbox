@@ -272,7 +272,7 @@ export default function Component() {
                 </div>
             </div>
 
-            <div className={"px-3 pb-3 py-1 gap-0.5 flex flex-1"}>
+            <div className={"px-3 pb-3 gap-0.5 flex flex-1"}>
                 <Resizable
                     minWidth={"20%"}
                     maxWidth={"80%"}
@@ -320,6 +320,7 @@ export default function Component() {
                     </pre>
                 </Wrapper>
             </div>
+
             <Progress size={"sm"} progress={10}/>
         </div>
     );

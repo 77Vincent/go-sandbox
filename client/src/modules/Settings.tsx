@@ -1,4 +1,4 @@
-import {Dropdown, Label, Select, ThemeMode} from "flowbite-react";
+import {Dropdown, Label, Select, ThemeMode, Tooltip} from "flowbite-react";
 import {ChangeEventHandler, MouseEvent} from "react";
 
 import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
@@ -57,9 +57,9 @@ export default function Component(props: {
 
     return (
         <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
-            <SettingsIcon className={"text-neutral-600 text-lg cursor-pointer hover:opacity-50"}/>
+            <SettingsIcon className={"text-neutral-600 dark:text-neutral-400 text-lg cursor-pointer hover:opacity-50"}/>
         }>
-            <Dropdown.Item as={"div"} className={layoutClasses}>
+            <Dropdown.Item className={layoutClasses}>
                 <span className={"font-semibold"}>Font Size</span>
 
                 <div className={"flex gap-3 items-center"}>
@@ -74,8 +74,8 @@ export default function Component(props: {
 
             <Dropdown.Divider/>
 
-            <Dropdown.Item as={"div"} className={layoutClasses}>
-                <Label htmlFor="countries" value="Key Bindings"/>
+            <Dropdown.Item className={layoutClasses}>
+                <Label className={"font-semibold"} htmlFor="countries" value="Key Bindings"/>
 
                 <Select defaultValue={keyBindings} onChange={onKeyBindingsChange} onClick={handleSelectClick}
                         sizing={"sm"} id="countries">
@@ -87,16 +87,20 @@ export default function Component(props: {
 
             <Dropdown.Divider/>
 
-            <Dropdown.Item as={"div"} className={layoutClasses}>
-                <span className={"font-semibold"}>Lint</span>
+            <Dropdown.Item className={layoutClasses}>
+                <Tooltip content={"Lint while typing"}>
+                    <span className={"font-semibold"}>Lint</span>
+                </Tooltip>
 
                 <ToggleSwitch checked={isLintOn} onChange={onLint}/>
             </Dropdown.Item>
 
             <Dropdown.Divider/>
 
-            <Dropdown.Item as={"div"} className={layoutClasses}>
-                <span className={"font-semibold"}>Auto Run</span>
+            <Dropdown.Item className={layoutClasses}>
+                <Tooltip content={"Auto run code on change"}>
+                    <span className={"font-semibold"}>Auto Run</span>
+                </Tooltip>
 
                 <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
             </Dropdown.Item>
