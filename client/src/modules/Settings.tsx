@@ -10,6 +10,7 @@ import {ImTextColor as TextMIcon} from "react-icons/im"
 import {FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S} from "../constants.ts";
 import {getActiveColor} from "../utils.ts";
 import {KeyBindings} from "../types";
+import {ToggleSwitch} from "./Common.tsx";
 
 export default function Component(props: {
     // for editor fontSize
@@ -21,8 +22,26 @@ export default function Component(props: {
     // for keyBindings
     keyBindings: KeyBindings;
     onKeyBindingsChange: ChangeEventHandler<HTMLSelectElement>;
+    // for lint
+    isLintOn: boolean;
+    onLint: () => void;
 }) {
-    const {keyBindings, fontSize, themeMode, onFontL, onFontS, onFontM, onKeyBindingsChange} = props;
+    const {
+        // for key bindings
+        keyBindings,
+        themeMode,
+        onKeyBindingsChange,
+
+        // for font size
+        fontSize,
+        onFontL,
+        onFontS,
+        onFontM,
+
+        // for lint
+        isLintOn,
+        onLint,
+    } = props;
     const layoutClasses = "cursor-auto flex justify-between items-center gap-7";
     const handleSelectClick = (e: MouseEvent<HTMLSelectElement>) => {
         e.stopPropagation();
@@ -50,6 +69,8 @@ export default function Component(props: {
                 </div>
             </Dropdown.Item>
 
+            <Dropdown.Divider/>
+
             <Dropdown.Item as={"div"} className={layoutClasses}>
                 <Label htmlFor="countries" value="Key Bindings"/>
 
@@ -59,6 +80,14 @@ export default function Component(props: {
                     <option value={"vim"}>VIM</option>
                     <option value={"emacs"}>Emacs</option>
                 </Select>
+            </Dropdown.Item>
+
+            <Dropdown.Divider/>
+
+            <Dropdown.Item as={"div"} className={layoutClasses}>
+                <span className={"font-semibold"}>Lint</span>
+
+                <ToggleSwitch checked={isLintOn} onChange={onLint}/>
             </Dropdown.Item>
         </Dropdown>
     );

@@ -232,10 +232,6 @@ export default function Component() {
 
                     <Divider/>
 
-                    <Tooltip content={"Turn on/off lint"}>
-                        <ToggleSwitch label={"Lint"} checked={isLintOn} onChange={onLint}/>
-                    </Tooltip>
-
                     <Tooltip content={"Auto Run & Format"}>
                         <ToggleSwitch label={"Auto"} checked={isAutoRun} onChange={onAutoRun}/>
                     </Tooltip>
@@ -244,12 +240,14 @@ export default function Component() {
 
                     <Settings
                         fontSize={fontSize}
-                        themeMode={mode}
                         onFontL={onFontL}
                         onFontM={onFontM}
                         onFontS={onFontS}
+                        themeMode={mode}
                         onKeyBindingsChange={onKeyBindingsChange}
                         keyBindings={keyBindings}
+                        isLintOn={isLintOn}
+                        onLint={onLint}
                     />
 
                     <Tooltip content={"Dark mode"}>
