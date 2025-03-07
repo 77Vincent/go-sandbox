@@ -3,13 +3,10 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/tianqi-wen_frgr/best-go-playground/internal"
-	"time"
 )
 
 func main() {
 	r := gin.Default()
-
-	r.Use(internal.Timeout(1 * time.Second))
 
 	// routes
 	r.GET("/status", internal.Status)
