@@ -5,9 +5,9 @@ import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
 
 import {
-    AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME, DEFAULT_FONT_SIZE,
+    AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
     EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
-    KEY_BINDINGS_KEY
+    KEY_BINDINGS_KEY, FONT_SIZE_M
 } from "../constants.ts";
 import {Divider, MyToast, Wrapper, ToggleSwitch} from "./Common.tsx";
 import {executeCode, formatCode} from "../api/api.ts";
@@ -189,26 +189,25 @@ export default function Component() {
         setEditorSize(size)
     }
 
-    function onFontSizeUp() {
-        let size = 0
-        if (fontSize === FONT_SIZE_L) {
-            size = DEFAULT_FONT_SIZE
-        } else {
-            size = FONT_SIZE_L
+    function onFontL() {
+        if (fontSize !== FONT_SIZE_L) {
+            setFontSize(FONT_SIZE_L)
+            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_L))
         }
-        setFontSize(size)
-        localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(size))
     }
 
-    function onFontSizeDown() {
-        let size = 0
-        if (fontSize === FONT_SIZE_S) {
-            size = DEFAULT_FONT_SIZE
-        } else {
-            size = FONT_SIZE_S
+    function onFontM() {
+        if (fontSize !== FONT_SIZE_M) {
+            setFontSize(FONT_SIZE_M)
+            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_M))
         }
-        setFontSize(size)
-        localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(size))
+    }
+
+    function onFontS() {
+        if (fontSize !== FONT_SIZE_S) {
+            setFontSize(FONT_SIZE_S)
+            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_S))
+        }
     }
 
     return (
@@ -246,8 +245,9 @@ export default function Component() {
                     <Settings
                         fontSize={fontSize}
                         themeMode={mode}
-                        onFontSizeUp={onFontSizeUp}
-                        onFontSizeDown={onFontSizeDown}
+                        onFontL={onFontL}
+                        onFontM={onFontM}
+                        onFontS={onFontS}
                         onKeyBindingsChange={onKeyBindingsChange}
                         keyBindings={keyBindings}
                     />

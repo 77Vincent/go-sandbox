@@ -12,12 +12,11 @@ import {
     EDITOR_SIZE_KEY,
     LINT_ON_KEY,
     KEY_BINDINGS_KEY,
-    DEFAULT_FONT_SIZE,
     FONT_SIZE_KEY,
     ACTIVE_COLOR_DARK,
     ACTIVE_COLOR_LIGHT,
     ERROR_PARSING_REGEX,
-    BUILD_ERROR_PARSING_REGEX
+    BUILD_ERROR_PARSING_REGEX, FONT_SIZE_M
 } from "./constants.ts";
 import {ThemeMode} from "flowbite-react";
 import {KeyBindings} from "./types";
@@ -27,7 +26,7 @@ export function getActiveColor(mode: ThemeMode = "light"): string {
 }
 
 export function getFontSize(): number {
-    return Number(localStorage.getItem(FONT_SIZE_KEY)) || DEFAULT_FONT_SIZE
+    return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
 }
 
 export function getCursorRow(): number {

@@ -13,8 +13,8 @@ export const DEFAULT_KEY_BINDINGS: KeyBindings = "";
 export const DEFAULT_AUTO_RUN = "true";
 export const DEFAULT_LINT_ON = "false";
 export const DEFAULT_EDITOR_SIZE = 60;
-export const DEFAULT_FONT_SIZE = 14;
 export const FONT_SIZE_L = 16;
+export const FONT_SIZE_M = 14;
 export const FONT_SIZE_S = 12;
 
 export const DEFAULT_CURSOR_POSITION = 0;
