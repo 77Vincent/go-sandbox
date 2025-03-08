@@ -153,7 +153,7 @@ func Execute(c *gin.Context) {
 	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 		c.AbortWithStatusJSON(http.StatusGatewayTimeout, response{
 			Message: executionTimeoutErrorMessage,
-			Stderr:  errBuf.String(),
+			Stderr:  parseStderrMessages(errBuf.String()),
 			Stdout:  outBuf.String(),
 		})
 		return
@@ -164,7 +164,7 @@ func Execute(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response{
 			Message: buildErrorMessage,
 			Error:   err.Error(),
-			Stderr:  errBuf.String(),
+			Stderr:  parseStderrMessages(errBuf.String()),
 			Stdout:  outBuf.String(),
 		})
 		return
@@ -173,6 +173,6 @@ func Execute(c *gin.Context) {
 	// If everything is good, return the captured stdout/stderr.
 	c.JSON(http.StatusOK, response{
 		Stdout: outBuf.String(),
-		Stderr: errBuf.String(),
+		Stderr: parseStderrMessages(errBuf.String()),
 	})
 }
