@@ -13,11 +13,9 @@ export type KeyBindings = "" | "vim" | "emacs";
 
 export {};
 
-export interface BaseResultI {
-    error?: string;
-}
-
-export interface ExecuteResultI extends BaseResultI {
+export interface ExecuteResultI {
+    error: string;
+    message: string
     stdout: string;
     stderr: string;
 }

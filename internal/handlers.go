@@ -14,7 +14,12 @@ import (
 	"time"
 )
 
-const executionTimeout = 2 * time.Second
+const (
+	badRequestMessage            = "bad request"
+	buildErrorMessage            = "build failed"
+	executionTimeoutErrorMessage = "execution timed out"
+	executionTimeout             = 2 * time.Second
+)
 
 func Status(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
@@ -22,54 +27,75 @@ func Status(c *gin.Context) {
 	})
 }
 
-type reqPayload struct {
+type request struct {
 	Code    string `json:"code" binding:"required"`
 	Version string `json:"version"`
 }
 
+type response struct {
+	Stderr  string `json:"stderr"`
+	Stdout  string `json:"stdout"`
+	Error   string `json:"error"`
+	Message string `json:"message"`
+}
+
 func Format(c *gin.Context) {
-	var req reqPayload
+	var req request
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response{
+			Error:   err.Error(),
+			Message: badRequestMessage,
+		})
 		return
 	}
 
 	formatted, err := format.Source([]byte(req.Code))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":  "build failed",
-			"stderr": err.Error(),
+		c.JSON(http.StatusBadRequest, response{
+			Error:   err.Error(),
+			Message: buildErrorMessage,
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"stdout": string(formatted)})
+	c.JSON(http.StatusOK, response{
+		Stdout: string(formatted),
+	})
 }
 
 func Execute(c *gin.Context) {
-	var req reqPayload
+	var req request
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, response{
+			Error:   err.Error(),
+			Message: badRequestMessage,
+		})
 		return
 	}
 
 	// generate a temporary file for the code
 	tmp, err := os.CreateTemp("", "code-*.go")
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
+			Error: err.Error(),
+		})
 		return
 	}
 	defer os.Remove(tmp.Name()) // remove the file when we're done
 
 	// write the formatted code to the file
 	if _, err = tmp.Write([]byte(req.Code)); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
+			Error: err.Error(),
+		})
 		return
 	}
 	if err = tmp.Close(); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
+			Error: err.Error(),
+		})
 		return
 	}
 
@@ -84,18 +110,24 @@ func Execute(c *gin.Context) {
 	// We can capture stdout and stderr separately:
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
+			Error: err.Error(),
+		})
 		return
 	}
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
+			Error: err.Error(),
+		})
 		return
 	}
 
 	// Start the process.
 	if err = cmd.Start(); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
+			Error: err.Error(),
+		})
 		return
 	}
 
@@ -119,26 +151,28 @@ func Execute(c *gin.Context) {
 
 	// If the context timed out or was canceled, the command was killed.
 	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-		c.AbortWithStatusJSON(http.StatusGatewayTimeout, gin.H{
-			"error":  "execution timed out",
-			"stdout": outBuf.String(),
-			"stderr": errBuf.String(),
+		c.AbortWithStatusJSON(http.StatusGatewayTimeout, response{
+			Message: executionTimeoutErrorMessage,
+			Stderr:  errBuf.String(),
+			Stdout:  outBuf.String(),
 		})
 		return
 	}
 
 	// If there was some other error from the command, return that.
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error":  parseErrorMessages(errBuf.String()),
-			"stdout": outBuf.String(),
+		c.AbortWithStatusJSON(http.StatusBadRequest, response{
+			Message: buildErrorMessage,
+			Error:   err.Error(),
+			Stderr:  errBuf.String(),
+			Stdout:  outBuf.String(),
 		})
 		return
 	}
 
 	// If everything is good, return the captured stdout/stderr.
-	c.JSON(http.StatusOK, gin.H{
-		"stdout": outBuf.String(),
-		"stderr": errBuf.String(),
+	c.JSON(http.StatusOK, response{
+		Stdout: outBuf.String(),
+		Stderr: errBuf.String(),
 	})
 }
