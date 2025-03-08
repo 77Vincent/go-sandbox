@@ -27,12 +27,11 @@ import {
     getCursorRow,
     getKeyBindings,
     getEditorSize, getFontSize,
-    getLintOn, mapFontSize, parseExecutionError
+    getLintOn, mapFontSize, generateMarkers
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings} from "../types";
 import {Link} from "react-router";
-
 
 export default function Component() {
     const {mode, toggleMode} = useThemeMode();
@@ -51,7 +50,7 @@ export default function Component() {
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(getCodeContent());
     const [result, setResult] = useState<string>("");
-    const [executionInfo, setExecutionInfo] = useState<string>("")
+    const [resultError, setResultError] = useState<string>("")
 
     // manage code
     const latestCodeRef = useRef(code);
@@ -113,8 +112,13 @@ export default function Component() {
             setIsRunning(true)
             setResult(RUNNING_INFO)
 
-            const {output} = await formatCode(latestCodeRef.current);
-            storeCode(output)
+            const {stdout, stderr = "", error = ""} = await formatCode(latestCodeRef.current);
+            if (stdout) {
+                storeCode(stdout)
+            }
+            setResultError(error)
+            setResult(stderr)
+            setErrorRows(generateMarkers(stderr))
 
             setIsRunning(false)
         } catch (e) {
@@ -130,16 +134,14 @@ export default function Component() {
             setResult(RUNNING_INFO)
 
             // try format code as a validation
-            const {output: formatted} = await formatCode(latestCodeRef.current);
+            const {stdout: formatted} = await formatCode(latestCodeRef.current);
 
             // actual run
-            const {error, stdout} = await executeCode(latestCodeRef.current);
+            const {stdout, error = ""} = await executeCode(latestCodeRef.current);
 
             // after run
             setResult(stdout);
-            if (error) {
-                setExecutionInfo(error)
-            }
+            setResultError(error)
             // only set the formatted code if the execution is successful!
             storeCode(formatted)
             // clear error markers
@@ -147,19 +149,7 @@ export default function Component() {
             setIsRunning(false)
         } catch (e) {
             const err = e as Error
-            const errs = parseExecutionError(err.message)
-            const markers: IMarker[] = []
-            for (const row of errs) {
-                markers.push({
-                    startRow: row - 1,
-                    endRow: row - 1,
-                    startCol: 0,
-                    endCol: 1,
-                    className: "error-marker",
-                    type: "fullLine"
-                })
-            }
-            setErrorRows(markers)
+            setErrorRows(generateMarkers(err.message))
 
             // show raw error message
             setResult(err.message)
@@ -326,9 +316,10 @@ export default function Component() {
                 </Resizable>
 
                 <Wrapper className={`py-2 px-2 bg-stone-200 text-${mapFontSize(fontSize)}`}>
-                    <pre className={"text-red-600 border-b border-neutral-300 pb-1 mb-1"}>
-                        {executionInfo}
-                    </pre>
+                    {
+                        resultError &&
+                        <pre className={"text-red-600 border-b border-neutral-300 pb-1 mb-1"}> {resultError} </pre>
+                    }
 
                     <pre>
                         {result}

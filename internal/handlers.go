@@ -37,11 +37,14 @@ func Format(c *gin.Context) {
 
 	formatted, err := format.Source([]byte(req.Code))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  "build failed",
+			"stderr": err.Error(),
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"output": string(formatted)})
+	c.JSON(http.StatusOK, gin.H{"stdout": string(formatted)})
 }
 
 func Execute(c *gin.Context) {

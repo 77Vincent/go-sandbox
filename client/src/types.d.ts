@@ -21,7 +21,3 @@ export interface ExecuteResultI extends BaseResultI {
     stdout: string;
     stderr: string;
 }
-
-export interface FormatResultI extends BaseResultI {
-    output: string;
-}

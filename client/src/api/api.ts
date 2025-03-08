@@ -1,4 +1,4 @@
-import {ExecuteResultI, FormatResultI} from "../types";
+import {ExecuteResultI} from "../types";
 import {HTTP_INTERNAL_ERROR} from "../constants.ts";
 
 export async function healthCheck() {
@@ -26,7 +26,7 @@ export async function executeCode(code: string): Promise<ExecuteResultI> {
     return await res.json();
 }
 
-export async function formatCode(code: string): Promise<FormatResultI> {
+export async function formatCode(code: string): Promise<ExecuteResultI> {
     const res = await fetch("/api/format", {
         method: "POST",
         headers: {
@@ -35,8 +35,7 @@ export async function formatCode(code: string): Promise<FormatResultI> {
         body: JSON.stringify({code}),
     });
 
-    if (!res.ok) {
-        // how to throw structured error here?
+    if (res.status === HTTP_INTERNAL_ERROR) {
         const {error} = await res.json();
         throw new Error(error);
     }

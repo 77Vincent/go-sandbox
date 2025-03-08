@@ -20,6 +20,7 @@ import {
 } from "./constants.ts";
 import {ThemeMode} from "flowbite-react";
 import {KeyBindings} from "./types";
+import {IMarker} from "react-ace";
 
 export function getActiveColor(mode: ThemeMode = "light"): string {
     return mode === "dark" ? ACTIVE_COLOR_DARK : ACTIVE_COLOR_LIGHT
@@ -79,4 +80,20 @@ export function mapFontSize(size: number): "sm" | "md" | "lg" {
     if (size < 14) return "sm";
     if (size >= 16) return "lg";
     return "md";
+}
+
+export function generateMarkers(error: string): IMarker[] {
+    const errs = parseExecutionError(error)
+    const markers: IMarker[] = []
+    for (const row of errs) {
+        markers.push({
+            startRow: row - 1,
+            endRow: row - 1,
+            startCol: 0,
+            endCol: 1,
+            className: "error-marker",
+            type: "fullLine"
+        })
+    }
+    return markers
 }
