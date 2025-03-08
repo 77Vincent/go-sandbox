@@ -12,3 +12,16 @@ declare global {
 export type KeyBindings = "" | "vim" | "emacs";
 
 export {};
+
+export interface BaseResultI {
+    error?: string;
+}
+
+export interface ExecuteResultI extends BaseResultI {
+    stdout: string;
+    stderr: string;
+}
+
+export interface FormatResultI extends BaseResultI {
+    output: string;
+}

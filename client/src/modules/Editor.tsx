@@ -131,10 +131,10 @@ export default function Component() {
             const {output: formatted} = await formatCode(latestCodeRef.current);
 
             // actual run
-            const {output} = await executeCode(latestCodeRef.current);
+            const {stdout} = await executeCode(latestCodeRef.current);
 
             // after run
-            setResult(output);
+            setResult(stdout);
             // only set the formatted code if the execution is successful!
             storeCode(formatted)
             // clear error markers

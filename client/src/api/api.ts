@@ -1,21 +1,12 @@
+import {ExecuteResultI, FormatResultI} from "../types";
+import {HTTP_INTERNAL_ERROR} from "../constants.ts";
+
 export async function healthCheck() {
     const res = await fetch("/api/status");
     if (!res.ok) {
         throw new Error("Failed to fetch");
     }
     return await res.json();
-}
-
-interface BaseResultI {
-    error?: string;
-}
-
-interface ExecuteResultI extends BaseResultI {
-    output: string;
-}
-
-interface FormatResultI extends BaseResultI {
-    output: string;
 }
 
 export async function executeCode(code: string): Promise<ExecuteResultI> {
@@ -27,8 +18,7 @@ export async function executeCode(code: string): Promise<ExecuteResultI> {
         body: JSON.stringify({code}),
     })
 
-    if (!res.ok) {
-        // how to throw structured error here?
+    if (res.status === HTTP_INTERNAL_ERROR) {
         const {error} = await res.json();
         throw new Error(error);
     }

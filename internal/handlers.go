@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-const executionTimeout = 4 * time.Second
+const executionTimeout = 2 * time.Second
 
 func Status(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
