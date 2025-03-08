@@ -50,7 +50,7 @@ export default function Component() {
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(getCodeContent());
     const [result, setResult] = useState<string>("");
-    const [resultError, setResultError] = useState<string>("")
+    const [message, setMessage] = useState<string>("")
 
     // manage code
     const latestCodeRef = useRef(code);
@@ -106,25 +106,36 @@ export default function Component() {
         }
     }
 
-    // managed debounced format
-    const formatCallback = useCallback(async () => {
+    async function format(): Promise<boolean> {
         try {
             setIsRunning(true)
             setResult(RUNNING_INFO)
 
-            const {stdout, stderr = "", error = ""} = await formatCode(latestCodeRef.current);
+            const {stdout, error, message} = await formatCode(latestCodeRef.current);
+
+            // always set message
+            setMessage(message)
+
             if (stdout) {
                 storeCode(stdout)
             }
-            setResultError(error)
-            setResult(stderr)
-            setErrorRows(generateMarkers(stderr))
+            setResult(error) // also clear the running info!
+            setErrorRows(generateMarkers(error))
 
             setIsRunning(false)
+
+            if (error) {
+                return Promise.resolve(false)
+            }
         } catch (e) {
             setToastMessage((e as Error).message)
         }
-    }, []);
+
+        return Promise.resolve(true)
+    }
+
+    // managed debounced format
+    const formatCallback = useCallback(format, []);
     const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
 
     // manage debounced run
@@ -133,19 +144,26 @@ export default function Component() {
             setIsRunning(true)
             setResult(RUNNING_INFO)
 
-            // try format code as a validation
-            const {stdout: formatted} = await formatCode(latestCodeRef.current);
+            // use format as validation
+            if (!await format()) {
+                return
+            }
 
             // actual run
-            const {stdout, error = ""} = await executeCode(latestCodeRef.current);
+            const {stdout, stderr, error, message} = await executeCode(latestCodeRef.current);
+            // always set message
+            setMessage(message)
 
-            // after run
+            // error case
+            if (error) {
+                setResult(`${error}\n${stderr}`)
+                setErrorRows(generateMarkers(stderr))
+                return
+            }
+
             setResult(stdout);
-            setResultError(error)
-            // only set the formatted code if the execution is successful!
-            storeCode(formatted)
-            // clear error markers
-            setErrorRows([])
+
+            setErrorRows([]) // clear error markers
             setIsRunning(false)
         } catch (e) {
             const err = e as Error
@@ -244,7 +262,7 @@ export default function Component() {
                         </Button>
                     </Tooltip>
 
-                    <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning} className={"shadow"} size={"xs"}
+                    <Button onClick={debouncedFormat} disabled={isRunning} className={"shadow"} size={"xs"}
                             gradientMonochrome={"info"}>
                         Format
                     </Button>
@@ -317,8 +335,8 @@ export default function Component() {
 
                 <Wrapper className={`py-2 px-2 bg-stone-200 text-${mapFontSize(fontSize)}`}>
                     {
-                        resultError &&
-                        <pre className={"text-red-600 border-b border-neutral-300 pb-1 mb-1"}> {resultError} </pre>
+                        message &&
+                        <pre className={"text-red-600 border-b border-neutral-300 pb-1 mb-1"}> {message} </pre>
                     }
 
                     <pre>
