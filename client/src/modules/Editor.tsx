@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState, ChangeEvent} from "react";
-import {Button, DarkThemeToggle, Progress, Tooltip, useThemeMode} from "flowbite-react";
+import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
@@ -129,6 +129,12 @@ export default function Component() {
             }
         } catch (e) {
             setToastMessage((e as Error).message)
+
+            // reset
+            setResult("")
+            setIsRunning(false)
+            setErrorRows([])
+            return Promise.resolve(false)
         }
 
         return Promise.resolve(true)
@@ -244,7 +250,7 @@ export default function Component() {
 
     return (
         <div className="relative h-screen flex flex-col dark:bg-gray-800 bg-stone-100">
-            <MyToast>{toastMessage}</MyToast>
+            <MyToast show={!!toastMessage} setShowToast={setToastMessage}>{toastMessage}</MyToast>
 
             <div className="flex justify-between items-center py-2 px-3  dark:text-white">
                 <Link to={"/"}>
@@ -338,14 +344,11 @@ export default function Component() {
                         message &&
                         <pre className={"text-red-600 border-b border-neutral-300 pb-1 mb-1"}> {message} </pre>
                     }
-
                     <pre>
                         {result}
                     </pre>
                 </Wrapper>
             </div>
-
-            <Progress size={"sm"} progress={10}/>
         </div>
     );
 }

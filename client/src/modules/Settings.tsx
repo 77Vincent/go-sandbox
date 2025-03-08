@@ -60,7 +60,7 @@ export default function Component(props: {
             <SettingsIcon className={"text-neutral-600 dark:text-neutral-400 text-lg cursor-pointer hover:opacity-50"}/>
         }>
             <Dropdown.Item className={layoutClasses}>
-                <span className={"font-semibold"}>Font Size</span>
+                <span>Font Size</span>
 
                 <div className={"flex gap-3 items-center"}>
                     <TextSIcon color={fontSize === FONT_SIZE_S ? getActiveColor(themeMode) : ""}
@@ -75,7 +75,7 @@ export default function Component(props: {
             <Dropdown.Divider/>
 
             <Dropdown.Item className={layoutClasses}>
-                <Label className={"font-semibold"} htmlFor="countries" value="Key Bindings"/>
+                <Label className={"font-normal"} htmlFor="countries" value="Key Bindings"/>
 
                 <Select defaultValue={keyBindings} onChange={onKeyBindingsChange} onClick={handleSelectClick}
                         sizing={"sm"} id="countries">
@@ -89,7 +89,7 @@ export default function Component(props: {
 
             <Dropdown.Item className={layoutClasses}>
                 <Tooltip content={"Lint while typing"}>
-                    <span className={"font-semibold"}>Lint</span>
+                    <span>Lint</span>
                 </Tooltip>
 
                 <ToggleSwitch checked={isLintOn} onChange={onLint}/>
@@ -99,7 +99,7 @@ export default function Component(props: {
 
             <Dropdown.Item className={layoutClasses}>
                 <Tooltip content={"Auto run code on change"}>
-                    <span className={"font-semibold"}>Auto Run</span>
+                    <span>Auto Run</span>
                 </Tooltip>
 
                 <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>

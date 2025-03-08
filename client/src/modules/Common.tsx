@@ -23,13 +23,14 @@ export function Divider() {
 export function MyToast(props: {
     children: ReactNode,
     className?: string
+    show: boolean,
+    setShowToast: (show: string) => void
 }) {
-    const {children, className} = props
+    const {show, children, className, setShowToast} = props
     const classes = `absolute z-10 bottom-6 left-6 ${className}`
 
     return (
-        children &&
-        <Toast className={classes}>
+        show && <Toast className={classes}>
             <div
                 className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-orange-500 dark:bg-orange-700 dark:text-orange-200 mr-2">
                 <HiExclamation className="h-5 w-5"/>
@@ -39,7 +40,7 @@ export function MyToast(props: {
                 {children}
             </div>
 
-            <Toast.Toggle/>
+            <Toast.Toggle onDismiss={() => setShowToast("")}/>
         </Toast>
     )
 }
