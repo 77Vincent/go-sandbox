@@ -38,8 +38,9 @@ export default function Component() {
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef<HTMLDivElement | null>(null);
 
+    const [toastMessage, setToastMessage] = useState<string>("");
+
     // error state
-    const [error, setError] = useState<string>("");
     const [errorRows, setErrorRows] = useState<IMarker[]>([]);
 
     // settings
@@ -50,6 +51,7 @@ export default function Component() {
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(getCodeContent());
     const [result, setResult] = useState<string>("");
+    const [executionInfo, setExecutionInfo] = useState<string>("")
 
     // manage code
     const latestCodeRef = useRef(code);
@@ -116,7 +118,7 @@ export default function Component() {
 
             setIsRunning(false)
         } catch (e) {
-            setError((e as Error).message)
+            setToastMessage((e as Error).message)
         }
     }, []);
     const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
@@ -131,10 +133,13 @@ export default function Component() {
             const {output: formatted} = await formatCode(latestCodeRef.current);
 
             // actual run
-            const {stdout} = await executeCode(latestCodeRef.current);
+            const {error, stdout} = await executeCode(latestCodeRef.current);
 
             // after run
             setResult(stdout);
+            if (error) {
+                setExecutionInfo(error)
+            }
             // only set the formatted code if the execution is successful!
             storeCode(formatted)
             // clear error markers
@@ -231,7 +236,7 @@ export default function Component() {
 
     return (
         <div className="relative h-screen flex flex-col dark:bg-gray-800 bg-stone-100">
-            <MyToast>{error}</MyToast>
+            <MyToast>{toastMessage}</MyToast>
 
             <div className="flex justify-between items-center py-2 px-3  dark:text-white">
                 <Link to={"/"}>
@@ -320,8 +325,12 @@ export default function Component() {
                     </Wrapper>
                 </Resizable>
 
-                <Wrapper className={"py-2 px-2 bg-stone-200"}>
-                    <pre className={`font-mono text-${mapFontSize(fontSize)}`}>
+                <Wrapper className={`py-2 px-2 bg-stone-200 text-${mapFontSize(fontSize)}`}>
+                    <pre className={"text-red-600 border-b border-neutral-300 pb-1 mb-1"}>
+                        {executionInfo}
+                    </pre>
+
+                    <pre>
                         {result}
                     </pre>
                 </Wrapper>
