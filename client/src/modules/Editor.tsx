@@ -136,20 +136,30 @@ export default function Component() {
             setIsRunning(true)
             setResult(RUNNING_INFO)
 
+            const {error: formatError, message: formatMessage} = await formatCode(latestCodeRef.current);
+            // format failed
+            if (formatError) {
+                setMessage(formatMessage)
+                setResult(formatError)
+                setErrorRows(generateMarkers(formatError))
+                setIsRunning(false)
+                return
+            }
+
             // actual run
             const {stdout, stderr, error, message} = await executeCode(latestCodeRef.current);
             // always set message
             setMessage(message)
 
-            // error case
+            // execute failed
             if (error) {
                 setResult(`${error}\n${stderr}`)
                 setErrorRows(generateMarkers(stderr))
+                setIsRunning(false)
                 return
             }
 
             setResult(stdout);
-
             setErrorRows([]) // clear error markers
             setIsRunning(false)
         } catch (e) {
