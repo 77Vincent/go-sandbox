@@ -330,14 +330,14 @@ export default function Component() {
                     </Wrapper>
                 </Resizable>
 
-                <Wrapper className={`py-2 px-2 bg-stone-200 text-${mapFontSize(fontSize)}`}>
+                <Wrapper className={`flex flex-col py-2 px-2 bg-stone-200 text-${mapFontSize(fontSize)}`}>
                     {
                         message &&
                         <div className={"text-orange-600 border-b border-neutral-300 pb-1 mb-1"}> {message} </div>
                     }
-                    <pre>
-                        {result}
-                    </pre>
+                    <div className={"h-full overflow-auto"}>
+                        <pre> {result} </pre>
+                    </div>
                 </Wrapper>
             </div>
         </div>
