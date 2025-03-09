@@ -23,7 +23,7 @@ export const DEFAULT_CURSOR_POSITION = 0;
 
 export const CURSOR_UPDATE_DEBOUNCE_TIME = 100;
 export const RUN_DEBOUNCE_TIME = 100;
-export const AUTO_RUN_DEBOUNCE_TIME = 750;
+export const AUTO_RUN_DEBOUNCE_TIME = 1000;
 
 export const ACTIVE_COLOR_LIGHT = "purple";
 export const ACTIVE_COLOR_DARK = "lime";

@@ -3,13 +3,14 @@ import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
+import {Link} from "react-router";
 
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
     EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
     KEY_BINDINGS_KEY, FONT_SIZE_M, RUNNING_INFO, AUTO_RUN_DEBOUNCE_TIME
 } from "../constants.ts";
-import {Divider, MyToast, Wrapper} from "./Common.tsx";
+import {ClickBoard, Divider, MyToast, Wrapper} from "./Common.tsx";
 import {executeCode, formatCode} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
@@ -31,7 +32,6 @@ import {
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings} from "../types";
-import {Link} from "react-router";
 
 export default function Component() {
     const {mode, toggleMode} = useThemeMode();
@@ -92,6 +92,10 @@ export default function Component() {
             }
             if (event.key.toLowerCase() === "escape") {
                 editor.focus();
+            }
+            if (event.key.toLowerCase() === "e" && event.metaKey) {
+                event.preventDefault();
+                debouncedRun()
             }
         }
 
@@ -302,9 +306,11 @@ export default function Component() {
                     grid={[10, 1]}
                     onResizeStop={onResizeStop}
                 >
-                    <Wrapper className={"h-full flex flex-col"}>
+                    <Wrapper className={"relative h-full flex flex-col"}>
+                        <ClickBoard content={code}/>
+
                         <AceEditor
-                            className={"rounded-t-lg flex-1"}
+                            className={"flex-1"}
                             mode="golang"
                             width={"100%"}
                             theme={mode === "dark" ? "one_dark" : "dawn"}
@@ -330,7 +336,8 @@ export default function Component() {
                     </Wrapper>
                 </Resizable>
 
-                <Wrapper className={`flex flex-col py-2 px-2 bg-stone-200 text-${mapFontSize(fontSize)}`}>
+                <Wrapper className={`relative flex flex-col py-2 px-2 bg-stone-200 text-${mapFontSize(fontSize)}`}>
+                    <ClickBoard content={result}/>
                     {
                         message &&
                         <div className={"text-orange-600 border-b border-neutral-300 pb-1 mb-1"}> {message} </div>

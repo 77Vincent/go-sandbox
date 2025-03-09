@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {Toast} from "flowbite-react";
+import {Clipboard, Toast, Flowbite, CustomFlowbiteTheme} from "flowbite-react";
 import {HiExclamation} from "react-icons/hi";
 
 export function Wrapper(props: {
@@ -65,5 +65,32 @@ export function ToggleSwitch(props: {
                 <span className="text-xs font-light text-gray-800 dark:text-gray-300">{label}</span>
             }
         </label>
+    )
+}
+
+export function ClickBoard(props: {
+    content: string
+}) {
+    const {content} = props
+    const customTheme: CustomFlowbiteTheme = {
+        clipboard: {
+            "withIcon": {
+                "base": "absolute end-2 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800",
+                "icon": {
+                    "defaultIcon": "h-3 w-3",
+                    "successIcon": "h-3 w-3 text-blue-700 dark:text-blue-500"
+                }
+            },
+        }
+    };
+
+    return (
+        content &&
+        <Flowbite theme={{theme: customTheme}}>
+            <Clipboard.WithIcon
+                valueToCopy={content}
+                className={"absolute top-4 right-0.5 z-10 opacity-60"}
+            />
+        </Flowbite>
     )
 }

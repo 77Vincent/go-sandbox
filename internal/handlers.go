@@ -18,7 +18,7 @@ const (
 	badRequestMessage            = "bad request"
 	buildErrorMessage            = "build failed"
 	executionTimeoutErrorMessage = "execution timed out"
-	executionTimeout             = 2 * time.Second
+	executionTimeout             = 5 * time.Second
 )
 
 func Status(c *gin.Context) {
