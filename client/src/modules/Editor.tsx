@@ -106,7 +106,8 @@ export default function Component() {
         }
     }
 
-    async function format(): Promise<boolean> {
+    // managed debounced format
+    const formatCallback = useCallback(async () => {
         try {
             setIsRunning(true)
             setResult(RUNNING_INFO)
@@ -123,25 +124,10 @@ export default function Component() {
             setErrorRows(generateMarkers(error))
 
             setIsRunning(false)
-
-            if (error) {
-                return Promise.resolve(false)
-            }
         } catch (e) {
             setToastMessage((e as Error).message)
-
-            // reset
-            setResult("")
-            setIsRunning(false)
-            setErrorRows([])
-            return Promise.resolve(false)
         }
-
-        return Promise.resolve(true)
-    }
-
-    // managed debounced format
-    const formatCallback = useCallback(format, []);
+    }, []);
     const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
 
     // manage debounced run
@@ -149,11 +135,6 @@ export default function Component() {
         try {
             setIsRunning(true)
             setResult(RUNNING_INFO)
-
-            // use format as validation
-            if (!await format()) {
-                return
-            }
 
             // actual run
             const {stdout, stderr, error, message} = await executeCode(latestCodeRef.current);
@@ -342,7 +323,7 @@ export default function Component() {
                 <Wrapper className={`py-2 px-2 bg-stone-200 text-${mapFontSize(fontSize)}`}>
                     {
                         message &&
-                        <pre className={"text-red-600 border-b border-neutral-300 pb-1 mb-1"}> {message} </pre>
+                        <div className={"text-orange-600 border-b border-neutral-300 pb-1 mb-1"}> {message} </div>
                     }
                     <pre>
                         {result}
