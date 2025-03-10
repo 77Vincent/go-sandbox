@@ -4,6 +4,7 @@ import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
 import {Link} from "react-router";
+import {IoLanguage as LanguageIcon} from "react-icons/io5"
 
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
@@ -20,6 +21,7 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim"
 import "ace-builds/src-noconflict/keybinding-emacs"
 import "ace-builds/src-noconflict/ext-statusbar";
+import "ace-builds/src-noconflict/ext-searchbox";
 import {debounce} from "react-ace/lib/editorOptions";
 import {
     getAutoRun,
@@ -32,10 +34,13 @@ import {
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings} from "../types";
+import About from "./About.tsx";
 
 export default function Component() {
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef<HTMLDivElement | null>(null);
+
+    const [showAbout, setShowAbout] = useState<boolean>(false);
 
     const [toastMessage, setToastMessage] = useState<string>("");
 
@@ -90,12 +95,18 @@ export default function Component() {
                 event.preventDefault();
                 debouncedRun()
             }
+            // shortcut for editor focus
             if (event.key.toLowerCase() === "escape") {
                 editor.focus();
             }
+            // shortcut for format
+            if (event.key.toLowerCase() === "b" && event.metaKey) {
+                event.preventDefault();
+                debouncedFormat()
+            }
+            // shortcut for share
             if (event.key.toLowerCase() === "e" && event.metaKey) {
                 event.preventDefault();
-                debouncedRun()
             }
         }
 
@@ -247,6 +258,8 @@ export default function Component() {
         <div className="relative h-screen flex flex-col dark:bg-gray-800 bg-stone-100">
             <MyToast show={!!toastMessage} setShowToast={setToastMessage}>{toastMessage}</MyToast>
 
+            <About show={showAbout} setShow={setShowAbout}/>
+
             <div className="flex justify-between items-center py-2 px-3  dark:text-white">
                 <Link to={"/"}>
                     <h1 className="text-2xl font-bold">
@@ -263,12 +276,16 @@ export default function Component() {
                         </Button>
                     </Tooltip>
 
-                    <Button onClick={debouncedFormat} disabled={isRunning} className={"shadow"} size={"xs"}
-                            gradientMonochrome={"info"}>
-                        Format
-                    </Button>
+                    <Tooltip content={"cmd/win + b"}>
+                        <Button onClick={debouncedFormat} disabled={isRunning} className={"shadow"} size={"xs"}
+                                gradientMonochrome={"info"}>
+                            Format
+                        </Button>
+                    </Tooltip>
 
-                    <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Export</Button>
+                    <Tooltip content={"cmd/win + e"}>
+                        <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Share</Button>
+                    </Tooltip>
 
                     <Divider/>
 
@@ -286,9 +303,16 @@ export default function Component() {
                         onAutoRun={onAutoRun}
                     />
 
+                    <Tooltip content={"Language"}>
+                        <LanguageIcon
+                            className={"text-neutral-600 dark:text-neutral-400 text-lg cursor-pointer hover:opacity-50"}/>
+                    </Tooltip>
+
                     <Tooltip content={"Dark mode"}>
                         <DarkThemeToggle onClick={onDarkThemeToggle}/>
                     </Tooltip>
+
+                    <p className={"text-sm text-neutral-600 cursor-pointer hover:opacity-50"} onClick={() => setShowAbout(true)}>About</p>
                 </div>
             </div>
 

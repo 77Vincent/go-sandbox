@@ -57,7 +57,8 @@ export default function Component(props: {
 
     return (
         <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
-            <SettingsIcon className={"text-neutral-600 dark:text-neutral-400 text-lg cursor-pointer hover:opacity-50"}/>
+            <SettingsIcon
+                className={"text-neutral-600 dark:text-neutral-400 text-lg cursor-pointer hover:opacity-50"}/>
         }>
             <Dropdown.Item className={layoutClasses}>
                 <span>Font Size</span>
