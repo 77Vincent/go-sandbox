@@ -300,7 +300,7 @@ export default function Component() {
         <div className="relative h-screen flex flex-col dark:bg-gray-800 bg-stone-100">
             <MyToast show={!!toastMessage} setShowToast={setToastMessage}>{toastMessage}</MyToast>
 
-            <About show={showAbout} setShow={setShowAbout}/>
+            <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
             <div className="flex justify-between items-center py-2 px-3  dark:text-white">
                 <Link to={"/"}>

@@ -101,4 +101,10 @@ export const TRANSLATE = {
         ja: "オートラン",
         ko: "자동 실행",
     },
+    buyMeACoffee: {
+        en: "Buy me a coffee",
+        zh: "请我喝杯咖啡吧",
+        ja: "コーヒーをおごって",
+        ko: "커피 사주세요",
+    }
 }
