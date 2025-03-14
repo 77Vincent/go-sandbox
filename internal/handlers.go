@@ -142,6 +142,13 @@ func Execute(c *gin.Context) {
 				return
 			default:
 				line := scanner.Text()
+				if eventName == "stderr" {
+					line = parseStderrMessages(line)
+					// skip empty lines after parsing
+					if line == "" {
+						continue
+					}
+				}
 				// SSE 格式: event: <eventName>\ndata: <data>\n\n
 				c.Render(-1, render.Data{
 					Data: []byte(fmt.Sprintf("event: %s\ndata: %s\n\n", eventName, line)),

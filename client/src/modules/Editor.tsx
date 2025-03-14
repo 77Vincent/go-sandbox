@@ -9,7 +9,7 @@ import {IoLanguage as LanguageIcon} from "react-icons/io5"
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
     EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
-    KEY_BINDINGS_KEY, FONT_SIZE_M, RUNNING_INFO, AUTO_RUN_DEBOUNCE_TIME
+    KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME
 } from "../constants.ts";
 import {ClickBoard, Divider, MyToast, Wrapper} from "./Common.tsx";
 import {executeCodeStream, formatCode} from "../api/api.ts";
@@ -125,22 +125,20 @@ export default function Component() {
     const formatCallback = useCallback(async () => {
         try {
             setIsRunning(true)
-            setResult(RUNNING_INFO)
 
             const {stdout, error, message} = await formatCode(latestCodeRef.current);
-
-            // always set message
-            setMessage(message)
 
             if (stdout) {
                 storeCode(stdout)
             }
-            setResult(error) // also clear the running info!
-            setErrorRows(generateMarkers(error))
 
+            setResult(error)
+            setErrorRows(generateMarkers(error))
+            setMessage(message)
             setIsRunning(false)
         } catch (e) {
             setToastMessage((e as Error).message)
+            setIsRunning(false)
         }
     }, []);
     const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
@@ -150,7 +148,6 @@ export default function Component() {
         try {
             setMessage("")
             setIsRunning(true)
-            setResult(RUNNING_INFO)
 
             const {error: formatError, message: formatMessage} = await formatCode(latestCodeRef.current);
             // format failed
@@ -167,6 +164,7 @@ export default function Component() {
             setResult("");            // 清空之前的输出
             setErrorRows([]);         // 清空错误标记
 
+            const markers = []
             for await (const evt of executeCodeStream(latestCodeRef.current)) {
                 switch (evt.event) {
                     case "stdout":
@@ -176,7 +174,8 @@ export default function Component() {
 
                     case "stderr":
                         // 也可以把 stderr 显示到同一个 result 或单独存储
-                        setResult(prev => prev + "[stderr] " + evt.data + "\n");
+                        setResult(prev => prev + `${evt.data}\n`);
+                        markers.push(...generateMarkers(evt.data))
                         break;
 
                     case "timeout":
@@ -184,8 +183,7 @@ export default function Component() {
                         break;
 
                     case "error":
-                        setResult(prev => prev + "[error] " + evt.data + "\n");
-                        // 如果想高亮错误行，可以 setErrorRows(...)
+                        setMessage(evt.data)
                         break;
 
                     case "done":
@@ -200,7 +198,7 @@ export default function Component() {
                 }
             }
 
-            setErrorRows([]) // clear error markers
+            setErrorRows(markers)
             setIsRunning(false)
         } catch (e) {
             const err = e as Error
@@ -336,7 +334,8 @@ export default function Component() {
                         <DarkThemeToggle onClick={onDarkThemeToggle}/>
                     </Tooltip>
 
-                    <p className={"text-sm text-neutral-600 cursor-pointer hover:opacity-50"} onClick={() => setShowAbout(true)}>About</p>
+                    <p className={"text-sm text-neutral-600 cursor-pointer hover:opacity-50"}
+                       onClick={() => setShowAbout(true)}>About</p>
                 </div>
             </div>
 

@@ -12,7 +12,7 @@ import (
 var re = regexp.MustCompile(`/var.*\.go:`)
 
 func parseStderrMessages(input string) string {
-	input = strings.ReplaceAll(input, "# command-line-arguments\n", "")
+	input = strings.ReplaceAll(input, "# command-line-arguments", "") // this is not useful
 	input = re.ReplaceAllString(input, "tmp.go:")
 	return input
 }
