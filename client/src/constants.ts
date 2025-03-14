@@ -38,3 +38,36 @@ export const ERROR_PARSING_REGEX = /tmp\.go:(\d+)/g;
 export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;
 
 export const HTTP_INTERNAL_ERROR = 500
+
+export const TRANSLATE = {
+    run: {
+        en: "Run",
+        zh: "运行",
+        ja: "実行",
+        ko: "실행",
+    },
+    format: {
+        en: "Format",
+        zh: "格式化",
+        ja: "フォーマット",
+        ko: "서식",
+    },
+    share: {
+        en: "Share",
+        zh: "分享",
+        ja: "共有",
+        ko: "공유",
+    },
+    about: {
+        en: "About",
+        zh: "关于",
+        ja: "情報",
+        ko: "정보",
+    },
+    language: {
+        en: "Language",
+        zh: "语言",
+        ja: "言語",
+        ko: "언어",
+    }
+}
