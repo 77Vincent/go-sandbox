@@ -1,10 +1,12 @@
 package internal
 
 import (
-	"bytes"
+	"bufio"
 	"context"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/render"
 	"go/format"
 	"io"
 	"net/http"
@@ -64,6 +66,7 @@ func Format(c *gin.Context) {
 	})
 }
 
+// Execute 实现 SSE 流式输出
 func Execute(c *gin.Context) {
 	var req request
 
@@ -75,104 +78,108 @@ func Execute(c *gin.Context) {
 		return
 	}
 
-	// generate a temporary file for the code
+	// 1) 创建临时文件并写入用户代码
 	tmp, err := os.CreateTemp("", "code-*.go")
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
-			Error: err.Error(),
-		})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
-	defer os.Remove(tmp.Name()) // remove the file when we're done
+	defer os.Remove(tmp.Name())
 
-	// write the formatted code to the file
 	if _, err = tmp.Write([]byte(req.Code)); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
-			Error: err.Error(),
-		})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
 	if err = tmp.Close(); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
-			Error: err.Error(),
-		})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
 
-	// 2) Create a context with a timeout.
-	//    If the user's code runs longer than 3 seconds, it will be killed.
+	// 2) 创建带超时的 context
 	ctx, cancel := context.WithTimeout(context.Background(), executionTimeout)
 	defer cancel()
 
-	// 3) Create the command using exec.CommandContext so it is tied to the context.
+	// 3) 使用 exec.CommandContext 关联 context
 	cmd := exec.CommandContext(ctx, "go", "run", tmp.Name())
 
-	// We can capture stdout and stderr separately:
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
-			Error: err.Error(),
-		})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
-			Error: err.Error(),
-		})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
 
-	// Start the process.
+	// 启动进程
 	if err = cmd.Start(); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{
-			Error: err.Error(),
-		})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
 
-	// 4) Read from stdout and stderr concurrently, storing the results in buffers.
-	var outBuf, errBuf bytes.Buffer
-	wg := &sync.WaitGroup{}
+	// 4) 设置 SSE 响应头
+	c.Writer.Header().Set("Content-Type", "text/event-stream")
+	c.Writer.Header().Set("Cache-Control", "no-cache")
+	c.Writer.Header().Set("Connection", "keep-alive")
+
+	// 用于并发读取 stdout/stderr
+	var wg sync.WaitGroup
 	wg.Add(2)
 
-	go func() {
+	// 按行读取并发送 SSE 的函数
+	readAndStream := func(r io.Reader, eventName string) {
 		defer wg.Done()
-		io.Copy(&outBuf, stdout)
-	}()
-	go func() {
-		defer wg.Done()
-		io.Copy(&errBuf, stderr)
-	}()
 
-	// Wait for the command to finish, or for the context to time out.
+		scanner := bufio.NewScanner(r)
+		for scanner.Scan() {
+			select {
+			case <-ctx.Done():
+				return
+			case <-c.Request.Context().Done():
+				// 如果想在客户端断开时也终止子进程，可在此调用 cmd.Process.Kill()
+				return
+			default:
+				line := scanner.Text()
+				// SSE 格式: event: <eventName>\ndata: <data>\n\n
+				c.Render(-1, render.Data{
+					Data: []byte(fmt.Sprintf("event: %s\ndata: %s\n\n", eventName, line)),
+				})
+				c.Writer.Flush()
+			}
+		}
+	}
+
+	// 并发读取 stdout/stderr
+	go readAndStream(stdout, "stdout")
+	go readAndStream(stderr, "stderr")
+
+	// 等待进程结束
 	err = cmd.Wait()
-	wg.Wait() // wait until stdout/stderr copying is done
+	wg.Wait() // 等待读取协程结束
 
-	// If the context timed out or was canceled, the command was killed.
+	// 判断是否超时
 	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-		c.AbortWithStatusJSON(http.StatusGatewayTimeout, response{
-			Message: executionTimeoutErrorMessage,
-			Stderr:  parseStderrMessages(errBuf.String()),
-			Stdout:  outBuf.String(),
+		c.Render(-1, render.Data{
+			Data: []byte("event: timeout\ndata: Execution timed out.\n\n"),
 		})
+		c.Writer.Flush()
 		return
 	}
 
-	// If there was some other error from the command, return that.
+	// 如果有其他错误
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, response{
-			Message: buildErrorMessage,
-			Error:   err.Error(),
-			Stderr:  parseStderrMessages(errBuf.String()),
-			Stdout:  outBuf.String(),
+		c.Render(-1, render.Data{
+			Data: []byte(fmt.Sprintf("event: error\ndata: %v\n\n", err)),
 		})
+		c.Writer.Flush()
 		return
 	}
 
-	// If everything is good, return the captured stdout/stderr.
-	c.JSON(http.StatusOK, response{
-		Stdout: outBuf.String(),
-		Stderr: parseStderrMessages(errBuf.String()),
+	// 正常结束，发送 done 事件
+	c.Render(-1, render.Data{
+		Data: []byte("event: done\ndata: Execution finished.\n\n"),
 	})
+	c.Writer.Flush()
 }

@@ -19,3 +19,8 @@ export interface ExecuteResultI {
     stdout: string;
     stderr: string;
 }
+
+export interface SSEEvent {
+    event: string;
+    data: string;
+}

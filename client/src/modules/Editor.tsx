@@ -12,7 +12,7 @@ import {
     KEY_BINDINGS_KEY, FONT_SIZE_M, RUNNING_INFO, AUTO_RUN_DEBOUNCE_TIME
 } from "../constants.ts";
 import {ClickBoard, Divider, MyToast, Wrapper} from "./Common.tsx";
-import {executeCode, formatCode} from "../api/api.ts";
+import {executeCodeStream, formatCode} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -162,28 +162,51 @@ export default function Component() {
                 return
             }
 
-            // actual run
-            const {stdout, stderr, error, message} = await executeCode(latestCodeRef.current);
-            // always set message
-            setMessage(message)
+            // 2) 调用流式 SSE
+            //    for await ... of 会逐条接收后端的事件
+            setResult("");            // 清空之前的输出
+            setErrorRows([]);         // 清空错误标记
 
-            // execute failed
-            if (error) {
-                setResult(`${error}\n${stderr}`)
-                setErrorRows(generateMarkers(stderr))
-                setIsRunning(false)
-                return
+            for await (const evt of executeCodeStream(latestCodeRef.current)) {
+                switch (evt.event) {
+                    case "stdout":
+                        // 追加到 result
+                        setResult(prev => prev + evt.data + "\n");
+                        break;
+
+                    case "stderr":
+                        // 也可以把 stderr 显示到同一个 result 或单独存储
+                        setResult(prev => prev + "[stderr] " + evt.data + "\n");
+                        break;
+
+                    case "timeout":
+                        setMessage("Execution timed out.");
+                        break;
+
+                    case "error":
+                        setResult(prev => prev + "[error] " + evt.data + "\n");
+                        // 如果想高亮错误行，可以 setErrorRows(...)
+                        break;
+
+                    case "done":
+                        setMessage("Execution finished.");
+                        // SSE 流结束后 for-await 会退出循环
+                        break;
+
+                    default:
+                        // 处理其他自定义事件或 "message"
+                        setResult(prev => prev + `[${evt.event}] ${evt.data}\n`);
+                        break;
+                }
             }
 
-            setResult(stdout);
             setErrorRows([]) // clear error markers
             setIsRunning(false)
         } catch (e) {
             const err = e as Error
             setErrorRows(generateMarkers(err.message))
-
-            // show raw error message
             setResult(err.message)
+            setIsRunning(false)
         }
     }, []);
     const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
