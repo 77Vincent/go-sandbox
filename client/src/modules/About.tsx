@@ -12,6 +12,10 @@ export default function Component(props: {
     return <Modal dismissible show={show} onClose={() => setShow(false)}>
         <Modal.Header>{TRANSLATE.about[lan]}</Modal.Header>
         <Modal.Body>
+            <p className="mb-6">
+                {TRANSLATE.aboutInfo[lan]}
+            </p>
+
             <Button gradientDuoTone={"purpleToBlue"} href={"https://www.buymeacoffee.com/"} target={"_blank"}>
                 {TRANSLATE.buyMeACoffee[lan]} (1$)
             </Button>

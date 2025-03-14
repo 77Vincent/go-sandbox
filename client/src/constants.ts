@@ -106,5 +106,11 @@ export const TRANSLATE = {
         zh: "请我喝杯咖啡吧",
         ja: "コーヒーをおごって",
         ko: "커피 사주세요",
+    },
+    aboutInfo: {
+        en: "This is an online Go playground. It is a web-based tool to write, compile, and run Go code. It is powered by the Go playground and the Monaco editor.",
+        zh: "这是一个在线 Go playground。这是一个用于编写、编译和运行 Go 代码的基于 Web 的工具。它由 Go playground 和 Monaco 编辑器驱动。",
+        ja: "これはオンライン Go playground です。これは Go コードを書いて、コンパイルして、実行するための Web ベースのツールです。Go playground と Monaco エディターで動作します。",
+        ko: "이것은 온라인 Go playground입니다. 이것은 Go 코드를 작성, 컴파일 및 실행하는 웹 기반 도구입니다. Go playground 및 Monaco 편집기로 구동됩니다.",
     }
 }
