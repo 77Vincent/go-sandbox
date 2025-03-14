@@ -94,19 +94,23 @@ export default function Component() {
             if (event.key.toLowerCase() === "enter" && event.metaKey) {
                 event.preventDefault();
                 debouncedRun()
+                return
             }
             // shortcut for editor focus
             if (event.key.toLowerCase() === "escape") {
                 editor.focus();
+                return;
             }
             // shortcut for format
             if (event.key.toLowerCase() === "b" && event.metaKey) {
                 event.preventDefault();
                 debouncedFormat()
+                return;
             }
             // shortcut for share
             if (event.key.toLowerCase() === "e" && event.metaKey) {
                 event.preventDefault();
+                return;
             }
         }
 
@@ -293,7 +297,7 @@ export default function Component() {
 
                 <div className="flex gap-2 justify-end items-center">
                     <Tooltip content={"cmd/win + enter"}>
-                        <Button onClick={debouncedRun} disabled={isAutoRun || isRunning} className={"shadow"}
+                        <Button onClick={debouncedRun} disabled={isRunning} className={"shadow"}
                                 size={"xs"}
                                 gradientDuoTone={"purpleToBlue"}>
                             Run
