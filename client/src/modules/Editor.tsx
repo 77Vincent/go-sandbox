@@ -52,6 +52,7 @@ export default function Component() {
     const [editorSize, setEditorSize] = useState<number>(getEditorSize())
 
     // editor status
+    const [isFormatting, setIsFormatting] = useState<boolean>(false)
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(getCodeContent());
     const [result, setResult] = useState<string>("");
@@ -120,7 +121,7 @@ export default function Component() {
     function onChange(code: string = "") {
         storeCode(code);
 
-        if (isAutoRun) {
+        if (isAutoRun && !isFormatting) {
             debouncedAutoRun();
         }
     }
@@ -129,6 +130,7 @@ export default function Component() {
     const formatCallback = useCallback(async () => {
         try {
             setIsRunning(true)
+            setIsFormatting(true)
 
             const {stdout, error, message} = await formatCode(latestCodeRef.current);
 
@@ -144,9 +146,11 @@ export default function Component() {
             }
 
             setIsRunning(false)
+            setIsFormatting(false)
         } catch (e) {
             setToastMessage((e as Error).message)
             setIsRunning(false)
+            setIsFormatting(false)
         }
     }, []);
     const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
@@ -156,14 +160,20 @@ export default function Component() {
         try {
             setMessage("")
             setIsRunning(true)
+            setIsFormatting(true)
 
-            const {error: formatError, message: formatMessage} = await formatCode(latestCodeRef.current);
+            const {
+                stdout: formatted,
+                error: formatError,
+                message: formatMessage
+            } = await formatCode(latestCodeRef.current);
             // format failed
             if (formatError) {
                 setMessage(formatMessage)
                 setResult(formatError)
                 setErrorRows(generateMarkers(formatError))
                 setIsRunning(false)
+                setIsFormatting(false)
                 return
             }
 
@@ -171,6 +181,7 @@ export default function Component() {
             //    for await ... of 会逐条接收后端的事件
             setResult("");            // 清空之前的输出
             setErrorRows([]);         // 清空错误标记
+            storeCode(formatted)      // 更新代码
 
             const markers = []
             for await (const evt of executeCodeStream(latestCodeRef.current)) {
@@ -206,11 +217,13 @@ export default function Component() {
 
             setErrorRows(markers)
             setIsRunning(false)
+            setIsFormatting(false)
         } catch (e) {
             const err = e as Error
             setErrorRows(generateMarkers(err.message))
             setResult(err.message)
             setIsRunning(false)
+            setIsFormatting(false)
         }
     }, []);
     const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
@@ -297,7 +310,7 @@ export default function Component() {
 
                 <div className="flex gap-2 justify-end items-center">
                     <Tooltip content={"cmd/win + enter"}>
-                        <Button onClick={debouncedRun} disabled={isRunning} className={"shadow"}
+                        <Button onClick={debouncedRun} disabled={isAutoRun || isRunning} className={"shadow"}
                                 size={"xs"}
                                 gradientDuoTone={"purpleToBlue"}>
                             Run
@@ -305,7 +318,7 @@ export default function Component() {
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + b"}>
-                        <Button onClick={debouncedFormat} disabled={isRunning} className={"shadow"} size={"xs"}
+                        <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning} className={"shadow"} size={"xs"}
                                 gradientMonochrome={"info"}>
                             Format
                         </Button>
