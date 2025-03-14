@@ -131,10 +131,14 @@ export default function Component() {
             if (stdout) {
                 storeCode(stdout)
             }
+            if (error) {
+                setResult(error)
+                setErrorRows(generateMarkers(error))
+            }
+            if (message) {
+                setMessage(message)
+            }
 
-            setResult(error)
-            setErrorRows(generateMarkers(error))
-            setMessage(message)
             setIsRunning(false)
         } catch (e) {
             setToastMessage((e as Error).message)
@@ -187,8 +191,6 @@ export default function Component() {
                         break;
 
                     case "done":
-                        setMessage("Execution finished.");
-                        // SSE 流结束后 for-await 会退出循环
                         break;
 
                     default:
