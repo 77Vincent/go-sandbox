@@ -1,4 +1,4 @@
-import {KeyBindings} from "./types";
+import {KeyBindings, languages} from "./types";
 
 export const KEY_BINDINGS_KEY = "keyBindings";
 export const AUTO_RUN_KEY = "isAutoRum";
@@ -38,6 +38,13 @@ export const ERROR_PARSING_REGEX = /tmp\.go:(\d+)/g;
 export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;
 
 export const HTTP_INTERNAL_ERROR = 500
+
+export const LANGUAGES: { value: languages, label: string }[] = [
+    {value: "en", label: "English"},
+    {value: "zh", label: "中文"},
+    {value: "ja", label: "日本語"},
+    {value: "ko", label: "한국어"},
+]
 
 export const TRANSLATE = {
     run: {

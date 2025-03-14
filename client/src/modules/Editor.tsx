@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState, ChangeEvent} from "react";
-import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
+import {Button, DarkThemeToggle, Dropdown, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
@@ -9,7 +9,7 @@ import {IoLanguage as LanguageIcon} from "react-icons/io5"
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
     EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
-    KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME
+    KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME, TRANSLATE, LANGUAGES
 } from "../constants.ts";
 import {ClickBoard, Divider, MyToast, Wrapper} from "./Common.tsx";
 import {executeCodeStream, formatCode} from "../api/api.ts";
@@ -33,7 +33,7 @@ import {
     getLintOn, mapFontSize, generateMarkers
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
-import {KeyBindings} from "../types";
+import {KeyBindings, languages} from "../types";
 import About from "./About.tsx";
 
 export default function Component() {
@@ -50,6 +50,7 @@ export default function Component() {
     // settings
     const [fontSize, setFontSize] = useState<number>(getFontSize());
     const [editorSize, setEditorSize] = useState<number>(getEditorSize())
+    const [lan, setLan] = useState<languages>("en")
 
     // editor status
     const [isFormatting, setIsFormatting] = useState<boolean>(false)
@@ -313,19 +314,22 @@ export default function Component() {
                         <Button onClick={debouncedRun} disabled={isAutoRun || isRunning} className={"shadow"}
                                 size={"xs"}
                                 gradientDuoTone={"purpleToBlue"}>
-                            Run
+                            {TRANSLATE.run[lan]}
                         </Button>
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + b"}>
-                        <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning} className={"shadow"} size={"xs"}
+                        <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning} className={"shadow"}
+                                size={"xs"}
                                 gradientMonochrome={"info"}>
-                            Format
+                            {TRANSLATE.format[lan]}
                         </Button>
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + e"}>
-                        <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>Share</Button>
+                        <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>
+                            {TRANSLATE.share[lan]}
+                        </Button>
                     </Tooltip>
 
                     <Divider/>
@@ -344,17 +348,27 @@ export default function Component() {
                         onAutoRun={onAutoRun}
                     />
 
-                    <Tooltip content={"Language"}>
+                    <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
                         <LanguageIcon
                             className={"text-neutral-600 dark:text-neutral-400 text-lg cursor-pointer hover:opacity-50"}/>
-                    </Tooltip>
+                    }>
+                        {
+                            LANGUAGES.map(({value, label}) => (
+                                <Dropdown.Item key={value} className={`cursor-pointer ${value === lan ? "bg-neutral-100" : ""}`} onClick={() => setLan(value)}>
+                                    {label}
+                                </Dropdown.Item>
+                            ))
+                        }
+                    </Dropdown>
 
                     <Tooltip content={"Dark mode"}>
                         <DarkThemeToggle onClick={onDarkThemeToggle}/>
                     </Tooltip>
 
                     <p className={"text-sm text-neutral-600 cursor-pointer hover:opacity-50"}
-                       onClick={() => setShowAbout(true)}>About</p>
+                       onClick={() => setShowAbout(true)}>
+                        {TRANSLATE.about[lan]}
+                    </p>
                 </div>
             </div>
 

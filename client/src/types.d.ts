@@ -24,3 +24,5 @@ export interface SSEEvent {
     event: string;
     data: string;
 }
+
+export type languages = "en" | "zh" | "ja" | "ko";
