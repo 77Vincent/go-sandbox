@@ -76,5 +76,29 @@ export const TRANSLATE = {
         zh: "语言",
         ja: "言語",
         ko: "언어",
-    }
+    },
+    fontSize: {
+        en: "Font Size",
+        zh: "字体大小",
+        ja: "フォントサイズ",
+        ko: "글꼴 크기",
+    },
+    keyBindings: {
+        en: "Key Bindings",
+        zh: "键位设置",
+        ja: "キーバインディング",
+        ko: "키 바인딩",
+    },
+    lint: {
+        en: "Lint",
+        zh: "代码检查",
+        ja: "リント",
+        ko: "린트",
+    },
+    autoRun: {
+        en: "Auto Run",
+        zh: "自动运行",
+        ja: "オートラン",
+        ko: "자동 실행",
+    },
 }

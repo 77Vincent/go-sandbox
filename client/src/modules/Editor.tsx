@@ -335,6 +335,7 @@ export default function Component() {
                     <Divider/>
 
                     <Settings
+                        lan={lan}
                         fontSize={fontSize}
                         onFontL={onFontL}
                         onFontM={onFontM}

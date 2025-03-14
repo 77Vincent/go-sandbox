@@ -8,12 +8,13 @@ import {
 } from "react-icons/md";
 import {ImTextColor as TextMIcon} from "react-icons/im"
 
-import {FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S} from "../constants.ts";
+import {FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, TRANSLATE} from "../constants.ts";
 import {getActiveColor} from "../utils.ts";
-import {KeyBindings} from "../types";
+import {KeyBindings, languages} from "../types";
 import {ToggleSwitch} from "./Common.tsx";
 
 export default function Component(props: {
+    lan: languages;
     // for editor fontSize
     fontSize: number;
     themeMode: ThemeMode;
@@ -35,6 +36,7 @@ export default function Component(props: {
         keyBindings,
         themeMode,
         onKeyBindingsChange,
+        lan,
 
         // for font size
         fontSize,
@@ -56,12 +58,12 @@ export default function Component(props: {
     };
 
     return (
-        <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
+        <Dropdown className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
             <SettingsIcon
                 className={"text-neutral-600 dark:text-neutral-400 text-lg cursor-pointer hover:opacity-50"}/>
         }>
             <Dropdown.Item className={layoutClasses}>
-                <span>Font Size</span>
+                <span>{TRANSLATE.fontSize[lan]}</span>
 
                 <div className={"flex gap-3 items-center"}>
                     <TextSIcon color={fontSize === FONT_SIZE_S ? getActiveColor(themeMode) : ""}
@@ -76,7 +78,7 @@ export default function Component(props: {
             <Dropdown.Divider/>
 
             <Dropdown.Item className={layoutClasses}>
-                <Label className={"font-normal"} htmlFor="countries" value="Key Bindings"/>
+                <Label className={"font-normal"} htmlFor="countries" value={TRANSLATE.keyBindings[lan]}/>
 
                 <Select defaultValue={keyBindings} onChange={onKeyBindingsChange} onClick={handleSelectClick}
                         sizing={"sm"} id="countries">
@@ -90,7 +92,7 @@ export default function Component(props: {
 
             <Dropdown.Item className={layoutClasses}>
                 <Tooltip content={"Lint while typing"}>
-                    <span>Lint</span>
+                    <span>{TRANSLATE.lint[lan]}</span>
                 </Tooltip>
 
                 <ToggleSwitch checked={isLintOn} onChange={onLint}/>
@@ -100,7 +102,7 @@ export default function Component(props: {
 
             <Dropdown.Item className={layoutClasses}>
                 <Tooltip content={"Auto run code on change"}>
-                    <span>Auto Run</span>
+                    <span>{TRANSLATE.autoRun[lan]}</span>
                 </Tooltip>
 
                 <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
