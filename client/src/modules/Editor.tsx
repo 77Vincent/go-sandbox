@@ -148,6 +148,7 @@ export default function Component() {
     // manage debounced run
     const runCallback = useCallback(async () => {
         try {
+            setMessage("")
             setIsRunning(true)
             setResult(RUNNING_INFO)
 
@@ -367,7 +368,7 @@ export default function Component() {
                         <div className={"text-orange-600 border-b border-neutral-300 pb-1 mb-1"}> {message} </div>
                     }
                     <div className={"h-full overflow-auto"}>
-                        <pre> {result} </pre>
+                        <pre>{result}</pre>
                     </div>
                 </Wrapper>
             </div>
