@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	errorRe    = regexp.MustCompile(`^/tmp/code-[0-9]*\.go:`)
 	skipError  = regexp.MustCompile(`^# command-line-arguments`)
 	skipError2 = regexp.MustCompile(`^[0-9]*/[0-9]*/[0-9]* [0-9]*:[0-9]*:[0-9]* `)
 )
@@ -17,6 +18,10 @@ var (
 func shouldSkip(input string) bool {
 	b := []byte(input)
 	return skipError.Match(b) || skipError2.Match(b)
+}
+
+func processError(input string) string {
+	return errorRe.ReplaceAllString(input, "")
 }
 
 // Timeout creates a middleware that enforces a timeout.

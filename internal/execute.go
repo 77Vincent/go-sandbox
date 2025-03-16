@@ -94,6 +94,7 @@ func Execute(c *gin.Context) {
 					if shouldSkip(line) {
 						continue
 					}
+					line = processError(line)
 				}
 				// SSE 格式: event: <eventName>\ndata: <data>\n\n
 				c.Render(-1, render.Data{
