@@ -12,6 +12,12 @@ export default function Component(props: {
         <Wrapper
             className={`relative flex flex-col py-2 px-2 bg-neutral-200 dark:bg-neutral-800 text-${mapFontSize(fontSize)}`}>
             <ClickBoard content={result}/>
+
+            {
+                (!resultError && !resultInfo && !result) &&
+                <div className={"text-xs text-neutral-400 font-light"}>OUTPUT</div>
+            }
+
             {
                 resultError &&
                 <pre
