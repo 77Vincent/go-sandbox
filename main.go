@@ -11,7 +11,7 @@ func main() {
 	r := gin.Default()
 
 	// a global timeout middleware as a safety net
-	r.Use(internal.Timeout(config.APITimeout * time.Second))
+	r.Use(internal.Timeout(config.APIGlobalTimeout * time.Second))
 
 	// routes
 	r.GET("/status", internal.Status)
