@@ -4,7 +4,8 @@ client:
 
 # docker run
 build:
-	docker build --platform linux/arm64 -t go-sandbox .
+	docker build --pull=false --platform linux/arm64 -t go-sandbox .
+
 up:
 	docker run -p 8080:8080 go-sandbox
 
