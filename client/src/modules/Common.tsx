@@ -7,7 +7,7 @@ export function Wrapper(props: {
     className?: string
 }) {
     const {children, className} = props
-    const classes = `w-full overflow-hidden dark:bg-gray-800 dark:text-white ${className}`
+    const classes = `relative h-full w-full overflow-hidden dark:bg-gray-800 dark:text-white ${className}`
 
     return (
         <div className={classes}>
@@ -75,7 +75,6 @@ export function ClickBoard(props: {
     const customTheme: CustomFlowbiteTheme = {
         clipboard: {
             "withIcon": {
-                "base": "absolute end-2 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800",
                 "icon": {
                     "defaultIcon": "h-3 w-3",
                     "successIcon": "h-3 w-3 text-cyan-700 dark:text-cyan-500"
@@ -89,7 +88,7 @@ export function ClickBoard(props: {
         <Flowbite theme={{theme: customTheme}}>
             <Clipboard.WithIcon
                 valueToCopy={content}
-                className={"absolute top-4 right-0.5 z-10 opacity-60"}
+                className={"absolute top-4 right-0.5 z-10 opacity-50"}
             />
         </Flowbite>
     )

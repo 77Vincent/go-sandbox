@@ -409,7 +409,7 @@ export default function Component(props: {
                 </div>
             </div>
 
-            <div className={"flex flex-1"}>
+            <div className={"h-0 flex flex-1"}>
                 <Resizable
                     minWidth={"20%"}
                     maxWidth={"80%"}
@@ -423,7 +423,7 @@ export default function Component(props: {
                     grid={[10, 1]}
                     onResizeStop={onResizeStop}
                 >
-                    <Wrapper className={"border-r border-r-gray-400 dark:border-r-gray-6b00 relative h-full flex flex-col"}>
+                    <Wrapper className={"border-r border-r-gray-400 dark:border-r-gray-6b00 flex flex-col"}>
                         <ClickBoard content={code}/>
 
                         <AceEditor
