@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"syscall"
 	"time"
 )
@@ -19,13 +20,28 @@ func main() {
 	}
 	codeFile := os.Args[1]
 
+	// 1. 编译用户代码，生成可执行文件
+	tmpDir, err := os.MkdirTemp("", "sandbox-build-")
+	if err != nil {
+		log.Fatalf("Failed to create temp directory: %v", err)
+	}
+	defer os.RemoveAll(tmpDir)
+
+	binPath := filepath.Join(tmpDir, "userprog")
+	buildCmd := exec.Command("go", "build", "-o", binPath, codeFile)
+	buildCmd.Stdout = os.Stdout
+	buildCmd.Stderr = os.Stderr
+	if err = buildCmd.Run(); err != nil {
+		log.Fatalf("Build error: %v", err)
+	}
+
 	// 先设置 seccomp 筛选规则（必须在设置内存限制之前完成）
-	if err := internal.SetupSeccomp(); err != nil {
+	if err = internal.SetupSeccomp(); err != nil {
 		log.Fatalf("Failed to setup seccomp: %v", err)
 	}
 
 	// 然后设置资源限制（CPU 和内存）
-	if err := internal.SetLimits(); err != nil {
+	if err = internal.SetLimits(); err != nil {
 		log.Fatalf("Failed to set resource limits: %v", err)
 	}
 
@@ -34,12 +50,12 @@ func main() {
 	defer cancel()
 
 	// 执行 "go run <codeFile>"
-	cmd := exec.CommandContext(ctx, "go", "run", codeFile)
+	cmd := exec.CommandContext(ctx, binPath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	start := time.Now()
-	err := cmd.Run()
+	err = cmd.Run()
 	duration := time.Since(start)
 
 	if err != nil {

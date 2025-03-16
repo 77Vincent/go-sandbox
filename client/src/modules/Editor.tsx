@@ -190,6 +190,7 @@ export default function Component(props: {
             } = await formatCode(latestCodeRef.current);
             // format failed
             if (formatError) {
+                setResultInfo("")
                 setResultError(formatMessage)
                 setResult(formatError)
                 setErrorRows(generateMarkers(formatError))
@@ -201,6 +202,7 @@ export default function Component(props: {
             // 2) 调用流式 SSE
             //    for await ... of 会逐条接收后端的事件
             setResult("");            // 清空之前的输出
+            setResultInfo("")         // 清空之前的信息
             setErrorRows([]);         // 清空错误标记
             storeCode(formatted)      // 更新代码
 
@@ -218,7 +220,7 @@ export default function Component(props: {
                         // special case -- stats info wrapped in the stderr
                         if (data.startsWith(STATS_INFO_PREFIX)) {
                             const [time, mem] = data.replace(STATS_INFO_PREFIX, "").split(";")
-                            setResultInfo(`Time: ${time}\nMemory: ${mem}bytes`)
+                            setResultInfo(`Time: ${time}\nMemory: ${mem}kb`)
                             break;
                         }
 
