@@ -322,7 +322,7 @@ export default function Component(props: {
                 <Link to={"/"} className={"flex items-center gap-2"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"w-7 h-7"}/>
 
-                    <h1 className="text-xl">
+                    <h1 className="text-xl font-semibold">
                         Golang Sandbox
                     </h1>
                 </Link>
@@ -350,7 +350,7 @@ export default function Component(props: {
                         </Button>
                     </Tooltip>
 
-                    <div className={"flex gap-0.5 items-center"}>
+                    <div className={"flex items-center"}>
                         <Divider/>
 
                         <Settings
@@ -396,7 +396,7 @@ export default function Component(props: {
                 </div>
             </div>
 
-            <div className={"px-3 pb-3 gap-0.5 flex flex-1"}>
+            <div className={"px-3 pb-3 flex flex-1"}>
                 <Resizable
                     minWidth={"20%"}
                     maxWidth={"80%"}
@@ -436,7 +436,7 @@ export default function Component(props: {
                         />
 
                         <div ref={statusBarRef}
-                             className={"px-3 border-t border-t-gray-400 dark:border-t-gray-500 text-gray-800 bg-gray-200 dark:text-white dark:bg-gray-700"}/>
+                             className={"px-3 border-t border-t-gray-300 dark:border-t-gray-700 text-gray-800 bg-gray-200 dark:text-white dark:bg-gray-900"}/>
                     </Wrapper>
                 </Resizable>
 
