@@ -14,15 +14,16 @@ import (
 // setLimits 限制 CPU 时间和内存（这里 CPU 限制为 2 秒，内存限制为 256MB）
 func setLimits() error {
 	// CPU 限制（秒）
-	rlimCPU := &syscall.Rlimit{Cur: 2, Max: 2}
+	rlimCPU := &syscall.Rlimit{Cur: 10, Max: 10}
 	if err := syscall.Setrlimit(syscall.RLIMIT_CPU, rlimCPU); err != nil {
 		return err
 	}
-	// 内存限制（字节），调高至 256MB
-	rlimMem := &syscall.Rlimit{Cur: 256 * 1024 * 1024, Max: 256 * 1024 * 1024}
+	// 内存限制（字节），调高至 1GB
+	rlimMem := &syscall.Rlimit{Cur: 4 * 1024 * 1024 * 1024, Max: 4 * 1024 * 1024 * 1024}
 	if err := syscall.Setrlimit(syscall.RLIMIT_AS, rlimMem); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -68,14 +69,14 @@ func main() {
 	if err := setupSeccomp(); err != nil {
 		log.Fatalf("Failed to setup seccomp: %v", err)
 	}
-	//
-	//// 然后设置资源限制（CPU 和内存）
-	//if err := setLimits(); err != nil {
-	//	log.Fatalf("Failed to set resource limits: %v", err)
-	//}
+
+	// 然后设置资源限制（CPU 和内存）
+	if err := setLimits(); err != nil {
+		log.Fatalf("Failed to set resource limits: %v", err)
+	}
 
 	// 设定一个硬性超时保护（防止 go run 执行时间过长）
-	timeout := time.AfterFunc(5*time.Second, func() {
+	timeout := time.AfterFunc(10*time.Second, func() {
 		log.Fatalf("Execution timed out")
 	})
 	defer timeout.Stop()
