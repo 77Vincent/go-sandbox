@@ -13,6 +13,7 @@ import {
     KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME, TRANSLATE, LANGUAGES, STATS_INFO_PREFIX
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
+import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import {executeCodeStream, formatCode} from "../api/api.ts";
@@ -331,7 +332,7 @@ export default function Component(props: {
         <div className="relative h-screen flex flex-col dark:bg-neutral-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
-            <div className="border-b flex justify-between items-center py-1 pl-2 pr-1  dark:text-white">
+            <div className="shadow-sm border-b border-b-gray-300 dark:border-b-gray-600 flex justify-between items-center py-1 pl-2 pr-1  dark:text-white">
                 <Link to={"/"} className={"flex items-center gap-2"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
 
@@ -422,7 +423,7 @@ export default function Component(props: {
                     grid={[10, 1]}
                     onResizeStop={onResizeStop}
                 >
-                    <Wrapper className={"border-r-2 border-r-neutral-300 relative h-full flex flex-col"}>
+                    <Wrapper className={"border-r border-r-gray-400 dark:border-r-gray-6b00 relative h-full flex flex-col"}>
                         <ClickBoard content={code}/>
 
                         <AceEditor
@@ -447,8 +448,7 @@ export default function Component(props: {
                             markers={errorRows}
                         />
 
-                        <div ref={statusBarRef}
-                             className={"px-3 border-t border-t-gray-300 dark:border-t-gray-700 text-gray-800 bg-gray-200 dark:text-white dark:bg-gray-900"}/>
+                        <StatusBar statusBarRef={statusBarRef}/>
                     </Wrapper>
                 </Resizable>
 
