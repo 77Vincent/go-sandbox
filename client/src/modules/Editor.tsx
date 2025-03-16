@@ -19,7 +19,7 @@ import {executeCodeStream, formatCode} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
-import "ace-builds/src-noconflict/theme-one_dark";
+import "ace-builds/src-noconflict/theme-nord_dark";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/keybinding-vim"
 import "ace-builds/src-noconflict/keybinding-emacs"
@@ -429,7 +429,7 @@ export default function Component(props: {
                             className={"flex-1"}
                             mode="golang"
                             width={"100%"}
-                            theme={mode === "dark" ? "one_dark" : "dawn"}
+                            theme={mode === "dark" ? "nord_dark" : "dawn"}
                             defaultValue={code}
                             value={code}
                             onCursorChange={debouncedOnCursorChange}
