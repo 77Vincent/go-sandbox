@@ -5,6 +5,7 @@ import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
 import {Link} from "react-router";
 import {IoLanguage as LanguageIcon} from "react-icons/io5"
+import {HiQuestionMarkCircle as AboutIcon} from "react-icons/hi"
 
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
@@ -14,6 +15,7 @@ import {
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import Terminal from "./Terminal.tsx"
 import {executeCodeStream, formatCode} from "../api/api.ts";
+import Logo from '../../public/logo.svg';
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -314,12 +316,14 @@ export default function Component(props: {
     }
 
     return (
-        <div className="relative h-screen flex flex-col dark:bg-gray-800 bg-stone-100">
+        <div className="relative h-screen flex flex-col dark:bg-neutral-900 bg-stone-100">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
-            <div className="flex justify-between items-center py-2 px-3  dark:text-white">
-                <Link to={"/"}>
-                    <h1 className="text-2xl font-bold">
+            <div className="flex justify-between items-center py-1.5 px-3  dark:text-white">
+                <Link to={"/"} className={"flex items-center gap-2"}>
+                    <img src={Logo} alt={"logo"} className={"w-7 h-7"}/>
+
+                    <h1 className="text-xl">
                         Golang Sandbox
                     </h1>
                 </Link>
@@ -347,46 +351,49 @@ export default function Component(props: {
                         </Button>
                     </Tooltip>
 
-                    <Divider/>
+                    <div className={"flex gap-0.5 items-center"}>
+                        <Divider/>
 
-                    <Settings
-                        lan={lan}
-                        fontSize={fontSize}
-                        onFontL={onFontL}
-                        onFontM={onFontM}
-                        onFontS={onFontS}
-                        themeMode={mode}
-                        onKeyBindingsChange={onKeyBindingsChange}
-                        keyBindings={keyBindings}
-                        isLintOn={isLintOn}
-                        onLint={onLint}
-                        isAutoRun={isAutoRun}
-                        onAutoRun={onAutoRun}
-                    />
+                        <Settings
+                            lan={lan}
+                            fontSize={fontSize}
+                            onFontL={onFontL}
+                            onFontM={onFontM}
+                            onFontS={onFontS}
+                            themeMode={mode}
+                            onKeyBindingsChange={onKeyBindingsChange}
+                            keyBindings={keyBindings}
+                            isLintOn={isLintOn}
+                            onLint={onLint}
+                            isAutoRun={isAutoRun}
+                            onAutoRun={onAutoRun}
+                        />
 
-                    <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
-                        <LanguageIcon
-                            className={"text-neutral-600 dark:text-neutral-400 text-lg cursor-pointer hover:opacity-50"}/>
-                    }>
-                        {
-                            LANGUAGES.map(({value, label}) => (
-                                <Dropdown.Item key={value}
-                                               className={`cursor-pointer ${value === lan ? "bg-neutral-100" : ""}`}
-                                               onClick={() => setLan(value)}>
-                                    {label}
-                                </Dropdown.Item>
-                            ))
-                        }
-                    </Dropdown>
+                        <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
+                            <LanguageIcon
+                                className={"text-neutral-600 dark:text-neutral-400 text-lg cursor-pointer hover:opacity-50"}/>
+                        }>
+                            {
+                                LANGUAGES.map(({value, label}) => (
+                                    <Dropdown.Item key={value}
+                                                   className={`cursor-pointer ${value === lan ? "bg-neutral-100" : ""}`}
+                                                   onClick={() => setLan(value)}>
+                                        {label}
+                                    </Dropdown.Item>
+                                ))
+                            }
+                        </Dropdown>
 
-                    <Tooltip content={"Dark mode"}>
-                        <DarkThemeToggle onClick={onDarkThemeToggle}/>
-                    </Tooltip>
+                        <Tooltip content={"About"}>
+                            <AboutIcon
+                                onClick={() => setShowAbout(true)}
+                                className={"mx-1 text-neutral-500 dark:text-neutral-400 text-2xl cursor-pointer hover:opacity-50"}/>
+                        </Tooltip>
 
-                    <p className={"text-sm text-neutral-600 cursor-pointer hover:opacity-50"}
-                       onClick={() => setShowAbout(true)}>
-                        {TRANSLATE.about[lan]}
-                    </p>
+                        <Tooltip content={"Dark mode"}>
+                            <DarkThemeToggle onClick={onDarkThemeToggle}/>
+                        </Tooltip>
+                    </div>
                 </div>
             </div>
 
