@@ -10,7 +10,7 @@ export default function Component(props: {
     const {fontSize, result, resultInfo, resultError} = props
     return (
         <Wrapper
-            className={`overflow-y-auto flex flex-col py-2 px-2 bg-neutral-200 dark:bg-neutral-800 text-${mapFontSize(fontSize)} leading-4`}>
+            className={`flex flex-col py-2 pb-0 px-2 bg-neutral-200 dark:bg-neutral-800 text-${mapFontSize(fontSize)} leading-4`}>
             <ClickBoard content={result}/>
 
             {
@@ -30,7 +30,7 @@ export default function Component(props: {
                     className={"text-green-600 border-b dark:border-neutral-600 border-neutral-300 pb-1 mb-1"}>{resultInfo}</pre>
             }
 
-            <pre>{result}</pre>
+            <pre className={"overflow-y-auto"}>{result}</pre>
         </Wrapper>
     )
 }
