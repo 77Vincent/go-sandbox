@@ -331,7 +331,7 @@ export default function Component(props: {
         <div className="relative h-screen flex flex-col dark:bg-neutral-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
-            <div className="flex justify-between items-center py-1 pl-2 pr-1  dark:text-white">
+            <div className="border-b flex justify-between items-center py-1 pl-2 pr-1  dark:text-white">
                 <Link to={"/"} className={"flex items-center gap-2"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
 
@@ -357,7 +357,7 @@ export default function Component(props: {
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + e"}>
-                        <Button className={"shadow"} color={"cyan"} size={"xs"}>
+                        <Button disabled={isRunning} className={"shadow"} color={"cyan"} size={"xs"}>
                             {TRANSLATE.share[lan]}
                         </Button>
                     </Tooltip>
@@ -408,7 +408,7 @@ export default function Component(props: {
                 </div>
             </div>
 
-            <div className={"px-1.5 pb-1.5 flex flex-1"}>
+            <div className={"flex flex-1"}>
                 <Resizable
                     minWidth={"20%"}
                     maxWidth={"80%"}
@@ -422,7 +422,7 @@ export default function Component(props: {
                     grid={[10, 1]}
                     onResizeStop={onResizeStop}
                 >
-                    <Wrapper className={"relative h-full flex flex-col"}>
+                    <Wrapper className={"border-r-2 border-r-neutral-300 relative h-full flex flex-col"}>
                         <ClickBoard content={code}/>
 
                         <AceEditor

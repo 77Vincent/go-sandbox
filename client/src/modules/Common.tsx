@@ -7,7 +7,7 @@ export function Wrapper(props: {
     className?: string
 }) {
     const {children, className} = props
-    const classes = `w-full overflow-hidden border border-neutral-300 dark:border-neutral-700 dark:bg-gray-800 dark:text-white ${className}`
+    const classes = `w-full overflow-hidden dark:bg-gray-800 dark:text-white ${className}`
 
     return (
         <div className={classes}>
