@@ -15,7 +15,6 @@ import {
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import Terminal from "./Terminal.tsx"
 import {executeCodeStream, formatCode} from "../api/api.ts";
-import Logo from '../../public/logo.svg';
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -321,7 +320,7 @@ export default function Component(props: {
 
             <div className="flex justify-between items-center py-1.5 px-3  dark:text-white">
                 <Link to={"/"} className={"flex items-center gap-2"}>
-                    <img src={Logo} alt={"logo"} className={"w-7 h-7"}/>
+                    <img src={"/logo.svg"} alt={"logo"} className={"w-7 h-7"}/>
 
                     <h1 className="text-xl">
                         Golang Sandbox
