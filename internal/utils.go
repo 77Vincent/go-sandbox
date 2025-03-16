@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	errorRe    = regexp.MustCompile(`^/tmp/code-[0-9]*\.go:`)
+	errorRe    = regexp.MustCompile(`^/tmp/code-[0-9]*\.go:`) // /tmp/code-123.go:
 	skipError  = regexp.MustCompile(`^# command-line-arguments`)
-	skipError2 = regexp.MustCompile(`^[0-9]*/[0-9]*/[0-9]* [0-9]*:[0-9]*:[0-9]* `)
+	skipError2 = regexp.MustCompile(`^[0-9]*/[0-9]*/[0-9]* [0-9]*:[0-9]*:[0-9]* `) // 2021/08/01 00:00:00
 )
 
 // these errors will not be return to users

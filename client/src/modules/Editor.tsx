@@ -124,13 +124,23 @@ export default function Component(props: {
     function onChange(code: string = "") {
         storeCode(code);
 
-        if (isAutoRun && !isFormatting) {
+        // only run if auto run is on
+        if (isAutoRun) {
             debouncedAutoRun();
         }
     }
 
+    function shouldAbort(): boolean {
+        // do not continue if formatting or already running or no code
+        return isFormatting || isRunning || !latestCodeRef.current
+    }
+
     // managed debounced format
     const formatCallback = useCallback(async () => {
+        if (shouldAbort()) {
+            return
+        }
+
         try {
             setIsRunning(true)
             setIsFormatting(true)
@@ -160,6 +170,10 @@ export default function Component(props: {
 
     // manage debounced run
     const runCallback = useCallback(async () => {
+        if (shouldAbort()) {
+            return
+        }
+
         try {
             setMessage("")
             setIsRunning(true)
