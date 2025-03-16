@@ -1,14 +1,15 @@
-// 文件 sandbox-runner/main.go
 package main
 
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/tianqi-wen_frgr/best-go-playground/config"
 	"github.com/tianqi-wen_frgr/best-go-playground/sandbox/internal"
 	"log"
 	"os"
 	"os/exec"
+	"syscall"
 	"time"
 )
 
@@ -37,13 +38,26 @@ func main() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	if err := cmd.Run(); err != nil {
-		// 判断是否因超时取消
+	start := time.Now()
+	err := cmd.Run()
+	duration := time.Since(start)
+
+	if err != nil {
+		// the program in the sandbox has to be ended due to the timeout
 		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 			log.Printf("Execution timed out")
 		} else {
 			log.Printf("Execution error: %v", err)
 		}
 		os.Exit(1)
+	}
+
+	// 获取子进程的资源使用情况
+	if ps := cmd.ProcessState; ps != nil {
+		if ru, ok := ps.SysUsage().(*syscall.Rusage); ok {
+			if _, err = fmt.Fprintf(os.Stderr, "STATS_INFO:%s;%d", duration, ru.Maxrss); err != nil {
+				log.Printf("Failed to write execution stats: %v", err)
+			}
+		}
 	}
 }

@@ -10,7 +10,7 @@ import {HiOutlineQuestionMarkCircle as AboutIcon} from "react-icons/hi"
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
     EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
-    KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME, TRANSLATE, LANGUAGES
+    KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME, TRANSLATE, LANGUAGES, STATS_INFO_PREFIX
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import ProgressBar from "./ProgressBar.tsx";
@@ -63,6 +63,7 @@ export default function Component(props: {
     const [code, setCode] = useState<string>(getCodeContent());
     const [result, setResult] = useState<string>("");
     const [resultError, setResultError] = useState<string>("")
+    const [resultInfo, setResultInfo] = useState<string>("")
 
     // manage code
     const latestCodeRef = useRef(code);
@@ -205,24 +206,33 @@ export default function Component(props: {
 
             const markers = []
             for await (const evt of executeCodeStream(latestCodeRef.current)) {
-                switch (evt.event) {
+                const {event, data} = evt
+
+                switch (event) {
                     case "stdout":
                         // 追加到 result
-                        setResult(prev => prev + evt.data + "\n");
+                        setResult(prev => prev + data + "\n");
                         break;
 
                     case "stderr":
+                        // special case -- stats info wrapped in the stderr
+                        if (data.startsWith(STATS_INFO_PREFIX)) {
+                            const [time, mem] = data.replace(STATS_INFO_PREFIX, "").split(";")
+                            setResultInfo(`Time: ${time}\nMemory: ${mem}bytes`)
+                            break;
+                        }
+
                         // 也可以把 stderr 显示到同一个 result 或单独存储
-                        setResult(prev => prev + `${evt.data}\n`);
-                        markers.push(...generateMarkers(evt.data))
+                        setResult(prev => prev + `${data}\n`);
+                        markers.push(...generateMarkers(data))
                         break;
 
                     case "timeout":
-                        setResultError("Execution timed out.");
+                        setResultError(data);
                         break;
 
                     case "error":
-                        setResultError(evt.data)
+                        setResultError(data)
                         break;
 
                     case "done":
@@ -230,7 +240,7 @@ export default function Component(props: {
 
                     default:
                         // 处理其他自定义事件或 "message"
-                        setResult(prev => prev + `[${evt.event}] ${evt.data}\n`);
+                        setResult(prev => prev + `[${event}] ${data}\n`);
                         break;
                 }
             }
@@ -330,7 +340,7 @@ export default function Component(props: {
                     <Tooltip content={"cmd/win + enter"}>
                         <Button onClick={debouncedRun} disabled={isAutoRun || isRunning} className={"shadow"}
                                 size={"xs"}
-                                gradientDuoTone={"purpleToPink"}>
+                                gradientDuoTone={"greenToBlue"}>
                             {TRANSLATE.run[lan]}
                         </Button>
                     </Tooltip>
@@ -338,13 +348,14 @@ export default function Component(props: {
                     <Tooltip content={"cmd/win + b"}>
                         <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning} className={"shadow"}
                                 size={"xs"}
-                                gradientDuoTone={"pinkToOrange"}>
+                                color={"cyan"}
+                        >
                             {TRANSLATE.format[lan]}
                         </Button>
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + e"}>
-                        <Button className={"shadow"} size={"xs"}>
+                        <Button className={"shadow"} color={"cyan"} size={"xs"}>
                             {TRANSLATE.share[lan]}
                         </Button>
                     </Tooltip>
@@ -440,8 +451,9 @@ export default function Component(props: {
                 </Resizable>
 
                 <Terminal
-                    result={result}
                     fontSize={fontSize}
+                    result={result}
+                    resultInfo={resultInfo}
                     resultError={resultError}
                 />
             </div>

@@ -37,6 +37,7 @@ func main() {
 
 export const ERROR_PARSING_REGEX = /tmp.*\.go:(\d+)/g;
 export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;
+export const STATS_INFO_PREFIX = "STATS_INFO:"
 
 export const HTTP_INTERNAL_ERROR = 500
 
