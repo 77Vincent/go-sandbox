@@ -91,9 +91,7 @@ func Execute(c *gin.Context) {
 			default:
 				line := scanner.Text()
 				if eventName == "stderr" {
-					line = parseStderrMessages(line)
-					// skip empty lines after parsing
-					if line == "" {
+					if shouldSkip(line) {
 						continue
 					}
 				}

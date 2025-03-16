@@ -5,16 +5,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"regexp"
-	"strings"
 	"time"
 )
 
-var re = regexp.MustCompile(`/var.*\.go:`)
+var (
+	skipError  = regexp.MustCompile(`^# command-line-arguments`)
+	skipError2 = regexp.MustCompile(`^[0-9]*/[0-9]*/[0-9]* [0-9]*:[0-9]*:[0-9]* `)
+)
 
-func parseStderrMessages(input string) string {
-	input = strings.ReplaceAll(input, "# command-line-arguments", "") // this is not useful
-	input = re.ReplaceAllString(input, "tmp.go:")
-	return input
+// these errors will not be return to users
+func shouldSkip(input string) bool {
+	b := []byte(input)
+	return skipError.Match(b) || skipError2.Match(b)
 }
 
 // Timeout creates a middleware that enforces a timeout.
