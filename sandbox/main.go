@@ -28,25 +28,33 @@ func setLimits() error {
 
 // setupSeccomp 加载一个最小的 seccomp 筛选规则，只允许基本的 I/O 和退出相关系统调用
 func setupSeccomp() error {
-	// 默认拒绝所有调用，返回 EPERM
-	filter, err := seccomp.NewFilter(seccomp.ActErrno.SetReturnCode(int16(syscall.EPERM)))
+	// 默认允许所有调用
+	filter, err := seccomp.NewFilter(seccomp.ActAllow)
 	if err != nil {
 		return err
 	}
-	// 允许以下系统调用
-	allowed := []string{
-		"read", "write", "exit", "exit_group", "rt_sigreturn",
-		// 根据需要添加其它允许的系统调用
+
+	// 要阻止的网络相关系统调用列表
+	disallowed := []string{
+		"socket", "socketpair", "connect", "accept", "accept4", "bind", "listen",
+		"sendto", "recvfrom", "sendmsg", "recvmsg",
 	}
-	for _, call := range allowed {
-		sc, err := seccomp.GetSyscallFromName(call)
+
+	for _, call := range disallowed {
+		var sc seccomp.ScmpSyscall
+		sc, err = seccomp.GetSyscallFromName(call)
 		if err != nil {
-			return err
+			continue
 		}
-		if err := filter.AddRule(sc, seccomp.ActAllow); err != nil {
+		if err = filter.AddRule(sc, seccomp.ActErrno.SetReturnCode(int16(syscall.EPERM))); err != nil {
+			// 如果提示“requested action matches default action”，可忽略
+			if err.Error() == "requested action matches default action of filter" {
+				continue
+			}
 			return err
 		}
 	}
+
 	return filter.Load()
 }
 
@@ -57,9 +65,9 @@ func main() {
 	codeFile := os.Args[1]
 
 	// 先设置 seccomp 筛选规则（必须在设置内存限制之前完成）
-	//if err := setupSeccomp(); err != nil {
-	//	log.Fatalf("Failed to setup seccomp: %v", err)
-	//}
+	if err := setupSeccomp(); err != nil {
+		log.Fatalf("Failed to setup seccomp: %v", err)
+	}
 	//
 	//// 然后设置资源限制（CPU 和内存）
 	//if err := setLimits(); err != nil {

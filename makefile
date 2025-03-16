@@ -7,8 +7,8 @@ server:
 
 # docker run
 build:
-	docker build -t go-sandbox .
+	docker build --platform linux/arm64 -t go-sandbox .
 up:
-	docker run --cap-add=SYS_RESOURCE --security-opt seccomp=unconfined -p 8080:8080 go-sandbox
+	docker run -p 8080:8080 go-sandbox
 
 .PHONY: client server build up
