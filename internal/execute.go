@@ -48,7 +48,6 @@ func Execute(c *gin.Context) {
 	defer cancel()
 
 	// 3) 使用 exec.CommandContext 关联 context
-	//cmd := exec.CommandContext(ctx, "go", "run", tmp.Name())
 	cmd := exec.CommandContext(ctx, "sandbox-runner", tmp.Name())
 
 	stdout, err := cmd.StdoutPipe()
