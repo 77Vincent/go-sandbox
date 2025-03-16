@@ -14,6 +14,7 @@ export default function Component(props: {
                 resultError &&
                 <div className={"text-orange-600 border-b border-neutral-300 pb-1 mb-1"}> {resultError} </div>
             }
+
             <div className={"h-full overflow-auto"}>
                 <pre>{result}</pre>
             </div>

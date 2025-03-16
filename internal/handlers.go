@@ -4,14 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"go/format"
 	"net/http"
-	"time"
 )
 
 const (
-	badRequestMessage            = "bad request"
-	buildErrorMessage            = "build failed"
-	executionTimeoutErrorMessage = "execution timed out"
-	executionTimeout             = 10 * time.Second
+	badRequestMessage = "bad request"
+	buildErrorMessage = "build failed"
 )
 
 func Status(c *gin.Context) {

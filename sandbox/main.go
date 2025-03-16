@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"errors"
+	"github.com/tianqi-wen_frgr/best-go-playground/config"
 	"github.com/tianqi-wen_frgr/best-go-playground/sandbox/internal"
 	"log"
 	"os"
@@ -28,7 +29,7 @@ func main() {
 	}
 
 	// 使用 Context 控制超时，这里设定 10 秒超时
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), config.SandboxTimeout*time.Second)
 	defer cancel()
 
 	// 执行 "go run <codeFile>"

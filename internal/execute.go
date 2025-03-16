@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
+	"github.com/tianqi-wen_frgr/best-go-playground/config"
 	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"sync"
+	"time"
 )
 
 // Execute 实现 SSE 流式输出
@@ -44,7 +46,7 @@ func Execute(c *gin.Context) {
 	}
 
 	// 2) 创建带超时的 context
-	ctx, cancel := context.WithTimeout(context.Background(), executionTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), config.APITimeout*time.Second)
 	defer cancel()
 
 	// 3) 使用 exec.CommandContext 关联 context
