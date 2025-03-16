@@ -5,7 +5,7 @@ import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
 import {Link} from "react-router";
 import {IoLanguage as LanguageIcon} from "react-icons/io5"
-import {HiQuestionMarkCircle as AboutIcon} from "react-icons/hi"
+import {HiOutlineQuestionMarkCircle as AboutIcon} from "react-icons/hi"
 
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
@@ -315,7 +315,7 @@ export default function Component(props: {
     }
 
     return (
-        <div className="relative h-screen flex flex-col dark:bg-gray-900">
+        <div className="relative h-screen flex flex-col dark:bg-neutral-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
             <div className="flex justify-between items-center py-1.5 px-3  dark:text-white">
@@ -386,12 +386,12 @@ export default function Component(props: {
                         <Tooltip content={"About"}>
                             <AboutIcon
                                 onClick={() => setShowAbout(true)}
-                                className={"mx-1 text-gray-600 dark:text-gray-300 text-2xl cursor-pointer hover:opacity-50"}/>
+                                className={"mx-1.5 text-gray-600 dark:text-gray-300 text-2xl cursor-pointer hover:opacity-50"}/>
                         </Tooltip>
 
-                        <Tooltip content={"Dark mode"}>
-                            <DarkThemeToggle onClick={onDarkThemeToggle}/>
-                        </Tooltip>
+                        <Divider/>
+
+                        <DarkThemeToggle onClick={onDarkThemeToggle}/>
                     </div>
                 </div>
             </div>
