@@ -13,6 +13,7 @@ import {
     KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME, TRANSLATE, LANGUAGES
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
+import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import {executeCodeStream, formatCode} from "../api/api.ts";
 
@@ -444,6 +445,8 @@ export default function Component(props: {
                     resultError={resultError}
                 />
             </div>
+
+            <ProgressBar show={isRunning || isFormatting} className={"absolute bottom-0"}/>
         </div>
     );
 }
