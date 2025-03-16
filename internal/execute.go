@@ -46,7 +46,7 @@ func Execute(c *gin.Context) {
 	}
 
 	// 2) 创建带超时的 context
-	ctx, cancel := context.WithTimeout(context.Background(), config.APITimeout*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), config.ExecuteAPITimeout*time.Second)
 	defer cancel()
 
 	// 3) 使用 exec.CommandContext 关联 context
