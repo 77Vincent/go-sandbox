@@ -331,7 +331,7 @@ export default function Component(props: {
                     <Tooltip content={"cmd/win + enter"}>
                         <Button onClick={debouncedRun} disabled={isAutoRun || isRunning} className={"shadow"}
                                 size={"xs"}
-                                gradientDuoTone={"purpleToBlue"}>
+                                gradientDuoTone={"purpleToPink"}>
                             {TRANSLATE.run[lan]}
                         </Button>
                     </Tooltip>
@@ -339,13 +339,13 @@ export default function Component(props: {
                     <Tooltip content={"cmd/win + b"}>
                         <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning} className={"shadow"}
                                 size={"xs"}
-                                gradientMonochrome={"info"}>
+                                gradientDuoTone={"pinkToOrange"}>
                             {TRANSLATE.format[lan]}
                         </Button>
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + e"}>
-                        <Button className={"shadow"} size={"xs"} gradientDuoTone={"greenToBlue"}>
+                        <Button className={"shadow"} size={"xs"} color={"blue"}>
                             {TRANSLATE.share[lan]}
                         </Button>
                     </Tooltip>
@@ -370,7 +370,7 @@ export default function Component(props: {
 
                         <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
                             <LanguageIcon
-                                className={"text-neutral-600 dark:text-neutral-400 text-lg cursor-pointer hover:opacity-50"}/>
+                                className={"text-neutral-700 dark:text-neutral-300 text-lg cursor-pointer hover:opacity-50"}/>
                         }>
                             {
                                 LANGUAGES.map(({value, label}) => (
@@ -386,7 +386,7 @@ export default function Component(props: {
                         <Tooltip content={"About"}>
                             <AboutIcon
                                 onClick={() => setShowAbout(true)}
-                                className={"mx-1 text-neutral-500 dark:text-neutral-400 text-2xl cursor-pointer hover:opacity-50"}/>
+                                className={"mx-1 text-neutral-600 dark:text-neutral-300 text-2xl cursor-pointer hover:opacity-50"}/>
                         </Tooltip>
 
                         <Tooltip content={"Dark mode"}>
