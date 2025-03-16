@@ -315,7 +315,7 @@ export default function Component(props: {
     }
 
     return (
-        <div className="relative h-screen flex flex-col dark:bg-neutral-900 bg-stone-100">
+        <div className="relative h-screen flex flex-col dark:bg-gray-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
             <div className="flex justify-between items-center py-1.5 px-3  dark:text-white">
@@ -370,12 +370,12 @@ export default function Component(props: {
 
                         <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
                             <LanguageIcon
-                                className={"text-neutral-700 dark:text-neutral-300 text-lg cursor-pointer hover:opacity-50"}/>
+                                className={"text-gray-700 dark:text-gray-300 text-lg cursor-pointer hover:opacity-50"}/>
                         }>
                             {
                                 LANGUAGES.map(({value, label}) => (
                                     <Dropdown.Item key={value}
-                                                   className={`cursor-pointer ${value === lan ? "bg-neutral-100" : ""}`}
+                                                   className={`cursor-pointer ${value === lan ? "bg-gray-100" : ""}`}
                                                    onClick={() => setLan(value)}>
                                         {label}
                                     </Dropdown.Item>
@@ -386,7 +386,7 @@ export default function Component(props: {
                         <Tooltip content={"About"}>
                             <AboutIcon
                                 onClick={() => setShowAbout(true)}
-                                className={"mx-1 text-neutral-600 dark:text-neutral-300 text-2xl cursor-pointer hover:opacity-50"}/>
+                                className={"mx-1 text-gray-600 dark:text-gray-300 text-2xl cursor-pointer hover:opacity-50"}/>
                         </Tooltip>
 
                         <Tooltip content={"Dark mode"}>
@@ -436,7 +436,7 @@ export default function Component(props: {
                         />
 
                         <div ref={statusBarRef}
-                             className={"px-3 border-t border-t-stone-400 dark:border-t-stone-500 text-gray-800 bg-stone-200 dark:text-white dark:bg-stone-700"}/>
+                             className={"px-3 border-t border-t-gray-400 dark:border-t-gray-500 text-gray-800 bg-gray-200 dark:text-white dark:bg-gray-700"}/>
                     </Wrapper>
                 </Resizable>
 
