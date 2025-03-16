@@ -27,10 +27,11 @@ export const ACTIVE_COLOR_LIGHT = "purple";
 export const ACTIVE_COLOR_DARK = "lime";
 
 export const DEFAULT_CODE_CONTENT = `package main
+
 import "fmt"
 
 func main() {
-    fmt.Println("Hello, playground")
+    fmt.Println("Hello, Go Sandbox")
 }`
 
 

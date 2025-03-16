@@ -12,6 +12,7 @@ import {
     KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME, TRANSLATE, LANGUAGES
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
+import Terminal from "./Terminal.tsx"
 import {executeCodeStream, formatCode} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
@@ -30,7 +31,7 @@ import {
     getCursorRow,
     getKeyBindings,
     getEditorSize, getFontSize,
-    getLintOn, mapFontSize, generateMarkers
+    getLintOn, generateMarkers
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages} from "../types";
@@ -59,7 +60,7 @@ export default function Component(props: {
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(getCodeContent());
     const [result, setResult] = useState<string>("");
-    const [message, setMessage] = useState<string>("")
+    const [resultError, setResultError] = useState<string>("")
 
     // manage code
     const latestCodeRef = useRef(code);
@@ -155,7 +156,7 @@ export default function Component(props: {
                 setErrorRows(generateMarkers(error))
             }
             if (message) {
-                setMessage(message)
+                setResultError(message)
             }
 
             setIsRunning(false)
@@ -175,7 +176,7 @@ export default function Component(props: {
         }
 
         try {
-            setMessage("")
+            setResultError("")
             setIsRunning(true)
             setIsFormatting(true)
 
@@ -186,7 +187,7 @@ export default function Component(props: {
             } = await formatCode(latestCodeRef.current);
             // format failed
             if (formatError) {
-                setMessage(formatMessage)
+                setResultError(formatMessage)
                 setResult(formatError)
                 setErrorRows(generateMarkers(formatError))
                 setIsRunning(false)
@@ -215,11 +216,11 @@ export default function Component(props: {
                         break;
 
                     case "timeout":
-                        setMessage("Execution timed out.");
+                        setResultError("Execution timed out.");
                         break;
 
                     case "error":
-                        setMessage(evt.data)
+                        setResultError(evt.data)
                         break;
 
                     case "done":
@@ -369,7 +370,9 @@ export default function Component(props: {
                     }>
                         {
                             LANGUAGES.map(({value, label}) => (
-                                <Dropdown.Item key={value} className={`cursor-pointer ${value === lan ? "bg-neutral-100" : ""}`} onClick={() => setLan(value)}>
+                                <Dropdown.Item key={value}
+                                               className={`cursor-pointer ${value === lan ? "bg-neutral-100" : ""}`}
+                                               onClick={() => setLan(value)}>
                                     {label}
                                 </Dropdown.Item>
                             ))
@@ -431,16 +434,11 @@ export default function Component(props: {
                     </Wrapper>
                 </Resizable>
 
-                <Wrapper className={`relative flex flex-col py-2 px-2 bg-stone-200 text-${mapFontSize(fontSize)}`}>
-                    <ClickBoard content={result}/>
-                    {
-                        message &&
-                        <div className={"text-orange-600 border-b border-neutral-300 pb-1 mb-1"}> {message} </div>
-                    }
-                    <div className={"h-full overflow-auto"}>
-                        <pre>{result}</pre>
-                    </div>
-                </Wrapper>
+                <Terminal
+                    result={result}
+                    fontSize={fontSize}
+                    resultError={resultError}
+                />
             </div>
         </div>
     );
