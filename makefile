@@ -2,9 +2,6 @@
 client:
 	cd client && npm run dev
 
-server:
-	go run main.go
-
 # docker run
 build:
 	docker build --platform linux/arm64 -t go-sandbox .
