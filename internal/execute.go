@@ -118,7 +118,7 @@ func Execute(c *gin.Context) {
 	// 判断是否超时
 	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 		c.Render(-1, render.Data{
-			Data: []byte("event: timeout\ndata: Execution timed out.\n\n"),
+			Data: []byte("event: timeout\ndata: Execution timed out(5s).\n\n"),
 		})
 		c.Writer.Flush()
 		return

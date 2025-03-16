@@ -76,10 +76,10 @@ export function parseExecutionError(error: string): number[] {
     return rows
 }
 
-export function mapFontSize(size: number): "sm" | "md" | "lg" {
-    if (size < 14) return "sm";
-    if (size >= 16) return "lg";
-    return "md";
+export function mapFontSize(size: number): "xs" | "sm" | "md" {
+    if (size < 14) return "xs";
+    if (size >= 16) return "md";
+    return "sm";
 }
 
 export function generateMarkers(error: string): IMarker[] {
