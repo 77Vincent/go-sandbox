@@ -11,7 +11,7 @@ import {
     EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
     KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME, TRANSLATE, LANGUAGES
 } from "../constants.ts";
-import {ClickBoard, Divider, MyToast, Wrapper} from "./Common.tsx";
+import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import {executeCodeStream, formatCode} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
@@ -36,13 +36,15 @@ import Settings from "./Settings.tsx";
 import {KeyBindings, languages} from "../types";
 import About from "./About.tsx";
 
-export default function Component() {
+export default function Component(props: {
+    setToastMessage: (message: string) => void
+}) {
+    const {setToastMessage} = props
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef<HTMLDivElement | null>(null);
 
     const [showAbout, setShowAbout] = useState<boolean>(false);
 
-    const [toastMessage, setToastMessage] = useState<string>("");
 
     // error state
     const [errorRows, setErrorRows] = useState<IMarker[]>([]);
@@ -298,8 +300,6 @@ export default function Component() {
 
     return (
         <div className="relative h-screen flex flex-col dark:bg-gray-800 bg-stone-100">
-            <MyToast show={!!toastMessage} setShowToast={setToastMessage}>{toastMessage}</MyToast>
-
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
             <div className="flex justify-between items-center py-2 px-3  dark:text-white">
