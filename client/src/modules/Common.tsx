@@ -57,7 +57,7 @@ export function ToggleSwitch(props: {
             <div>
                 <input checked={checked} onChange={onChange} type="checkbox" value="" className="sr-only peer"/>
                 <div
-                    className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-blue-700 dark:peer-checked:bg-orange-500"></div>
+                    className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-cyan-500"></div>
             </div>
 
             {
@@ -78,7 +78,7 @@ export function ClickBoard(props: {
                 "base": "absolute end-2 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800",
                 "icon": {
                     "defaultIcon": "h-3 w-3",
-                    "successIcon": "h-3 w-3 text-blue-700 dark:text-blue-500"
+                    "successIcon": "h-3 w-3 text-cyan-700 dark:text-cyan-500"
                 }
             },
         }

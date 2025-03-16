@@ -318,13 +318,11 @@ export default function Component(props: {
         <div className="relative h-screen flex flex-col dark:bg-neutral-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
-            <div className="flex justify-between items-center py-1.5 px-3  dark:text-white">
+            <div className="flex justify-between items-center py-1 pl-2 pr-1  dark:text-white">
                 <Link to={"/"} className={"flex items-center gap-2"}>
-                    <img src={"/logo.svg"} alt={"logo"} className={"w-7 h-7"}/>
+                    <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
 
-                    <h1 className="text-xl font-semibold">
-                        Golang Sandbox
-                    </h1>
+                    <h1 className="text-2xl font-bold italic text-cyan-600 dark:text-cyan-500"> Sandbox </h1>
                 </Link>
 
                 <div className="flex gap-2 justify-end items-center">
@@ -345,7 +343,7 @@ export default function Component(props: {
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + e"}>
-                        <Button className={"shadow"} size={"xs"} color={"blue"}>
+                        <Button className={"shadow"} size={"xs"}>
                             {TRANSLATE.share[lan]}
                         </Button>
                     </Tooltip>
@@ -375,7 +373,7 @@ export default function Component(props: {
                             {
                                 LANGUAGES.map(({value, label}) => (
                                     <Dropdown.Item key={value}
-                                                   className={`cursor-pointer ${value === lan ? "bg-gray-100" : ""}`}
+                                                   className={`cursor-pointer ${value === lan ? "font-semibold" : ""}`}
                                                    onClick={() => setLan(value)}>
                                         {label}
                                     </Dropdown.Item>
@@ -396,7 +394,7 @@ export default function Component(props: {
                 </div>
             </div>
 
-            <div className={"px-3 pb-3 flex flex-1"}>
+            <div className={"px-1.5 pb-1.5 flex flex-1"}>
                 <Resizable
                     minWidth={"20%"}
                     maxWidth={"80%"}
