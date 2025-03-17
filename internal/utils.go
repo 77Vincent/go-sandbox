@@ -9,15 +9,13 @@ import (
 )
 
 var (
-	errorRe    = regexp.MustCompile(`^/tmp/code-[0-9]*\.go:`) // /tmp/code-123.go:
-	skipError  = regexp.MustCompile(`^# command-line-arguments`)
-	skipError2 = regexp.MustCompile(`^[0-9]*/[0-9]*/[0-9]* [0-9]*:[0-9]*:[0-9]* `) // 2021/08/01 00:00:00
+	errorRe   = regexp.MustCompile(`^/tmp/code-[0-9]*\.go:`) // /tmp/code-123.go:
+	skipError = regexp.MustCompile(`^# command-line-arguments`)
 )
 
 // these errors will not be return to users
 func shouldSkip(input string) bool {
-	b := []byte(input)
-	return skipError.Match(b) || skipError2.Match(b)
+	return skipError.Match([]byte(input))
 }
 
 func processError(input string) string {
