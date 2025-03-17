@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 	"sync"
 	"time"
 )
@@ -19,7 +20,6 @@ import (
 // Execute 实现 SSE 流式输出
 func Execute(c *gin.Context) {
 	var req request
-
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response{
 			Error:   err.Error(),
@@ -49,7 +49,7 @@ func Execute(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), config.ExecuteAPITimeout*time.Second)
 	defer cancel()
 
-	// 3) 使用 exec.CommandContext 关联 context
+	// 3) 使用 exec.CommandContext 关联 context，调用 sandbox-runner
 	cmd := exec.CommandContext(ctx, "sandbox-runner", tmp.Name())
 
 	stdout, err := cmd.StdoutPipe()
@@ -63,7 +63,6 @@ func Execute(c *gin.Context) {
 		return
 	}
 
-	// 启动进程
 	if err = cmd.Start(); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
@@ -74,68 +73,95 @@ func Execute(c *gin.Context) {
 	c.Writer.Header().Set("Cache-Control", "no-cache")
 	c.Writer.Header().Set("Connection", "keep-alive")
 
-	// 用于并发读取 stdout/stderr
-	var wg sync.WaitGroup
+	// 创建一个互斥锁，保护 c.Writer 写入
+	var (
+		writeMu sync.Mutex
+		wg      sync.WaitGroup
+	)
 	wg.Add(2)
 
-	// 按行读取并发送 SSE 的函数
-	readAndStream := func(r io.Reader, eventName string) {
+	// stream 函数：按行读取并写 SSE 数据
+	stream := func(r io.Reader, event string, c *gin.Context, wg *sync.WaitGroup) {
 		defer wg.Done()
 
 		scanner := bufio.NewScanner(r)
 		for scanner.Scan() {
+			// 检查上下文和请求结束
 			select {
 			case <-ctx.Done():
 				return
 			case <-c.Request.Context().Done():
-				// 如果想在客户端断开时也终止子进程，可在此调用 cmd.Process.Kill()
+				// 客户端断开，杀死子进程
+				_ = cmd.Process.Kill()
 				return
 			default:
-				line := scanner.Text()
-				if eventName == "stderr" {
-					if shouldSkip(line) {
-						continue
-					}
-					line = processError(line)
-				}
-				// SSE 格式: event: <eventName>\ndata: <data>\n\n
+			}
+
+			line := scanner.Text()
+
+			// 如果行以清屏控制字符开始，则发送 clear 事件
+			if strings.HasPrefix(line, "\x0c") {
+				writeMu.Lock()
 				c.Render(-1, render.Data{
-					Data: []byte(fmt.Sprintf("event: %s\ndata: %s\n\n", eventName, line)),
+					Data: []byte("event: clear\ndata: \n\n"),
 				})
 				c.Writer.Flush()
+				writeMu.Unlock()
+				line = strings.ReplaceAll(line, "\x0c", "")
 			}
+
+			// 针对 stderr 处理
+			if event == "stderr" {
+				if shouldSkip(line) {
+					continue
+				}
+				line = processError(line)
+			}
+
+			// 格式化 SSE 行
+			sseLine := fmt.Sprintf("event: %s\ndata: %s\n\n", event, line)
+			writeMu.Lock()
+			_, err = c.Writer.Write([]byte(sseLine))
+			if err != nil {
+				writeMu.Unlock()
+				return
+			}
+			c.Writer.Flush()
+			writeMu.Unlock()
 		}
 	}
 
-	// 并发读取 stdout/stderr
-	go readAndStream(stdout, "stdout")
-	go readAndStream(stderr, "stderr")
+	go stream(stdout, "stdout", c, &wg)
+	go stream(stderr, "stderr", c, &wg)
 
 	// 等待进程结束
 	err = cmd.Wait()
-	wg.Wait() // 等待读取协程结束
+	wg.Wait()
 
-	// 判断是否超时
 	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+		writeMu.Lock()
 		c.Render(-1, render.Data{
 			Data: []byte("event: timeout\ndata: Execution timed out(5s).\n\n"),
 		})
 		c.Writer.Flush()
+		writeMu.Unlock()
 		return
 	}
 
-	// 如果有其他错误
 	if err != nil {
+		writeMu.Lock()
 		c.Render(-1, render.Data{
 			Data: []byte(fmt.Sprintf("event: error\ndata: %v\n\n", err)),
 		})
 		c.Writer.Flush()
+		writeMu.Unlock()
 		return
 	}
 
-	// 正常结束，发送 done 事件
+	writeMu.Lock()
 	c.Render(-1, render.Data{
 		Data: []byte("event: done\ndata: Execution finished.\n\n"),
 	})
 	c.Writer.Flush()
+	writeMu.Unlock()
 }
