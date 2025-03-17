@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -84,8 +83,11 @@ func Execute(c *gin.Context) {
 	stream := func(r io.Reader, event string, c *gin.Context, wg *sync.WaitGroup) {
 		defer wg.Done()
 
-		scanner := bufio.NewScanner(r)
-		for scanner.Scan() {
+		// 每次读取的块大小，可根据需求调节
+		const chunkSize = 256
+		buf := make([]byte, chunkSize)
+
+		for {
 			// 检查上下文和请求结束
 			select {
 			case <-ctx.Done():
@@ -97,29 +99,44 @@ func Execute(c *gin.Context) {
 			default:
 			}
 
-			line := scanner.Text()
+			// 尝试从 r 中读取 chunkSize 字节
+			var n int
+			n, err = r.Read(buf)
+
+			if n == 0 {
+				if err != nil {
+					if err == io.EOF {
+						break
+					}
+					return // 或处理错误
+				}
+				continue
+			}
+
+			chunk := string(buf[:n])
 
 			// 如果行以清屏控制字符开始，则发送 clear 事件
-			if strings.HasPrefix(line, "\x0c") {
+			if strings.Contains(chunk, "\x0c") {
 				writeMu.Lock()
 				c.Render(-1, render.Data{
 					Data: []byte("event: clear\ndata: \n\n"),
 				})
 				c.Writer.Flush()
 				writeMu.Unlock()
-				line = strings.ReplaceAll(line, "\x0c", "")
+
+				chunk = strings.ReplaceAll(chunk, "\x0c", "")
 			}
 
 			// 针对 stderr 处理
 			if event == "stderr" {
-				if shouldSkip(line) {
+				if shouldSkip(chunk) {
 					continue
 				}
-				line = processError(line)
+				chunk = processError(chunk)
 			}
 
 			// 格式化 SSE 行
-			sseLine := fmt.Sprintf("event: %s\ndata: %s\n\n", event, line)
+			sseLine := fmt.Sprintf("event: %s\ndata: %s\n\n", event, chunk)
 			writeMu.Lock()
 			_, err = c.Writer.Write([]byte(sseLine))
 			if err != nil {
