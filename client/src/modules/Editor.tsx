@@ -373,6 +373,7 @@ export default function Component(props: {
                         <Divider/>
 
                         <Settings
+                            disabled={isFormatting || isRunning}
                             lan={lan}
                             fontSize={fontSize}
                             onFontL={onFontL}

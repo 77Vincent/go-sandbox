@@ -14,6 +14,7 @@ import {KeyBindings, languages} from "../types";
 import {ToggleSwitch} from "./Common.tsx";
 
 export default function Component(props: {
+    disabled?: boolean;
     lan: languages;
     // for editor fontSize
     fontSize: number;
@@ -35,6 +36,7 @@ export default function Component(props: {
     onShowInvisible: () => void;
 }) {
     const {
+        disabled,
         // for key bindings
         keyBindings,
         themeMode,
@@ -65,7 +67,7 @@ export default function Component(props: {
     };
 
     return (
-        <Dropdown className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
+        <Dropdown disabled={disabled} className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
             <SettingsIcon
                 className={"text-gray-700 dark:text-gray-300 text-lg cursor-pointer hover:opacity-50"}/>
         }>
