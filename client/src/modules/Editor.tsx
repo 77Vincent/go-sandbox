@@ -336,7 +336,7 @@ export default function Component(props: {
                 <Link to={"/"} className={"flex items-center gap-2"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
 
-                    <h1 className="text-2xl font-bold italic text-cyan-600 dark:text-cyan-500"> Sandbox </h1>
+                    <h1 className="text-2xl font-semibold italic text-gray-600 dark:text-cyan-500">Go Sandbox </h1>
                 </Link>
 
                 <div className="flex gap-2 justify-end items-center">
@@ -423,7 +423,7 @@ export default function Component(props: {
                     grid={[10, 1]}
                     onResizeStop={onResizeStop}
                 >
-                    <Wrapper className={"border-r border-r-gray-400 dark:border-r-gray-6b00 flex flex-col"}>
+                    <Wrapper className={"border-r border-r-gray-400 dark:border-r-gray-600 flex flex-col"}>
                         <ClickBoard content={code}/>
 
                         <AceEditor

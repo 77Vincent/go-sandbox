@@ -31,7 +31,7 @@ export const DEFAULT_CODE_CONTENT = `package main
 import "fmt"
 
 func main() {
-    fmt.Println("Hello, Go Sandbox")
+    fmt.Println("Hello, Go Sandbox!")
 }`
 
 
