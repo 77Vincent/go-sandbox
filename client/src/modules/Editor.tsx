@@ -271,7 +271,7 @@ export default function Component(props: {
         const col = value.cursor.column;
 
         if (statusBarRef.current) {
-            statusBarRef.current.textContent
+            statusBarRef.current.textContent = `${row + 1}:${col + 1}`;
         }
 
         localStorage.setItem(CURSOR_ROW_KEY, row);
