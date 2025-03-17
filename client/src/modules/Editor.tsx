@@ -10,7 +10,7 @@ import {HiOutlineQuestionMarkCircle as AboutIcon} from "react-icons/hi"
 import {
     AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
     EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
-    KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME, TRANSLATE, LANGUAGES, STATS_INFO_PREFIX
+    KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME, TRANSLATE, LANGUAGES, STATS_INFO_PREFIX, SHOW_INVISIBLE_KEY
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -34,7 +34,7 @@ import {
     getCursorRow,
     getKeyBindings,
     getEditorSize, getFontSize,
-    getLintOn, generateMarkers
+    getLintOn, generateMarkers, getShowInvisible
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages} from "../types";
@@ -83,6 +83,7 @@ export default function Component(props: {
     const [keyBindings, setKeyBindings] = useState<KeyBindings>(getKeyBindings())
     const [isAutoRun, setIsAutoRun] = useState<boolean>(getAutoRun())
     const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
+    const [isShowInvisible, setIsShowInvisible] = useState<boolean>(getShowInvisible())
 
     const onEditorLoad = (editor: Ace.Editor) => {
         // not ready to run
@@ -297,6 +298,11 @@ export default function Component(props: {
         setIsAutoRun(!isAutoRun);
     }
 
+    function onShowInvisible() {
+        localStorage.setItem(SHOW_INVISIBLE_KEY, JSON.stringify(!isShowInvisible));
+        setIsShowInvisible(!isShowInvisible);
+    }
+
     function onDarkThemeToggle() {
         toggleMode();
     }
@@ -379,6 +385,8 @@ export default function Component(props: {
                             onLint={onLint}
                             isAutoRun={isAutoRun}
                             onAutoRun={onAutoRun}
+                            isShowInvisible={isShowInvisible}
+                            onShowInvisible={onShowInvisible}
                         />
 
                         <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
@@ -442,6 +450,7 @@ export default function Component(props: {
                                 printMargin: false,
                                 enableBasicAutocompletion: true,
                                 enableLiveAutocompletion: isLintOn,
+                                showInvisibles: isShowInvisible,
                                 enableSnippets: true,
                             }}
                             onChange={onChange}

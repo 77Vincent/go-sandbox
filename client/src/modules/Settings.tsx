@@ -30,6 +30,9 @@ export default function Component(props: {
     // for auto run
     isAutoRun: boolean;
     onAutoRun: () => void;
+    // for show invisible characters
+    isShowInvisible: boolean;
+    onShowInvisible: () => void;
 }) {
     const {
         // for key bindings
@@ -51,6 +54,10 @@ export default function Component(props: {
         // for auto run
         isAutoRun,
         onAutoRun,
+
+        // for show invisible characters
+        isShowInvisible,
+        onShowInvisible,
     } = props;
     const layoutClasses = "cursor-auto flex justify-between items-center gap-7";
     const handleSelectClick = (e: MouseEvent<HTMLSelectElement>) => {
@@ -83,7 +90,7 @@ export default function Component(props: {
                     <span>{TRANSLATE.showInvisible[lan]}</span>
                 </Tooltip>
 
-                <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
+                <ToggleSwitch checked={isShowInvisible} onChange={onShowInvisible}/>
             </Dropdown.Item>
             <Dropdown.Divider/>
 

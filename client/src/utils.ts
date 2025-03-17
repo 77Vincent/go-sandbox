@@ -16,7 +16,7 @@ import {
     ACTIVE_COLOR_DARK,
     ACTIVE_COLOR_LIGHT,
     ERROR_PARSING_REGEX,
-    BUILD_ERROR_PARSING_REGEX, FONT_SIZE_M
+    BUILD_ERROR_PARSING_REGEX, FONT_SIZE_M, SHOW_INVISIBLE_KEY, DEFAULT_SHOW_INVISIBLE
 } from "./constants.ts";
 import {ThemeMode} from "flowbite-react";
 import {KeyBindings} from "./types";
@@ -56,6 +56,10 @@ export function getAutoRun(): boolean {
 
 export function getLintOn(): boolean {
     return JSON.parse(localStorage.getItem(LINT_ON_KEY) || DEFAULT_LINT_ON)
+}
+
+export function getShowInvisible(): boolean {
+    return JSON.parse(localStorage.getItem(SHOW_INVISIBLE_KEY) || DEFAULT_SHOW_INVISIBLE)
 }
 
 export function parseExecutionError(error: string): number[] {
