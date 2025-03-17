@@ -56,11 +56,16 @@ export async function* executeCodeStream(code: string): AsyncGenerator<SSEEvent,
                 // it was a \n before split and supposed to be part of the previous data
                 if (line === "") {
                     yield {event: "stdout", data: "\n"};
+                    continue
                 }
+
                 if (line.startsWith(SSE_EVENT_KEY)) {
                     event = line.substring(SSE_EVENT_KEY.length).trim();
                 } else if (line.startsWith(SSE_DATA_KEY)) {
                     data += line.substring(SSE_DATA_KEY.length).trim()
+                } else {
+                    // IMPORTANT: a line break should be added before a free line
+                    data += "\n" + line
                 }
             }
 
