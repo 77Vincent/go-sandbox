@@ -17,30 +17,19 @@ export default function Component(props: {
             <ClickBoard content={stdout}/>
 
             {
-                (!error && !info && !stdout) &&
+                (!error && !info && !stdout && !stderr) &&
                 <div className={"text-neutral-400 dark:text-neutral-600 font-light"}>
                     Press "Run" or type anything to execute automatically
                 </div>
             }
 
-            {
-                error &&
-                <pre
-                    className={`text-red-700 border-b ${common}`}>{error}</pre>
-            }
+            {error && <pre className={`text-red-700 border-b ${common}`}>{error}</pre>}
 
-            {
-                info &&
-                <pre
-                    className={`text-green-600 border-b leading-5 ${common}`}>{info}</pre>
-            }
+            {info && <pre className={`text-green-600 border-b leading-5 ${common}`}>{info}</pre>}
 
-            {
-                stdout && <pre className={"overflow-y-auto"}>{stdout}</pre>
-            }
-            {
-                stderr && <pre className={"overflow-y-auto text-red-700"}>{stderr}</pre>
-            }
+            {stdout && <pre className={"overflow-y-auto"}>{stdout}</pre>}
+
+            {stderr && <pre className={"overflow-y-auto text-red-700"}>{stderr}</pre>}
         </Wrapper>
     )
 }
