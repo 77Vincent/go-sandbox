@@ -103,6 +103,12 @@ export const TRANSLATE = {
         ja: "オートラン",
         ko: "자동 실행",
     },
+    showInvisible: {
+        en: "Show Invisible Characters",
+        zh: "显示不可见字符",
+        ja: "不可視文字を表示",
+        ko: "보이지 않는 문자 표시",
+    },
     buyMeACoffee: {
         en: "Buy me a coffee",
         zh: "请我喝杯咖啡吧",

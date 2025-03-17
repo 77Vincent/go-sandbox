@@ -63,6 +63,31 @@ export default function Component(props: {
                 className={"text-gray-700 dark:text-gray-300 text-lg cursor-pointer hover:opacity-50"}/>
         }>
             <Dropdown.Item className={layoutClasses}>
+                <Tooltip content={"Auto run code on change"}>
+                    <span>{TRANSLATE.autoRun[lan]}</span>
+                </Tooltip>
+
+                <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
+            </Dropdown.Item>
+
+            <Dropdown.Item className={layoutClasses}>
+                <Tooltip content={"Lint while typing"}>
+                    <span>{TRANSLATE.lint[lan]}</span>
+                </Tooltip>
+
+                <ToggleSwitch checked={isLintOn} onChange={onLint}/>
+            </Dropdown.Item>
+
+            <Dropdown.Item className={layoutClasses}>
+                <Tooltip content={"Show invisible characters"}>
+                    <span>{TRANSLATE.showInvisible[lan]}</span>
+                </Tooltip>
+
+                <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
+            </Dropdown.Item>
+            <Dropdown.Divider/>
+
+            <Dropdown.Item className={layoutClasses}>
                 <span>{TRANSLATE.fontSize[lan]}</span>
 
                 <div className={"flex gap-3 items-center"}>
@@ -86,26 +111,6 @@ export default function Component(props: {
                     <option value={"vim"}>VIM</option>
                     <option value={"emacs"}>Emacs</option>
                 </Select>
-            </Dropdown.Item>
-
-            <Dropdown.Divider/>
-
-            <Dropdown.Item className={layoutClasses}>
-                <Tooltip content={"Lint while typing"}>
-                    <span>{TRANSLATE.lint[lan]}</span>
-                </Tooltip>
-
-                <ToggleSwitch checked={isLintOn} onChange={onLint}/>
-            </Dropdown.Item>
-
-            <Dropdown.Divider/>
-
-            <Dropdown.Item className={layoutClasses}>
-                <Tooltip content={"Auto run code on change"}>
-                    <span>{TRANSLATE.autoRun[lan]}</span>
-                </Tooltip>
-
-                <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
             </Dropdown.Item>
         </Dropdown>
     );

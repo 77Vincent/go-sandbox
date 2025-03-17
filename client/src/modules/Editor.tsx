@@ -270,7 +270,7 @@ export default function Component(props: {
         const col = value.cursor.column;
 
         if (statusBarRef.current) {
-            statusBarRef.current.textContent = `${row + 1}:${col + 1}`;
+            statusBarRef.current.textContent
         }
 
         localStorage.setItem(CURSOR_ROW_KEY, row);
@@ -439,6 +439,7 @@ export default function Component(props: {
                             keyboardHandler={keyBindings}
                             editorProps={{$blockScrolling: true}}
                             setOptions={{
+                                printMargin: false,
                                 enableBasicAutocompletion: true,
                                 enableLiveAutocompletion: isLintOn,
                                 enableSnippets: true,
