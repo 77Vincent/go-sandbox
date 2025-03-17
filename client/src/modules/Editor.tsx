@@ -62,7 +62,8 @@ export default function Component(props: {
     const [isFormatting, setIsFormatting] = useState<boolean>(false)
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(getCodeContent());
-    const [result, setResult] = useState<string>("");
+    const [stdout, setStdout] = useState<string>("");
+    const [stderr, setStderr] = useState<string>("");
     const [resultError, setResultError] = useState<string>("")
     const [resultInfo, setResultInfo] = useState<string>("")
 
@@ -153,11 +154,14 @@ export default function Component(props: {
 
             const {stdout, error, message} = await formatCode(latestCodeRef.current);
 
+            // reset
+            setStdout("")
+
             if (stdout) {
                 storeCode(stdout)
             }
             if (error) {
-                setResult(error)
+                setStderr(error)
                 setErrorRows(generateMarkers(error))
             }
             if (message) {
@@ -194,19 +198,20 @@ export default function Component(props: {
             if (formatError) {
                 setResultInfo("")
                 setResultError(formatMessage)
-                setResult(formatError)
+
+                setStderr(formatError)
                 setErrorRows(generateMarkers(formatError))
                 setIsRunning(false)
                 setIsFormatting(false)
                 return
             }
 
-            // 2) 调用流式 SSE
-            //    for await ... of 会逐条接收后端的事件
-            setResult("");            // 清空之前的输出
-            setResultInfo("")         // 清空之前的信息
-            setErrorRows([]);         // 清空错误标记
-            storeCode(formatted)      // 更新代码
+            // clean up
+            setStderr("")
+            setStdout("");
+            setResultInfo("")
+            setErrorRows([]);
+            storeCode(formatted)
 
             const markers = []
             for await (const evt of executeCodeStream(latestCodeRef.current)) {
@@ -215,7 +220,7 @@ export default function Component(props: {
                 switch (event) {
                     case "stdout":
                         // 追加到 result
-                        setResult(prev => prev + data + "\n");
+                        setStdout(prev => prev + data + "\n");
                         break;
 
                     case "stderr":
@@ -227,7 +232,7 @@ export default function Component(props: {
                         }
 
                         // 也可以把 stderr 显示到同一个 result 或单独存储
-                        setResult(prev => prev + `${data}\n`);
+                        setStderr(prev => prev + `${data}\n`);
                         markers.push(...generateMarkers(data))
                         break;
 
@@ -244,7 +249,7 @@ export default function Component(props: {
 
                     default:
                         // 处理其他自定义事件或 "message"
-                        setResult(prev => prev + `[${event}] ${data}\n`);
+                        setStdout(prev => prev + `[${event}] ${data}\n`);
                         break;
                 }
             }
@@ -255,7 +260,7 @@ export default function Component(props: {
         } catch (e) {
             const err = e as Error
             setErrorRows(generateMarkers(err.message))
-            setResult(err.message)
+            setStdout(err.message)
             setIsRunning(false)
             setIsFormatting(false)
         }
@@ -338,7 +343,8 @@ export default function Component(props: {
         <div className="relative h-screen flex flex-col dark:bg-neutral-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
-            <div className="shadow-sm border-b border-b-gray-300 dark:border-b-gray-600 flex justify-between items-center py-1 pl-2 pr-1  dark:text-white">
+            <div
+                className="shadow-sm border-b border-b-gray-300 dark:border-b-gray-600 flex justify-between items-center py-1 pl-2 pr-1  dark:text-white">
                 <Link to={"/"} className={"flex items-center gap-2"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
 
@@ -465,9 +471,10 @@ export default function Component(props: {
 
                 <Terminal
                     fontSize={fontSize}
-                    result={result}
-                    resultInfo={resultInfo}
-                    resultError={resultError}
+                    stdout={stdout}
+                    stderr={stderr}
+                    info={resultInfo}
+                    error={resultError}
                 />
             </div>
 
