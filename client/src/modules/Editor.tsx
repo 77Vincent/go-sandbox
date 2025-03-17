@@ -62,10 +62,12 @@ export default function Component(props: {
     const [isFormatting, setIsFormatting] = useState<boolean>(false)
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(getCodeContent());
+
+    // result
     const [stdout, setStdout] = useState<string>("");
     const [stderr, setStderr] = useState<string>("");
-    const [resultError, setResultError] = useState<string>("")
-    const [resultInfo, setResultInfo] = useState<string>("")
+    const [error, setError] = useState<string>("")
+    const [info, setInfo] = useState<string>("")
 
     // manage code
     const latestCodeRef = useRef(code);
@@ -165,7 +167,7 @@ export default function Component(props: {
                 setErrorRows(generateMarkers(error))
             }
             if (message) {
-                setResultError(message)
+                setError(message)
             }
 
             setIsRunning(false)
@@ -185,7 +187,7 @@ export default function Component(props: {
         }
 
         try {
-            setResultError("")
+            setError("")
             setIsRunning(true)
             setIsFormatting(true)
 
@@ -196,8 +198,8 @@ export default function Component(props: {
             } = await formatCode(latestCodeRef.current);
             // format failed
             if (formatError) {
-                setResultInfo("")
-                setResultError(formatMessage)
+                setInfo("")
+                setError(formatMessage)
 
                 setStderr(formatError)
                 setErrorRows(generateMarkers(formatError))
@@ -209,7 +211,7 @@ export default function Component(props: {
             // clean up
             setStderr("")
             setStdout("");
-            setResultInfo("")
+            setInfo("")
             setErrorRows([]);
             storeCode(formatted)
 
@@ -227,7 +229,7 @@ export default function Component(props: {
                         // special case -- stats info wrapped in the stderr
                         if (data.startsWith(STATS_INFO_PREFIX)) {
                             const [time, mem] = data.replace(STATS_INFO_PREFIX, "").split(";")
-                            setResultInfo(`Time: ${time}\nMemory: ${mem}kb`)
+                            setInfo(`Time: ${time}\nMemory: ${mem}kb`)
                             break;
                         }
 
@@ -237,11 +239,11 @@ export default function Component(props: {
                         break;
 
                     case "timeout":
-                        setResultError(data);
+                        setError(data);
                         break;
 
                     case "error":
-                        setResultError(data)
+                        setError(data)
                         break;
 
                     case "done":
@@ -473,8 +475,8 @@ export default function Component(props: {
                     fontSize={fontSize}
                     stdout={stdout}
                     stderr={stderr}
-                    info={resultInfo}
-                    error={resultError}
+                    info={info}
+                    error={error}
                 />
             </div>
 
