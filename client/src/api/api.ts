@@ -40,7 +40,7 @@ export async function* executeCodeStream(code: string): AsyncGenerator<SSEEvent,
         if (done) break;
 
         // 将读取到的数据解码并累加到 buffer 中
-        buffer += decoder.decode(value, {stream: true});
+        buffer += decoder.decode(value, { stream: true });
         // SSE 事件以两个换行符 "\n\n" 作为分隔符
         const parts = buffer.split("\n\n");
         // 最后一部分可能不完整，保留到下一轮处理
@@ -53,13 +53,14 @@ export async function* executeCodeStream(code: string): AsyncGenerator<SSEEvent,
             let data = "";
 
             for (const line of lines) {
+                // it was a \n before split and supposed to be part of the previous data
+                if (line === "") {
+                    yield {event: "stdout", data: "\n"};
+                }
                 if (line.startsWith(SSE_EVENT_KEY)) {
                     event = line.substring(SSE_EVENT_KEY.length).trim();
                 } else if (line.startsWith(SSE_DATA_KEY)) {
                     data += line.substring(SSE_DATA_KEY.length).trim()
-                } else if (line !== "") {
-                    // it was a \n before split and supposed to be part of the previous data
-                    yield {event: "stdout", data: "\n"};
                 }
             }
 
