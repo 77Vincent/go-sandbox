@@ -20,7 +20,8 @@
     "react": "^18.2.0",
     "react-ace": "^14.0.1",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^7.2.0"
+    "react-router-dom": "^7.2.0",
+    "sse.js": "^2.6.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.67",

@@ -13,7 +13,7 @@ export default function Component(props: {
 
     return (
         <Wrapper
-            className={`flex flex-col py-2 pb-0 px-2 bg-neutral-200 dark:bg-neutral-800 text-${mapFontSize(fontSize)} leading-4`}>
+            className={`flex flex-col py-2 pb-0 px-2 bg-neutral-200 dark:bg-neutral-800 text-${mapFontSize(fontSize)}`}>
             <ClickBoard content={stdout}/>
 
             {
@@ -25,7 +25,7 @@ export default function Component(props: {
 
             {error && <pre className={`text-red-700 border-b ${common}`}>{error}</pre>}
 
-            {info && <pre className={`text-green-600 border-b leading-5 ${common}`}>{info}</pre>}
+            {info && <pre className={`text-green-600 border-b ${common}`}>{info}</pre>}
 
             {stdout && <pre className={"overflow-y-auto"}>{stdout}</pre>}
 

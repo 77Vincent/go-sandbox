@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -83,68 +84,48 @@ func Execute(c *gin.Context) {
 	stream := func(r io.Reader, event string, c *gin.Context, wg *sync.WaitGroup) {
 		defer wg.Done()
 
-		// 每次读取的块大小，可根据需求调节
-		const chunkSize = 256
-		buf := make([]byte, chunkSize)
-
-		for {
-			// 检查上下文和请求结束
+		scanner := bufio.NewScanner(r)
+		for scanner.Scan() {
 			select {
 			case <-ctx.Done():
 				return
 			case <-c.Request.Context().Done():
-				// 客户端断开，杀死子进程
 				_ = cmd.Process.Kill()
 				return
 			default:
-			}
+				line := scanner.Text()
 
-			// 尝试从 r 中读取 chunkSize 字节
-			var n int
-			n, err = r.Read(buf)
+				// 如果行以清屏控制字符开始，则发送 clear 事件
+				if strings.Contains(line, "\x0c") {
+					writeMu.Lock()
+					c.Render(-1, render.Data{
+						Data: []byte("event:clear\ndata:\n\n"),
+					})
+					c.Writer.Flush()
+					writeMu.Unlock()
 
-			if n == 0 {
-				if err != nil {
-					if err == io.EOF {
-						break
-					}
-					return // 或处理错误
+					line = strings.ReplaceAll(line, "\x0c", "")
 				}
-				continue
-			}
 
-			chunk := string(buf[:n])
+				// 针对 stderr 处理
+				if event == "stderr" {
+					if shouldSkip(line) {
+						continue
+					}
+					line = processError(line)
+				}
 
-			// 如果行以清屏控制字符开始，则发送 clear 事件
-			if strings.Contains(chunk, "\x0c") {
+				// 格式化 SSE 行
+				sseLine := fmt.Sprintf("event:%s\ndata:%s\n\n", event, line)
 				writeMu.Lock()
-				c.Render(-1, render.Data{
-					Data: []byte("event: clear\ndata: \n\n"),
-				})
+				_, err = c.Writer.Write([]byte(sseLine))
+				if err != nil {
+					writeMu.Unlock()
+					return
+				}
 				c.Writer.Flush()
 				writeMu.Unlock()
-
-				chunk = strings.ReplaceAll(chunk, "\x0c", "")
 			}
-
-			// 针对 stderr 处理
-			if event == "stderr" {
-				if shouldSkip(chunk) {
-					continue
-				}
-				chunk = processError(chunk)
-			}
-
-			// 格式化 SSE 行
-			sseLine := fmt.Sprintf("event: %s\ndata: %s\n\n", event, chunk)
-			writeMu.Lock()
-			_, err = c.Writer.Write([]byte(sseLine))
-			if err != nil {
-				writeMu.Unlock()
-				return
-			}
-			c.Writer.Flush()
-			writeMu.Unlock()
 		}
 	}
 
@@ -158,7 +139,7 @@ func Execute(c *gin.Context) {
 	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 		writeMu.Lock()
 		c.Render(-1, render.Data{
-			Data: []byte("event: timeout\ndata: Execution timed out(5s).\n\n"),
+			Data: []byte("event:timeout\ndata:Execution timed out(5s).\n\n"),
 		})
 		c.Writer.Flush()
 		writeMu.Unlock()
@@ -168,7 +149,7 @@ func Execute(c *gin.Context) {
 	if err != nil {
 		writeMu.Lock()
 		c.Render(-1, render.Data{
-			Data: []byte(fmt.Sprintf("event: error\ndata: %v\n\n", err)),
+			Data: []byte(fmt.Sprintf("event:error\ndata:%v\n\n", err)),
 		})
 		c.Writer.Flush()
 		writeMu.Unlock()
@@ -177,7 +158,7 @@ func Execute(c *gin.Context) {
 
 	writeMu.Lock()
 	c.Render(-1, render.Data{
-		Data: []byte("event: done\ndata: Execution finished.\n\n"),
+		Data: []byte("event:done\ndata:Execution finished.\n\n"),
 	})
 	c.Writer.Flush()
 	writeMu.Unlock()
