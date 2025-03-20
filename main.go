@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/tianqi-wen_frgr/best-go-playground/config"
 	"github.com/tianqi-wen_frgr/best-go-playground/internal"
@@ -9,6 +10,16 @@ import (
 
 func main() {
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{
+			"http://localhost:5173",
+			"https://www.go-sandbox.org",
+			"https://go-sandbox.org",
+			"https://main.d25pqeeloarr3n.amplifyapp.com",
+		},
+		AllowMethods: []string{"POST, GET, OPTIONS, PUT, DELETE"},
+	}))
 
 	// a global timeout middleware as a safety net
 	timeout := internal.Timeout(config.APIGlobalTimeout * time.Second)
