@@ -196,6 +196,7 @@ export default function Component(props: {
             } = await formatCode(latestCodeRef.current);
             // format failed
             if (formatError) {
+                setStdout("")
                 setInfo("")
                 setError(formatMessage)
 
