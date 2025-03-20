@@ -28,6 +28,14 @@ func send(line []byte, event string, c *gin.Context, lock *sync.Mutex) {
 		return
 	}
 
+	if event == stderrKey {
+		if shouldSkip(line) {
+			return
+		}
+
+		line = processError(line)
+	}
+
 	data := fmt.Sprintf("event:%s\ndata:%s\n\n", event, line)
 
 	lock.Lock()
