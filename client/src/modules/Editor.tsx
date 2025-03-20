@@ -195,8 +195,8 @@ export default function Component(props: {
                 message: formatMessage
             } = await formatCode(latestCodeRef.current);
 
-            setStdout("")
             setInfo("")
+            setStdout("")
 
             // format failed
             if (formatError) {
@@ -210,7 +210,7 @@ export default function Component(props: {
 
             // clean up
             setError("")
-            setInfo("")
+            setStderr("")
             setErrorRows([]);
             storeCode(formatted)
 

@@ -23,13 +23,13 @@ export default function Component(props: {
                 </div>
             }
 
-            {error && <pre className={`text-red-700 border-b ${common}`}>{error}</pre>}
+            {error && <pre className={`text-red-700 border-b dark:text-red-500 ${common}`}>{error}</pre>}
 
-            {info && <pre className={`text-green-600 border-b ${common}`}>{info}</pre>}
+            {info && <pre className={`text-green-600 border-b dark:text-green-300 ${common}`}>{info}</pre>}
 
             {stdout && <pre className={"overflow-y-auto"}>{stdout}</pre>}
 
-            {stderr && <pre className={"overflow-y-auto text-red-700"}>{stderr}</pre>}
+            {stderr && <pre className={"overflow-y-auto text-red-700 dark:text-red-500"}>{stderr}</pre>}
         </Wrapper>
     )
 }
