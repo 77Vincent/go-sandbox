@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -9,13 +8,33 @@ import (
 	"github.com/gin-gonic/gin/render"
 	"github.com/tianqi-wen_frgr/best-go-playground/config"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
-	"strings"
 	"sync"
 	"time"
 )
+
+const chunkSize = 1
+
+func send(line []byte, event string, c *gin.Context, lock *sync.Mutex) {
+	// skip sending if no data
+	if len(line) == 0 {
+		return
+	}
+
+	data := fmt.Sprintf("event:%s\ndata:%s\n\n", event, line)
+
+	lock.Lock()
+	defer lock.Unlock()
+
+	if _, err := c.Writer.Write([]byte(data)); err != nil {
+		log.Printf("failed to send event to client: %s", err)
+		return
+	}
+	c.Writer.Flush()
+}
 
 // Execute 实现 SSE 流式输出
 func Execute(c *gin.Context) {
@@ -75,8 +94,8 @@ func Execute(c *gin.Context) {
 
 	// 创建一个互斥锁，保护 c.Writer 写入
 	var (
-		writeMu sync.Mutex
-		wg      sync.WaitGroup
+		lock sync.Mutex
+		wg   sync.WaitGroup
 	)
 	wg.Add(2)
 
@@ -84,47 +103,59 @@ func Execute(c *gin.Context) {
 	stream := func(r io.Reader, event string, c *gin.Context, wg *sync.WaitGroup) {
 		defer wg.Done()
 
-		scanner := bufio.NewScanner(r)
-		for scanner.Scan() {
+		var (
+			buf  = make([]byte, chunkSize)
+			line []byte
+		)
+
+		for {
 			select {
 			case <-ctx.Done():
 				return
 			case <-c.Request.Context().Done():
-				_ = cmd.Process.Kill()
+				if err = cmd.Process.Kill(); err != nil {
+					log.Fatalf("failed to kill process: %s", err)
+				}
 				return
 			default:
-				line := scanner.Text()
+			}
 
-				// 如果行以清屏控制字符开始，则发送 clear 事件
-				if strings.Contains(line, "\x0c") {
-					writeMu.Lock()
-					c.Render(-1, render.Data{
-						Data: []byte("event:clear\ndata:\n\n"),
-					})
-					c.Writer.Flush()
-					writeMu.Unlock()
+			var n int
+			n, err = r.Read(buf)
 
-					line = strings.ReplaceAll(line, "\x0c", "")
-				}
-
-				// 针对 stderr 处理
-				if event == "stderr" {
-					if shouldSkip(line) {
-						continue
-					}
-					line = processError(line)
-				}
-
-				// 格式化 SSE 行
-				sseLine := fmt.Sprintf("event:%s\ndata:%s\n\n", event, line)
-				writeMu.Lock()
-				_, err = c.Writer.Write([]byte(sseLine))
+			if n == 0 {
 				if err != nil {
-					writeMu.Unlock()
-					return
+					send(line, event, c, &lock)
+
+					break
+					//if err == io.EOF {
+					//	break
+					//}
+					//break
 				}
-				c.Writer.Flush()
-				writeMu.Unlock()
+				continue
+			}
+
+			b := buf[0]
+
+			switch b {
+			case '\n':
+				send(line, event, c, &lock)
+				line = []byte{} // reset
+			case '\x0c':
+				// send remaining data first
+				send(line, event, c, &lock)
+
+				// send clear event
+				lock.Lock()
+				c.Render(-1, render.Data{
+					Data: []byte("event:clear\ndata:\n\n"),
+				})
+				lock.Unlock()
+
+				line = []byte{} // reset
+			default:
+				line = append(line, b)
 			}
 		}
 	}
@@ -132,34 +163,31 @@ func Execute(c *gin.Context) {
 	go stream(stdout, "stdout", c, &wg)
 	go stream(stderr, "stderr", c, &wg)
 
-	// 等待进程结束
-	err = cmd.Wait()
 	wg.Wait()
 
-	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-		writeMu.Lock()
-		c.Render(-1, render.Data{
-			Data: []byte("event:timeout\ndata:Execution timed out(5s).\n\n"),
-		})
-		c.Writer.Flush()
-		writeMu.Unlock()
-		return
-	}
-
+	// 等待进程结束
+	err = cmd.Wait()
 	if err != nil {
-		writeMu.Lock()
+		lock.Lock()
+		defer lock.Unlock()
+
 		c.Render(-1, render.Data{
 			Data: []byte(fmt.Sprintf("event:error\ndata:%v\n\n", err)),
 		})
 		c.Writer.Flush()
-		writeMu.Unlock()
 		return
 	}
 
-	writeMu.Lock()
+	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+		c.Render(-1, render.Data{
+			Data: []byte("event:timeout\ndata:Execution timed out(5s).\n\n"),
+		})
+		c.Writer.Flush()
+		return
+	}
+
 	c.Render(-1, render.Data{
 		Data: []byte("event:done\ndata:Execution finished.\n\n"),
 	})
 	c.Writer.Flush()
-	writeMu.Unlock()
 }
