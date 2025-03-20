@@ -183,6 +183,9 @@ func Execute(c *gin.Context) {
 		return
 	}
 
+	lock.Lock()
+	defer lock.Unlock()
+
 	// lastly send done event
 	c.Render(-1, render.Data{
 		Data: []byte("event:done\ndata:Execution finished.\n\n"),
