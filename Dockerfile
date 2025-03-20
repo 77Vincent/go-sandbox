@@ -2,6 +2,8 @@ FROM golang:1.23.4-alpine AS build-backend
 
 # 设置 CGO_ENABLED=1，以支持 seccomp
 ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=arm64
 
 # 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
 RUN apk update && apk add --no-cache \

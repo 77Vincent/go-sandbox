@@ -18,7 +18,7 @@ export default function Component(props: {
     return (
         <Wrapper
             className={`flex flex-col p-2 pb-0 bg-neutral-200 dark:bg-neutral-800 text-${mapFontSize(fontSize)}`}>
-            <ClickBoard content={stdout}/>
+            <ClickBoard content={stdout || stderr}/>
 
             {
                 (!error && !info && !stdout && !stderr) &&
