@@ -1,6 +1,10 @@
 import {ClickBoard, Wrapper} from "./Common.tsx";
 import {mapFontSize} from "../utils.ts";
 
+const common = "dark:border-neutral-600 border-neutral-300 pb-1 mb-1.5"
+const errorColor = "text-red-700 dark:text-red-500"
+const infoColor = "text-green-600 dark:text-green-300"
+
 export default function Component(props: {
     stdout: string,
     stderr: string,
@@ -9,7 +13,6 @@ export default function Component(props: {
     error: string,
 }) {
     const {fontSize, stdout, stderr, info, error} = props
-    const common = "dark:border-neutral-600 border-neutral-300 pb-1 mb-1.5"
 
     return (
         <Wrapper
@@ -23,13 +26,13 @@ export default function Component(props: {
                 </div>
             }
 
-            {error && <pre className={`text-red-700 border-b dark:text-red-500 ${common}`}>{error}</pre>}
+            {error && <pre className={`${errorColor} ${common}`}>{error}</pre>}
 
-            {info && <pre className={`text-green-600 border-b dark:text-green-300 ${common}`}>{info}</pre>}
+            {info && <pre className={`${infoColor} ${common}`}>{info}</pre>}
 
             {stdout && <pre className={"overflow-y-auto"}>{stdout}</pre>}
 
-            {stderr && <pre className={"overflow-y-auto text-red-700 dark:text-red-500"}>{stderr}</pre>}
+            {stderr && <pre className={`overflow-y-auto ${errorColor}`}>{stderr}</pre>}
         </Wrapper>
     )
 }
