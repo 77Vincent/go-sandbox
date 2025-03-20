@@ -75,6 +75,18 @@ export const TRANSLATE = {
         ja: "情報",
         ko: "정보",
     },
+    hintAuto: {
+        en: "Type something to run automatically",
+        zh: "输入内容以自动运行",
+        ja: "自動実行するには何かを入力してください",
+        ko: "자동으로 실행하려면 무언가를 입력하십시오",
+    },
+    hintManual: {
+        en: "Press 'Run' to execute",
+        zh: "按运行键以执行",
+        ja: "実行するには実行を押してください",
+        ko: "실행하려면 실행을 누르십시오",
+    },
     language: {
         en: "Language",
         zh: "语言",
