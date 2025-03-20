@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState, ChangeEvent} from "react";
+import {useCallback, useRef, useState, ChangeEvent, useEffect} from "react";
 import {Button, DarkThemeToggle, Dropdown, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
@@ -60,7 +60,6 @@ export default function Component(props: {
     const [lan, setLan] = useState<languages>("en")
 
     // editor status
-    const [isFormatting, setIsFormatting] = useState<boolean>(false)
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(getCodeContent());
 
@@ -70,8 +69,9 @@ export default function Component(props: {
     const [error, setError] = useState<string>("")
     const [info, setInfo] = useState<string>("")
 
-    // manage code
+    // reference the latest state
     const latestCodeRef = useRef(code);
+    const isRunningRef = useRef(isRunning);
 
     function storeCode(code: string) {
         setCode(code);
@@ -131,6 +131,11 @@ export default function Component(props: {
         window.addEventListener('keydown', handleKeyDown);
     };
 
+    // IMPORTANT: update the ref when the state changes
+    useEffect(() => {
+        isRunningRef.current = isRunning
+    }, [isRunning]);
+
     function onChange(code: string = "") {
         storeCode(code);
 
@@ -141,8 +146,8 @@ export default function Component(props: {
     }
 
     function shouldAbort(): boolean {
-        // do not continue if formatting or already running or no code
-        return isFormatting || isRunning || !latestCodeRef.current
+        // do not continue if the code is empty or running
+        return isRunningRef.current || !latestCodeRef.current
     }
 
     // managed debounced format
@@ -153,12 +158,8 @@ export default function Component(props: {
 
         try {
             setIsRunning(true)
-            setIsFormatting(true)
 
             const {stdout, error, message} = await formatCode(latestCodeRef.current);
-
-            // reset
-            setStdout("")
 
             if (stdout) {
                 storeCode(stdout)
@@ -172,11 +173,9 @@ export default function Component(props: {
             }
 
             setIsRunning(false)
-            setIsFormatting(false)
         } catch (e) {
             setToastMessage((e as Error).message)
             setIsRunning(false)
-            setIsFormatting(false)
         }
     }, []);
     const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
@@ -189,7 +188,6 @@ export default function Component(props: {
 
         try {
             setIsRunning(true)
-            setIsFormatting(true)
 
             const {
                 stdout: formatted,
@@ -204,7 +202,6 @@ export default function Component(props: {
                 setStderr(formatError)
                 setErrorRows(generateMarkers(formatError))
                 setIsRunning(false)
-                setIsFormatting(false)
                 return
             }
 
@@ -229,10 +226,12 @@ export default function Component(props: {
 
             source.addEventListener('timeout', ({data}: MessageEvent) => {
                 setError(data)
+                setIsRunning(false)
             });
 
             source.addEventListener('error', ({data}: MessageEvent) => {
                 setError(data)
+                setIsRunning(false)
             });
 
             source.addEventListener('stderr', ({data}: MessageEvent) => {
@@ -257,14 +256,14 @@ export default function Component(props: {
                 setStderr("")
             });
 
-            setIsRunning(false)
-            setIsFormatting(false)
+            source.addEventListener('done', () => {
+                setIsRunning(false)
+            });
         } catch (e) {
             const err = e as Error
             setErrorRows(generateMarkers(err.message))
             setStdout(err.message)
             setIsRunning(false)
-            setIsFormatting(false)
         }
     }, []);
     const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
@@ -381,7 +380,7 @@ export default function Component(props: {
                         <Divider/>
 
                         <Settings
-                            disabled={isFormatting || isRunning}
+                            disabled={isRunning}
                             lan={lan}
                             fontSize={fontSize}
                             onFontL={onFontL}
@@ -480,7 +479,7 @@ export default function Component(props: {
                 />
             </div>
 
-            <ProgressBar show={isRunning || isFormatting} className={"absolute bottom-0"}/>
+            <ProgressBar show={isRunning} className={"absolute bottom-0"}/>
         </div>
     );
 }
