@@ -9,13 +9,14 @@ import (
 )
 
 var (
-	errorRe   = regexp.MustCompile(`^/tmp/code-[0-9]*\.go:`) // /tmp/code-123.go:
-	skipError = regexp.MustCompile(`^# command-line-arguments`)
+	errorRe    = regexp.MustCompile(`^/tmp/code-[0-9]*\.go:`) // /tmp/code-123.go:
+	skipError  = regexp.MustCompile(`^# command-line-arguments`)
+	skipError2 = regexp.MustCompile(`^[0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} (Build|Execution) error: exit status [0-9]+`) // 2021/08/01 00:00:00
 )
 
 // these errors will not be return to users
 func shouldSkip(line []byte) bool {
-	return skipError.Match(line)
+	return skipError.Match(line) || skipError2.Match(line)
 }
 
 func processError(line []byte) []byte {
