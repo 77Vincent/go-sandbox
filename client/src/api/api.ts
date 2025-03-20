@@ -1,14 +1,6 @@
 import {ExecuteResultI} from "../types";
 import {HTTP_INTERNAL_ERROR} from "../constants.ts";
-
-const apiUrl = import.meta.env.VITE_API_URL || "";
-
-function getUrl(path: string): string {
-    if (import.meta.env.MODE === "development") {
-        return `/api${path}`;
-    }
-    return `${apiUrl}${path}`;
-}
+import {getUrl} from "../utils.ts";
 
 export async function healthCheck() {
     const res = await fetch(getUrl("/status"));

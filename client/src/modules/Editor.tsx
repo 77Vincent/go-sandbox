@@ -34,7 +34,7 @@ import {
     getCursorRow,
     getKeyBindings,
     getEditorSize, getFontSize,
-    getLintOn, generateMarkers, getShowInvisible
+    getLintOn, generateMarkers, getShowInvisible, getUrl
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages} from "../types";
@@ -216,7 +216,7 @@ export default function Component(props: {
 
             const markers: IMarker[] = []
 
-            const source = new SSE("/api/execute", {
+            const source = new SSE(getUrl("/execute"), {
                 headers: {'Content-Type': 'application/json'},
                 payload: JSON.stringify({code: latestCodeRef.current})
             });

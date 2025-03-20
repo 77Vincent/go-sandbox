@@ -1,22 +1,25 @@
 import {
+    ACTIVE_COLOR_DARK,
+    ACTIVE_COLOR_LIGHT,
     AUTO_RUN_KEY,
+    BUILD_ERROR_PARSING_REGEX,
     CODE_CONTENT_KEY,
     CURSOR_COLUMN_KEY,
     CURSOR_ROW_KEY,
     DEFAULT_AUTO_RUN,
     DEFAULT_CODE_CONTENT,
     DEFAULT_CURSOR_POSITION,
-    DEFAULT_LINT_ON,
     DEFAULT_EDITOR_SIZE,
     DEFAULT_KEY_BINDINGS,
+    DEFAULT_LINT_ON,
+    DEFAULT_SHOW_INVISIBLE,
     EDITOR_SIZE_KEY,
-    LINT_ON_KEY,
-    KEY_BINDINGS_KEY,
-    FONT_SIZE_KEY,
-    ACTIVE_COLOR_DARK,
-    ACTIVE_COLOR_LIGHT,
     ERROR_PARSING_REGEX,
-    BUILD_ERROR_PARSING_REGEX, FONT_SIZE_M, SHOW_INVISIBLE_KEY, DEFAULT_SHOW_INVISIBLE
+    FONT_SIZE_KEY,
+    FONT_SIZE_M,
+    KEY_BINDINGS_KEY,
+    LINT_ON_KEY,
+    SHOW_INVISIBLE_KEY
 } from "./constants.ts";
 import {ThemeMode} from "flowbite-react";
 import {KeyBindings} from "./types";
@@ -100,4 +103,14 @@ export function generateMarkers(error: string): IMarker[] {
         })
     }
     return markers
+}
+
+const apiUrl = import.meta.env.VITE_API_URL || "";
+const isDev = import.meta.env.MODE === "development";
+
+export function getUrl(path: string): string {
+    if (isDev) {
+        return `/api${path}`;
+    }
+    return `${apiUrl}${path}`;
 }
