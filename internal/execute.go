@@ -115,13 +115,16 @@ func Execute(c *gin.Context) {
 			default:
 			}
 
-			var n int
-			n, err = r.Read(buf)
+			n, e := r.Read(buf)
 
 			if n == 0 {
-				if err != nil {
-					// in case there is remaining data
-					send(line, event, c, &lock)
+				if e != nil {
+					if e == io.EOF {
+						// in case there is remaining data
+						send(line, event, c, &lock)
+						return
+					}
+					log.Printf("failed to read from %s: %s", event, e)
 					return // equal to break actually
 				}
 				continue
