@@ -16,7 +16,11 @@ import (
 	"time"
 )
 
-const chunkSize = 1
+const (
+	chunkSize = 1
+	stdoutKey = "stdout"
+	stderrKey = "stderr"
+)
 
 func send(line []byte, event string, c *gin.Context, lock *sync.Mutex) {
 	// skip sending if no data
@@ -160,27 +164,30 @@ func Execute(c *gin.Context) {
 		}
 	}
 
-	go stream(stdout, "stdout", c, &wg)
-	go stream(stderr, "stderr", c, &wg)
+	go stream(stdout, stdoutKey, c, &wg)
+	go stream(stderr, stderrKey, c, &wg)
 
 	wg.Wait()
 
 	// 等待进程结束
 	err = cmd.Wait()
+
+	// check ctx timeout error first
+	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+		c.Render(-1, render.Data{
+			Data: []byte("event:timeout\ndata:Execution timed out(5s).\n\n"),
+		})
+		c.Writer.Flush()
+		return
+	}
+
+	// check other execution error later
 	if err != nil {
 		lock.Lock()
 		defer lock.Unlock()
 
 		c.Render(-1, render.Data{
 			Data: []byte(fmt.Sprintf("event:error\ndata:%v\n\n", err)),
-		})
-		c.Writer.Flush()
-		return
-	}
-
-	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-		c.Render(-1, render.Data{
-			Data: []byte("event:timeout\ndata:Execution timed out(5s).\n\n"),
 		})
 		c.Writer.Flush()
 		return
