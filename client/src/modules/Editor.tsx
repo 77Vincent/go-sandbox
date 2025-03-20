@@ -16,7 +16,7 @@ import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
-import {executeCodeStream, formatCode} from "../api/api.ts";
+import {formatCode} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -39,6 +39,7 @@ import {
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages} from "../types";
 import About from "./About.tsx";
+import {SSE} from "sse.js";
 
 export default function Component(props: {
     setToastMessage: (message: string) => void
@@ -187,7 +188,6 @@ export default function Component(props: {
         }
 
         try {
-            setError("")
             setIsRunning(true)
             setIsFormatting(true)
 
@@ -211,52 +211,52 @@ export default function Component(props: {
             // clean up
             setStderr("")
             setStdout("");
+            setError("")
             setInfo("")
             setErrorRows([]);
             storeCode(formatted)
 
-            const markers = []
-            for await (const evt of executeCodeStream(latestCodeRef.current)) {
-                const {event, data} = evt
+            const markers: IMarker[] = []
 
-                switch (event) {
-                    case "stdout":
-                        // 追加到 result
-                        setStdout(prev => prev + data + "\n");
-                        break;
+            const source = new SSE("/api/execute", {
+                headers: {'Content-Type': 'application/json'},
+                payload: JSON.stringify({code: latestCodeRef.current})
+            });
 
-                    case "stderr":
-                        // special case -- stats info wrapped in the stderr
-                        if (data.startsWith(STATS_INFO_PREFIX)) {
-                            const [time, mem] = data.replace(STATS_INFO_PREFIX, "").split(";")
-                            setInfo(`Time: ${time}\nMemory: ${mem}kb`)
-                            break;
-                        }
+            source.addEventListener('stdout', ({data}: MessageEvent) => {
+                setStdout(prev => prev + `${data}\n`)
+            });
 
-                        // 也可以把 stderr 显示到同一个 result 或单独存储
-                        setStderr(prev => prev + `${data}\n`);
-                        markers.push(...generateMarkers(data))
-                        break;
+            source.addEventListener('timeout', ({data}: MessageEvent) => {
+                setError(data)
+            });
 
-                    case "timeout":
-                        setError(data);
-                        break;
+            source.addEventListener('error', ({data}: MessageEvent) => {
+                setError(data)
+            });
 
-                    case "error":
-                        setError(data)
-                        break;
-
-                    case "done":
-                        break;
-
-                    default:
-                        // 处理其他自定义事件或 "message"
-                        setStdout(prev => prev + `[${event}] ${data}\n`);
-                        break;
+            source.addEventListener('stderr', ({data}: MessageEvent) => {
+                // special case -- stats info wrapped in the stderr
+                if (data.startsWith(STATS_INFO_PREFIX)) {
+                    const [time, mem] = data.replace(STATS_INFO_PREFIX, "").split(";")
+                    setInfo(`Time: ${time}\nMemory: ${mem}kb`)
+                    return
                 }
-            }
 
-            setErrorRows(markers)
+                markers.push(...generateMarkers(data))
+                if (markers.length > 0) {
+                    setErrorRows(markers)
+                }
+
+                setStderr(prev => prev + `${data}\n`)
+            });
+
+            // clear the screen
+            source.addEventListener('clear', () => {
+                setStdout("")
+                setStderr("")
+            });
+
             setIsRunning(false)
             setIsFormatting(false)
         } catch (e) {

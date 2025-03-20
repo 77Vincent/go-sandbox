@@ -130,12 +130,7 @@ func Execute(c *gin.Context) {
 			if n == 0 {
 				if err != nil {
 					send(line, event, c, &lock)
-
 					break
-					//if err == io.EOF {
-					//	break
-					//}
-					//break
 				}
 				continue
 			}
