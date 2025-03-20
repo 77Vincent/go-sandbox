@@ -14,5 +14,4 @@ push-server:
 	docker build --platform linux/arm64 -t 733089366385.dkr.ecr.ap-northeast-1.amazonaws.com/go-sandbox:latest --push .
 
 
-
 .PHONY: client server build up
