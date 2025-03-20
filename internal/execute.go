@@ -1,8 +1,6 @@
 package internal
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
@@ -13,13 +11,15 @@ import (
 	"os"
 	"os/exec"
 	"sync"
-	"time"
 )
 
 const (
-	chunkSize = 1
-	stdoutKey = "stdout"
-	stderrKey = "stderr"
+	chunkSize    = 1
+	stdoutKey    = "stdout"
+	stderrKey    = "stderr"
+	sandboxName  = "sandbox-runner"
+	tmpFileName  = "code-*.go"
+	timeoutError = "exit status 124"
 )
 
 func send(line []byte, event string, c *gin.Context, lock *sync.Mutex) {
@@ -60,7 +60,7 @@ func Execute(c *gin.Context) {
 	}
 
 	// 1) 创建临时文件并写入用户代码
-	tmp, err := os.CreateTemp("", "code-*.go")
+	tmp, err := os.CreateTemp("", tmpFileName)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
@@ -76,28 +76,20 @@ func Execute(c *gin.Context) {
 		return
 	}
 
-	// 2) 创建带超时的 context
-	ctx, cancel := context.WithTimeout(context.Background(), config.ExecuteAPITimeout*time.Second)
-	defer cancel()
-
-	// 3) 使用 exec.CommandContext 关联 context，调用 sandbox-runner
-	cmd := exec.CommandContext(ctx, "sandbox-runner", tmp.Name())
+	cmd := exec.Command(sandboxName, tmp.Name())
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
+	defer stdout.Close()
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
-
-	if err = cmd.Start(); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
-		return
-	}
+	defer stderr.Close()
 
 	// 4) 设置 SSE 响应头
 	c.Writer.Header().Set("Content-Type", "text/event-stream")
@@ -105,16 +97,9 @@ func Execute(c *gin.Context) {
 	c.Writer.Header().Set("Connection", "keep-alive")
 
 	// 创建一个互斥锁，保护 c.Writer 写入
-	var (
-		lock sync.Mutex
-		wg   sync.WaitGroup
-	)
-	wg.Add(2)
-
+	var lock sync.Mutex
 	// stream 函数：按行读取并写 SSE 数据
-	stream := func(r io.Reader, event string, c *gin.Context, wg *sync.WaitGroup) {
-		defer wg.Done()
-
+	stream := func(r io.ReadCloser, event string, c *gin.Context) {
 		var (
 			buf  = make([]byte, chunkSize)
 			line []byte
@@ -122,8 +107,6 @@ func Execute(c *gin.Context) {
 
 		for {
 			select {
-			case <-ctx.Done():
-				return
 			case <-c.Request.Context().Done():
 				if err = cmd.Process.Kill(); err != nil {
 					log.Fatalf("failed to kill process: %s", err)
@@ -137,8 +120,9 @@ func Execute(c *gin.Context) {
 
 			if n == 0 {
 				if err != nil {
+					// in case there is remaining data
 					send(line, event, c, &lock)
-					break
+					return // equal to break actually
 				}
 				continue
 			}
@@ -167,28 +151,28 @@ func Execute(c *gin.Context) {
 		}
 	}
 
-	go stream(stdout, stdoutKey, c, &wg)
-	go stream(stderr, stderrKey, c, &wg)
-
-	wg.Wait()
-
-	// 等待进程结束
-	err = cmd.Wait()
-
-	// check ctx timeout error first
-	if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-		c.Render(-1, render.Data{
-			Data: []byte("event:timeout\ndata:Execution timed out(5s).\n\n"),
-		})
-		c.Writer.Flush()
+	if err = cmd.Start(); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
 
-	// check other execution error later
-	if err != nil {
+	go stream(stdout, stdoutKey, c)
+	go stream(stderr, stderrKey, c)
+
+	if err = cmd.Wait(); err != nil {
 		lock.Lock()
 		defer lock.Unlock()
 
+		// timeout case
+		if err.Error() == timeoutError {
+			c.Render(-1, render.Data{
+				Data: []byte(fmt.Sprintf("event:error\ndata:Execution timed out(%ds).\n\n", config.SandboxCPUTimeLimit)),
+			})
+			c.Writer.Flush()
+			return
+		}
+
+		// other error cases
 		c.Render(-1, render.Data{
 			Data: []byte(fmt.Sprintf("event:error\ndata:%v\n\n", err)),
 		})
@@ -196,6 +180,7 @@ func Execute(c *gin.Context) {
 		return
 	}
 
+	// lastly send done event
 	c.Render(-1, render.Data{
 		Data: []byte("event:done\ndata:Execution finished.\n\n"),
 	})

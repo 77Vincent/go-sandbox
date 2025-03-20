@@ -224,11 +224,6 @@ export default function Component(props: {
                 setStdout(prev => prev + `${data}\n`)
             });
 
-            source.addEventListener('timeout', ({data}: MessageEvent) => {
-                setError(data)
-                setIsRunning(false)
-            });
-
             source.addEventListener('error', ({data}: MessageEvent) => {
                 setError(data)
                 setIsRunning(false)

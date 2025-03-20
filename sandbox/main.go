@@ -14,6 +14,10 @@ import (
 	"time"
 )
 
+const (
+	timeoutExitCode = 124
+)
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatalf("Usage: %s <code-file>", os.Args[0])
@@ -45,8 +49,8 @@ func main() {
 		log.Fatalf("Failed to set resource limits: %v", err)
 	}
 
-	// 使用 Context 控制超时，这里设定 10 秒超时
-	ctx, cancel := context.WithTimeout(context.Background(), config.SandboxTimeout*time.Second)
+	// the execution timeout is same as the CPU timeout limit
+	ctx, cancel := context.WithTimeout(context.Background(), config.SandboxCPUTimeLimit*time.Second)
 	defer cancel()
 
 	// 执行 "go run <codeFile>"
@@ -55,18 +59,17 @@ func main() {
 	cmd.Stderr = os.Stderr
 
 	start := time.Now()
-	err = cmd.Run()
-	duration := time.Since(start)
-
-	if err != nil {
+	if err = cmd.Run(); err != nil {
 		// the program in the sandbox has to be ended due to the timeout
 		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-			log.Printf("Execution timed out")
-		} else {
-			log.Printf("Execution error: %v", err)
+			os.Exit(timeoutExitCode)
 		}
+
+		log.Printf("Execution error: %s", err)
 		os.Exit(1)
 	}
+
+	duration := time.Since(start)
 
 	// 获取子进程的资源使用情况
 	if ps := cmd.ProcessState; ps != nil {
