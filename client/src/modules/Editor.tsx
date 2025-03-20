@@ -194,21 +194,21 @@ export default function Component(props: {
                 error: formatError,
                 message: formatMessage
             } = await formatCode(latestCodeRef.current);
+
+            setStdout("")
+            setInfo("")
+
             // format failed
             if (formatError) {
-                setStdout("")
-                setInfo("")
                 setError(formatMessage)
-
                 setStderr(formatError)
+
                 setErrorRows(generateMarkers(formatError))
                 setIsRunning(false)
                 return
             }
 
             // clean up
-            setStderr("")
-            setStdout("");
             setError("")
             setInfo("")
             setErrorRows([]);
