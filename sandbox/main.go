@@ -76,6 +76,7 @@ func main() {
 		if ru, ok := ps.SysUsage().(*syscall.Rusage); ok {
 			if _, err = fmt.Fprintf(os.Stderr, "STATS_INFO:%s;%d", duration, ru.Maxrss); err != nil {
 				log.Printf("Failed to write execution stats: %v", err)
+				os.Exit(1)
 			}
 		}
 	}

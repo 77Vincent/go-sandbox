@@ -38,6 +38,7 @@ func send(line []byte, event string, c *gin.Context, lock *sync.Mutex) {
 
 	data := fmt.Sprintf("event:%s\ndata:%s\n\n", event, line)
 
+	// start sending with lock
 	lock.Lock()
 	defer lock.Unlock()
 
@@ -97,9 +98,14 @@ func Execute(c *gin.Context) {
 	c.Writer.Header().Set("Connection", "keep-alive")
 
 	// 创建一个互斥锁，保护 c.Writer 写入
-	var lock sync.Mutex
+	var (
+		lock sync.Mutex
+		wg   sync.WaitGroup
+	)
 	// stream 函数：按行读取并写 SSE 数据
-	stream := func(r io.ReadCloser, event string, c *gin.Context) {
+	stream := func(r io.ReadCloser, event string, c *gin.Context, wg *sync.WaitGroup) {
+		defer wg.Done()
+
 		var (
 			buf  = make([]byte, chunkSize)
 			line []byte
@@ -120,8 +126,11 @@ func Execute(c *gin.Context) {
 			if n == 0 {
 				if e != nil {
 					if e == io.EOF {
-						// in case there is remaining data
-						send(line, event, c, &lock)
+						// just a double check, if context is not done, send remaining data
+						if c.Request.Context().Err() == nil {
+							// send remaining data if any
+							send(line, event, c, &lock)
+						}
 						return
 					}
 					log.Printf("failed to read from %s: %s", event, e)
@@ -159,9 +168,15 @@ func Execute(c *gin.Context) {
 		return
 	}
 
-	go stream(stdout, stdoutKey, c)
-	go stream(stderr, stderrKey, c)
+	wg.Add(2)
 
+	go stream(stdout, stdoutKey, c, &wg)
+	go stream(stderr, stderrKey, c, &wg)
+
+	// wait for both goroutines to finish
+	wg.Wait()
+
+	// wait for the command to finish
 	if err = cmd.Wait(); err != nil {
 		lock.Lock()
 		defer lock.Unlock()
