@@ -14,12 +14,12 @@ var (
 )
 
 // these errors will not be return to users
-func shouldSkip(input string) bool {
-	return skipError.Match([]byte(input))
+func shouldSkip(line []byte) bool {
+	return skipError.Match(line)
 }
 
-func processError(input string) string {
-	return errorRe.ReplaceAllString(input, "")
+func processError(line []byte) []byte {
+	return errorRe.ReplaceAll(line, []byte(""))
 }
 
 // Timeout creates a middleware that enforces a timeout.
