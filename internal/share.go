@@ -11,13 +11,6 @@ import (
 	"net/http"
 )
 
-// Initialize a Redis client. Adjust the address and options as needed.
-var rdb = redis.NewClient(&redis.Options{
-	Addr: "redis:6379", // Redis server address
-	// Password: "", // no password set
-	// DB:       0,  // use default DB
-})
-
 // generateHashKey computes a SHA-256 hash for the given code snippet.
 func generateHashKey(code []byte) string {
 	hash := sha256.Sum256(code)

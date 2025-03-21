@@ -1,5 +1,5 @@
 import {ExecuteResultI} from "../types";
-import {HTTP_INTERNAL_ERROR} from "../constants.ts";
+import {HTTP_INTERNAL_ERROR, HTTP_NOT_FOUND} from "../constants.ts";
 import {getUrl} from "../utils.ts";
 
 export async function healthCheck() {
@@ -10,8 +10,18 @@ export async function healthCheck() {
     return await res.json();
 }
 
-export async function shareCode(code: string): Promise<string> {
-    const res = await fetch(getUrl("/share"), {
+export async function fetchSnippet(id: string): Promise<string> {
+    const res = await fetch(getUrl(`/snippet/${id}`));
+    if (res.status === HTTP_INTERNAL_ERROR || res.status === HTTP_NOT_FOUND) {
+        const {error} = await res.json();
+        throw new Error(error);
+    }
+
+    return await res.text();
+}
+
+export async function shareSnippet(code: string): Promise<string> {
+    const res = await fetch(getUrl("/snippet"), {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

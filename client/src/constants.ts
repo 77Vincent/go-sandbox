@@ -41,12 +41,13 @@ func main() {
     fmt.Println("Hello, Go Sandbox!")
 }`
 
-
+export const SNIPPET_REGEX = /\/snippet\/([a-zA-Z0-9]+)/g;
 export const ERROR_PARSING_REGEX = /tmp\/.*\.go:(\d+)/g;
 export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;
 export const STATS_INFO_PREFIX = "STATS_INFO:"
 
 export const HTTP_INTERNAL_ERROR = 500
+export const HTTP_NOT_FOUND = 404
 
 export const LANGUAGES: { value: languages, label: string }[] = [
     {value: "en", label: "English"},
