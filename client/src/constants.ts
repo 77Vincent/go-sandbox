@@ -1,6 +1,7 @@
 import {KeyBindings, languages} from "./types";
 
 export const KEY_BINDINGS_KEY = "keyBindings";
+export const LANGUAGE_KEY = "languageKey";
 export const AUTO_RUN_KEY = "isAutoRum";
 export const LINT_ON_KEY = "isLintOn";
 export const SHOW_INVISIBLE_KEY = "isShowInvisible";
@@ -15,6 +16,7 @@ export const DEFAULT_AUTO_RUN = "true";
 export const DEFAULT_LINT_ON = "false";
 export const DEFAULT_SHOW_INVISIBLE = "false";
 export const DEFAULT_EDITOR_SIZE = 60;
+export const DEFAULT_LANGUAGE = "en";
 export const FONT_SIZE_L = 16;
 export const FONT_SIZE_M = 14;
 export const FONT_SIZE_S = 12;

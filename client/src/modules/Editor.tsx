@@ -1,16 +1,30 @@
 import {useCallback, useRef, useState, ChangeEvent, useEffect} from "react";
-import {Button, DarkThemeToggle, Dropdown, Tooltip, useThemeMode} from "flowbite-react";
+import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
 import {Link} from "react-router";
-import {IoLanguage as LanguageIcon} from "react-icons/io5"
 import {HiOutlineQuestionMarkCircle as AboutIcon} from "react-icons/hi"
 
 import {
-    AUTO_RUN_KEY, CODE_CONTENT_KEY, CURSOR_COLUMN_KEY, CURSOR_ROW_KEY, CURSOR_UPDATE_DEBOUNCE_TIME,
-    EDITOR_SIZE_KEY, FONT_SIZE_KEY, FONT_SIZE_L, FONT_SIZE_S, LINT_ON_KEY, RUN_DEBOUNCE_TIME,
-    KEY_BINDINGS_KEY, FONT_SIZE_M, AUTO_RUN_DEBOUNCE_TIME, TRANSLATE, LANGUAGES, STATS_INFO_PREFIX, SHOW_INVISIBLE_KEY
+    AUTO_RUN_KEY,
+    CODE_CONTENT_KEY,
+    CURSOR_COLUMN_KEY,
+    CURSOR_ROW_KEY,
+    CURSOR_UPDATE_DEBOUNCE_TIME,
+    EDITOR_SIZE_KEY,
+    FONT_SIZE_KEY,
+    FONT_SIZE_L,
+    FONT_SIZE_S,
+    LINT_ON_KEY,
+    RUN_DEBOUNCE_TIME,
+    KEY_BINDINGS_KEY,
+    FONT_SIZE_M,
+    AUTO_RUN_DEBOUNCE_TIME,
+    TRANSLATE,
+    STATS_INFO_PREFIX,
+    SHOW_INVISIBLE_KEY,
+    LANGUAGE_KEY
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -34,7 +48,7 @@ import {
     getCursorRow,
     getKeyBindings,
     getEditorSize, getFontSize,
-    getLintOn, generateMarkers, getShowInvisible, getUrl
+    getLintOn, generateMarkers, getShowInvisible, getUrl, getLanguage
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages} from "../types";
@@ -57,7 +71,7 @@ export default function Component(props: {
     // settings
     const [fontSize, setFontSize] = useState<number>(getFontSize());
     const [editorSize, setEditorSize] = useState<number>(getEditorSize())
-    const [lan, setLan] = useState<languages>("en")
+    const [lan, setLan] = useState<languages>(getLanguage())
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -295,6 +309,13 @@ export default function Component(props: {
         setKeyBindings(value)
     }
 
+    function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
+        event.stopPropagation();
+        const value = event.target.value as languages
+        localStorage.setItem(LANGUAGE_KEY, value);
+        setLan(value)
+    }
+
     function onAutoRun() {
         localStorage.setItem(AUTO_RUN_KEY, JSON.stringify(!isAutoRun));
         setIsAutoRun(!isAutoRun);
@@ -384,6 +405,7 @@ export default function Component(props: {
                             onFontS={onFontS}
                             themeMode={mode}
                             onKeyBindingsChange={onKeyBindingsChange}
+                            onLanguageChange={onLanguageChange}
                             keyBindings={keyBindings}
                             isLintOn={isLintOn}
                             onLint={onLint}
@@ -393,28 +415,11 @@ export default function Component(props: {
                             onShowInvisible={onShowInvisible}
                         />
 
-                        <Dropdown size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
-                            <LanguageIcon
-                                className={"text-gray-700 dark:text-gray-300 text-lg cursor-pointer hover:opacity-50"}/>
-                        }>
-                            {
-                                LANGUAGES.map(({value, label}) => (
-                                    <Dropdown.Item key={value}
-                                                   className={`cursor-pointer ${value === lan ? "font-semibold" : ""}`}
-                                                   onClick={() => setLan(value)}>
-                                        {label}
-                                    </Dropdown.Item>
-                                ))
-                            }
-                        </Dropdown>
-
                         <Tooltip content={"About"}>
                             <AboutIcon
                                 onClick={() => setShowAbout(true)}
                                 className={"mx-1.5 text-gray-600 dark:text-gray-300 text-2xl cursor-pointer hover:opacity-50"}/>
                         </Tooltip>
-
-                        <Divider/>
 
                         <DarkThemeToggle onClick={onDarkThemeToggle}/>
                     </div>

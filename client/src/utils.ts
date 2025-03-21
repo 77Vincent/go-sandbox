@@ -10,19 +10,19 @@ import {
     DEFAULT_CODE_CONTENT,
     DEFAULT_CURSOR_POSITION,
     DEFAULT_EDITOR_SIZE,
-    DEFAULT_KEY_BINDINGS,
+    DEFAULT_KEY_BINDINGS, DEFAULT_LANGUAGE,
     DEFAULT_LINT_ON,
     DEFAULT_SHOW_INVISIBLE,
     EDITOR_SIZE_KEY,
     ERROR_PARSING_REGEX,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
-    KEY_BINDINGS_KEY,
+    KEY_BINDINGS_KEY, LANGUAGE_KEY,
     LINT_ON_KEY,
     SHOW_INVISIBLE_KEY
 } from "./constants.ts";
 import {ThemeMode} from "flowbite-react";
-import {KeyBindings} from "./types";
+import {KeyBindings, languages} from "./types";
 import {IMarker} from "react-ace";
 
 export function getActiveColor(mode: ThemeMode = "light"): string {
@@ -31,6 +31,10 @@ export function getActiveColor(mode: ThemeMode = "light"): string {
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
+}
+
+export function getLanguage(): languages {
+    return localStorage.getItem(LANGUAGE_KEY) as languages || DEFAULT_LANGUAGE
 }
 
 export function getCursorRow(): number {

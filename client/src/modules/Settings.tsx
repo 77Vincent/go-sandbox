@@ -8,7 +8,7 @@ import {
 } from "react-icons/md";
 import {ImTextColor as TextMIcon} from "react-icons/im"
 
-import {FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, TRANSLATE} from "../constants.ts";
+import {FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, LANGUAGES, TRANSLATE} from "../constants.ts";
 import {getActiveColor} from "../utils.ts";
 import {KeyBindings, languages} from "../types";
 import {ToggleSwitch} from "./Common.tsx";
@@ -16,6 +16,7 @@ import {ToggleSwitch} from "./Common.tsx";
 export default function Component(props: {
     disabled?: boolean;
     lan: languages;
+    onLanguageChange: ChangeEventHandler<HTMLSelectElement>;
     // for editor fontSize
     fontSize: number;
     themeMode: ThemeMode;
@@ -41,7 +42,10 @@ export default function Component(props: {
         keyBindings,
         themeMode,
         onKeyBindingsChange,
+
+        // for language
         lan,
+        onLanguageChange,
 
         // for font size
         fontSize,
@@ -112,13 +116,26 @@ export default function Component(props: {
             <Dropdown.Divider/>
 
             <Dropdown.Item className={layoutClasses}>
-                <Label className={"font-normal"} htmlFor="countries" value={TRANSLATE.keyBindings[lan]}/>
+                <Label className={"font-normal"} htmlFor="keyBindings" value={TRANSLATE.keyBindings[lan]}/>
 
                 <Select defaultValue={keyBindings} onChange={onKeyBindingsChange} onClick={handleSelectClick}
-                        sizing={"sm"} id="countries">
+                        sizing={"sm"} id="keyBindings">
                     <option value={""}>None</option>
                     <option value={"vim"}>VIM</option>
                     <option value={"emacs"}>Emacs</option>
+                </Select>
+            </Dropdown.Item>
+
+            <Dropdown.Item className={layoutClasses}>
+                <Label className={"font-normal"} htmlFor="language" value={TRANSLATE.language[lan]}/>
+
+                <Select defaultValue={lan} onChange={onLanguageChange} onClick={handleSelectClick}
+                        sizing={"sm"} id="language">
+                    {
+                        LANGUAGES.map(({value, label}) => {
+                            return <option key={value} value={value}>{label}</option>
+                        })
+                    }
                 </Select>
             </Dropdown.Item>
         </Dropdown>
