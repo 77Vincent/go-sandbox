@@ -25,7 +25,7 @@ export interface SSEEvent {
     data: string;
 }
 
-export type languages = "en" | "zh" | "ja" | "ko";
+export type languages = "en" | "zh_CN" | "zh_TW" | "ja"
 
 export type resultType = "stdout" | "stderr"
 
