@@ -24,7 +24,7 @@ import {
     TRANSLATE,
     STATS_INFO_PREFIX,
     SHOW_INVISIBLE_KEY,
-    LANGUAGE_KEY
+    LANGUAGE_KEY, EVENT_STDOUT, EVENT_ERROR, EVENT_STDERR, EVENT_CLEAR, EVENT_DONE
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -235,16 +235,16 @@ export default function Component(props: {
                 payload: JSON.stringify({code: latestCodeRef.current})
             });
 
-            source.addEventListener('stdout', ({data}: MessageEvent) => {
+            source.addEventListener(EVENT_STDOUT, ({data}: MessageEvent) => {
                 setStdout(prev => prev + `${data}\n`)
             });
 
-            source.addEventListener('error', ({data}: MessageEvent) => {
+            source.addEventListener(EVENT_ERROR, ({data}: MessageEvent) => {
                 setError(data)
                 setIsRunning(false)
             });
 
-            source.addEventListener('stderr', ({data}: MessageEvent) => {
+            source.addEventListener(EVENT_STDERR, ({data}: MessageEvent) => {
                 // special case -- stats info wrapped in the stderr
                 if (data.startsWith(STATS_INFO_PREFIX)) {
                     const [time, mem] = data.replace(STATS_INFO_PREFIX, "").split(";")
@@ -261,12 +261,12 @@ export default function Component(props: {
             });
 
             // clear the screen
-            source.addEventListener('clear', () => {
+            source.addEventListener(EVENT_CLEAR, () => {
                 setStdout("")
                 setStderr("")
             });
 
-            source.addEventListener('done', () => {
+            source.addEventListener(EVENT_DONE, () => {
                 setIsRunning(false)
             });
         } catch (e) {

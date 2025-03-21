@@ -1,5 +1,11 @@
 import {KeyBindings, languages} from "./types";
 
+export const EVENT_STDOUT = "stdout";
+export const EVENT_STDERR = "stderr";
+export const EVENT_ERROR = "error";
+export const EVENT_CLEAR = "clear";
+export const EVENT_DONE = "done";
+
 export const KEY_BINDINGS_KEY = "keyBindings";
 export const LANGUAGE_KEY = "languageKey";
 export const AUTO_RUN_KEY = "isAutoRum";
