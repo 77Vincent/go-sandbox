@@ -51,7 +51,7 @@ import {
     getLintOn, generateMarkers, getShowInvisible, getUrl, getLanguage
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
-import {KeyBindings, languages} from "../types";
+import {KeyBindings, languages, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
 
@@ -78,8 +78,7 @@ export default function Component(props: {
     const [code, setCode] = useState<string>(getCodeContent());
 
     // result
-    const [stdout, setStdout] = useState<string>("");
-    const [stderr, setStderr] = useState<string>("");
+    const [result, setResult] = useState<resultI[]>([]);
     const [error, setError] = useState<string>("")
     const [info, setInfo] = useState<string>("")
 
@@ -179,7 +178,7 @@ export default function Component(props: {
                 storeCode(stdout)
             }
             if (error) {
-                setStderr(error)
+                setResult([{type: EVENT_STDERR, content: error}])
                 setErrorRows(generateMarkers(error))
             }
             if (message) {
@@ -210,12 +209,12 @@ export default function Component(props: {
             } = await formatCode(latestCodeRef.current);
 
             setInfo("")
-            setStdout("")
+            setResult([])
 
             // format failed
             if (formatError) {
                 setError(formatMessage)
-                setStderr(formatError)
+                setResult([{type: EVENT_STDERR, content: formatError}])
 
                 setErrorRows(generateMarkers(formatError))
                 setIsRunning(false)
@@ -224,7 +223,7 @@ export default function Component(props: {
 
             // clean up
             setError("")
-            setStderr("")
+            setResult([])
             setErrorRows([]);
             storeCode(formatted)
 
@@ -236,7 +235,7 @@ export default function Component(props: {
             });
 
             source.addEventListener(EVENT_STDOUT, ({data}: MessageEvent) => {
-                setStdout(prev => prev + `${data}\n`)
+                setResult(prev => prev.concat({type: EVENT_STDOUT, content: data}))
             });
 
             source.addEventListener(EVENT_ERROR, ({data}: MessageEvent) => {
@@ -257,13 +256,12 @@ export default function Component(props: {
                     setErrorRows(markers)
                 }
 
-                setStderr(prev => prev + `${data}\n`)
+                setResult(prev => prev.concat({type: EVENT_STDERR, content: data}))
             });
 
             // clear the screen
             source.addEventListener(EVENT_CLEAR, () => {
-                setStdout("")
-                setStderr("")
+                setResult([])
             });
 
             source.addEventListener(EVENT_DONE, () => {
@@ -272,7 +270,7 @@ export default function Component(props: {
         } catch (e) {
             const err = e as Error
             setErrorRows(generateMarkers(err.message))
-            setStdout(err.message)
+            setResult([{type: EVENT_STDERR, content: err.message}])
             setIsRunning(false)
         }
     }, []);
@@ -478,8 +476,7 @@ export default function Component(props: {
                 <Terminal
                     hint={isAutoRun ? TRANSLATE.hintAuto[lan] : TRANSLATE.hintManual[lan]}
                     fontSize={fontSize}
-                    stdout={stdout}
-                    stderr={stderr}
+                    result={result}
                     info={info}
                     error={error}
                 />

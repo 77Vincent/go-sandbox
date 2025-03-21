@@ -26,3 +26,10 @@ export interface SSEEvent {
 }
 
 export type languages = "en" | "zh" | "ja" | "ko";
+
+export type resultType = "stdout" | "stderr"
+
+export interface resultI {
+    type: resultType;
+    content: string;
+}
