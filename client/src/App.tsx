@@ -1,12 +1,12 @@
 import Editor from "./modules/Editor";
-import {useEffect, useState} from "react";
+import {ReactNode, useEffect, useState} from "react";
 import {healthCheck} from "./api/api.ts";
 import {BrowserRouter} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 
 function App() {
-    const [toastError, setToastError] = useState<string>("");
-    const [toastInfo, setToastInfo] = useState<string>("");
+    const [toastError, setToastError] = useState<ReactNode>(null);
+    const [toastInfo, setToastInfo] = useState<ReactNode>(null);
 
     useEffect(() => {
         (async () => {

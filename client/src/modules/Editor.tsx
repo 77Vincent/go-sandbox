@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState, ChangeEvent, useEffect} from "react";
+import {useCallback, useRef, useState, ChangeEvent, useEffect, ReactNode} from "react";
 import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
@@ -53,10 +53,36 @@ import Settings from "./Settings.tsx";
 import {KeyBindings, languages, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
+import {Link} from "react-router-dom";
+
+function ShareSuccessMessage(props: {
+    url: string,
+}): ReactNode {
+    const {url} = props
+    return (
+        <div>
+            <p>The link has been copied to clipboard, share it with others:</p>
+            <Link to={url} className={"text-cyan-500 underline"}>{url}</Link>
+        </div>
+    )
+}
+
+function FetchErrorMessage(props: {
+    error: string
+}): ReactNode {
+    const {error} = props
+
+    return (
+        <div>
+            <p>{error}</p>
+            <p>Loading local cache instead</p>
+        </div>
+    )
+}
 
 export default function Component(props: {
-    setToastError: (message: string) => void
-    setToastInfo: (message: string) => void
+    setToastError: (message: ReactNode) => void
+    setToastInfo: (message: ReactNode) => void
 }) {
     const {setToastError, setToastInfo} = props
     const {mode, toggleMode} = useThemeMode();
@@ -102,6 +128,7 @@ export default function Component(props: {
     const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
     const [isShowInvisible, setIsShowInvisible] = useState<boolean>(getShowInvisible())
 
+    // fetch the snippet if the url contains the snippet id
     useEffect(() => {
         (async () => {
             const matches = location.pathname.match(SNIPPET_REGEX)
@@ -114,7 +141,7 @@ export default function Component(props: {
                         setCode(data)
                     }
                 } catch (e) {
-                    setToastError((e as Error).message)
+                    setToastError(<FetchErrorMessage error={(e as Error).message}/>)
                 }
             }
         })()
@@ -186,7 +213,7 @@ export default function Component(props: {
             const id = await shareSnippet(latestCodeRef.current);
             const url = `${location.origin}/snippet/${id}`
             await navigator.clipboard.writeText(url);
-            setToastInfo(`Copied to clipboard, share to others:\n${url}`)
+            setToastInfo(<ShareSuccessMessage url={url}/>)
         } catch (e) {
             setToastError((e as Error).message)
         }
@@ -391,15 +418,16 @@ export default function Component(props: {
 
             <div
                 className="shadow-sm border-b border-b-gray-300 dark:border-b-gray-600 flex justify-between items-center py-1 pl-2 pr-1  dark:text-white">
-                <div className={"flex items-center gap-2"}>
+                <Link to={""} className={"flex items-center gap-2 hover:opacity-70 transition-opacity duration-300"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
 
                     <div className="text-2xl italic text-gray-700 dark:text-cyan-500">Go Sandbox</div>
-                </div>
+                </Link>
 
                 <div className="flex gap-2 justify-end items-center">
                     <Tooltip content={"cmd/win + enter"}>
-                        <Button onClick={debouncedRun} disabled={isAutoRun || isRunning || !latestCodeRef.current} className={"shadow"}
+                        <Button onClick={debouncedRun} disabled={isAutoRun || isRunning || !latestCodeRef.current}
+                                className={"shadow"}
                                 size={"xs"}
                                 gradientDuoTone={"greenToBlue"}>
                             {TRANSLATE.run[lan]}
@@ -407,7 +435,8 @@ export default function Component(props: {
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + b"}>
-                        <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning || !latestCodeRef.current} className={"shadow"}
+                        <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning || !latestCodeRef.current}
+                                className={"shadow"}
                                 size={"xs"}
                                 color={mode === "dark" ? "light" : "cyan"}
                         >
@@ -416,7 +445,8 @@ export default function Component(props: {
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + e"}>
-                        <Button onClick={debouncedShare} disabled={isRunning || !latestCodeRef.current} className={"shadow"}
+                        <Button onClick={debouncedShare} disabled={isRunning || !latestCodeRef.current}
+                                className={"shadow"}
                                 color={mode === "dark" ? "light" : "cyan"}
                                 size={"xs"}>
                             {TRANSLATE.share[lan]}
