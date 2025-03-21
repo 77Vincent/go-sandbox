@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"github.com/tianqi-wen_frgr/best-go-playground/internal/db"
 	"net/http"
 )
 
@@ -12,7 +13,7 @@ func Fetch(c *gin.Context) {
 	// Fetch the snippet id from the URL parameter.
 	id := c.Param("id")
 	// Fetch the snippet from Redis.
-	code, err := rdb.Get(c, id).Result()
+	code, err := db.Redis().Get(c, id).Result()
 
 	if errors.Is(err, redis.Nil) {
 		c.AbortWithStatusJSON(http.StatusNotFound, response{Error: fmt.Sprintf("snippet %s not found", id)})
