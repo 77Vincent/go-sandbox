@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  server:
+    build: .
+    container_name: go-sandbox-server
+    platform: linux/arm64
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+  redis:
+    image: redis:7
+    container_name: go-sandbox-redis
+    ports:
+      - "6379:6379"
