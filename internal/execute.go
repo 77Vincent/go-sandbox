@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"
+	"strings"
 	"sync"
 )
 
@@ -212,4 +214,35 @@ func Execute(c *gin.Context) {
 		Data: []byte("event:done\ndata:Execution finished.\n\n"),
 	})
 	c.Writer.Flush()
+}
+
+var (
+	errorRe    = regexp.MustCompile(`^/tmp/code-[0-9]*\.go:`) // /tmp/code-123.go:
+	skipError  = regexp.MustCompile(`^# command-line-arguments`)
+	skipError2 = regexp.MustCompile(`^[0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} (Build|Execution) error: exit status [0-9]+`) // 2021/08/01 00:00:00
+)
+
+// these errors will not be return to users
+func shouldSkip(line []byte) bool {
+	return skipError.Match(line) || skipError2.Match(line)
+}
+
+func processError(line []byte) []byte {
+	return errorRe.ReplaceAll(line, []byte(""))
+}
+
+func isTestCode(code string) bool {
+	// If we see `func main(`, assume it has a main function
+	// this can prevent going through the code too further because func main usually appears at the beginning of the code
+	if strings.Contains(code, "func main(") {
+		return false
+	}
+
+	// If we see `func Test` or `func Benchmark`, assume it’s test code
+	// (You might refine this check for package _test or other details)
+	if strings.Contains(code, "func Test") || strings.Contains(code, "func Benchmark") {
+		return true
+	}
+
+	return false
 }
