@@ -1,4 +1,4 @@
-import {Dropdown, Label, Select, ThemeMode, Tooltip} from "flowbite-react";
+import {Dropdown, Label, Select, Tooltip} from "flowbite-react";
 import {ChangeEventHandler, MouseEvent} from "react";
 
 import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
@@ -9,7 +9,6 @@ import {
 import {ImTextColor as TextMIcon} from "react-icons/im"
 
 import {FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, LANGUAGES, TRANSLATE} from "../constants.ts";
-import {getActiveColor} from "../utils.ts";
 import {KeyBindings, languages} from "../types";
 import {ToggleSwitch} from "./Common.tsx";
 
@@ -19,7 +18,6 @@ export default function Component(props: {
     onLanguageChange: ChangeEventHandler<HTMLSelectElement>;
     // for editor fontSize
     fontSize: number;
-    themeMode: ThemeMode;
     onFontL: () => void;
     onFontS: () => void;
     onFontM: () => void;
@@ -40,7 +38,6 @@ export default function Component(props: {
         disabled,
         // for key bindings
         keyBindings,
-        themeMode,
         onKeyBindingsChange,
 
         // for language
@@ -65,16 +62,21 @@ export default function Component(props: {
         isShowInvisible,
         onShowInvisible,
     } = props;
-    const layoutClasses = "cursor-auto flex justify-between items-center gap-7";
+    const layoutClasses = "cursor-auto flex justify-between items-center gap-8";
     const handleSelectClick = (e: MouseEvent<HTMLSelectElement>) => {
         e.stopPropagation();
     };
 
     return (
-        <Dropdown disabled={disabled} className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"} arrowIcon={false} label={
+        <Dropdown disabled={disabled} className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"}
+                  arrowIcon={false} label={
             <SettingsIcon
                 className={"text-gray-700 dark:text-gray-300 text-lg cursor-pointer hover:opacity-50"}/>
         }>
+            <Dropdown.Header>
+                <p className={"font-semibold"}> Settings </p>
+            </Dropdown.Header>
+
             <Dropdown.Item className={layoutClasses}>
                 <Tooltip content={"Auto run code on change"}>
                     <span>{TRANSLATE.autoRun[lan]}</span>
@@ -104,11 +106,11 @@ export default function Component(props: {
                 <span>{TRANSLATE.fontSize[lan]}</span>
 
                 <div className={"flex gap-3 items-center"}>
-                    <TextSIcon color={fontSize === FONT_SIZE_S ? getActiveColor(themeMode) : ""}
+                    <TextSIcon color={fontSize === FONT_SIZE_S ? "cyan" : ""}
                                onClick={onFontS} className={"cursor-pointer hover:opacity-50 text-lg"}/>
-                    <TextMIcon color={fontSize === FONT_SIZE_M ? getActiveColor(themeMode) : ""}
+                    <TextMIcon color={fontSize === FONT_SIZE_M ? "cyan" : ""}
                                onClick={onFontM} className={"cursor-pointer hover:opacity-50 text-xl"}/>
-                    <TextLIcon color={fontSize === FONT_SIZE_L ? getActiveColor(themeMode) : ""}
+                    <TextLIcon color={fontSize === FONT_SIZE_L ? "cyan" : ""}
                                onClick={onFontL} className={"cursor-pointer hover:opacity-50 text-2xl"}/>
                 </div>
             </Dropdown.Item>

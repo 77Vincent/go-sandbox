@@ -1,6 +1,4 @@
 import {
-    ACTIVE_COLOR_DARK,
-    ACTIVE_COLOR_LIGHT,
     AUTO_RUN_KEY,
     BUILD_ERROR_PARSING_REGEX,
     CODE_CONTENT_KEY,
@@ -21,13 +19,8 @@ import {
     LINT_ON_KEY,
     SHOW_INVISIBLE_KEY
 } from "./constants.ts";
-import {ThemeMode} from "flowbite-react";
 import {KeyBindings, languages} from "./types";
 import {IMarker} from "react-ace";
-
-export function getActiveColor(mode: ThemeMode = "light"): string {
-    return mode === "dark" ? ACTIVE_COLOR_DARK : ACTIVE_COLOR_LIGHT
-}
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M

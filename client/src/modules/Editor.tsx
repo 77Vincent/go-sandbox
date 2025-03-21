@@ -381,14 +381,16 @@ export default function Component(props: {
                     <Tooltip content={"cmd/win + b"}>
                         <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning} className={"shadow"}
                                 size={"xs"}
-                                color={"cyan"}
+                                color={mode === "dark" ? "light" : "cyan"}
                         >
                             {TRANSLATE.format[lan]}
                         </Button>
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + e"}>
-                        <Button disabled={isRunning} className={"shadow"} color={"cyan"} size={"xs"}>
+                        <Button disabled={isRunning} className={"shadow"}
+                                color={mode === "dark" ? "light" : "cyan"}
+                                size={"xs"}>
                             {TRANSLATE.share[lan]}
                         </Button>
                     </Tooltip>
@@ -403,7 +405,6 @@ export default function Component(props: {
                             onFontL={onFontL}
                             onFontM={onFontM}
                             onFontS={onFontS}
-                            themeMode={mode}
                             onKeyBindingsChange={onKeyBindingsChange}
                             onLanguageChange={onLanguageChange}
                             keyBindings={keyBindings}
@@ -428,6 +429,9 @@ export default function Component(props: {
 
             <div className={"h-0 flex flex-1"}>
                 <Resizable
+                    handleClasses={{
+                        right: "hover:bg-cyan-200 transition-colors duration-300",
+                    }}
                     minWidth={"20%"}
                     maxWidth={"80%"}
                     enable={{
