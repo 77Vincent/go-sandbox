@@ -364,7 +364,7 @@ export default function Component(props: {
                 <Link to={"/"} className={"flex items-center gap-2"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
 
-                    <h1 className="text-2xl italic text-gray-600 dark:text-cyan-500">Go Sandbox </h1>
+                    <div className="text-2xl italic text-gray-600 dark:text-cyan-500">Go Sandbox</div>
                 </Link>
 
                 <div className="flex gap-2 justify-end items-center">

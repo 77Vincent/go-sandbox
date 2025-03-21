@@ -4,7 +4,6 @@ import {healthCheck} from "./api/api.ts";
 import {BrowserRouter} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 
-
 function App() {
     const [toastMessage, setToastMessage] = useState<string>("");
 

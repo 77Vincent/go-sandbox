@@ -6,7 +6,7 @@ client:
 build:
 	docker build --platform linux/arm64 -t go-sandbox .
 
-up:
+server:
 	docker run -p 8080:8080 go-sandbox
 
 push:

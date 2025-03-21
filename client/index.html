@@ -44,9 +44,22 @@
             "url": "https://go-sandbox.org/"
         }
     </script>
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            border: 0;
+            clip: rect(0, 0, 0, 0);
+        }
+    </style>
 </head>
 
 <body>
+<h1 class="sr-only">Go Sandbox - An Advanced Online Golang Playground</h1>
 <div id="root"></div>
 <script type="module" src="/src/main.tsx"></script>
 </body>
