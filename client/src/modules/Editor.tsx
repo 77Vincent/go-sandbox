@@ -29,7 +29,7 @@ import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
-import {formatCode} from "../api/api.ts";
+import {formatCode, shareCode} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -161,6 +161,16 @@ export default function Component(props: {
         // do not continue if the code is empty or running
         return isRunningRef.current || !latestCodeRef.current
     }
+
+    const shareCallback = useCallback(async () => {
+        try {
+            const url = await shareCode(latestCodeRef.current);
+            console.log(1111111, url)
+        } catch (e) {
+            setToastMessage((e as Error).message)
+        }
+    }, []);
+    const debouncedShare = useRef(debounce(shareCallback, RUN_DEBOUNCE_TIME)).current;
 
     // managed debounced format
     const formatCallback = useCallback(async () => {
@@ -385,7 +395,7 @@ export default function Component(props: {
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + e"}>
-                        <Button disabled={isRunning} className={"shadow"}
+                        <Button onClick={debouncedShare} disabled={isRunning} className={"shadow"}
                                 color={mode === "dark" ? "light" : "cyan"}
                                 size={"xs"}>
                             {TRANSLATE.share[lan]}

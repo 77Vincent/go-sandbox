@@ -7,7 +7,7 @@ build:
 	docker build --platform linux/arm64 -t go-sandbox .
 
 server:
-	docker-compose up
+	docker-compose up --build
 
 push:
 	aws ecr get-login-password | docker login --username AWS --password-stdin 733089366385.dkr.ecr.ap-northeast-1.amazonaws.com
