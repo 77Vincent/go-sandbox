@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"syscall"
 	"time"
 )
@@ -18,12 +19,40 @@ const (
 	timeoutExitCode = 124
 )
 
+var (
+	testCodeRegex = regexp.MustCompile(`(?i)code-.*_test\.go`)
+)
+
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatalf("Usage: %s <code-file>", os.Args[0])
 	}
 	codeFile := os.Args[1]
 
+	// 0. 检查代码文件是否是测试文件
+	// test file flow
+	if testCodeRegex.MatchString(codeFile) {
+		cmd := exec.Command("go", "test", codeFile)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		// 先设置 seccomp 筛选规则（必须在设置内存限制之前完成）
+		if err := internal.SetupSeccomp(); err != nil {
+			log.Fatalf("Failed to setup seccomp: %v", err)
+		}
+
+		// 然后设置资源限制（CPU 和内存）
+		if err := internal.SetLimits(); err != nil {
+			log.Fatalf("Failed to set resource limits: %v", err)
+		}
+
+		if err := cmd.Run(); err != nil {
+			// handle test failures or build errors
+			os.Exit(1)
+		}
+	}
+
+	// normal code flow
 	// 1. 编译用户代码，生成可执行文件
 	tmpDir, err := os.MkdirTemp("", "sandbox-build-")
 	if err != nil {
