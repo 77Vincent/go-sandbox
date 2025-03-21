@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -63,4 +64,20 @@ func Timeout(timeout time.Duration) gin.HandlerFunc {
 			return
 		}
 	}
+}
+
+func isTestCode(code string) bool {
+	// If we see `func main(`, assume it has a main function
+	// this can prevent going through the code too further because func main usually appears at the beginning of the code
+	if strings.Contains(code, "func main(") {
+		return false
+	}
+
+	// If we see `func Test` or `func Benchmark`, assume it’s test code
+	// (You might refine this check for package _test or other details)
+	if strings.Contains(code, "func Test") || strings.Contains(code, "func Benchmark") {
+		return true
+	}
+
+	return false
 }

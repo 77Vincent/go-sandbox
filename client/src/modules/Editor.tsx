@@ -3,7 +3,6 @@ import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
-import {Link} from "react-router";
 import {HiOutlineQuestionMarkCircle as AboutIcon} from "react-icons/hi"
 
 import {
@@ -361,11 +360,11 @@ export default function Component(props: {
 
             <div
                 className="shadow-sm border-b border-b-gray-300 dark:border-b-gray-600 flex justify-between items-center py-1 pl-2 pr-1  dark:text-white">
-                <Link to={"/"} className={"flex items-center gap-2"}>
+                <div className={"flex items-center gap-2"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
 
-                    <div className="text-2xl italic text-gray-600 dark:text-cyan-500">Go Sandbox</div>
-                </Link>
+                    <div className="text-2xl italic text-gray-700 dark:text-cyan-500">Go Sandbox</div>
+                </div>
 
                 <div className="flex gap-2 justify-end items-center">
                     <Tooltip content={"cmd/win + enter"}>

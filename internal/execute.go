@@ -14,12 +14,13 @@ import (
 )
 
 const (
-	chunkSize    = 1
-	stdoutKey    = "stdout"
-	stderrKey    = "stderr"
-	sandboxName  = "sandbox-runner"
-	tmpFileName  = "code-*.go"
-	timeoutError = "exit status 124"
+	chunkSize       = 1
+	stdoutKey       = "stdout"
+	stderrKey       = "stderr"
+	sandboxName     = "sandbox-runner"
+	tmpFileName     = "code-*.go"
+	tmpTestFileName = "code-*_test.go"
+	timeoutError    = "exit status 124"
 )
 
 func send(line []byte, event string, c *gin.Context, lock *sync.Mutex) {
@@ -60,8 +61,13 @@ func Execute(c *gin.Context) {
 		return
 	}
 
+	var fileName = tmpFileName
+	if isTestCode(req.Code) {
+		fileName = tmpTestFileName
+	}
+
 	// 1) 创建临时文件并写入用户代码
-	tmp, err := os.CreateTemp("", tmpFileName)
+	tmp, err := os.CreateTemp("", fileName)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
