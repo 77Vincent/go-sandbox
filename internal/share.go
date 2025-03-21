@@ -4,11 +4,11 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/tianqi-wen_frgr/best-go-playground/config"
 	"net/http"
+	"time"
 )
 
 // generateHashKey computes a SHA-256 hash for the given code snippet.
@@ -36,7 +36,7 @@ func Share(c *gin.Context) {
 	// snippet not found
 	if errors.Is(err, redis.Nil) {
 		// Save the snippet in Redis.
-		if err = rdb.Set(c, key, req.Code, config.CodeSnippetTTL).Err(); err != nil {
+		if err = rdb.Set(c, key, req.Code, config.CodeSnippetTTL*time.Hour).Err(); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 			return
 		}
@@ -48,7 +48,5 @@ func Share(c *gin.Context) {
 		return
 	}
 
-	// Construct and return the shareable URL.
-	shareURL := fmt.Sprintf("%s/snippet/%s", config.BaseUrl, key)
-	c.String(http.StatusOK, shareURL)
+	c.String(http.StatusOK, key)
 }

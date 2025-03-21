@@ -29,6 +29,8 @@ export type languages = "en" | "zh_CN" | "zh_TW" | "ja"
 
 export type resultType = "stdout" | "stderr"
 
+export type toastType = "info" | "error"
+
 export interface resultI {
     type: resultType;
     content: string;

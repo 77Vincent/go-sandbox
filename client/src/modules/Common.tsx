@@ -1,6 +1,10 @@
 import {ReactNode} from "react";
 import {Clipboard, Toast, Flowbite, CustomFlowbiteTheme} from "flowbite-react";
-import {HiExclamation} from "react-icons/hi";
+import {
+    HiExclamation as ErrorIcon,
+    HiInformationCircle as InfoIcon,
+} from "react-icons/hi";
+import {toastType} from "../types";
 
 export function Wrapper(props: {
     children: ReactNode,
@@ -20,20 +24,28 @@ export function Divider() {
     return <div className={"mx-1 h-4 w-1 border-r border-neutral-300 dark:border-neutral-500"}/>
 }
 
+const defaultToastType = "info"
+
 export function MyToast(props: {
     children: ReactNode,
-    className?: string
     show: boolean,
+    type?: toastType,
     setShowToast: (show: string) => void
 }) {
-    const {show, children, className, setShowToast} = props
-    const classes = `absolute z-10 bottom-6 left-6 ${className}`
+    const {type = defaultToastType, show, children, setShowToast} = props
+    const color = type === "info"
+        ? "bg-cyan-100 text-cyan-500 dark:bg-cyan-700 dark:text-cyan-200"
+        : "bg-orange-100 text-orange-500 dark:bg-orange-700 dark:text-orange-200"
 
     return (
-        show && <Toast className={classes}>
+        show && <Toast className={`absolute z-10 bottom-6 left-6 w-auto max-w-xl`}>
             <div
-                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-orange-500 dark:bg-orange-700 dark:text-orange-200 mr-2">
-                <HiExclamation className="h-5 w-5"/>
+                className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg mr-2 ${color}`}>
+                {
+                    type === "info" ?
+                        <InfoIcon className="h-5 w-5"/> :
+                        <ErrorIcon className="h-5 w-5"/>
+                }
             </div>
 
             <div className={"text-sm"}>

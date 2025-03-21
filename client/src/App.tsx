@@ -5,7 +5,8 @@ import {BrowserRouter} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 
 function App() {
-    const [toastMessage, setToastMessage] = useState<string>("");
+    const [toastError, setToastError] = useState<string>("");
+    const [toastInfo, setToastInfo] = useState<string>("");
 
     useEffect(() => {
         (async () => {
@@ -13,7 +14,7 @@ function App() {
                 await healthCheck();
                 console.log("backend api connected");
             } catch (e) {
-                setToastMessage(`No backend connection: ${(e as Error).message}`);
+                setToastError(`No backend connection: ${(e as Error).message}`);
             }
         })();
     }, []);
@@ -21,9 +22,10 @@ function App() {
     return (
         <BrowserRouter>
             <main>
-                <MyToast show={!!toastMessage} setShowToast={setToastMessage}>{toastMessage}</MyToast>
+                <MyToast type={"error"} show={!!toastError} setShowToast={setToastError}>{toastError}</MyToast>
+                <MyToast type={"info"} show={!!toastInfo} setShowToast={setToastInfo}>{toastInfo}</MyToast>
 
-                <Editor setToastMessage={setToastMessage}/>
+                <Editor setToastInfo={setToastInfo} setToastError={setToastError}/>
             </main>
         </BrowserRouter>
     );

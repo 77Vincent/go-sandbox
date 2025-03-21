@@ -23,13 +23,13 @@ import {
     TRANSLATE,
     STATS_INFO_PREFIX,
     SHOW_INVISIBLE_KEY,
-    LANGUAGE_KEY, EVENT_STDOUT, EVENT_ERROR, EVENT_STDERR, EVENT_CLEAR, EVENT_DONE
+    LANGUAGE_KEY, EVENT_STDOUT, EVENT_ERROR, EVENT_STDERR, EVENT_CLEAR, EVENT_DONE, SNIPPET_REGEX
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
-import {formatCode, shareCode} from "../api/api.ts";
+import {fetchSnippet, formatCode, shareSnippet} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -55,9 +55,10 @@ import About from "./About.tsx";
 import {SSE} from "sse.js";
 
 export default function Component(props: {
-    setToastMessage: (message: string) => void
+    setToastError: (message: string) => void
+    setToastInfo: (message: string) => void
 }) {
-    const {setToastMessage} = props
+    const {setToastError, setToastInfo} = props
     const {mode, toggleMode} = useThemeMode();
     const statusBarRef = useRef<HTMLDivElement | null>(null);
 
@@ -100,6 +101,24 @@ export default function Component(props: {
     const [isAutoRun, setIsAutoRun] = useState<boolean>(getAutoRun())
     const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
     const [isShowInvisible, setIsShowInvisible] = useState<boolean>(getShowInvisible())
+
+    useEffect(() => {
+        (async () => {
+            const matches = location.pathname.match(SNIPPET_REGEX)
+            if (matches) {
+                const raw = matches[0]
+                const id = raw.split("/")[2]
+                try {
+                    const data = await fetchSnippet(id)
+                    if (data) {
+                        setCode(data)
+                    }
+                } catch (e) {
+                    setToastError((e as Error).message)
+                }
+            }
+        })()
+    }, []);
 
     const onEditorLoad = (editor: Ace.Editor) => {
         // not ready to run
@@ -164,10 +183,12 @@ export default function Component(props: {
 
     const shareCallback = useCallback(async () => {
         try {
-            const url = await shareCode(latestCodeRef.current);
-            console.log(1111111, url)
+            const id = await shareSnippet(latestCodeRef.current);
+            const url = `${location.origin}/snippet/${id}`
+            await navigator.clipboard.writeText(url);
+            setToastInfo(`Copied to clipboard, share to others:\n${url}`)
         } catch (e) {
-            setToastMessage((e as Error).message)
+            setToastError((e as Error).message)
         }
     }, []);
     const debouncedShare = useRef(debounce(shareCallback, RUN_DEBOUNCE_TIME)).current;
@@ -196,7 +217,7 @@ export default function Component(props: {
 
             setIsRunning(false)
         } catch (e) {
-            setToastMessage((e as Error).message)
+            setToastError((e as Error).message)
             setIsRunning(false)
         }
     }, []);
@@ -378,7 +399,7 @@ export default function Component(props: {
 
                 <div className="flex gap-2 justify-end items-center">
                     <Tooltip content={"cmd/win + enter"}>
-                        <Button onClick={debouncedRun} disabled={isAutoRun || isRunning} className={"shadow"}
+                        <Button onClick={debouncedRun} disabled={isAutoRun || isRunning || !latestCodeRef.current} className={"shadow"}
                                 size={"xs"}
                                 gradientDuoTone={"greenToBlue"}>
                             {TRANSLATE.run[lan]}
@@ -386,7 +407,7 @@ export default function Component(props: {
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + b"}>
-                        <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning} className={"shadow"}
+                        <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning || !latestCodeRef.current} className={"shadow"}
                                 size={"xs"}
                                 color={mode === "dark" ? "light" : "cyan"}
                         >
@@ -395,7 +416,7 @@ export default function Component(props: {
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + e"}>
-                        <Button onClick={debouncedShare} disabled={isRunning} className={"shadow"}
+                        <Button onClick={debouncedShare} disabled={isRunning || !latestCodeRef.current} className={"shadow"}
                                 color={mode === "dark" ? "light" : "cyan"}
                                 size={"xs"}>
                             {TRANSLATE.share[lan]}
