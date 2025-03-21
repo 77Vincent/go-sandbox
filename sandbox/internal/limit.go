@@ -32,8 +32,10 @@ func SetupSeccomp() error {
 
 	// 要阻止的网络相关系统调用列表
 	disallowed := []string{
-		"socket", "socketpair", "connect", "accept", "accept4", "bind", "listen",
-		"sendto", "recvfrom", "sendmsg", "recvmsg",
+		// should allow them in order to run and access http server on localhost in the sandbox
+		// "socket", "bind", "listen", "accept", "accept4", "connect",
+		// should disallow them in order to prevent network access
+		"socketpair", "sendto", "recvfrom", "sendmsg", "recvmsg",
 	}
 
 	for _, call := range disallowed {
