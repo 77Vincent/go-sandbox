@@ -12,7 +12,7 @@ export async function healthCheck() {
 
 export async function fetchSnippet(id: string): Promise<string> {
     const res = await fetch(getUrl(`/snippet/${id}`));
-    if (res.status === HTTP_INTERNAL_ERROR || res.status === HTTP_NOT_FOUND) {
+    if (res.status >= HTTP_INTERNAL_ERROR || res.status === HTTP_NOT_FOUND) {
         const {error} = await res.json();
         throw new Error(error);
     }
@@ -29,7 +29,7 @@ export async function shareSnippet(code: string): Promise<string> {
         body: JSON.stringify({code}),
     });
 
-    if (res.status === HTTP_INTERNAL_ERROR) {
+    if (res.status >= HTTP_INTERNAL_ERROR) {
         const {error} = await res.json();
         throw new Error(error);
     }
@@ -46,7 +46,7 @@ export async function formatCode(code: string): Promise<ExecuteResultI> {
         body: JSON.stringify({code}),
     });
 
-    if (res.status === HTTP_INTERNAL_ERROR) {
+    if (res.status >= HTTP_INTERNAL_ERROR) {
         const {error} = await res.json();
         throw new Error(error);
     }
