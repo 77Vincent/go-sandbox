@@ -9,8 +9,11 @@ services:
       - "8080:8080"
     depends_on:
       - redis
+    restart: always
+
   redis:
     image: redis:7
     container_name: go-sandbox-redis
     ports:
       - "6379:6379"
+    restart: always
