@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState, ChangeEvent, useEffect, ReactNode} from "react";
-import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
+import {Button, DarkThemeToggle, Dropdown, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
@@ -29,6 +29,7 @@ import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
+import Templates from "./Templates.tsx";
 import {fetchSnippet, formatCode, shareSnippet} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
@@ -412,6 +413,10 @@ export default function Component(props: {
         }
     }
 
+    function onTemplateSelect(template: string) {
+        console.log(template)
+    }
+
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
@@ -454,6 +459,19 @@ export default function Component(props: {
                             {TRANSLATE.share[lan]}
                         </Button>
                     </Tooltip>
+
+                    <Divider/>
+
+                    <Templates onTemplateSelect={onTemplateSelect}/>
+
+                    <Dropdown color={"light"} size={"xs"} label={"Go 1.24"}>
+                        <Dropdown.Item>
+                            Go 1.24
+                        </Dropdown.Item>
+                        <Dropdown.Item>
+                            Go 1.23
+                        </Dropdown.Item>
+                    </Dropdown>
 
                     <div className={"flex items-center"}>
                         <Divider/>

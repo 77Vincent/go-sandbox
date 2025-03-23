@@ -148,3 +148,20 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         ja: "これはオンライン Go playground です。これは Go コードを書いて、コンパイルして、実行するための Web ベースのツールです。Go playground と Monaco エディターで動作します。",
     }
 }
+
+export const TEMPLATES: Record<string, Record<string, string>> = {
+    Basic: {
+        helloWorld: "Hello World",
+        goroutine: "Goroutine",
+        switchCase: "Switch case",
+        sleep: "Sleep",
+    },
+    Problems: {
+        fibonacci: "Fibonacci",
+        quickSort: "Quick sort",
+    },
+    Fun: {
+        clearScreen: "Clear screen",
+        httpServer: "HTTP server",
+    }
+}

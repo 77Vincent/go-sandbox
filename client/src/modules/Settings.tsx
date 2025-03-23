@@ -71,7 +71,7 @@ export default function Component(props: {
         <Dropdown disabled={disabled} className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"}
                   arrowIcon={false} label={
             <SettingsIcon
-                className={"text-gray-700 dark:text-gray-300 text-lg cursor-pointer hover:opacity-50"}/>
+                className={"cursor-pointer text-lg text-gray-700 hover:opacity-50 dark:text-gray-300"}/>
         }>
             <Dropdown.Header>
                 <p className={"font-semibold"}>{TRANSLATE.settings[lan]}</p>
@@ -99,13 +99,13 @@ export default function Component(props: {
             <Dropdown.Item className={layoutClasses}>
                 <span>{TRANSLATE.fontSize[lan]}</span>
 
-                <div className={"flex gap-3 items-center"}>
+                <div className={"flex items-center gap-3"}>
                     <TextSIcon color={fontSize === FONT_SIZE_S ? "cyan" : ""}
-                               onClick={onFontS} className={"cursor-pointer hover:opacity-50 text-lg"}/>
+                               onClick={onFontS} className={"cursor-pointer text-lg hover:opacity-50"}/>
                     <TextMIcon color={fontSize === FONT_SIZE_M ? "cyan" : ""}
-                               onClick={onFontM} className={"cursor-pointer hover:opacity-50 text-xl"}/>
+                               onClick={onFontM} className={"cursor-pointer text-xl hover:opacity-50"}/>
                     <TextLIcon color={fontSize === FONT_SIZE_L ? "cyan" : ""}
-                               onClick={onFontL} className={"cursor-pointer hover:opacity-50 text-2xl"}/>
+                               onClick={onFontL} className={"cursor-pointer text-2xl hover:opacity-50"}/>
                 </div>
             </Dropdown.Item>
 
