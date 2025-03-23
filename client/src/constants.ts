@@ -152,9 +152,12 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
 export const TEMPLATES: Record<string, Record<string, string>> = {
     Basic: {
         helloWorld: "Hello World",
-        goroutine: "Goroutine",
-        switchCase: "Switch case",
         sleep: "Sleep",
+        defer: "Defer",
+        switchCase: "Switch-case",
+        goroutine: "Goroutine",
+        channel: "Channel",
+        assertion: "Assertion",
     },
     Problems: {
         fibonacci: "Fibonacci",

@@ -12,20 +12,40 @@ const (
 	sleepCase      = "sleep"
 	httpServerCase = "httpServer"
 	switchCaseCase = "switchCase"
+	goroutineCase  = "goroutine"
+	channelCase    = "channel"
+	deferCase      = "defer"
+	assertionCase  = "assertion"
 	// problems
 	// fun
+	clearScreenCase = "clearScreen"
 )
 
 func GetTemplate(c *gin.Context) {
-	id := c.Param("id")
+	var (
+		id     = c.Param("id")
+		output = ""
+	)
 	switch id {
 	case sleepCase:
-		c.String(http.StatusOK, snippets.Sleep)
+		output = snippets.Sleep
 	case httpServerCase:
-		c.String(http.StatusOK, snippets.HttpServer)
+		output = snippets.HttpServer
 	case switchCaseCase:
-		c.String(http.StatusOK, snippets.SwitchCase)
+		output = snippets.SwitchCase
+	case goroutineCase:
+		output = snippets.Goroutine
+	case channelCase:
+		output = snippets.Channel
+	case deferCase:
+		output = snippets.Defer
+	case assertionCase:
+		output = snippets.Assertion
+	case clearScreenCase:
+		output = snippets.ClearScreen
 	default:
 		c.String(http.StatusNotFound, notFoundError)
 	}
+
+	c.String(http.StatusOK, output)
 }
