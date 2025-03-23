@@ -2,7 +2,7 @@ import {useCallback, useRef, useState, ChangeEvent, useEffect, ReactNode} from "
 import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
-import {Resizable, ResizeDirection, NumberSize} from "re-resizable";
+import {Resizable, ResizeDirection} from "re-resizable";
 import {HiOutlineQuestionMarkCircle as AboutIcon} from "react-icons/hi"
 
 import {
@@ -145,7 +145,7 @@ export default function Component(props: {
                 }
             }
         })()
-    }, []);
+    }, [setToastError]);
 
     const onEditorLoad = (editor: Ace.Editor) => {
         // not ready to run
@@ -217,7 +217,7 @@ export default function Component(props: {
         } catch (e) {
             setToastError((e as Error).message)
         }
-    }, []);
+    }, [setToastInfo, setToastError]);
     const debouncedShare = useRef(debounce(shareCallback, RUN_DEBOUNCE_TIME)).current;
 
     // managed debounced format
@@ -247,7 +247,7 @@ export default function Component(props: {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, []);
+    }, [setToastError]);
     const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
 
     // manage debounced run
@@ -385,7 +385,7 @@ export default function Component(props: {
         toggleMode();
     }
 
-    function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement, _deltas: NumberSize) {
+    function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         const size = (refToElement.clientWidth / window.innerWidth) * 100
         localStorage.setItem(EDITOR_SIZE_KEY, JSON.stringify(size))
         setEditorSize(size)
@@ -413,18 +413,18 @@ export default function Component(props: {
     }
 
     return (
-        <div className="relative h-screen flex flex-col dark:bg-neutral-900">
+        <div className="relative flex h-screen flex-col dark:bg-neutral-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
             <div
-                className="shadow-sm border-b border-b-gray-300 dark:border-b-gray-600 flex justify-between items-center py-1 pl-2 pr-1  dark:text-white">
-                <Link to={""} className={"flex items-center gap-2 hover:opacity-70 transition-opacity duration-300"}>
+                className="flex items-center justify-between border-b border-b-gray-300 py-1 pl-2 pr-1 shadow-sm dark:border-b-gray-600  dark:text-white">
+                <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
 
                     <div className="text-2xl italic text-gray-700 dark:text-cyan-500">Go Sandbox</div>
                 </Link>
 
-                <div className="flex gap-2 justify-end items-center">
+                <div className="flex items-center justify-end gap-2">
                     <Tooltip content={"cmd/win + enter"}>
                         <Button onClick={debouncedRun} disabled={isRunning || !latestCodeRef.current}
                                 className={"shadow"}
@@ -479,7 +479,7 @@ export default function Component(props: {
                         <Tooltip content={"About"}>
                             <AboutIcon
                                 onClick={() => setShowAbout(true)}
-                                className={"mx-1.5 text-gray-600 dark:text-gray-300 text-2xl cursor-pointer hover:opacity-50"}/>
+                                className={"mx-1.5 cursor-pointer text-2xl text-gray-600 hover:opacity-50 dark:text-gray-300"}/>
                         </Tooltip>
 
                         <DarkThemeToggle onClick={onDarkThemeToggle}/>
@@ -487,7 +487,7 @@ export default function Component(props: {
                 </div>
             </div>
 
-            <div className={"h-0 flex flex-1"}>
+            <div className={"flex h-0 flex-1"}>
                 <Resizable
                     handleClasses={{
                         right: "hover:bg-cyan-200 transition-colors duration-300",
@@ -504,7 +504,7 @@ export default function Component(props: {
                     grid={[10, 1]}
                     onResizeStop={onResizeStop}
                 >
-                    <Wrapper className={"border-r border-r-gray-400 dark:border-r-gray-600 flex flex-col"}>
+                    <Wrapper className={"flex flex-col border-r border-r-gray-400 dark:border-r-gray-600"}>
                         <ClickBoard content={code}/>
 
                         <AceEditor
