@@ -426,16 +426,17 @@ export default function Component(props: {
 
                 <div className="flex gap-2 justify-end items-center">
                     <Tooltip content={"cmd/win + enter"}>
-                        <Button onClick={debouncedRun} disabled={isAutoRun || isRunning || !latestCodeRef.current}
+                        <Button onClick={debouncedRun} disabled={isRunning || !latestCodeRef.current}
                                 className={"shadow"}
                                 size={"xs"}
-                                gradientDuoTone={"greenToBlue"}>
+                                color={mode === "dark" ? "light" : "cyan"}
+                        >
                             {TRANSLATE.run[lan]}
                         </Button>
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + b"}>
-                        <Button onClick={debouncedFormat} disabled={isAutoRun || isRunning || !latestCodeRef.current}
+                        <Button onClick={debouncedFormat} disabled={isRunning || !latestCodeRef.current}
                                 className={"shadow"}
                                 size={"xs"}
                                 color={mode === "dark" ? "light" : "cyan"}
@@ -445,10 +446,11 @@ export default function Component(props: {
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + e"}>
-                        <Button onClick={debouncedShare} disabled={isRunning || !latestCodeRef.current}
+                        <Button onClick={debouncedShare} disabled={!latestCodeRef.current}
                                 className={"shadow"}
-                                color={mode === "dark" ? "light" : "cyan"}
-                                size={"xs"}>
+                                size={"xs"}
+                                gradientDuoTone={"greenToBlue"}
+                        >
                             {TRANSLATE.share[lan]}
                         </Button>
                     </Tooltip>

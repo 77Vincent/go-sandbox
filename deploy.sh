@@ -7,10 +7,10 @@ git pull origin main
 echo "Building API service..."
 docker compose build server
 
-echo "Stopping old API container..."
+echo "Stopping old server container..."
 docker compose stop server
 
-echo "Starting new API container..."
+echo "Starting new server container..."
 docker compose up -d server
 
 echo "✅ Deployed successfully!"
