@@ -19,7 +19,10 @@ const (
 	fileIOCase        = "fileIO"
 	contextCancelCase = "contextCancel"
 	jsonCase          = "JSON"
+	mutexCase         = "mutex"
+	tickerCase        = "ticker"
 	// problems
+	fibonacciCase = "fibonacci"
 	// fun
 	clearScreenCase = "clearScreen"
 )
@@ -52,6 +55,12 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.ContextCancel
 	case jsonCase:
 		output = snippets.JSON
+	case fibonacciCase:
+		output = snippets.Fibonacci
+	case mutexCase:
+		output = snippets.Mutex
+	case tickerCase:
+		output = snippets.Ticker
 	default:
 		c.String(http.StatusNotFound, notFoundError)
 	}

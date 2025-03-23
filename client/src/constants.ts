@@ -159,8 +159,10 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
         channel: "Channel",
         assertion: "Assertion",
         fileIO: "File I/O",
-        contextCancel: "Context Cancel",
+        contextCancel: "Context",
         json: "JSON",
+        mutex: "Mutex",
+        ticker: "Ticker",
     },
     Problems: {
         fibonacci: "Fibonacci",
