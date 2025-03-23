@@ -158,6 +158,9 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
         goroutine: "Goroutine",
         channel: "Channel",
         assertion: "Assertion",
+        fileIO: "File I/O",
+        contextCancel: "Context Cancel",
+        json: "JSON",
     },
     Problems: {
         fibonacci: "Fibonacci",
@@ -166,5 +169,14 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
     Fun: {
         clearScreen: "Clear screen",
         httpServer: "HTTP server",
-    }
+    },
+    "Design Patterns": {
+        singleton: "Singleton",
+        factory: "Factory",
+        strategy: "Strategy",
+        template: "Template",
+        observer: "Observer",
+        decorator: "Decorator",
+        facade: "Facade",
+    },
 }

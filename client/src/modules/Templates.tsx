@@ -16,7 +16,7 @@ export default function Component(props: {
     }
 
     return (
-        <Dropdown disabled={isRunning} color={"light"} size={"xs"} label={"Templates"}>
+        <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"} label={"Templates"}>
             {
                 Object.keys(TEMPLATES).map(key => {
                     return (
@@ -29,7 +29,7 @@ export default function Component(props: {
                                     Object.entries(TEMPLATES[key]).map(([subkey, value]) => {
                                         return (
                                             <div
-                                                className={"rounded-md border border-gray-300 px-1.5 py-1 hover:border-cyan-300 hover:bg-cyan-100 dark:hover:bg-cyan-800"}
+                                                className={"rounded-md border border-gray-300 px-1.5 py-1 shadow-sm hover:border-cyan-300 hover:bg-cyan-100 dark:hover:border-cyan-200 dark:hover:bg-cyan-800"}
                                                 onClick={onClick(subkey)} key={subkey}>
                                                 {value}
                                             </div>

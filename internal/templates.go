@@ -9,13 +9,16 @@ import (
 const (
 	notFoundError = "template not found"
 	// basic
-	sleepCase      = "sleep"
-	httpServerCase = "httpServer"
-	switchCaseCase = "switchCase"
-	goroutineCase  = "goroutine"
-	channelCase    = "channel"
-	deferCase      = "defer"
-	assertionCase  = "assertion"
+	sleepCase         = "sleep"
+	httpServerCase    = "httpServer"
+	switchCaseCase    = "switchCase"
+	goroutineCase     = "goroutine"
+	channelCase       = "channel"
+	deferCase         = "defer"
+	assertionCase     = "assertion"
+	fileIOCase        = "fileIO"
+	contextCancelCase = "contextCancel"
+	jsonCase          = "JSON"
 	// problems
 	// fun
 	clearScreenCase = "clearScreen"
@@ -43,6 +46,12 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.Assertion
 	case clearScreenCase:
 		output = snippets.ClearScreen
+	case fileIOCase:
+		output = snippets.FileIO
+	case contextCancelCase:
+		output = snippets.ContextCancel
+	case jsonCase:
+		output = snippets.JSON
 	default:
 		c.String(http.StatusNotFound, notFoundError)
 	}
