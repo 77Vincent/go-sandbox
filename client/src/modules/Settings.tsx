@@ -1,4 +1,4 @@
-import {Dropdown, Label, Select, Tooltip} from "flowbite-react";
+import {Dropdown, Label, Select} from "flowbite-react";
 import {ChangeEventHandler, MouseEvent} from "react";
 
 import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
@@ -74,29 +74,23 @@ export default function Component(props: {
                 className={"text-gray-700 dark:text-gray-300 text-lg cursor-pointer hover:opacity-50"}/>
         }>
             <Dropdown.Header>
-                <p className={"font-semibold"}> Settings </p>
+                <p className={"font-semibold"}>{TRANSLATE.settings[lan]}</p>
             </Dropdown.Header>
 
             <Dropdown.Item className={layoutClasses}>
-                <Tooltip content={"Auto run code on change"}>
-                    <span>{TRANSLATE.autoRun[lan]}</span>
-                </Tooltip>
+                <span>{TRANSLATE.autoRun[lan]}</span>
 
                 <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
             </Dropdown.Item>
 
             <Dropdown.Item className={layoutClasses}>
-                <Tooltip content={"Lint while typing"}>
-                    <span>{TRANSLATE.lint[lan]}</span>
-                </Tooltip>
+                <span>{TRANSLATE.lint[lan]}</span>
 
                 <ToggleSwitch checked={isLintOn} onChange={onLint}/>
             </Dropdown.Item>
 
             <Dropdown.Item className={layoutClasses}>
-                <Tooltip content={"Show invisible characters"}>
-                    <span>{TRANSLATE.showInvisible[lan]}</span>
-                </Tooltip>
+                <span>{TRANSLATE.showInvisible[lan]}</span>
 
                 <ToggleSwitch checked={isShowInvisible} onChange={onShowInvisible}/>
             </Dropdown.Item>

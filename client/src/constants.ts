@@ -81,6 +81,12 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "關於",
         ja: "情報",
     },
+    settings: {
+        en: "Settings",
+        zh_CN: "设置",
+        zh_TW: "設置",
+        ja: "設定",
+    },
     hintAuto: {
         en: "Type something to run automatically",
         zh_CN: "输入内容以自动运行",
