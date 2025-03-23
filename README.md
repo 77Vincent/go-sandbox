@@ -6,11 +6,13 @@ highlighting and automatic realtime execution of your Go programs.
 ## Features
 
 ### Core
+
 - Automatic Realtime Execution
 - Overload protection
 - Automatic package management
 
 ### UI/UX
+
 - VIM and EMACS Keybindings
 - Syntax Highlighting
 - Code sharing
@@ -20,15 +22,24 @@ highlighting and automatic realtime execution of your Go programs.
 ## Development
 
 ### Prerequisites
+
 - Node.js
 - Docker
 
-**Client**
+### Client
+
 ```bash
 cd client && npm install && npm run dev
 ```
 
-**Server**
+or if you have installed once, then
+
+```bash
+make client
+```
+
+### Server
+
 ```bash
 make server
 ```
