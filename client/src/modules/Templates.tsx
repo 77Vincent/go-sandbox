@@ -3,9 +3,10 @@ import {TEMPLATES} from "../constants.ts";
 import {MouseEventHandler} from "react";
 
 export default function Component(props: {
+    isRunning: boolean,
     onTemplateSelect: (template: string) => void
 }) {
-    const {onTemplateSelect} = props;
+    const {onTemplateSelect, isRunning} = props;
 
     function onClick(key: string): MouseEventHandler<HTMLDivElement> {
         return (e) => {
@@ -15,7 +16,7 @@ export default function Component(props: {
     }
 
     return (
-        <Dropdown color={"light"} size={"xs"} label={"Templates"}>
+        <Dropdown disabled={isRunning} color={"light"} size={"xs"} label={"Templates"}>
             {
                 Object.keys(TEMPLATES).map(key => {
                     return (

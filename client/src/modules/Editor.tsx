@@ -30,7 +30,7 @@ import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import Templates from "./Templates.tsx";
-import {fetchSnippet, formatCode, shareSnippet} from "../api/api.ts";
+import {fetchSnippet, formatCode, getTemplate, shareSnippet} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -251,6 +251,23 @@ export default function Component(props: {
     }, [setToastError]);
     const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
 
+    const getTemplateCallback = useCallback(async (id: string) => {
+        if (shouldAbort()) {
+            return
+        }
+
+        try {
+            setIsRunning(true)
+            const code = await getTemplate(id);
+            setCode(code)
+            setIsRunning(false)
+        } catch (e) {
+            setToastError((e as Error).message)
+            setIsRunning(false)
+        }
+    }, [setToastError]);
+    const debouncedGetTemplate = useRef(debounce(getTemplateCallback, RUN_DEBOUNCE_TIME)).current;
+
     // manage debounced run
     const runCallback = useCallback(async () => {
         if (shouldAbort()) {
@@ -413,10 +430,6 @@ export default function Component(props: {
         }
     }
 
-    function onTemplateSelect(template: string) {
-        console.log(template)
-    }
-
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
@@ -462,7 +475,7 @@ export default function Component(props: {
 
                     <Divider/>
 
-                    <Templates onTemplateSelect={onTemplateSelect}/>
+                    <Templates isRunning={isRunning} onTemplateSelect={debouncedGetTemplate}/>
 
                     <Dropdown color={"light"} size={"xs"} label={"Go 1.24"}>
                         <Dropdown.Item>
