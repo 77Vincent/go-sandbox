@@ -2,81 +2,68 @@ package snippets
 
 const SwitchCase = `package main
 
-import (
-    "fmt"
-)
+import "fmt"
 
 func main() {
-    // Example 1: Basic switch-case with an integer
-    number := 3
-    fmt.Println("Example 1: Basic switch-case with an integer:")
-    switch number {
+    // 1. Basic switch-case
+    num := 3
+    switch num {
     case 1:
-        fmt.Println("Number is one")
+        fmt.Println("One")
     case 2:
-        fmt.Println("Number is two")
+        fmt.Println("Two")
     case 3:
-        fmt.Println("Number is three")
+        fmt.Println("Three")
     default:
-        fmt.Println("Unknown number")
+        fmt.Println("Unknown")
     }
-    fmt.Println()
 
-    // Example 2: Switch with multiple expressions in one case
+    // 2. Multiple values in one case
     day := "Sat"
-    fmt.Println("Example 2: Switch with multiple expressions in one case:")
     switch day {
     case "Sat", "Sun":
-        fmt.Println("It's the weekend")
+        fmt.Println("Weekend")
     default:
-        fmt.Println("It's a weekday")
+        fmt.Println("Weekday")
     }
-    fmt.Println()
 
-    // Example 3: Switch without an expression (similar to if-else)
+    // 3. Switch without an expression (if-else style)
     score := 85
-    fmt.Println("Example 3: Switch without an expression (if-else chain):")
     switch {
     case score >= 90:
-        fmt.Println("Grade: A")
+        fmt.Println("Grade A")
     case score >= 80:
-        fmt.Println("Grade: B")
+        fmt.Println("Grade B")
     case score >= 70:
-        fmt.Println("Grade: C")
-    case score >= 60:
-        fmt.Println("Grade: D")
+        fmt.Println("Grade C")
     default:
-        fmt.Println("Grade: F")
+        fmt.Println("Grade D or F")
     }
-    fmt.Println()
 
-    // Example 4: Using fallthrough to execute subsequent case blocks
+    // 4. Using fallthrough to execute subsequent cases
     level := 1
-    fmt.Println("Example 4: Switch-case with fallthrough:")
     switch level {
     case 1:
-        fmt.Println("Level 1: Beginner")
-        fallthrough // fallthrough continues to the next case regardless of its condition
+        fmt.Println("Beginner")
+        fallthrough
     case 2:
-        fmt.Println("Level 2: Intermediate")
+        fmt.Println("Intermediate")
         fallthrough
     case 3:
-        fmt.Println("Level 3: Advanced")
+        fmt.Println("Advanced")
     default:
-        fmt.Println("Other level")
+        fmt.Println("Other")
     }
-    fmt.Println()
 
-    // Example 5: Type switch to determine the underlying type of an interface value
-    var value interface{} = 3.14
-    fmt.Println("Example 5: Type switch to determine variable type:")
-    switch v := value.(type) {
+    // 5. Type switch to determine the underlying type
+    var val interface{} = 3.14
+    switch v := val.(type) {
     case int:
-        fmt.Printf("Type is int, value: %d\n", v)
+        fmt.Println("Type int:", v)
     case float64:
-        fmt.Printf("Type is float64, value: %f\n", v)
+        fmt.Println("Type float64:", v)
     case string:
-        fmt.Printf("Type is string, value: %s\n", v)
+        fmt.Println("Type string:", v)
     default:
         fmt.Println("Unknown type")
     }
