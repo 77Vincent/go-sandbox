@@ -18,8 +18,8 @@ func generateHashKey(code []byte) string {
 	return hex.EncodeToString(hash[:16])
 }
 
-// Share handles POST requests to save a snippet in Redis.
-func Share(c *gin.Context) {
+// ShareSnippet handles POST requests to save a snippet in Redis.
+func ShareSnippet(c *gin.Context) {
 	var req request
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, response{

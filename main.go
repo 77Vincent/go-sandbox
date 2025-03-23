@@ -36,9 +36,10 @@ func main() {
 
 	// routes
 	r.GET("/status", timeout, internal.Status)
+	r.GET("/templates/:id", timeout, internal.Status)
 	r.POST("/format", timeout, internal.Format)
-	r.POST("/snippet", timeout, internal.Share)
-	r.GET("/snippet/:id", timeout, internal.Fetch)
+	r.POST("/snippet", timeout, internal.ShareSnippet)
+	r.GET("/snippet/:id", timeout, internal.FetchSnippet)
 	r.POST("/execute", internal.Execute)
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

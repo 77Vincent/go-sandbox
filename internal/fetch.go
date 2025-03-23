@@ -9,10 +9,10 @@ import (
 	"net/http"
 )
 
-func Fetch(c *gin.Context) {
-	// Fetch the snippet id from the URL parameter.
+func FetchSnippet(c *gin.Context) {
+	// FetchSnippet the snippet id from the URL parameter.
 	id := c.Param("id")
-	// Fetch the snippet from Redis.
+	// FetchSnippet the snippet from Redis.
 	code, err := db.Redis().Get(c, id).Result()
 
 	if errors.Is(err, redis.Nil) {
