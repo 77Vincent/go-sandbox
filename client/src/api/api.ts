@@ -5,7 +5,8 @@ import {getUrl} from "../utils.ts";
 export async function healthCheck() {
     const res = await fetch(getUrl("/status"));
     if (!res.ok) {
-        throw new Error("Failed to fetch");
+        const {error} = await res.json();
+        throw new Error(error);
     }
     return await res.json();
 }

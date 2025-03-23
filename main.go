@@ -32,6 +32,8 @@ func main() {
 	// a global timeout middleware as a safety net
 	timeout := internal.Timeout(config.APIGlobalTimeout * time.Second)
 
+	r.Use(gin.CustomRecovery(internal.PanicRecovery))
+
 	// routes
 	r.GET("/status", timeout, internal.Status)
 	r.POST("/format", timeout, internal.Format)
