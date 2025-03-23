@@ -23,7 +23,7 @@ import {
     TRANSLATE,
     STATS_INFO_PREFIX,
     SHOW_INVISIBLE_KEY,
-    LANGUAGE_KEY, EVENT_STDOUT, EVENT_ERROR, EVENT_STDERR, EVENT_CLEAR, EVENT_DONE, SNIPPET_REGEX
+    LANGUAGE_KEY, EVENT_STDOUT, EVENT_ERROR, EVENT_STDERR, EVENT_CLEAR, EVENT_DONE, SNIPPET_REGEX, DEFAULT_CODE_CONTENT
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -256,10 +256,15 @@ export default function Component(props: {
             return
         }
 
+        if (id === "helloWorld") {
+            storeCode(DEFAULT_CODE_CONTENT)
+            return
+        }
+
         try {
             setIsRunning(true)
             const code = await getTemplate(id);
-            setCode(code)
+            storeCode(code);
             setIsRunning(false)
         } catch (e) {
             setToastError((e as Error).message)
