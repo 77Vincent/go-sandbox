@@ -9,12 +9,13 @@ const infoColor = "text-green-600 dark:text-green-300"
 
 export default function Component(props: {
     hint: string,
+    running: boolean,
     result: resultI[],
     fontSize: number,
     info: string,
     error: string,
 }) {
-    const {fontSize, result, info, error, hint} = props
+    const {fontSize, result, info, error, running, hint} = props
 
     return (
         <Wrapper
@@ -24,9 +25,11 @@ export default function Component(props: {
             }/>
 
             {
-                (!error && !info && !result.length) &&
-                <div className={"text-neutral-400 dark:text-neutral-600 font-light"}>
-                    {hint}
+                (!error && !info) &&
+                <div className={`${common} text-neutral-400 dark:text-neutral-600 font-light`}>
+                    {
+                        running ? "Running..." : hint
+                    }
                 </div>
             }
 

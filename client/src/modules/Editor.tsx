@@ -304,7 +304,7 @@ export default function Component(props: {
                 // special case -- stats info wrapped in the stderr
                 if (data.startsWith(STATS_INFO_PREFIX)) {
                     const [time, mem] = data.replace(STATS_INFO_PREFIX, "").split(";")
-                    setInfo(`Time: ${time}\nMemory: ${mem}kb`)
+                    setInfo(`Time: ${time} | Memory: ${mem}kb`)
                     return
                 }
 
@@ -537,6 +537,7 @@ export default function Component(props: {
 
                 <Terminal
                     hint={isAutoRun ? TRANSLATE.hintAuto[lan] : TRANSLATE.hintManual[lan]}
+                    running={isRunning}
                     fontSize={fontSize}
                     result={result}
                     info={info}
