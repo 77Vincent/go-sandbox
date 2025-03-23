@@ -23,7 +23,14 @@ import {
     TRANSLATE,
     STATS_INFO_PREFIX,
     SHOW_INVISIBLE_KEY,
-    LANGUAGE_KEY, EVENT_STDOUT, EVENT_ERROR, EVENT_STDERR, EVENT_CLEAR, EVENT_DONE, SNIPPET_REGEX, DEFAULT_CODE_CONTENT
+    LANGUAGE_KEY,
+    EVENT_STDOUT,
+    EVENT_ERROR,
+    EVENT_STDERR,
+    EVENT_CLEAR,
+    EVENT_DONE,
+    SNIPPET_REGEX,
+    DEFAULT_CODE_CONTENT,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -90,7 +97,6 @@ export default function Component(props: {
     const statusBarRef = useRef<HTMLDivElement | null>(null);
 
     const [showAbout, setShowAbout] = useState<boolean>(false);
-
 
     // error state
     const [errorRows, setErrorRows] = useState<IMarker[]>([]);

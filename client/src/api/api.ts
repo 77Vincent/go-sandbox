@@ -13,7 +13,7 @@ export async function healthCheck() {
 
 export async function getTemplate(id: string): Promise<string> {
     const res = await fetch(getUrl(`/templates/${id}`));
-    if (res.status >= HTTP_INTERNAL_ERROR || res.status === HTTP_NOT_FOUND) {
+    if (res.status >= HTTP_INTERNAL_ERROR) {
         const {error} = await res.json();
         throw new Error(error);
     }
