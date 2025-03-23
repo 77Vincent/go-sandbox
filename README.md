@@ -1,7 +1,6 @@
-# Go Sandbox - An Advanced Online Golang Playground
+# Go Sandbox - An Advanced Online Golang Editor
 
-Experience seamless Golang development with Go Sandbox – a lightweight and advanced online editor featuring syntax
-highlighting and automatic realtime execution of your Go programs.
+https://go-sandbox.org/
 
 ## Features
 
@@ -9,15 +8,13 @@ highlighting and automatic realtime execution of your Go programs.
 
 - Automatic Realtime Execution
 - Overload protection
-- Automatic package management
 
 ### UI/UX
 
 - VIM and EMACS Keybindings
 - Syntax Highlighting
-- Code sharing
-- Code templates
-- Dark and Light themes
+- Code templating and sharing
+- Dark mode
 
 ## Development
 
