@@ -18,11 +18,13 @@ const (
 	assertionCase     = "assertion"
 	fileIOCase        = "fileIO"
 	contextCancelCase = "contextCancel"
-	jsonCase          = "JSON"
+	jsonCase          = "json"
 	mutexCase         = "mutex"
 	tickerCase        = "ticker"
 	// problems
-	fibonacciCase = "fibonacci"
+	fibonacciCase    = "fibonacci"
+	quickSortCase    = "quickSort"
+	binarySearchCase = "binarySearch"
 	// fun
 	clearScreenCase = "clearScreen"
 )
@@ -61,6 +63,10 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.Mutex
 	case tickerCase:
 		output = snippets.Ticker
+	case quickSortCase:
+		output = snippets.QuickSort
+	case binarySearchCase:
+		output = snippets.BinarySearch
 	default:
 		c.String(http.StatusNotFound, notFoundError)
 	}
