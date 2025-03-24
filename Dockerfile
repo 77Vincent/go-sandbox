@@ -12,11 +12,11 @@ RUN apk update && apk add --no-cache \
     musl-dev
 
 WORKDIR /go/src/app
-COPY go.mod go.sum ./
+COPY sandbox/go.mod sandbox/go.sum ./
 RUN go mod download
-COPY . .
+COPY sandbox .
 
-RUN go build -o sandbox-runner-1 ./sandbox/main.go
+RUN go build -o sandbox-runner-1 .
 
 FROM golang:1.23-alpine AS build-runner-2
 
@@ -32,11 +32,11 @@ RUN apk update && apk add --no-cache \
     musl-dev
 
 WORKDIR /go/src/app
-COPY go.mod go.sum ./
+COPY sandbox/go.mod sandbox/go.sum ./
 RUN go mod download
-COPY . .
+COPY sandbox .
 
-RUN go build -o sandbox-runner-2 ./sandbox/main.go
+RUN go build -o sandbox-runner-2 .
 
 FROM golang:1.24-alpine AS build-backend
 

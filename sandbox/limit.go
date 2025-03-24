@@ -1,20 +1,19 @@
-package internal
+package main
 
 import (
 	"github.com/seccomp/libseccomp-golang"
-	"github.com/tianqi-wen_frgr/go-sandbox/config"
 	"syscall"
 )
 
 // SetLimits 限制 CPU 时间和内存（这里 CPU 限制为 2 秒，内存限制为 256MB）
 func SetLimits() error {
 	// CPU 限制（秒）
-	rlimCPU := &syscall.Rlimit{Cur: config.SandboxCPUTimeLimit, Max: config.SandboxCPUTimeLimit}
+	rlimCPU := &syscall.Rlimit{Cur: sandboxCPUTimeLimit, Max: sandboxCPUTimeLimit}
 	if err := syscall.Setrlimit(syscall.RLIMIT_CPU, rlimCPU); err != nil {
 		return err
 	}
 	// 内存限制（字节），调高至 1GB
-	rlimMem := &syscall.Rlimit{Cur: config.SandboxMemoryLimit, Max: config.SandboxMemoryLimit}
+	rlimMem := &syscall.Rlimit{Cur: sandboxMemoryLimit, Max: sandboxMemoryLimit}
 	if err := syscall.Setrlimit(syscall.RLIMIT_AS, rlimMem); err != nil {
 		return err
 	}
