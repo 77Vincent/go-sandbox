@@ -19,8 +19,9 @@ const (
 	chunkSize       = 1
 	stdoutKey       = "stdout"
 	stderrKey       = "stderr"
-	sandboxRunner1  = "sandbox-runner-1"
-	sandboxRunner2  = "sandbox-runner-2"
+	sandboxRunner1  = "./sandbox-runner-1"
+	sandboxRunner2  = "./sandbox-runner-2"
+	sandboxRunner3  = "./sandbox-runner-3"
 	tmpFileName     = "code-*.go"
 	tmpTestFileName = "code-*_test.go"
 	timeoutError    = "exit status 124"
@@ -72,13 +73,21 @@ func Execute(c *gin.Context) {
 		fileName = tmpTestFileName
 	}
 
+	var (
+		env  = os.Environ()
+		path = os.Getenv("PATH")
+	)
 	switch req.Version {
 	case "1":
 		sandboxVersion = sandboxRunner1
+		env = append(env, "PATH=/go1/bin:"+path)
 	case "2":
 		sandboxVersion = sandboxRunner2
+		env = append(env, "PATH=/go2/bin:"+path)
+	case "3":
+		sandboxVersion = sandboxRunner3
+		env = append(env, "PATH=/go3/bin:"+path)
 	}
-	fmt.Println("sandboxVersion:", sandboxVersion)
 
 	// 1) 创建临时文件并写入用户代码
 	tmp, err := os.CreateTemp("", fileName)
@@ -98,6 +107,7 @@ func Execute(c *gin.Context) {
 	}
 
 	cmd := exec.Command(sandboxVersion, tmp.Name())
+	cmd.Env = env
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
