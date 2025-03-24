@@ -22,6 +22,7 @@ const (
 	sandboxRunner1  = "./sandbox-runner-1"
 	sandboxRunner2  = "./sandbox-runner-2"
 	sandboxRunner3  = "./sandbox-runner-3"
+	sandboxRunner4  = "./sandbox-runner-4"
 	tmpFileName     = "code-*.go"
 	tmpTestFileName = "code-*_test.go"
 	timeoutError    = "exit status 124"
@@ -87,6 +88,9 @@ func Execute(c *gin.Context) {
 	case "3":
 		sandboxVersion = sandboxRunner3
 		env = append(env, "PATH=/go3/bin:"+path)
+	case "4":
+		sandboxVersion = sandboxRunner4
+		env = append(env, "PATH=/go4/bin:"+path)
 	}
 
 	// 1) 创建临时文件并写入用户代码

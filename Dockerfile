@@ -4,7 +4,6 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-# 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
 RUN apk update && apk add --no-cache \
     pkgconfig \
     libseccomp-dev \
@@ -24,7 +23,6 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-# 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
 RUN apk update && apk add --no-cache \
     pkgconfig \
     libseccomp-dev \
@@ -44,7 +42,6 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-# 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
 RUN apk update && apk add --no-cache \
     pkgconfig \
     libseccomp-dev \
@@ -57,6 +54,25 @@ RUN go mod download
 COPY sandbox .
 
 RUN go build -o sandbox-runner-3 .
+
+FROM golang:tip-alpine AS build-runner-4
+
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=arm64
+
+RUN apk update && apk add --no-cache \
+    pkgconfig \
+    libseccomp-dev \
+    gcc \
+    musl-dev
+
+WORKDIR /go/src/app
+COPY sandbox/go.mod sandbox/go.sum ./
+RUN go mod download
+COPY sandbox .
+
+RUN go build -o sandbox-runner-4 .
 
 FROM golang:1.24-alpine AS build-backend
 
@@ -98,11 +114,13 @@ COPY --from=build-backend /go/src/app/server ./
 COPY --from=build-runner-1 /go/src/app/sandbox-runner-1 ./
 COPY --from=build-runner-2 /go/src/app/sandbox-runner-2 ./
 COPY --from=build-runner-3 /go/src/app/sandbox-runner-3 ./
+COPY --from=build-runner-4 /go/src/app/sandbox-runner-4 ./
 
 # Copy the go toolchain from each runner stage into separate directories
 COPY --from=build-runner-1 /usr/local/go /go1
 COPY --from=build-runner-2 /usr/local/go /go2
 COPY --from=build-runner-3 /usr/local/go /go3
+COPY --from=build-runner-4 /usr/local/go /go4
 
 EXPOSE 3000
 
