@@ -3,7 +3,8 @@ client:
 	cd client && npm run dev
 
 server:
-	docker-compose up --build
+	docker-compose up --build -d
+down:
+	docker-compose down --rmi all --volumes --remove-orphans
 
-
-.PHONY: client server
+.PHONY: client server down
