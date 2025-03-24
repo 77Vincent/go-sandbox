@@ -1,26 +1,5 @@
 # ---- Build sandbox-runner with Go 1.19 ----
-FROM golang:1.23-alpine AS build-runner-1
-
-ENV CGO_ENABLED=1
-ENV GOOS=linux
-ENV GOARCH=arm64
-
-# 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
-RUN apk update && apk add --no-cache \
-    pkgconfig \
-    libseccomp-dev \
-    gcc \
-    musl-dev
-
-WORKDIR /go/src/app
-COPY go.mod go.sum ./
-RUN go mod download
-COPY . .
-
-RUN go build -o sandbox-runner-1 ./sandbox/main.go
-
-# ---- Build sandbox-runner with Go 1.24 ----
-FROM golang:1.24-alpine AS build-runner-2
+FROM golang:1.23-alpine AS build-runner-2
 
 ENV CGO_ENABLED=1
 ENV GOOS=linux
@@ -39,6 +18,27 @@ RUN go mod download
 COPY . .
 
 RUN go build -o sandbox-runner-2 ./sandbox/main.go
+
+# ---- Build sandbox-runner with Go 1.24 ----
+FROM golang:1.24-alpine AS build-runner-1
+
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=arm64
+
+# 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
+RUN apk update && apk add --no-cache \
+    pkgconfig \
+    libseccomp-dev \
+    gcc \
+    musl-dev
+
+WORKDIR /go/src/app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+
+RUN go build -o sandbox-runner-1 ./sandbox/main.go
 
 FROM golang:1.24-alpine AS build-backend
 
