@@ -17,7 +17,7 @@ func main() {
 	})
 
 	log.Println("Starting server...")
-	l, err := net.Listen("tcp", "localhost:3000")
+	l, err := net.Listen("tcp", "localhost:8080")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,7 +26,7 @@ func main() {
 	}()
 
 	log.Println("Sending request...")
-	res, err := http.Get("http://localhost:3000/hello")
+	res, err := http.Get("http://localhost:8080/hello")
 	if err != nil {
 		log.Fatal(err)
 	}
