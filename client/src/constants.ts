@@ -169,6 +169,7 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
         quickSort: "Quick sort",
         binarySearch: "Binary search",
         bfs: "BFS",
+        dfs: "DFS",
     },
     Fun: {
         clearScreen: "Clear screen",

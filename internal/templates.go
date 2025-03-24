@@ -26,6 +26,7 @@ const (
 	quickSortCase    = "quickSort"
 	binarySearchCase = "binarySearch"
 	bfsCase          = "bfs"
+	dfsCase          = "dfs"
 	// fun
 	clearScreenCase = "clearScreen"
 )
@@ -70,6 +71,8 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.BinarySearch
 	case bfsCase:
 		output = snippets.Bfs
+	case dfsCase:
+		output = snippets.Dfs
 	default:
 		c.String(http.StatusNotFound, notFoundError)
 	}
