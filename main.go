@@ -42,7 +42,5 @@ func main() {
 	r.GET("/snippet/:id", timeout, internal.FetchSnippet)
 	r.POST("/execute", internal.Execute)
 
-	if err := r.Run(config.ApiServerPort); err != nil {
-		panic(err)
-	}
+	r.Run(config.ApiServerPort)
 }

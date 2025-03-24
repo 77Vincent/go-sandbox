@@ -6,7 +6,7 @@ services:
     container_name: go-sandbox-server
     platform: linux/arm64
     ports:
-      - "8080:8080"
+      - "3000:3000"
     depends_on:
       - redis
     restart: always
