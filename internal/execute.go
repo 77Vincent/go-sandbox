@@ -78,6 +78,7 @@ func Execute(c *gin.Context) {
 	case "2":
 		sandboxVersion = sandboxRunner2
 	}
+	fmt.Println("sandboxVersion:", sandboxVersion)
 
 	// 1) 创建临时文件并写入用户代码
 	tmp, err := os.CreateTemp("", fileName)
