@@ -6,6 +6,7 @@ export const EVENT_ERROR = "error";
 export const EVENT_CLEAR = "clear";
 export const EVENT_DONE = "done";
 
+export const SANDBOX_VERSION_KEY = "sandboxVersion";
 export const KEY_BINDINGS_KEY = "keyBindings";
 export const LANGUAGE_KEY = "languageKey";
 export const AUTO_RUN_KEY = "isAutoRum";
@@ -17,6 +18,8 @@ export const CODE_CONTENT_KEY = "codeContent";
 export const CURSOR_ROW_KEY = "cursorPositionRow";
 export const CURSOR_COLUMN_KEY = "cursorPositionColumn";
 
+export const SANDBOX_VERSION_2 = "2";
+export const SANDBOX_VERSION_1 = "1";
 export const DEFAULT_KEY_BINDINGS: KeyBindings = "";
 export const DEFAULT_AUTO_RUN = "true";
 export const DEFAULT_LINT_ON = "false";
@@ -48,6 +51,11 @@ export const STATS_INFO_PREFIX = "STATS_INFO:"
 
 export const HTTP_INTERNAL_ERROR = 500
 export const HTTP_NOT_FOUND = 404
+
+export const SANDBOX_VERSIONS: Record<string, string> = {
+    "1": "Go 1.24",
+    "2": "Go 1.23",
+}
 
 export const LANGUAGES: { value: languages, label: string }[] = [
     {value: "en", label: "English"},

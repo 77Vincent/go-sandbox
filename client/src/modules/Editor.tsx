@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState, ChangeEvent, useEffect, ReactNode} from "react";
-import {Button, DarkThemeToggle, Dropdown, Tooltip, useThemeMode} from "flowbite-react";
+import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
@@ -30,13 +30,14 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    DEFAULT_CODE_CONTENT,
+    DEFAULT_CODE_CONTENT, SANDBOX_VERSIONS, SANDBOX_VERSION_KEY,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
-import Templates from "./Templates.tsx";
+import TemplateSelector from "./TemplateSelector.tsx";
+import VersionSelector from "./VersionSelector.tsx";
 import {fetchSnippet, formatCode, getTemplate, shareSnippet} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
@@ -55,7 +56,7 @@ import {
     getCursorRow,
     getKeyBindings,
     getEditorSize, getFontSize,
-    getLintOn, generateMarkers, getShowInvisible, getUrl, getLanguage
+    getLintOn, generateMarkers, getShowInvisible, getUrl, getLanguage, getSandboxVersion
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages, resultI} from "../types";
@@ -105,6 +106,7 @@ export default function Component(props: {
     const [fontSize, setFontSize] = useState<number>(getFontSize());
     const [editorSize, setEditorSize] = useState<number>(getEditorSize())
     const [lan, setLan] = useState<languages>(getLanguage())
+    const [sandboxVersion, setSandboxVersion] = useState<string>(getSandboxVersion())
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -393,6 +395,11 @@ export default function Component(props: {
         setKeyBindings(value)
     }
 
+    function onSandboxVersionChange(version: string) {
+        localStorage.setItem(SANDBOX_VERSION_KEY, version);
+        setSandboxVersion(version)
+    }
+
     function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
         event.stopPropagation();
         const value = event.target.value as languages
@@ -486,16 +493,8 @@ export default function Component(props: {
 
                     <Divider/>
 
-                    <Templates isRunning={isRunning} onTemplateSelect={debouncedGetTemplate}/>
-
-                    <Dropdown color={"light"} size={"xs"} label={"Go 1.24"}>
-                        <Dropdown.Item>
-                            Go 1.24
-                        </Dropdown.Item>
-                        <Dropdown.Item>
-                            Go 1.23
-                        </Dropdown.Item>
-                    </Dropdown>
+                    <TemplateSelector isRunning={isRunning} onSelect={debouncedGetTemplate}/>
+                    <VersionSelector version={SANDBOX_VERSIONS[sandboxVersion]} isRunning={isRunning} onSelect={onSandboxVersionChange}/>
 
                     <div className={"flex items-center"}>
                         <Divider/>

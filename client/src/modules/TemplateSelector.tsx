@@ -4,14 +4,14 @@ import {MouseEventHandler} from "react";
 
 export default function Component(props: {
     isRunning: boolean,
-    onTemplateSelect: (template: string) => void
+    onSelect: (id: string) => void
 }) {
-    const {onTemplateSelect, isRunning} = props;
+    const {onSelect, isRunning} = props;
 
     function onClick(key: string): MouseEventHandler<HTMLDivElement> {
         return (e) => {
             e.stopPropagation();
-            onTemplateSelect(key);
+            onSelect(key);
         }
     }
 
