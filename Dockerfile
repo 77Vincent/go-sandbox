@@ -46,8 +46,7 @@ COPY --from=build-backend /usr/local/go /usr/local/go
 # 更新 PATH，让 /app 和 go 工具链在 PATH 中
 ENV PATH="/app:/usr/local/go/bin:${PATH}"
 
-# 暴露端口（看你 gin 监听哪个端口，这里假设 8080）
-EXPOSE 8080
+EXPOSE 3000
 
 # 启动可执行文件
 CMD ["./server"]
