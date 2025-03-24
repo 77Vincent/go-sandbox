@@ -168,6 +168,7 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
         fibonacci: "Fibonacci",
         quickSort: "Quick sort",
         binarySearch: "Binary search",
+        bfs: "BFS",
     },
     Fun: {
         clearScreen: "Clear screen",
