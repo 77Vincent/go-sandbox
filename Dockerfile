@@ -1,4 +1,46 @@
-FROM golang:1.23.4-alpine AS build-backend
+# ---- Build sandbox-runner with Go 1.19 ----
+FROM golang:1.23-alpine AS build-runner-1
+
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=arm64
+
+# 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
+RUN apk update && apk add --no-cache \
+    pkgconfig \
+    libseccomp-dev \
+    gcc \
+    musl-dev
+
+WORKDIR /go/src/app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+
+RUN go build -o sandbox-runner-1 ./sandbox/main.go
+
+# ---- Build sandbox-runner with Go 1.24 ----
+FROM golang:1.24-alpine AS build-runner-2
+
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=arm64
+
+# 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
+RUN apk update && apk add --no-cache \
+    pkgconfig \
+    libseccomp-dev \
+    gcc \
+    musl-dev
+
+WORKDIR /go/src/app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+
+RUN go build -o sandbox-runner-2 ./sandbox/main.go
+
+FROM golang:1.24-alpine AS build-backend
 
 # 设置 CGO_ENABLED=1，以支持 seccomp
 ENV CGO_ENABLED=1
@@ -24,9 +66,6 @@ COPY . .
 # 编译生成可执行文件
 RUN go build -o server main.go
 
-# 编译出 sandbox-runner 可执行文件
-RUN go build -o sandbox-runner ./sandbox/main.go
-
 # =========== 3. 最终镜像阶段 =============
 FROM alpine:3.16
 
@@ -38,7 +77,8 @@ WORKDIR /app
 
 # 拷贝后端可执行文件
 COPY --from=build-backend /go/src/app/server ./
-COPY --from=build-backend /go/src/app/sandbox-runner ./
+COPY --from=build-runner-1 /go/src/app/sandbox-runner-1 ./
+COPY --from=build-runner-2 /go/src/app/sandbox-runner-2 ./
 
 # 从构建镜像拷贝 go 工具链
 COPY --from=build-backend /usr/local/go /usr/local/go

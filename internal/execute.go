@@ -19,7 +19,7 @@ const (
 	chunkSize       = 1
 	stdoutKey       = "stdout"
 	stderrKey       = "stderr"
-	sandboxName     = "sandbox-runner"
+	sandboxName     = "sandbox-runner-1"
 	tmpFileName     = "code-*.go"
 	tmpTestFileName = "code-*_test.go"
 	timeoutError    = "exit status 124"
