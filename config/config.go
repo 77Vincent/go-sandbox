@@ -6,4 +6,5 @@ const (
 	SandboxMemoryLimit  = 2 * 1024 * 1024 * 1024 // bytes
 	CodeSnippetTTL      = 14 * 24                // hours
 	RedisUrl            = "redis:6379"
+	ApiServerPort       = ":3000"
 )
