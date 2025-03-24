@@ -55,6 +55,7 @@ export const HTTP_NOT_FOUND = 404
 export const SANDBOX_VERSIONS: Record<string, string> = {
     "1": "Go 1.24",
     "2": "Go 1.23",
+    "3": "Go 1.22",
 }
 
 export const LANGUAGES: { value: languages, label: string }[] = [
