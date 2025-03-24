@@ -42,3 +42,15 @@ make server
 ```
 
 ## Test
+
+### Client
+
+```bash
+cd client && npm run test
+```
+
+### Server
+
+```bash
+make test
+```
