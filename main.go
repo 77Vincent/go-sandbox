@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/tianqi-wen_frgr/best-go-playground/config"
-	"github.com/tianqi-wen_frgr/best-go-playground/internal"
+	"github.com/tianqi-wen_frgr/go-sandbox/config"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal"
 	"time"
 )
 

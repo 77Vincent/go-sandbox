@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
-	"github.com/tianqi-wen_frgr/best-go-playground/config"
+	"github.com/tianqi-wen_frgr/go-sandbox/config"
 	"io"
 	"log"
 	"net/http"
@@ -19,7 +19,9 @@ const (
 	chunkSize       = 1
 	stdoutKey       = "stdout"
 	stderrKey       = "stderr"
-	sandboxName     = "sandbox-runner"
+	sandboxRunner1  = "./sandbox-runner-1"
+	sandboxRunner2  = "./sandbox-runner-2"
+	sandboxRunner3  = "./sandbox-runner-3"
 	tmpFileName     = "code-*.go"
 	tmpTestFileName = "code-*_test.go"
 	timeoutError    = "exit status 124"
@@ -63,9 +65,28 @@ func Execute(c *gin.Context) {
 		return
 	}
 
-	var fileName = tmpFileName
+	var (
+		fileName       = tmpFileName
+		sandboxVersion = sandboxRunner1
+	)
 	if isTestCode(req.Code) {
 		fileName = tmpTestFileName
+	}
+
+	var (
+		env  = os.Environ()
+		path = os.Getenv("PATH")
+	)
+	switch req.Version {
+	case "1":
+		sandboxVersion = sandboxRunner1
+		env = append(env, "PATH=/go1/bin:"+path)
+	case "2":
+		sandboxVersion = sandboxRunner2
+		env = append(env, "PATH=/go2/bin:"+path)
+	case "3":
+		sandboxVersion = sandboxRunner3
+		env = append(env, "PATH=/go3/bin:"+path)
 	}
 
 	// 1) 创建临时文件并写入用户代码
@@ -85,7 +106,8 @@ func Execute(c *gin.Context) {
 		return
 	}
 
-	cmd := exec.Command(sandboxName, tmp.Name())
+	cmd := exec.Command(sandboxVersion, tmp.Name())
+	cmd.Env = env
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {

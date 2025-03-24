@@ -2,7 +2,7 @@ package internal
 
 import (
 	"github.com/seccomp/libseccomp-golang"
-	"github.com/tianqi-wen_frgr/best-go-playground/config"
+	"github.com/tianqi-wen_frgr/go-sandbox/config"
 	"syscall"
 )
 

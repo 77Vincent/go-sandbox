@@ -1,4 +1,4 @@
-module github.com/tianqi-wen_frgr/best-go-playground
+module github.com/tianqi-wen_frgr/go-sandbox
 
 go 1.23.0
 

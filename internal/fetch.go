@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
-	"github.com/tianqi-wen_frgr/best-go-playground/internal/db"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/db"
 	"net/http"
 )
 

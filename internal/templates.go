@@ -2,7 +2,7 @@ package internal
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tianqi-wen_frgr/best-go-playground/internal/snippets"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets"
 	"net/http"
 )
 

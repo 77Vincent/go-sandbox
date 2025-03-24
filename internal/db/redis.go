@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
-	"github.com/tianqi-wen_frgr/best-go-playground/config"
+	"github.com/tianqi-wen_frgr/go-sandbox/config"
 	"sync"
 	"time"
 )

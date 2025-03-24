@@ -16,8 +16,8 @@ import {
     FONT_SIZE_KEY,
     FONT_SIZE_M,
     KEY_BINDINGS_KEY, LANGUAGE_KEY,
-    LINT_ON_KEY,
-    SHOW_INVISIBLE_KEY
+    LINT_ON_KEY, SANDBOX_VERSION_KEY,
+    SHOW_INVISIBLE_KEY, SANDBOX_VERSION_1
 } from "./constants.ts";
 import {KeyBindings, languages} from "./types";
 import {IMarker} from "react-ace";
@@ -48,6 +48,10 @@ export function getKeyBindings(): KeyBindings {
 
 export function getEditorSize(): number {
     return Number(localStorage.getItem(EDITOR_SIZE_KEY)) || DEFAULT_EDITOR_SIZE
+}
+
+export function getSandboxVersion(): string {
+    return localStorage.getItem(SANDBOX_VERSION_KEY) || SANDBOX_VERSION_1
 }
 
 export function getAutoRun(): boolean {

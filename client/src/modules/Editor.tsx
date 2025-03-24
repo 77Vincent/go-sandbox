@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState, ChangeEvent, useEffect, ReactNode} from "react";
-import {Button, DarkThemeToggle, Dropdown, Tooltip, useThemeMode} from "flowbite-react";
+import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
@@ -30,13 +30,14 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    DEFAULT_CODE_CONTENT,
+    DEFAULT_CODE_CONTENT, SANDBOX_VERSIONS, SANDBOX_VERSION_KEY,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
-import Templates from "./Templates.tsx";
+import TemplateSelector from "./TemplateSelector.tsx";
+import VersionSelector from "./VersionSelector.tsx";
 import {fetchSnippet, formatCode, getTemplate, shareSnippet} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
@@ -55,7 +56,7 @@ import {
     getCursorRow,
     getKeyBindings,
     getEditorSize, getFontSize,
-    getLintOn, generateMarkers, getShowInvisible, getUrl, getLanguage
+    getLintOn, generateMarkers, getShowInvisible, getUrl, getLanguage, getSandboxVersion
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages, resultI} from "../types";
@@ -105,6 +106,7 @@ export default function Component(props: {
     const [fontSize, setFontSize] = useState<number>(getFontSize());
     const [editorSize, setEditorSize] = useState<number>(getEditorSize())
     const [lan, setLan] = useState<languages>(getLanguage())
+    const [sandboxVersion, setSandboxVersion] = useState<string>(getSandboxVersion())
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -116,13 +118,14 @@ export default function Component(props: {
     const [info, setInfo] = useState<string>("")
 
     // reference the latest state
-    const latestCodeRef = useRef(code);
+    const codeRef = useRef(code);
+    const sandboxVersionRef = useRef(sandboxVersion);
     const isRunningRef = useRef(isRunning);
 
     function storeCode(code: string) {
         setCode(code);
         localStorage.setItem(CODE_CONTENT_KEY, code);
-        latestCodeRef.current = code;
+        codeRef.current = code;
     }
 
     // cursor status
@@ -200,6 +203,9 @@ export default function Component(props: {
     useEffect(() => {
         isRunningRef.current = isRunning
     }, [isRunning]);
+    useEffect(() => {
+        sandboxVersionRef.current = sandboxVersion
+    }, [sandboxVersion]);
 
     function onChange(code: string = "") {
         storeCode(code);
@@ -212,12 +218,12 @@ export default function Component(props: {
 
     function shouldAbort(): boolean {
         // do not continue if the code is empty or running
-        return isRunningRef.current || !latestCodeRef.current
+        return isRunningRef.current || !codeRef.current
     }
 
     const shareCallback = useCallback(async () => {
         try {
-            const id = await shareSnippet(latestCodeRef.current);
+            const id = await shareSnippet(codeRef.current);
             const url = `${location.origin}/snippet/${id}`
             await navigator.clipboard.writeText(url);
             setToastInfo(<ShareSuccessMessage url={url}/>)
@@ -236,7 +242,7 @@ export default function Component(props: {
         try {
             setIsRunning(true)
 
-            const {stdout, error, message} = await formatCode(latestCodeRef.current);
+            const {stdout, error, message} = await formatCode(codeRef.current);
 
             if (stdout) {
                 storeCode(stdout)
@@ -292,7 +298,7 @@ export default function Component(props: {
                 stdout: formatted,
                 error: formatError,
                 message: formatMessage
-            } = await formatCode(latestCodeRef.current);
+            } = await formatCode(codeRef.current);
 
             setInfo("")
             setResult([])
@@ -317,7 +323,7 @@ export default function Component(props: {
 
             const source = new SSE(getUrl("/execute"), {
                 headers: {'Content-Type': 'application/json'},
-                payload: JSON.stringify({code: latestCodeRef.current})
+                payload: JSON.stringify({code: codeRef.current, version: sandboxVersionRef.current})
             });
 
             source.addEventListener(EVENT_STDOUT, ({data}: MessageEvent) => {
@@ -393,6 +399,11 @@ export default function Component(props: {
         setKeyBindings(value)
     }
 
+    function onSandboxVersionChange(version: string) {
+        localStorage.setItem(SANDBOX_VERSION_KEY, version);
+        setSandboxVersion(version)
+    }
+
     function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
         event.stopPropagation();
         const value = event.target.value as languages
@@ -455,7 +466,7 @@ export default function Component(props: {
 
                 <div className="flex items-center justify-end gap-2">
                     <Tooltip content={"cmd/win + enter"}>
-                        <Button onClick={debouncedRun} disabled={isRunning || !latestCodeRef.current}
+                        <Button onClick={debouncedRun} disabled={isRunning || !codeRef.current}
                                 className={"shadow"}
                                 size={"xs"}
                                 color={mode === "dark" ? "light" : "cyan"}
@@ -465,7 +476,7 @@ export default function Component(props: {
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + b"}>
-                        <Button onClick={debouncedFormat} disabled={isRunning || !latestCodeRef.current}
+                        <Button onClick={debouncedFormat} disabled={isRunning || !codeRef.current}
                                 className={"shadow"}
                                 size={"xs"}
                                 color={mode === "dark" ? "light" : "cyan"}
@@ -475,7 +486,7 @@ export default function Component(props: {
                     </Tooltip>
 
                     <Tooltip content={"cmd/win + e"}>
-                        <Button onClick={debouncedShare} disabled={!latestCodeRef.current}
+                        <Button onClick={debouncedShare} disabled={!codeRef.current}
                                 className={"shadow"}
                                 size={"xs"}
                                 gradientDuoTone={"greenToBlue"}
@@ -486,16 +497,9 @@ export default function Component(props: {
 
                     <Divider/>
 
-                    <Templates isRunning={isRunning} onTemplateSelect={debouncedGetTemplate}/>
-
-                    <Dropdown color={"light"} size={"xs"} label={"Go 1.24"}>
-                        <Dropdown.Item>
-                            Go 1.24
-                        </Dropdown.Item>
-                        <Dropdown.Item>
-                            Go 1.23
-                        </Dropdown.Item>
-                    </Dropdown>
+                    <TemplateSelector isRunning={isRunning} onSelect={debouncedGetTemplate}/>
+                    <VersionSelector version={SANDBOX_VERSIONS[sandboxVersion]} isRunning={isRunning}
+                                     onSelect={onSandboxVersionChange}/>
 
                     <div className={"flex items-center"}>
                         <Divider/>
