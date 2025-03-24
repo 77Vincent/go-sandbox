@@ -19,7 +19,8 @@ const (
 	chunkSize       = 1
 	stdoutKey       = "stdout"
 	stderrKey       = "stderr"
-	sandboxName     = "sandbox-runner-1"
+	sandboxRunner1  = "sandbox-runner-1"
+	sandboxRunner2  = "sandbox-runner-2"
 	tmpFileName     = "code-*.go"
 	tmpTestFileName = "code-*_test.go"
 	timeoutError    = "exit status 124"
@@ -63,9 +64,19 @@ func Execute(c *gin.Context) {
 		return
 	}
 
-	var fileName = tmpFileName
+	var (
+		fileName       = tmpFileName
+		sandboxVersion = sandboxRunner1
+	)
 	if isTestCode(req.Code) {
 		fileName = tmpTestFileName
+	}
+
+	switch req.Version {
+	case "1":
+		sandboxVersion = sandboxRunner1
+	case "2":
+		sandboxVersion = sandboxRunner2
 	}
 
 	// 1) 创建临时文件并写入用户代码
@@ -85,7 +96,7 @@ func Execute(c *gin.Context) {
 		return
 	}
 
-	cmd := exec.Command(sandboxName, tmp.Name())
+	cmd := exec.Command(sandboxVersion, tmp.Name())
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
