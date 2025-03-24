@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
-	"github.com/tianqi-wen_frgr/best-go-playground/config"
+	"github.com/tianqi-wen_frgr/go-sandbox/config"
 	"io"
 	"log"
 	"net/http"
