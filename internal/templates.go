@@ -24,6 +24,7 @@ const (
 	// problems
 	fibonacciCase    = "fibonacci"
 	quickSortCase    = "quickSort"
+	mergeSortCase    = "mergeSort"
 	binarySearchCase = "binarySearch"
 	bfsCase          = "bfs"
 	dfsCase          = "dfs"
@@ -59,14 +60,17 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.ContextCancel
 	case jsonCase:
 		output = snippets.JSON
-	case fibonacciCase:
-		output = snippets.Fibonacci
 	case mutexCase:
 		output = snippets.Mutex
 	case tickerCase:
 		output = snippets.Ticker
+	// problems
+	case fibonacciCase:
+		output = snippets.Fibonacci
 	case quickSortCase:
 		output = snippets.QuickSort
+	case mergeSortCase:
+		output = snippets.MergeSort
 	case binarySearchCase:
 		output = snippets.BinarySearch
 	case bfsCase:

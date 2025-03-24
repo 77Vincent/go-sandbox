@@ -167,6 +167,7 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
     Problems: {
         fibonacci: "Fibonacci",
         quickSort: "Quick sort",
+        mergeSort: "Merge sort",
         binarySearch: "Binary search",
         bfs: "BFS",
         dfs: "DFS",
