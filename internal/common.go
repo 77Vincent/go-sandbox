@@ -12,7 +12,7 @@ const (
 
 func Status(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"message": "pong test 2",
+		"message": "pong test 1",
 	})
 }
 
