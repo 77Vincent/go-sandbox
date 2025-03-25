@@ -122,6 +122,8 @@ COPY --from=build-runner-2 /usr/local/go /go2
 COPY --from=build-runner-3 /usr/local/go /go3
 COPY --from=build-runner-4 /usr/local/go /go4
 
+ENV PATH="/go1/bin:${PATH}"
+
 EXPOSE 3000
 
 # 启动可执行文件
