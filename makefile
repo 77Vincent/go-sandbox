@@ -5,6 +5,6 @@ client:
 server:
 	docker-compose up --build -d
 down:
-	docker-compose down --rmi all --volumes --remove-orphans
+	docker-compose down --volumes --remove-orphans
 
 .PHONY: client server down

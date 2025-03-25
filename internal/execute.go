@@ -136,66 +136,6 @@ func Execute(c *gin.Context) {
 		lock sync.Mutex
 		wg   sync.WaitGroup
 	)
-	// stream 函数：按行读取并写 SSE 数据
-	stream := func(r io.ReadCloser, event string, c *gin.Context, wg *sync.WaitGroup) {
-		defer wg.Done()
-
-		var (
-			buf  = make([]byte, chunkSize)
-			line []byte
-		)
-
-		for {
-			select {
-			case <-c.Request.Context().Done():
-				if err = cmd.Process.Kill(); err != nil {
-					log.Fatalf("failed to kill process: %s", err)
-				}
-				return
-			default:
-			}
-
-			n, e := r.Read(buf)
-
-			if n == 0 {
-				if e != nil {
-					if e == io.EOF {
-						// just a double check, if context is not done, send remaining data
-						if c.Request.Context().Err() == nil {
-							// send remaining data if any
-							send(line, event, c, &lock)
-						}
-						return
-					}
-					log.Printf("failed to read from %s: %s", event, e)
-					return // equal to break actually
-				}
-				continue
-			}
-
-			b := buf[0]
-
-			switch b {
-			case '\n':
-				send(line, event, c, &lock)
-				line = []byte{} // reset
-			case '\x0c':
-				// send remaining data first
-				send(line, event, c, &lock)
-
-				// send clear event
-				lock.Lock()
-				c.Render(-1, render.Data{
-					Data: []byte("event:clear\ndata:\n\n"),
-				})
-				lock.Unlock()
-
-				line = []byte{} // reset
-			default:
-				line = append(line, b)
-			}
-		}
-	}
 
 	if err = cmd.Start(); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
@@ -204,8 +144,8 @@ func Execute(c *gin.Context) {
 
 	wg.Add(2)
 
-	go stream(stdout, stdoutKey, c, &wg)
-	go stream(stderr, stderrKey, c, &wg)
+	go stream(stdout, stdoutKey, c, &wg, &lock, cmd)
+	go stream(stderr, stderrKey, c, &wg, &lock, cmd)
 
 	// wait for both goroutines to finish
 	wg.Wait()
@@ -271,4 +211,64 @@ func isTestCode(code string) bool {
 	}
 
 	return false
+}
+
+func stream(r io.ReadCloser, event string, c *gin.Context, wg *sync.WaitGroup, lock *sync.Mutex, cmd *exec.Cmd) {
+	defer wg.Done()
+
+	var (
+		buf  = make([]byte, chunkSize)
+		line []byte
+	)
+
+	for {
+		select {
+		case <-c.Request.Context().Done():
+			if err := cmd.Process.Kill(); err != nil {
+				log.Fatalf("failed to kill process: %s", err)
+			}
+			return
+		default:
+		}
+
+		n, e := r.Read(buf)
+
+		if n == 0 {
+			if e != nil {
+				if e == io.EOF {
+					// just a double check, if context is not done, send remaining data
+					if c.Request.Context().Err() == nil {
+						// send remaining data if any
+						send(line, event, c, lock)
+					}
+					return
+				}
+				log.Printf("failed to read from %s: %s", event, e)
+				return // equal to break actually
+			}
+			continue
+		}
+
+		b := buf[0]
+
+		switch b {
+		case '\n':
+			send(line, event, c, lock)
+			line = []byte{} // reset
+		case '\x0c':
+			// send remaining data first
+			send(line, event, c, lock)
+
+			// send clear event
+			lock.Lock()
+			c.Render(-1, render.Data{
+				Data: []byte("event:clear\ndata:\n\n"),
+			})
+			lock.Unlock()
+
+			line = []byte{} // reset
+		default:
+			line = append(line, b)
+		}
+	}
 }
