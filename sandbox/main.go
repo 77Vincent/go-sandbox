@@ -9,13 +9,14 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"syscall"
 	"time"
 )
 
 const (
 	timeoutExitCode     = 124
-	sandboxCPUTimeLimit = 5                      // seconds
+	sandboxCPUTimeLimit = 7                      // seconds
 	sandboxMemoryLimit  = 2 * 1024 * 1024 * 1024 // bytes
 )
 
@@ -27,7 +28,10 @@ func main() {
 	if len(os.Args) < 2 {
 		log.Fatalf("Usage: %s <code-file>", os.Args[0])
 	}
-	codeFile := os.Args[1]
+	var (
+		codeFile = os.Args[1]
+		version  = strings.Split(codeFile, "/")[0]
+	)
 
 	// 0. 检查代码文件是否是测试文件
 	// test file flow
@@ -59,6 +63,23 @@ func main() {
 		log.Fatalf("Failed to create temp directory: %v", err)
 	}
 	defer os.RemoveAll(tmpDir)
+
+	// init module if not exists
+	if _, err = os.Stat(fmt.Sprintf("%s/go.mod", version)); os.IsNotExist(err) {
+		// init module
+		cmd := exec.Command("go", "mod", "init", "sandbox")
+		cmd.Dir = version // init module in the version directory
+		if err = cmd.Run(); err != nil {
+			log.Fatalf("Failed to init module: %v", err)
+		}
+
+		// tidy module
+		cmd = exec.Command("go", "mod", "tidy")
+		cmd.Dir = version // init module in the version directory
+		if err = cmd.Run(); err != nil {
+			log.Fatalf("Failed to tidy module: %v", err)
+		}
+	}
 
 	binPath := filepath.Join(tmpDir, "userprog")
 	buildCmd := exec.Command("go", "build", "-o", binPath, codeFile)

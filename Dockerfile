@@ -4,15 +4,14 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-COPY install-deps.sh /tmp/
-RUN sh /tmp/install-deps.sh
+RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
 
 WORKDIR /go/src/app
 COPY sandbox/go.mod sandbox/go.sum ./
 RUN go mod download
 COPY sandbox .
 
-RUN go build -o sandbox-runner-1 .
+RUN go build -o sandbox-runner .
 
 FROM golang:1.23-alpine AS build-runner-2
 
@@ -20,15 +19,14 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-COPY install-deps.sh /tmp/
-RUN sh /tmp/install-deps.sh
+RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
 
 WORKDIR /go/src/app
 COPY sandbox/go.mod sandbox/go.sum ./
 RUN go mod download
 COPY sandbox .
 
-RUN go build -o sandbox-runner-2 .
+RUN go build -o sandbox-runner .
 
 FROM golang:1.22-alpine AS build-runner-3
 
@@ -36,15 +34,14 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-COPY install-deps.sh /tmp/
-RUN sh /tmp/install-deps.sh
+RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
 
 WORKDIR /go/src/app
 COPY sandbox/go.mod sandbox/go.sum ./
 RUN go mod download
 COPY sandbox .
 
-RUN go build -o sandbox-runner-3 .
+RUN go build -o sandbox-runner .
 
 FROM golang:tip-alpine AS build-runner-4
 
@@ -52,15 +49,14 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-COPY install-deps.sh /tmp/
-RUN sh /tmp/install-deps.sh
+RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
 
 WORKDIR /go/src/app
 COPY sandbox/go.mod sandbox/go.sum ./
 RUN go mod download
 COPY sandbox .
 
-RUN go build -o sandbox-runner-4 .
+RUN go build -o sandbox-runner .
 
 FROM golang:1.24-alpine AS build-backend
 
@@ -69,8 +65,7 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-COPY install-deps.sh /tmp/
-RUN sh /tmp/install-deps.sh
+RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
 
 WORKDIR /go/src/app
 
@@ -93,12 +88,18 @@ RUN apk add --no-cache libseccomp
 # 工作目录
 WORKDIR /app
 
+# 创建沙箱目录
+RUN mkdir -p ./1
+RUN mkdir -p ./2
+RUN mkdir -p ./3
+RUN mkdir -p ./4
+
 # 拷贝后端可执行文件
 COPY --from=build-backend /go/src/app/server ./
-COPY --from=build-runner-1 /go/src/app/sandbox-runner-1 ./
-COPY --from=build-runner-2 /go/src/app/sandbox-runner-2 ./
-COPY --from=build-runner-3 /go/src/app/sandbox-runner-3 ./
-COPY --from=build-runner-4 /go/src/app/sandbox-runner-4 ./
+COPY --from=build-runner-1 /go/src/app/sandbox-runner ./1
+COPY --from=build-runner-2 /go/src/app/sandbox-runner ./2
+COPY --from=build-runner-3 /go/src/app/sandbox-runner ./3
+COPY --from=build-runner-4 /go/src/app/sandbox-runner ./4
 
 # Copy the go toolchain from each runner stage into separate directories
 COPY --from=build-runner-1 /usr/local/go /go1

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"sync"
@@ -19,11 +20,12 @@ const (
 	chunkSize       = 1
 	stdoutKey       = "stdout"
 	stderrKey       = "stderr"
-	sandboxRunner1  = "./sandbox-runner-1"
-	sandboxRunner2  = "./sandbox-runner-2"
-	sandboxRunner3  = "./sandbox-runner-3"
-	sandboxRunner4  = "./sandbox-runner-4"
-	tmpFileName     = "code-*.go"
+	tmpDirName      = "sandbox-"
+	sandboxRunner1  = "./1/sandbox-runner"
+	sandboxRunner2  = "./2/sandbox-runner"
+	sandboxRunner3  = "./3/sandbox-runner"
+	sandboxRunner4  = "./4/sandbox-runner"
+	tmpFileName     = "main.go"
 	tmpTestFileName = "code-*_test.go"
 	timeoutError    = "exit status 124"
 )
@@ -67,11 +69,11 @@ func Execute(c *gin.Context) {
 	}
 
 	var (
-		fileName       = tmpFileName
+		//fileName       = tmpFileName
 		sandboxVersion = sandboxRunner1
 	)
 	if isTestCode(req.Code) {
-		fileName = tmpTestFileName
+		//fileName = tmpTestFileName
 	}
 
 	var (
@@ -93,24 +95,22 @@ func Execute(c *gin.Context) {
 		env = append(env, "PATH=/go4/bin:"+path)
 	}
 
-	// 1) 创建临时文件并写入用户代码
-	tmp, err := os.CreateTemp("", fileName)
+	// create a tmp dir
+	tmpDir, err := os.MkdirTemp(req.Version, tmpDirName)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
-	defer os.Remove(tmp.Name())
+	defer os.RemoveAll(tmpDir)
 
-	if _, err = tmp.Write([]byte(req.Code)); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
-		return
-	}
-	if err = tmp.Close(); err != nil {
+	// write code to a file
+	codeFile := filepath.Join(tmpDir, "main.go")
+	if err = os.WriteFile(codeFile, []byte(req.Code), 0644); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
 
-	cmd := exec.Command(sandboxVersion, tmp.Name())
+	cmd := exec.Command(sandboxVersion, codeFile)
 	cmd.Env = env
 
 	stdout, err := cmd.StdoutPipe()
@@ -183,7 +183,7 @@ func Execute(c *gin.Context) {
 }
 
 var (
-	errorRe    = regexp.MustCompile(`^/tmp/code-[0-9]*\.go:`) // /tmp/code-123.go:
+	errorRe    = regexp.MustCompile(`^/tmp/main\.go:`) // /tmp/code-123.go:
 	skipError  = regexp.MustCompile(`^# command-line-arguments`)
 	skipError2 = regexp.MustCompile(`^[0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} (Build|Execution) error: exit status [0-9]+`) // 2021/08/01 00:00:00
 )
