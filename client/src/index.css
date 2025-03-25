@@ -9,7 +9,7 @@
 
 .progress-bar {
     /* 定义动画：名称 progressAnimation，持续 5 秒，线性过渡，动画结束后保持最终状态 */
-    animation: progressAnimation 6s linear forwards;
+    animation: progressAnimation 10s linear forwards;
 }
 @keyframes progressAnimation {
     from { width: 0; }

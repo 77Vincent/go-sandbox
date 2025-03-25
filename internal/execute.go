@@ -21,10 +21,10 @@ const (
 	stdoutKey       = "stdout"
 	stderrKey       = "stderr"
 	tmpDirName      = "sandbox-"
-	sandboxRunner1  = "./1/sandbox-runner"
-	sandboxRunner2  = "./2/sandbox-runner"
-	sandboxRunner3  = "./3/sandbox-runner"
-	sandboxRunner4  = "./4/sandbox-runner"
+	sandboxRunner1  = "./go1/sandbox-runner"
+	sandboxRunner2  = "./go2/sandbox-runner"
+	sandboxRunner3  = "./go3/sandbox-runner"
+	sandboxRunner4  = "./go4/sandbox-runner"
 	tmpFileName     = "main.go"
 	tmpTestFileName = "code-*_test.go"
 	timeoutError    = "exit status 124"
@@ -96,7 +96,7 @@ func Execute(c *gin.Context) {
 	}
 
 	// create a tmp dir
-	tmpDir, err := os.MkdirTemp(req.Version, tmpDirName)
+	tmpDir, err := os.MkdirTemp(fmt.Sprintf("go%s", req.Version), tmpDirName)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return

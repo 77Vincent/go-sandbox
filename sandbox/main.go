@@ -29,8 +29,8 @@ func main() {
 		log.Fatalf("Usage: %s <code-file>", os.Args[0])
 	}
 	var (
-		codeFile = os.Args[1]
-		version  = strings.Split(codeFile, "/")[0]
+		codeFile  = os.Args[1]
+		moduleDir = strings.Split(codeFile, "/")[0]
 	)
 
 	// 0. 检查代码文件是否是测试文件
@@ -65,27 +65,34 @@ func main() {
 	defer os.RemoveAll(tmpDir)
 
 	// init module if not exists
-	if _, err = os.Stat(fmt.Sprintf("%s/go.mod", version)); os.IsNotExist(err) {
+	if _, err = os.Stat(fmt.Sprintf("%s/go.mod", moduleDir)); os.IsNotExist(err) {
 		// init module
 		cmd := exec.Command("go", "mod", "init", "sandbox")
-		cmd.Dir = version // init module in the version directory
+		cmd.Dir = moduleDir
 		if err = cmd.Run(); err != nil {
 			log.Fatalf("Failed to init module: %v", err)
 		}
-
-		// tidy module
-		cmd = exec.Command("go", "mod", "tidy")
-		cmd.Dir = version // init module in the version directory
-		if err = cmd.Run(); err != nil {
-			log.Fatalf("Failed to tidy module: %v", err)
-		}
 	}
 
+	// move the source code to the module dir
+	if err = os.Rename(codeFile, filepath.Join(moduleDir, "main.go")); err != nil {
+		log.Fatalf("Failed to move code file: %v", err)
+	}
+
+	// run go mod tidy
+	cmd := exec.Command("go", "mod", "tidy")
+	cmd.Dir = moduleDir
+	if err = cmd.Run(); err != nil {
+		log.Fatalf("Failed to tidy module: %v", err)
+	}
+
+	// build the code
 	binPath := filepath.Join(tmpDir, "userprog")
-	buildCmd := exec.Command("go", "build", "-o", binPath, codeFile)
-	buildCmd.Stdout = os.Stdout
-	buildCmd.Stderr = os.Stderr
-	if err = buildCmd.Run(); err != nil {
+	cmd = exec.Command("go", "build", "-o", binPath, ".")
+	cmd.Dir = moduleDir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err = cmd.Run(); err != nil {
 		log.Fatalf("Build error: %v", err)
 	}
 
@@ -103,8 +110,8 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), sandboxCPUTimeLimit*time.Second)
 	defer cancel()
 
-	// 执行 "go run <codeFile>"
-	cmd := exec.CommandContext(ctx, binPath)
+	// execute the built program
+	cmd = exec.CommandContext(ctx, binPath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 

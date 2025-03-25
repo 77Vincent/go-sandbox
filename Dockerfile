@@ -89,17 +89,17 @@ RUN apk add --no-cache libseccomp
 WORKDIR /app
 
 # 创建沙箱目录
-RUN mkdir -p ./1
-RUN mkdir -p ./2
-RUN mkdir -p ./3
-RUN mkdir -p ./4
+RUN mkdir -p ./go1
+RUN mkdir -p ./go2
+RUN mkdir -p ./go3
+RUN mkdir -p ./go4
 
 # 拷贝后端可执行文件
 COPY --from=build-backend /go/src/app/server ./
-COPY --from=build-runner-1 /go/src/app/sandbox-runner ./1
-COPY --from=build-runner-2 /go/src/app/sandbox-runner ./2
-COPY --from=build-runner-3 /go/src/app/sandbox-runner ./3
-COPY --from=build-runner-4 /go/src/app/sandbox-runner ./4
+COPY --from=build-runner-1 /go/src/app/sandbox-runner ./go1
+COPY --from=build-runner-2 /go/src/app/sandbox-runner ./go2
+COPY --from=build-runner-3 /go/src/app/sandbox-runner ./go3
+COPY --from=build-runner-4 /go/src/app/sandbox-runner ./go4
 
 # Copy the go toolchain from each runner stage into separate directories
 COPY --from=build-runner-1 /usr/local/go /go1
