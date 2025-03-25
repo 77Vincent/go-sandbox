@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"sync"
@@ -19,10 +20,12 @@ const (
 	chunkSize       = 1
 	stdoutKey       = "stdout"
 	stderrKey       = "stderr"
-	sandboxRunner1  = "./sandbox-runner-1"
-	sandboxRunner2  = "./sandbox-runner-2"
-	sandboxRunner3  = "./sandbox-runner-3"
-	tmpFileName     = "code-*.go"
+	tmpDirName      = "sandbox-"
+	sandboxRunner1  = "./go1/sandbox-runner"
+	sandboxRunner2  = "./go2/sandbox-runner"
+	sandboxRunner3  = "./go3/sandbox-runner"
+	sandboxRunner4  = "./go4/sandbox-runner"
+	tmpFileName     = "main.go"
 	tmpTestFileName = "code-*_test.go"
 	timeoutError    = "exit status 124"
 )
@@ -66,11 +69,11 @@ func Execute(c *gin.Context) {
 	}
 
 	var (
-		fileName       = tmpFileName
+		//fileName       = tmpFileName
 		sandboxVersion = sandboxRunner1
 	)
 	if isTestCode(req.Code) {
-		fileName = tmpTestFileName
+		//fileName = tmpTestFileName
 	}
 
 	var (
@@ -87,26 +90,27 @@ func Execute(c *gin.Context) {
 	case "3":
 		sandboxVersion = sandboxRunner3
 		env = append(env, "PATH=/go3/bin:"+path)
+	case "4":
+		sandboxVersion = sandboxRunner4
+		env = append(env, "PATH=/go4/bin:"+path)
 	}
 
-	// 1) 创建临时文件并写入用户代码
-	tmp, err := os.CreateTemp("", fileName)
+	// create a tmp dir
+	tmpDir, err := os.MkdirTemp(fmt.Sprintf("go%s", req.Version), tmpDirName)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
-	defer os.Remove(tmp.Name())
+	defer os.RemoveAll(tmpDir)
 
-	if _, err = tmp.Write([]byte(req.Code)); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
-		return
-	}
-	if err = tmp.Close(); err != nil {
+	// write code to a file
+	codeFile := filepath.Join(tmpDir, "main.go")
+	if err = os.WriteFile(codeFile, []byte(req.Code), 0644); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
 
-	cmd := exec.Command(sandboxVersion, tmp.Name())
+	cmd := exec.Command(sandboxVersion, codeFile)
 	cmd.Env = env
 
 	stdout, err := cmd.StdoutPipe()
@@ -132,66 +136,6 @@ func Execute(c *gin.Context) {
 		lock sync.Mutex
 		wg   sync.WaitGroup
 	)
-	// stream 函数：按行读取并写 SSE 数据
-	stream := func(r io.ReadCloser, event string, c *gin.Context, wg *sync.WaitGroup) {
-		defer wg.Done()
-
-		var (
-			buf  = make([]byte, chunkSize)
-			line []byte
-		)
-
-		for {
-			select {
-			case <-c.Request.Context().Done():
-				if err = cmd.Process.Kill(); err != nil {
-					log.Fatalf("failed to kill process: %s", err)
-				}
-				return
-			default:
-			}
-
-			n, e := r.Read(buf)
-
-			if n == 0 {
-				if e != nil {
-					if e == io.EOF {
-						// just a double check, if context is not done, send remaining data
-						if c.Request.Context().Err() == nil {
-							// send remaining data if any
-							send(line, event, c, &lock)
-						}
-						return
-					}
-					log.Printf("failed to read from %s: %s", event, e)
-					return // equal to break actually
-				}
-				continue
-			}
-
-			b := buf[0]
-
-			switch b {
-			case '\n':
-				send(line, event, c, &lock)
-				line = []byte{} // reset
-			case '\x0c':
-				// send remaining data first
-				send(line, event, c, &lock)
-
-				// send clear event
-				lock.Lock()
-				c.Render(-1, render.Data{
-					Data: []byte("event:clear\ndata:\n\n"),
-				})
-				lock.Unlock()
-
-				line = []byte{} // reset
-			default:
-				line = append(line, b)
-			}
-		}
-	}
 
 	if err = cmd.Start(); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
@@ -200,8 +144,8 @@ func Execute(c *gin.Context) {
 
 	wg.Add(2)
 
-	go stream(stdout, stdoutKey, c, &wg)
-	go stream(stderr, stderrKey, c, &wg)
+	go stream(stdout, stdoutKey, c, &wg, &lock, cmd)
+	go stream(stderr, stderrKey, c, &wg, &lock, cmd)
 
 	// wait for both goroutines to finish
 	wg.Wait()
@@ -239,7 +183,7 @@ func Execute(c *gin.Context) {
 }
 
 var (
-	errorRe    = regexp.MustCompile(`^/tmp/code-[0-9]*\.go:`) // /tmp/code-123.go:
+	errorRe    = regexp.MustCompile(`^/tmp/main\.go:`) // /tmp/code-123.go:
 	skipError  = regexp.MustCompile(`^# command-line-arguments`)
 	skipError2 = regexp.MustCompile(`^[0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} (Build|Execution) error: exit status [0-9]+`) // 2021/08/01 00:00:00
 )
@@ -267,4 +211,64 @@ func isTestCode(code string) bool {
 	}
 
 	return false
+}
+
+func stream(r io.ReadCloser, event string, c *gin.Context, wg *sync.WaitGroup, lock *sync.Mutex, cmd *exec.Cmd) {
+	defer wg.Done()
+
+	var (
+		buf  = make([]byte, chunkSize)
+		line []byte
+	)
+
+	for {
+		select {
+		case <-c.Request.Context().Done():
+			if err := cmd.Process.Kill(); err != nil {
+				log.Fatalf("failed to kill process: %s", err)
+			}
+			return
+		default:
+		}
+
+		n, e := r.Read(buf)
+
+		if n == 0 {
+			if e != nil {
+				if e == io.EOF {
+					// just a double check, if context is not done, send remaining data
+					if c.Request.Context().Err() == nil {
+						// send remaining data if any
+						send(line, event, c, lock)
+					}
+					return
+				}
+				log.Printf("failed to read from %s: %s", event, e)
+				return // equal to break actually
+			}
+			continue
+		}
+
+		b := buf[0]
+
+		switch b {
+		case '\n':
+			send(line, event, c, lock)
+			line = []byte{} // reset
+		case '\x0c':
+			// send remaining data first
+			send(line, event, c, lock)
+
+			// send clear event
+			lock.Lock()
+			c.Render(-1, render.Data{
+				Data: []byte("event:clear\ndata:\n\n"),
+			})
+			lock.Unlock()
+
+			line = []byte{} // reset
+		default:
+			line = append(line, b)
+		}
+	}
 }

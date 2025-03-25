@@ -566,6 +566,7 @@ export default function Component(props: {
                             keyboardHandler={keyBindings}
                             editorProps={{$blockScrolling: true}}
                             setOptions={{
+                                mergeUndoDeltas: true,
                                 printMargin: false,
                                 enableBasicAutocompletion: true,
                                 enableLiveAutocompletion: isLintOn,

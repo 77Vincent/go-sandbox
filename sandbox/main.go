@@ -4,19 +4,20 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/tianqi-wen_frgr/go-sandbox/config"
-	"github.com/tianqi-wen_frgr/go-sandbox/sandbox/internal"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"syscall"
 	"time"
 )
 
 const (
-	timeoutExitCode = 124
+	timeoutExitCode     = 124
+	sandboxCPUTimeLimit = 7                      // seconds
+	sandboxMemoryLimit  = 2 * 1024 * 1024 * 1024 // bytes
 )
 
 var (
@@ -27,7 +28,10 @@ func main() {
 	if len(os.Args) < 2 {
 		log.Fatalf("Usage: %s <code-file>", os.Args[0])
 	}
-	codeFile := os.Args[1]
+	var (
+		codeFile  = os.Args[1]
+		moduleDir = strings.Split(codeFile, "/")[0]
+	)
 
 	// 0. 检查代码文件是否是测试文件
 	// test file flow
@@ -37,12 +41,12 @@ func main() {
 		cmd.Stderr = os.Stderr
 
 		// 先设置 seccomp 筛选规则（必须在设置内存限制之前完成）
-		if err := internal.SetupSeccomp(); err != nil {
+		if err := SetupSeccomp(); err != nil {
 			log.Fatalf("Failed to setup seccomp: %v", err)
 		}
 
 		// 然后设置资源限制（CPU 和内存）
-		if err := internal.SetLimits(); err != nil {
+		if err := SetLimits(); err != nil {
 			log.Fatalf("Failed to set resource limits: %v", err)
 		}
 
@@ -60,30 +64,54 @@ func main() {
 	}
 	defer os.RemoveAll(tmpDir)
 
+	// init module if not exists
+	if _, err = os.Stat(fmt.Sprintf("%s/go.mod", moduleDir)); os.IsNotExist(err) {
+		// init module
+		cmd := exec.Command("go", "mod", "init", "sandbox")
+		cmd.Dir = moduleDir
+		if err = cmd.Run(); err != nil {
+			log.Fatalf("Failed to init module: %v", err)
+		}
+	}
+
+	// move the source code to the module dir
+	if err = os.Rename(codeFile, filepath.Join(moduleDir, "main.go")); err != nil {
+		log.Fatalf("Failed to move code file: %v", err)
+	}
+
+	// run go mod tidy
+	cmd := exec.Command("go", "mod", "tidy")
+	cmd.Dir = moduleDir
+	if err = cmd.Run(); err != nil {
+		log.Fatalf("Failed to tidy module: %v", err)
+	}
+
+	// build the code
 	binPath := filepath.Join(tmpDir, "userprog")
-	buildCmd := exec.Command("go", "build", "-o", binPath, codeFile)
-	buildCmd.Stdout = os.Stdout
-	buildCmd.Stderr = os.Stderr
-	if err = buildCmd.Run(); err != nil {
+	cmd = exec.Command("go", "build", "-o", binPath, ".")
+	cmd.Dir = moduleDir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err = cmd.Run(); err != nil {
 		log.Fatalf("Build error: %v", err)
 	}
 
 	// 先设置 seccomp 筛选规则（必须在设置内存限制之前完成）
-	if err = internal.SetupSeccomp(); err != nil {
+	if err = SetupSeccomp(); err != nil {
 		log.Fatalf("Failed to setup seccomp: %v", err)
 	}
 
 	// 然后设置资源限制（CPU 和内存）
-	if err = internal.SetLimits(); err != nil {
+	if err = SetLimits(); err != nil {
 		log.Fatalf("Failed to set resource limits: %v", err)
 	}
 
 	// the execution timeout is same as the CPU timeout limit
-	ctx, cancel := context.WithTimeout(context.Background(), config.SandboxCPUTimeLimit*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), sandboxCPUTimeLimit*time.Second)
 	defer cancel()
 
-	// 执行 "go run <codeFile>"
-	cmd := exec.CommandContext(ctx, binPath)
+	// execute the built program
+	cmd = exec.CommandContext(ctx, binPath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 

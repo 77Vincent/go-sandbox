@@ -4,19 +4,14 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-# 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
-RUN apk update && apk add --no-cache \
-    pkgconfig \
-    libseccomp-dev \
-    gcc \
-    musl-dev
+RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
 
 WORKDIR /go/src/app
-COPY go.mod go.sum ./
+COPY sandbox/go.mod sandbox/go.sum ./
 RUN go mod download
-COPY . .
+COPY sandbox .
 
-RUN go build -o sandbox-runner-1 ./sandbox/main.go
+RUN go build -o sandbox-runner .
 
 FROM golang:1.23-alpine AS build-runner-2
 
@@ -24,19 +19,44 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-# 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
-RUN apk update && apk add --no-cache \
-    pkgconfig \
-    libseccomp-dev \
-    gcc \
-    musl-dev
+RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
 
 WORKDIR /go/src/app
-COPY go.mod go.sum ./
+COPY sandbox/go.mod sandbox/go.sum ./
 RUN go mod download
-COPY . .
+COPY sandbox .
 
-RUN go build -o sandbox-runner-2 ./sandbox/main.go
+RUN go build -o sandbox-runner .
+
+FROM golang:1.22-alpine AS build-runner-3
+
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=arm64
+
+RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
+
+WORKDIR /go/src/app
+COPY sandbox/go.mod sandbox/go.sum ./
+RUN go mod download
+COPY sandbox .
+
+RUN go build -o sandbox-runner .
+
+FROM golang:tip-alpine AS build-runner-4
+
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=arm64
+
+RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
+
+WORKDIR /go/src/app
+COPY sandbox/go.mod sandbox/go.sum ./
+RUN go mod download
+COPY sandbox .
+
+RUN go build -o sandbox-runner .
 
 FROM golang:1.24-alpine AS build-backend
 
@@ -45,12 +65,7 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-# 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
-RUN apk update && apk add --no-cache \
-    pkgconfig \
-    libseccomp-dev \
-    gcc \
-    musl-dev
+RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
 
 WORKDIR /go/src/app
 
@@ -73,14 +88,26 @@ RUN apk add --no-cache libseccomp
 # 工作目录
 WORKDIR /app
 
+# 创建沙箱目录
+RUN mkdir -p ./go1
+RUN mkdir -p ./go2
+RUN mkdir -p ./go3
+RUN mkdir -p ./go4
+
 # 拷贝后端可执行文件
 COPY --from=build-backend /go/src/app/server ./
-COPY --from=build-runner-1 /go/src/app/sandbox-runner-1 ./
-COPY --from=build-runner-2 /go/src/app/sandbox-runner-2 ./
+COPY --from=build-runner-1 /go/src/app/sandbox-runner ./go1
+COPY --from=build-runner-2 /go/src/app/sandbox-runner ./go2
+COPY --from=build-runner-3 /go/src/app/sandbox-runner ./go3
+COPY --from=build-runner-4 /go/src/app/sandbox-runner ./go4
 
 # Copy the go toolchain from each runner stage into separate directories
 COPY --from=build-runner-1 /usr/local/go /go1
 COPY --from=build-runner-2 /usr/local/go /go2
+COPY --from=build-runner-3 /usr/local/go /go3
+COPY --from=build-runner-4 /usr/local/go /go4
+
+ENV PATH="/go1/bin:${PATH}"
 
 EXPOSE 3000
 
