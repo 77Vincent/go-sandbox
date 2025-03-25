@@ -4,11 +4,8 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-RUN apk update && apk add --no-cache \
-    pkgconfig \
-    libseccomp-dev \
-    gcc \
-    musl-dev
+COPY install-deps.sh /tmp/
+RUN sh /tmp/install-deps.sh
 
 WORKDIR /go/src/app
 COPY sandbox/go.mod sandbox/go.sum ./
@@ -23,11 +20,8 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-RUN apk update && apk add --no-cache \
-    pkgconfig \
-    libseccomp-dev \
-    gcc \
-    musl-dev
+COPY install-deps.sh /tmp/
+RUN sh /tmp/install-deps.sh
 
 WORKDIR /go/src/app
 COPY sandbox/go.mod sandbox/go.sum ./
@@ -42,11 +36,8 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-RUN apk update && apk add --no-cache \
-    pkgconfig \
-    libseccomp-dev \
-    gcc \
-    musl-dev
+COPY install-deps.sh /tmp/
+RUN sh /tmp/install-deps.sh
 
 WORKDIR /go/src/app
 COPY sandbox/go.mod sandbox/go.sum ./
@@ -61,11 +52,8 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-RUN apk update && apk add --no-cache \
-    pkgconfig \
-    libseccomp-dev \
-    gcc \
-    musl-dev
+COPY install-deps.sh /tmp/
+RUN sh /tmp/install-deps.sh
 
 WORKDIR /go/src/app
 COPY sandbox/go.mod sandbox/go.sum ./
@@ -81,12 +69,8 @@ ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
 
-# 更新 apk 并安装必要依赖：pkgconfig、libseccomp-dev、gcc、musl-dev
-RUN apk update && apk add --no-cache \
-    pkgconfig \
-    libseccomp-dev \
-    gcc \
-    musl-dev
+COPY install-deps.sh /tmp/
+RUN sh /tmp/install-deps.sh
 
 WORKDIR /go/src/app
 
