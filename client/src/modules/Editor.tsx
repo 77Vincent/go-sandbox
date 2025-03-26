@@ -35,7 +35,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX,
+    EDITOR_SIZE_MAX, ACTIVE_COLOR,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -487,7 +487,7 @@ export default function Component(props: {
                         <Button onClick={debouncedRun} disabled={isRunning || !codeRef.current}
                                 className={"shadow"}
                                 size={"xs"}
-                                color={mode === "dark" ? "light" : "cyan"}
+                                color={mode === "dark" ? "light" : ACTIVE_COLOR}
                         >
                             {TRANSLATE.run[lan]}
                         </Button>
@@ -497,7 +497,7 @@ export default function Component(props: {
                         <Button onClick={debouncedFormat} disabled={isRunning || !codeRef.current}
                                 className={"shadow"}
                                 size={"xs"}
-                                color={mode === "dark" ? "light" : "cyan"}
+                                color={mode === "dark" ? "light" : ACTIVE_COLOR}
                         >
                             {TRANSLATE.format[lan]}
                         </Button>
