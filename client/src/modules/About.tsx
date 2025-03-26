@@ -17,7 +17,7 @@ export default function Component(props: {
             </p>
 
             <Button gradientDuoTone={"purpleToBlue"} href={"https://www.buymeacoffee.com/"} target={"_blank"}>
-                {TRANSLATE.buyMeACoffee[lan]} (1$)
+                {TRANSLATE.coffee[lan]} (1$)
             </Button>
         </Modal.Body>
     </Modal>

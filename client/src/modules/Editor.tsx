@@ -30,7 +30,12 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    DEFAULT_CODE_CONTENT, SANDBOX_VERSIONS, SANDBOX_VERSION_KEY,
+    DEFAULT_CODE_CONTENT,
+    SANDBOX_VERSIONS,
+    SANDBOX_VERSION_KEY,
+    IS_VERTICAL_LAYOUT_KEY,
+    EDITOR_SIZE_MIN,
+    EDITOR_SIZE_MAX, ACTIVE_COLOR,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -55,8 +60,16 @@ import {
     getCursorColumn,
     getCursorRow,
     getKeyBindings,
-    getEditorSize, getFontSize,
-    getLintOn, generateMarkers, getShowInvisible, getUrl, getLanguage, getSandboxVersion
+    getEditorSize,
+    getFontSize,
+    getLintOn,
+    generateMarkers,
+    getShowInvisible,
+    getUrl,
+    getLanguage,
+    getSandboxVersion,
+    getIsVerticalLayout,
+    isMobileDevice
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages, resultI} from "../types";
@@ -89,15 +102,18 @@ function FetchErrorMessage(props: {
     )
 }
 
+const resizeHandlerHoverClasses = "hover:bg-cyan-400 transition-colors duration-300";
+
 export default function Component(props: {
     setToastError: (message: ReactNode) => void
     setToastInfo: (message: ReactNode) => void
 }) {
     const {setToastError, setToastInfo} = props
-    const {mode, toggleMode} = useThemeMode();
+    const {mode} = useThemeMode();
     const statusBarRef = useRef<HTMLDivElement | null>(null);
 
     const [showAbout, setShowAbout] = useState<boolean>(false);
+    const [isMobile] = useState<boolean>(isMobileDevice());
 
     // error state
     const [errorRows, setErrorRows] = useState<IMarker[]>([]);
@@ -105,6 +121,7 @@ export default function Component(props: {
     // settings
     const [fontSize, setFontSize] = useState<number>(getFontSize());
     const [editorSize, setEditorSize] = useState<number>(getEditorSize())
+    const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(getIsVerticalLayout())
     const [lan, setLan] = useState<languages>(getLanguage())
     const [sandboxVersion, setSandboxVersion] = useState<string>(getSandboxVersion())
 
@@ -404,6 +421,13 @@ export default function Component(props: {
         setSandboxVersion(version)
     }
 
+    function onIsVerticalLayoutChange() {
+        const value = !isLayoutVertical
+        localStorage.setItem(IS_VERTICAL_LAYOUT_KEY, JSON.stringify(value));
+        setIsLayoutVertical(value)
+        location.reload()
+    }
+
     function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
         event.stopPropagation();
         const value = event.target.value as languages
@@ -421,12 +445,15 @@ export default function Component(props: {
         setIsShowInvisible(!isShowInvisible);
     }
 
-    function onDarkThemeToggle() {
-        toggleMode();
-    }
-
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
-        const size = (refToElement.clientWidth / window.innerWidth) * 100
+        // calculate the size
+        let size = 0
+        if (isLayoutVertical) {
+            size = (refToElement.clientHeight / (window.innerHeight - 45)) * 100
+        } else {
+            size = (refToElement.clientWidth / window.innerWidth) * 100
+        }
+
         localStorage.setItem(EDITOR_SIZE_KEY, JSON.stringify(size))
         setEditorSize(size)
     }
@@ -457,19 +484,19 @@ export default function Component(props: {
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
             <div
-                className="flex items-center justify-between border-b border-b-gray-300 py-1 pl-2 pr-1 shadow-sm dark:border-b-gray-600  dark:text-white">
+                className="flex items-center justify-between border-b border-b-gray-300 py-0.5 pl-2 pr-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
-                    <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
+                    <img src={"/logo.svg"} alt={"logo"} className={"h-5 max-md:hidden"}/>
 
-                    <div className="text-2xl italic text-gray-700 dark:text-cyan-500">Go Sandbox</div>
+                    <div className="text-2xl italic text-gray-700 dark:text-cyan-500 max-md:text-base">Go Sandbox</div>
                 </Link>
 
-                <div className="flex items-center justify-end gap-2">
+                <div className="flex items-center justify-end gap-2 max-md:gap-1">
                     <Tooltip content={"cmd/win + enter"}>
                         <Button onClick={debouncedRun} disabled={isRunning || !codeRef.current}
                                 className={"shadow"}
                                 size={"xs"}
-                                color={mode === "dark" ? "light" : "cyan"}
+                                color={mode === "dark" ? "light" : ACTIVE_COLOR}
                         >
                             {TRANSLATE.run[lan]}
                         </Button>
@@ -479,7 +506,7 @@ export default function Component(props: {
                         <Button onClick={debouncedFormat} disabled={isRunning || !codeRef.current}
                                 className={"shadow"}
                                 size={"xs"}
-                                color={mode === "dark" ? "light" : "cyan"}
+                                color={mode === "dark" ? "light" : ACTIVE_COLOR}
                         >
                             {TRANSLATE.format[lan]}
                         </Button>
@@ -495,11 +522,15 @@ export default function Component(props: {
                         </Button>
                     </Tooltip>
 
-                    <Divider/>
-
-                    <TemplateSelector isRunning={isRunning} onSelect={debouncedGetTemplate}/>
-                    <VersionSelector version={SANDBOX_VERSIONS[sandboxVersion]} isRunning={isRunning}
-                                     onSelect={onSandboxVersionChange}/>
+                    {
+                        isMobile ? null :
+                            <>
+                                <Divider/>
+                                <TemplateSelector isRunning={isRunning} onSelect={debouncedGetTemplate}/>
+                                <VersionSelector version={SANDBOX_VERSIONS[sandboxVersion]} isRunning={isRunning}
+                                                 onSelect={onSandboxVersionChange}/>
+                            </>
+                    }
 
                     <div className={"flex items-center"}>
                         <Divider/>
@@ -511,6 +542,8 @@ export default function Component(props: {
                             onFontL={onFontL}
                             onFontM={onFontM}
                             onFontS={onFontS}
+                            isVerticalLayout={isLayoutVertical}
+                            setIsVerticalLayout={onIsVerticalLayoutChange}
                             onKeyBindingsChange={onKeyBindingsChange}
                             onLanguageChange={onLanguageChange}
                             keyBindings={keyBindings}
@@ -525,32 +558,37 @@ export default function Component(props: {
                         <Tooltip content={"About"}>
                             <AboutIcon
                                 onClick={() => setShowAbout(true)}
-                                className={"mx-1.5 cursor-pointer text-2xl text-gray-600 hover:opacity-50 dark:text-gray-300"}/>
+                                className={"mx-1.5 cursor-pointer text-2xl text-gray-600 hover:opacity-50 dark:text-gray-300 max-md:mx-0 max-md:text-lg"}/>
                         </Tooltip>
 
-                        <DarkThemeToggle onClick={onDarkThemeToggle}/>
+                        <DarkThemeToggle/>
                     </div>
                 </div>
             </div>
 
-            <div className={"flex h-0 flex-1"}>
+            <div className={`flex h-0 flex-1 ${isLayoutVertical ? "flex-col" : "flex-row"}`}>
                 <Resizable
                     handleClasses={{
-                        right: "hover:bg-cyan-200 transition-colors duration-300",
+                        right: !isLayoutVertical ? resizeHandlerHoverClasses : "",
+                        bottom: isLayoutVertical ? resizeHandlerHoverClasses : "",
                     }}
-                    minWidth={"20%"}
-                    maxWidth={"80%"}
+                    minWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MIN}%`}
+                    maxWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MAX}%`}
+                    minHeight={isLayoutVertical ? `${EDITOR_SIZE_MIN}%` : "100%"}
+                    maxHeight={isLayoutVertical ? `${EDITOR_SIZE_MAX}%` : "100%"}
                     enable={{
-                        right: true
+                        right: !isLayoutVertical,
+                        bottom: isLayoutVertical,
                     }}
                     defaultSize={{
-                        width: `${editorSize}%`,
-                        height: "100%"
+                        width: isLayoutVertical ? "100%" : `${editorSize}%`,
+                        height: isLayoutVertical ? `${editorSize}%` : "100%",
                     }}
                     grid={[10, 1]}
                     onResizeStop={onResizeStop}
                 >
-                    <Wrapper className={"flex flex-col border-r border-r-gray-400 dark:border-r-gray-600"}>
+                    <Wrapper
+                        className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                         <ClickBoard content={code}/>
 
                         <AceEditor
@@ -578,11 +616,12 @@ export default function Component(props: {
                             markers={errorRows}
                         />
 
-                        <StatusBar statusBarRef={statusBarRef}/>
+                        <StatusBar statusBarRef={statusBarRef} errors={errorRows.length}/>
                     </Wrapper>
                 </Resizable>
 
                 <Terminal
+                    lan={lan}
                     hint={isAutoRun ? TRANSLATE.hintAuto[lan] : TRANSLATE.hintManual[lan]}
                     running={isRunning}
                     fontSize={fontSize}

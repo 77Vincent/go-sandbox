@@ -12,7 +12,6 @@ function App() {
         (async () => {
             try {
                 await healthCheck();
-                console.log("backend api connected");
             } catch (e) {
                 setToastError(`No backend connection: ${(e as Error).message}`);
             }

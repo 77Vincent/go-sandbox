@@ -1,21 +1,30 @@
 import {Dropdown, Label, Select} from "flowbite-react";
 import {ChangeEventHandler, MouseEvent} from "react";
 
-import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
+import {
+    VscSettingsGear as SettingsIcon,
+    VscLayoutSidebarRight as LayoutHorizontalIcon,
+    VscLayoutPanel as LayoutVerticalIcon,
+} from "react-icons/vsc";
 import {
     MdTextDecrease as TextSIcon,
     MdTextIncrease as TextLIcon,
 } from "react-icons/md";
 import {ImTextColor as TextMIcon} from "react-icons/im"
 
-import {FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, LANGUAGES, TRANSLATE} from "../constants.ts";
+import {ACTIVE_COLOR, FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, LANGUAGES, TRANSLATE} from "../constants.ts";
 import {KeyBindings, languages} from "../types";
 import {ToggleSwitch} from "./Common.tsx";
+
+const activeClasses = "cursor-pointer hover:opacity-50";
 
 export default function Component(props: {
     disabled?: boolean;
     lan: languages;
     onLanguageChange: ChangeEventHandler<HTMLSelectElement>;
+    // for layout
+    isVerticalLayout: boolean;
+    setIsVerticalLayout: () => void;
     // for editor fontSize
     fontSize: number;
     onFontL: () => void;
@@ -44,6 +53,10 @@ export default function Component(props: {
         lan,
         onLanguageChange,
 
+        // for layout
+        isVerticalLayout,
+        setIsVerticalLayout,
+
         // for font size
         fontSize,
         onFontL,
@@ -71,7 +84,7 @@ export default function Component(props: {
         <Dropdown disabled={disabled} className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"}
                   arrowIcon={false} label={
             <SettingsIcon
-                className={"cursor-pointer text-lg text-gray-700 hover:opacity-50 dark:text-gray-300"}/>
+                className={"cursor-pointer text-lg text-gray-700 hover:opacity-50 dark:text-gray-300 max-md:text-sm"}/>
         }>
             <Dropdown.Header>
                 <p className={"font-semibold"}>{TRANSLATE.settings[lan]}</p>
@@ -100,12 +113,23 @@ export default function Component(props: {
                 <span>{TRANSLATE.fontSize[lan]}</span>
 
                 <div className={"flex items-center gap-3"}>
-                    <TextSIcon color={fontSize === FONT_SIZE_S ? "cyan" : ""}
-                               onClick={onFontS} className={"cursor-pointer text-lg hover:opacity-50"}/>
-                    <TextMIcon color={fontSize === FONT_SIZE_M ? "cyan" : ""}
-                               onClick={onFontM} className={"cursor-pointer text-xl hover:opacity-50"}/>
-                    <TextLIcon color={fontSize === FONT_SIZE_L ? "cyan" : ""}
-                               onClick={onFontL} className={"cursor-pointer text-2xl hover:opacity-50"}/>
+                    <TextSIcon color={fontSize === FONT_SIZE_S ? ACTIVE_COLOR : ""}
+                               onClick={onFontS} className={`${activeClasses} text-lg`}/>
+                    <TextMIcon color={fontSize === FONT_SIZE_M ? ACTIVE_COLOR : ""}
+                               onClick={onFontM} className={`${activeClasses} text-xl`}/>
+                    <TextLIcon color={fontSize === FONT_SIZE_L ? ACTIVE_COLOR : ""}
+                               onClick={onFontL} className={`${activeClasses} text-2xl`}/>
+                </div>
+            </Dropdown.Item>
+
+            <Dropdown.Item className={layoutClasses}>
+                <span>{TRANSLATE.layout[lan]}</span>
+
+                <div className={"flex items-center gap-3"}>
+                    <LayoutHorizontalIcon color={!isVerticalLayout ? ACTIVE_COLOR : ""}
+                                          onClick={setIsVerticalLayout} className={activeClasses}/>
+                    <LayoutVerticalIcon color={isVerticalLayout ? ACTIVE_COLOR : ""}
+                                        onClick={setIsVerticalLayout} className={activeClasses}/>
                 </div>
             </Dropdown.Item>
 

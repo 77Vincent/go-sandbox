@@ -1,13 +1,14 @@
 import {ClickBoard, Wrapper} from "./Common.tsx";
 import {mapFontSize} from "../utils.ts";
-import {resultI} from "../types";
-import {EVENT_STDERR} from "../constants.ts";
+import {languages, resultI} from "../types";
+import {EVENT_STDERR, TRANSLATE} from "../constants.ts";
 
-const common = "border-b dark:border-neutral-700 border-neutral-300 pb-1.5 mb-2"
+const common = "border-b dark:border-neutral-700 border-neutral-300 pb-1.5 mb-1"
 const errorColor = "text-red-700 dark:text-red-500"
 const infoColor = "text-green-600 dark:text-green-300"
 
 export default function Component(props: {
+    lan: languages,
     hint: string,
     running: boolean,
     result: resultI[],
@@ -15,21 +16,19 @@ export default function Component(props: {
     info: string,
     error: string,
 }) {
-    const {fontSize, result, info, error, running, hint} = props
+    const {fontSize, result, info, error, running, hint, lan} = props
 
     return (
         <Wrapper
-            className={`flex flex-col p-2 pb-0 bg-neutral-200 dark:bg-neutral-800 text-${mapFontSize(fontSize)}`}>
+            className={`overflow-hidden flex flex-col p-1.5 pb-0 bg-neutral-200 dark:bg-neutral-800 text-${mapFontSize(fontSize)}`}>
             <ClickBoard content={
                 result.map(item => item.content).join("\n")
             }/>
 
             {
                 (!error && !info) &&
-                <div className={`${common} text-neutral-400 dark:text-neutral-600 font-light`}>
-                    {
-                        running ? "Running..." : hint
-                    }
+                <div className={`${common} font-light text-neutral-400 dark:text-neutral-600`}>
+                    {running ? TRANSLATE.running[lan] : hint}
                 </div>
             }
 
@@ -37,15 +36,18 @@ export default function Component(props: {
 
             {info && <pre className={`${infoColor} ${common}`}>{info}</pre>}
 
-            {
-                result.map((item, index) => {
-                    return (
-                        <pre key={index} className={item.type === EVENT_STDERR ? errorColor : ""}>
-                            {item.content}
-                        </pre>
-                    )
-                })
-            }
+            <div className={`flex h-full w-full flex-col overflow-auto`}>
+                {
+                    result.map((item, index) => {
+                        return (
+                            <pre key={index}
+                                 className={item.type === EVENT_STDERR ? errorColor : ""}>
+                                {item.content}
+                            </pre>
+                        )
+                    })
+                }
+            </div>
         </Wrapper>
     )
 }

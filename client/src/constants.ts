@@ -6,6 +6,7 @@ export const EVENT_ERROR = "error";
 export const EVENT_CLEAR = "clear";
 export const EVENT_DONE = "done";
 
+export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
 export const SANDBOX_VERSION_KEY = "sandboxVersion";
 export const KEY_BINDINGS_KEY = "keyBindings";
 export const LANGUAGE_KEY = "languageKey";
@@ -18,23 +19,27 @@ export const CODE_CONTENT_KEY = "codeContent";
 export const CURSOR_ROW_KEY = "cursorPositionRow";
 export const CURSOR_COLUMN_KEY = "cursorPositionColumn";
 
-export const SANDBOX_VERSION_2 = "2";
-export const SANDBOX_VERSION_1 = "1";
+export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
+export const DEFAULT_SANDBOX_VERSION = "1";
 export const DEFAULT_KEY_BINDINGS: KeyBindings = "";
 export const DEFAULT_AUTO_RUN = "true";
 export const DEFAULT_LINT_ON = "false";
 export const DEFAULT_SHOW_INVISIBLE = "false";
 export const DEFAULT_EDITOR_SIZE = 50;
+export const EDITOR_SIZE_MAX = 90
+export const EDITOR_SIZE_MIN = 10
 export const DEFAULT_LANGUAGE = "en";
 export const FONT_SIZE_L = 16;
 export const FONT_SIZE_M = 14;
 export const FONT_SIZE_S = 12;
 
+export const MOBILE_WIDTH = 768;
 export const DEFAULT_CURSOR_POSITION = 0;
 
 export const CURSOR_UPDATE_DEBOUNCE_TIME = 100;
 export const RUN_DEBOUNCE_TIME = 100;
 export const AUTO_RUN_DEBOUNCE_TIME = 1000;
+export const ACTIVE_COLOR = "cyan"
 
 export const DEFAULT_CODE_CONTENT = `package main
 
@@ -45,7 +50,7 @@ func main() {
 }`
 
 export const SNIPPET_REGEX = /\/snippet\/([a-zA-Z0-9]+)/g;
-export const ERROR_PARSING_REGEX = /tmp\/.*\.go:(\d+)/g;
+export const ERROR_PARSING_REGEX = /main\.go:(\d+)/g;
 export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;
 export const STATS_INFO_PREFIX = "STATS_INFO:"
 
@@ -67,11 +72,23 @@ export const LANGUAGES: { value: languages, label: string }[] = [
 ]
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    layout: {
+        en: "Layout",
+        zh_CN: "布局",
+        zh_TW: "佈局",
+        ja: "レイアウト",
+    },
     run: {
         en: "Run",
         zh_CN: "运行",
         zh_TW: "執行",
         ja: "実行",
+    },
+    running: {
+        en: "Running...",
+        zh_CN: "运行中...",
+        zh_TW: "執行中...",
+        ja: "実行中...",
     },
     format: {
         en: "Format",
@@ -145,7 +162,7 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "顯示不可見字符",
         ja: "不可視文字を表示",
     },
-    buyMeACoffee: {
+    coffee: {
         en: "Buy me a coffee",
         zh_CN: "请我喝杯咖啡吧",
         zh_TW: "請我喝杯咖啡吧",
