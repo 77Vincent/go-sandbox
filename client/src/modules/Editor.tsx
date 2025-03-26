@@ -538,14 +538,14 @@ export default function Component(props: {
                     handleClasses={{
                         right: "hover:bg-cyan-200 transition-colors duration-300",
                     }}
-                    minWidth={"20%"}
-                    maxWidth={"80%"}
+                    minWidth={"10%"}
+                    maxWidth={"90%"}
                     enable={{
                         right: true
                     }}
                     defaultSize={{
                         width: `${editorSize}%`,
-                        height: "100%"
+                        height: "100%",
                     }}
                     grid={[10, 1]}
                     onResizeStop={onResizeStop}
