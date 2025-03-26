@@ -33,6 +33,7 @@ const (
 	gameOfLifeCase  = "gameOfLife"
 	// design patterns
 	singletonCase = "singleton"
+	factoryCase   = "factory"
 )
 
 func GetTemplate(c *gin.Context) {
@@ -86,6 +87,8 @@ func GetTemplate(c *gin.Context) {
 		// design patterns
 	case singletonCase:
 		output = snippets.Singleton
+	case factoryCase:
+		output = snippets.Factory
 
 	default:
 		c.String(http.StatusNotFound, notFoundError)
