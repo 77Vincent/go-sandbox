@@ -30,7 +30,12 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    DEFAULT_CODE_CONTENT, SANDBOX_VERSIONS, SANDBOX_VERSION_KEY, IS_VERTICAL_LAYOUT_KEY,
+    DEFAULT_CODE_CONTENT,
+    SANDBOX_VERSIONS,
+    SANDBOX_VERSION_KEY,
+    IS_VERTICAL_LAYOUT_KEY,
+    EDITOR_SIZE_MIN,
+    EDITOR_SIZE_MAX,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -88,6 +93,8 @@ function FetchErrorMessage(props: {
         </div>
     )
 }
+
+const resizeHandlerHoverClasses = "hover:bg-cyan-200 transition-colors duration-300";
 
 export default function Component(props: {
     setToastError: (message: ReactNode) => void
@@ -547,12 +554,13 @@ export default function Component(props: {
             <div className={`flex h-0 flex-1 ${isLayoutVertical ? "flex-col" : "flex-row"}`}>
                 <Resizable
                     handleClasses={{
-                        right: "hover:bg-cyan-200 transition-colors duration-300",
+                        right: !isLayoutVertical ? resizeHandlerHoverClasses : "",
+                        bottom: isLayoutVertical ? resizeHandlerHoverClasses : "",
                     }}
-                    minWidth={isLayoutVertical ? "100%" : "10%"}
-                    maxWidth={isLayoutVertical ? "100%" : "90%"}
-                    minHeight={isLayoutVertical ? "10%" : "100%"}
-                    maxHeight={isLayoutVertical ? "90%" : "100%"}
+                    minWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MIN}%`}
+                    maxWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MAX}%`}
+                    minHeight={isLayoutVertical ? `${EDITOR_SIZE_MIN}%` : "100%"}
+                    maxHeight={isLayoutVertical ? `${EDITOR_SIZE_MAX}%` : "100%"}
                     enable={{
                         right: !isLayoutVertical,
                         bottom: isLayoutVertical,
