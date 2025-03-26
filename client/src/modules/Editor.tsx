@@ -601,7 +601,7 @@ export default function Component(props: {
                             markers={errorRows}
                         />
 
-                        <StatusBar statusBarRef={statusBarRef}/>
+                        <StatusBar statusBarRef={statusBarRef} errors={errorRows.length}/>
                     </Wrapper>
                 </Resizable>
 
