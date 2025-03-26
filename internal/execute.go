@@ -184,7 +184,7 @@ func Execute(c *gin.Context) {
 
 var (
 	errorRe    = regexp.MustCompile(`^/tmp/main\.go:`) // /tmp/code-123.go:
-	skipError  = regexp.MustCompile(`^# command-line-arguments`)
+	skipError  = regexp.MustCompile(`^# sandbox`)
 	skipError2 = regexp.MustCompile(`^[0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} (Build|Execution) error: exit status [0-9]+`) // 2021/08/01 00:00:00
 )
 

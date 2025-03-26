@@ -49,7 +49,7 @@ func main() {
 }`
 
 export const SNIPPET_REGEX = /\/snippet\/([a-zA-Z0-9]+)/g;
-export const ERROR_PARSING_REGEX = /tmp\/.*\.go:(\d+)/g;
+export const ERROR_PARSING_REGEX = /main\.go:(\d+)/g;
 export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;
 export const STATS_INFO_PREFIX = "STATS_INFO:"
 
