@@ -6,6 +6,7 @@ export const EVENT_ERROR = "error";
 export const EVENT_CLEAR = "clear";
 export const EVENT_DONE = "done";
 
+export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
 export const SANDBOX_VERSION_KEY = "sandboxVersion";
 export const KEY_BINDINGS_KEY = "keyBindings";
 export const LANGUAGE_KEY = "languageKey";
@@ -18,8 +19,8 @@ export const CODE_CONTENT_KEY = "codeContent";
 export const CURSOR_ROW_KEY = "cursorPositionRow";
 export const CURSOR_COLUMN_KEY = "cursorPositionColumn";
 
-export const SANDBOX_VERSION_2 = "2";
-export const SANDBOX_VERSION_1 = "1";
+export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
+export const DEFAULT_SANDBOX_VERSION = "1";
 export const DEFAULT_KEY_BINDINGS: KeyBindings = "";
 export const DEFAULT_AUTO_RUN = "true";
 export const DEFAULT_LINT_ON = "false";
@@ -67,6 +68,12 @@ export const LANGUAGES: { value: languages, label: string }[] = [
 ]
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    layout: {
+        en: "Layout",
+        zh_CN: "布局",
+        zh_TW: "佈局",
+        ja: "レイアウト",
+    },
     theme: {
         en: "Theme",
         zh_CN: "主题",
@@ -151,7 +158,7 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "顯示不可見字符",
         ja: "不可視文字を表示",
     },
-    buyMeACoffee: {
+    coffee: {
         en: "Buy me a coffee",
         zh_CN: "请我喝杯咖啡吧",
         zh_TW: "請我喝杯咖啡吧",

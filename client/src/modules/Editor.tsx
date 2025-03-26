@@ -30,7 +30,7 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    DEFAULT_CODE_CONTENT, SANDBOX_VERSIONS, SANDBOX_VERSION_KEY,
+    DEFAULT_CODE_CONTENT, SANDBOX_VERSIONS, SANDBOX_VERSION_KEY, IS_VERTICAL_LAYOUT_KEY,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -56,7 +56,7 @@ import {
     getCursorRow,
     getKeyBindings,
     getEditorSize, getFontSize,
-    getLintOn, generateMarkers, getShowInvisible, getUrl, getLanguage, getSandboxVersion
+    getLintOn, generateMarkers, getShowInvisible, getUrl, getLanguage, getSandboxVersion, getIsVerticalLayout
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages, resultI} from "../types";
@@ -105,6 +105,7 @@ export default function Component(props: {
     // settings
     const [fontSize, setFontSize] = useState<number>(getFontSize());
     const [editorSize, setEditorSize] = useState<number>(getEditorSize())
+    const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(getIsVerticalLayout())
     const [lan, setLan] = useState<languages>(getLanguage())
     const [sandboxVersion, setSandboxVersion] = useState<string>(getSandboxVersion())
 
@@ -404,6 +405,13 @@ export default function Component(props: {
         setSandboxVersion(version)
     }
 
+    function onIsVerticalLayoutChange() {
+        const value = !isLayoutVertical
+        localStorage.setItem(IS_VERTICAL_LAYOUT_KEY, JSON.stringify(value));
+        setIsLayoutVertical(value)
+        location.reload()
+    }
+
     function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
         event.stopPropagation();
         const value = event.target.value as languages
@@ -422,7 +430,14 @@ export default function Component(props: {
     }
 
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
-        const size = (refToElement.clientWidth / window.innerWidth) * 100
+        // calculate the size
+        let size = 0
+        if (isLayoutVertical) {
+            size = (refToElement.clientHeight / window.innerHeight) * 100
+        } else {
+            size = (refToElement.clientWidth / window.innerWidth) * 100
+        }
+
         localStorage.setItem(EDITOR_SIZE_KEY, JSON.stringify(size))
         setEditorSize(size)
     }
@@ -453,7 +468,7 @@ export default function Component(props: {
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
             <div
-                className="flex items-center justify-between border-b border-b-gray-300 py-1 pl-2 pr-1 shadow-sm dark:border-b-gray-600  dark:text-white">
+                className="flex items-center justify-between border-b border-b-gray-300 py-1.5 pl-2 pr-1.5 shadow-sm dark:border-b-gray-600  dark:text-white">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
 
@@ -507,6 +522,8 @@ export default function Component(props: {
                             onFontL={onFontL}
                             onFontM={onFontM}
                             onFontS={onFontS}
+                            isVerticalLayout={isLayoutVertical}
+                            setIsVerticalLayout={onIsVerticalLayoutChange}
                             onKeyBindingsChange={onKeyBindingsChange}
                             onLanguageChange={onLanguageChange}
                             keyBindings={keyBindings}
@@ -527,19 +544,22 @@ export default function Component(props: {
                 </div>
             </div>
 
-            <div className={"flex h-0 flex-1"}>
+            <div className={`flex h-0 flex-1 ${isLayoutVertical ? "flex-col" : "flex-row"}`}>
                 <Resizable
                     handleClasses={{
                         right: "hover:bg-cyan-200 transition-colors duration-300",
                     }}
-                    minWidth={"10%"}
-                    maxWidth={"90%"}
+                    minWidth={isLayoutVertical ? "100%" : "10%"}
+                    maxWidth={isLayoutVertical ? "100%" : "90%"}
+                    minHeight={isLayoutVertical ? "10%" : "100%"}
+                    maxHeight={isLayoutVertical ? "90%" : "100%"}
                     enable={{
-                        right: true
+                        right: !isLayoutVertical,
+                        bottom: isLayoutVertical,
                     }}
                     defaultSize={{
-                        width: `${editorSize}%`,
-                        height: "100%",
+                        width: isLayoutVertical ? "100%" : `${editorSize}%`,
+                        height: isLayoutVertical ? `${editorSize}%` : "100%",
                     }}
                     grid={[10, 1]}
                     onResizeStop={onResizeStop}

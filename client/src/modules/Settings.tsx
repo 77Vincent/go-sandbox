@@ -1,7 +1,11 @@
 import {DarkThemeToggle, Dropdown, Label, Select} from "flowbite-react";
 import {ChangeEventHandler, MouseEvent} from "react";
 
-import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
+import {
+    VscSettingsGear as SettingsIcon,
+    VscLayoutSidebarRight as LayoutHorizontalIcon,
+    VscLayoutPanel as LayoutVerticalIcon,
+} from "react-icons/vsc";
 import {
     MdTextDecrease as TextSIcon,
     MdTextIncrease as TextLIcon,
@@ -16,6 +20,9 @@ export default function Component(props: {
     disabled?: boolean;
     lan: languages;
     onLanguageChange: ChangeEventHandler<HTMLSelectElement>;
+    // for layout
+    isVerticalLayout: boolean;
+    setIsVerticalLayout: () => void;
     // for editor fontSize
     fontSize: number;
     onFontL: () => void;
@@ -43,6 +50,10 @@ export default function Component(props: {
         // for language
         lan,
         onLanguageChange,
+
+        // for layout
+        isVerticalLayout,
+        setIsVerticalLayout,
 
         // for font size
         fontSize,
@@ -106,6 +117,17 @@ export default function Component(props: {
                                onClick={onFontM} className={"cursor-pointer text-xl hover:opacity-50"}/>
                     <TextLIcon color={fontSize === FONT_SIZE_L ? "cyan" : ""}
                                onClick={onFontL} className={"cursor-pointer text-2xl hover:opacity-50"}/>
+                </div>
+            </Dropdown.Item>
+
+            <Dropdown.Item className={layoutClasses}>
+                <span>{TRANSLATE.layout[lan]}</span>
+
+                <div className={"flex items-center gap-3"}>
+                    <LayoutHorizontalIcon color={!isVerticalLayout ? "cyan" : ""}
+                                          onClick={setIsVerticalLayout} className={"cursor-pointer hover:opacity-50"}/>
+                    <LayoutVerticalIcon color={isVerticalLayout ? "cyan" : ""}
+                                        onClick={setIsVerticalLayout} className={"cursor-pointer hover:opacity-50"}/>
                 </div>
             </Dropdown.Item>
 
