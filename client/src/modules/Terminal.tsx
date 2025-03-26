@@ -1,14 +1,14 @@
 import {ClickBoard, Wrapper} from "./Common.tsx";
 import {mapFontSize} from "../utils.ts";
-import {resultI} from "../types";
-import {EVENT_STDERR} from "../constants.ts";
+import {languages, resultI} from "../types";
+import {EVENT_STDERR, TRANSLATE} from "../constants.ts";
 
-const runningMessage = "Running..."
 const common = "border-b dark:border-neutral-700 border-neutral-300 pb-1.5 mb-1"
 const errorColor = "text-red-700 dark:text-red-500"
 const infoColor = "text-green-600 dark:text-green-300"
 
 export default function Component(props: {
+    lan: languages,
     hint: string,
     running: boolean,
     result: resultI[],
@@ -16,7 +16,7 @@ export default function Component(props: {
     info: string,
     error: string,
 }) {
-    const {fontSize, result, info, error, running, hint} = props
+    const {fontSize, result, info, error, running, hint, lan} = props
 
     return (
         <Wrapper
@@ -28,7 +28,7 @@ export default function Component(props: {
             {
                 (!error && !info) &&
                 <div className={`${common} font-light text-neutral-400 dark:text-neutral-600`}>
-                    {running ? runningMessage : hint}
+                    {running ? TRANSLATE.running[lan] : hint}
                 </div>
             }
 

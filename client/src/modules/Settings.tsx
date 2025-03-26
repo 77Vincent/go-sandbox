@@ -1,4 +1,4 @@
-import {DarkThemeToggle, Dropdown, Label, Select} from "flowbite-react";
+import {DarkThemeToggle, Dropdown, Label, Select, useThemeMode} from "flowbite-react";
 import {ChangeEventHandler, MouseEvent} from "react";
 
 import {
@@ -79,6 +79,7 @@ export default function Component(props: {
     const handleSelectClick = (e: MouseEvent<HTMLSelectElement>) => {
         e.stopPropagation();
     };
+    const {mode} = useThemeMode();
 
     return (
         <Dropdown disabled={disabled} className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"}
@@ -162,7 +163,7 @@ export default function Component(props: {
             <Dropdown.Divider/>
 
             <Dropdown.Item className={layoutClasses}>
-                <span>{TRANSLATE.theme[lan]}</span>
+                <span>{TRANSLATE.theme[lan]} / {mode}</span>
 
                 <DarkThemeToggle/>
             </Dropdown.Item>

@@ -87,6 +87,12 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "執行",
         ja: "実行",
     },
+    running: {
+        en: "Running...",
+        zh_CN: "运行中...",
+        zh_TW: "執行中...",
+        ja: "実行中...",
+    },
     format: {
         en: "Format",
         zh_CN: "格式化",

@@ -598,6 +598,7 @@ export default function Component(props: {
                 </Resizable>
 
                 <Terminal
+                    lan={lan}
                     hint={isAutoRun ? TRANSLATE.hintAuto[lan] : TRANSLATE.hintManual[lan]}
                     running={isRunning}
                     fontSize={fontSize}
