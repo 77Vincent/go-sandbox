@@ -204,6 +204,7 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
     Fun: {
         clearScreen: "Clear screen",
         httpServer: "HTTP server",
+        gameOfLife: "Game of Life",
     },
     "Design Patterns": {
         singleton: "Singleton",

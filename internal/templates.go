@@ -10,7 +10,6 @@ const (
 	notFoundError = "template not found"
 	// basic
 	sleepCase         = "sleep"
-	httpServerCase    = "httpServer"
 	switchCaseCase    = "switchCase"
 	goroutineCase     = "goroutine"
 	channelCase       = "channel"
@@ -30,6 +29,10 @@ const (
 	dfsCase          = "dfs"
 	// fun
 	clearScreenCase = "clearScreen"
+	httpServerCase  = "httpServer"
+	gameOfLifeCase  = "gameOfLife"
+	// design patterns
+	singletonCase = "singleton"
 )
 
 func GetTemplate(c *gin.Context) {
@@ -40,8 +43,6 @@ func GetTemplate(c *gin.Context) {
 	switch id {
 	case sleepCase:
 		output = snippets.Sleep
-	case httpServerCase:
-		output = snippets.HttpServer
 	case switchCaseCase:
 		output = snippets.SwitchCase
 	case goroutineCase:
@@ -52,8 +53,6 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.Defer
 	case assertionCase:
 		output = snippets.Assertion
-	case clearScreenCase:
-		output = snippets.ClearScreen
 	case fileIOCase:
 		output = snippets.FileIO
 	case contextCancelCase:
@@ -77,6 +76,17 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.Bfs
 	case dfsCase:
 		output = snippets.Dfs
+		// fun
+	case clearScreenCase:
+		output = snippets.ClearScreen
+	case httpServerCase:
+		output = snippets.HttpServer
+	case gameOfLifeCase:
+		output = snippets.GameOfLife
+		// design patterns
+	case singletonCase:
+		output = snippets.Singleton
+
 	default:
 		c.String(http.StatusNotFound, notFoundError)
 	}
