@@ -433,7 +433,7 @@ export default function Component(props: {
         // calculate the size
         let size = 0
         if (isLayoutVertical) {
-            size = (refToElement.clientHeight / window.innerHeight) * 100
+            size = (refToElement.clientHeight / (window.innerHeight - 45)) * 100
         } else {
             size = (refToElement.clientWidth / window.innerWidth) * 100
         }
@@ -564,7 +564,8 @@ export default function Component(props: {
                     grid={[10, 1]}
                     onResizeStop={onResizeStop}
                 >
-                    <Wrapper className={"flex flex-col border-r border-r-gray-400 dark:border-r-gray-600"}>
+                    <Wrapper
+                        className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                         <ClickBoard content={code}/>
 
                         <AceEditor
