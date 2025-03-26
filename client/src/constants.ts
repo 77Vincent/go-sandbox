@@ -77,12 +77,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "佈局",
         ja: "レイアウト",
     },
-    theme: {
-        en: "Theme",
-        zh_CN: "主题",
-        zh_TW: "主題",
-        ja: "テーマ",
-    },
     run: {
         en: "Run",
         zh_CN: "运行",
