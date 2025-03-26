@@ -1,4 +1,4 @@
-import {Dropdown, Label, Select} from "flowbite-react";
+import {DarkThemeToggle, Dropdown, Label, Select} from "flowbite-react";
 import {ChangeEventHandler, MouseEvent} from "react";
 
 import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
@@ -133,6 +133,14 @@ export default function Component(props: {
                         })
                     }
                 </Select>
+            </Dropdown.Item>
+
+            <Dropdown.Divider/>
+
+            <Dropdown.Item className={layoutClasses}>
+                <span>{TRANSLATE.theme[lan]}</span>
+
+                <DarkThemeToggle/>
             </Dropdown.Item>
         </Dropdown>
     );

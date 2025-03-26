@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState, ChangeEvent, useEffect, ReactNode} from "react";
-import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
+import {Button, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
@@ -94,7 +94,7 @@ export default function Component(props: {
     setToastInfo: (message: ReactNode) => void
 }) {
     const {setToastError, setToastInfo} = props
-    const {mode, toggleMode} = useThemeMode();
+    const {mode} = useThemeMode();
     const statusBarRef = useRef<HTMLDivElement | null>(null);
 
     const [showAbout, setShowAbout] = useState<boolean>(false);
@@ -421,10 +421,6 @@ export default function Component(props: {
         setIsShowInvisible(!isShowInvisible);
     }
 
-    function onDarkThemeToggle() {
-        toggleMode();
-    }
-
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         const size = (refToElement.clientWidth / window.innerWidth) * 100
         localStorage.setItem(EDITOR_SIZE_KEY, JSON.stringify(size))
@@ -527,8 +523,6 @@ export default function Component(props: {
                                 onClick={() => setShowAbout(true)}
                                 className={"mx-1.5 cursor-pointer text-2xl text-gray-600 hover:opacity-50 dark:text-gray-300"}/>
                         </Tooltip>
-
-                        <DarkThemeToggle onClick={onDarkThemeToggle}/>
                     </div>
                 </div>
             </div>

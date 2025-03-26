@@ -67,6 +67,12 @@ export const LANGUAGES: { value: languages, label: string }[] = [
 ]
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    theme: {
+        en: "Theme",
+        zh_CN: "主题",
+        zh_TW: "主題",
+        ja: "テーマ",
+    },
     run: {
         en: "Run",
         zh_CN: "运行",
