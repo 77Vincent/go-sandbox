@@ -35,7 +35,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, ACTIVE_COLOR,
+    EDITOR_SIZE_MAX, ACTIVE_COLOR, TITLE,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -488,7 +488,7 @@ export default function Component(props: {
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5 max-md:hidden"}/>
 
-                    <div className="text-2xl italic text-gray-700 dark:text-cyan-500 max-md:text-base">Go Sandbox</div>
+                    <div className="text-2xl italic text-gray-700 dark:text-cyan-500 max-md:text-base">{TITLE}</div>
                 </Link>
 
                 <div className="flex items-center justify-end gap-2 max-md:gap-1">

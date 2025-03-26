@@ -1,5 +1,7 @@
 import {KeyBindings, languages} from "./types";
 
+export const TITLE = "Go Sandbox";
+
 export const EVENT_STDOUT = "stdout";
 export const EVENT_STDERR = "stderr";
 export const EVENT_ERROR = "error";
@@ -102,12 +104,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "分享",
         ja: "共有",
     },
-    about: {
-        en: "About",
-        zh_CN: "关于",
-        zh_TW: "關於",
-        ja: "情報",
-    },
     settings: {
         en: "Settings",
         zh_CN: "设置",
@@ -167,6 +163,12 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_CN: "请我喝杯咖啡吧",
         zh_TW: "請我喝杯咖啡吧",
         ja: "コーヒーをおごって",
+    },
+    bugReport: {
+        en: "Bug Report",
+        zh_CN: "报告 Bug",
+        zh_TW: "報告 Bug",
+        ja: "バグ報告",
     },
     aboutInfo: {
         en: "This is an online Go playground. It is a web-based tool to write, compile, and run Go code. It is powered by the Go playground and the Monaco editor.",

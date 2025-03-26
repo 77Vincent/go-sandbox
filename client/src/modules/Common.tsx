@@ -20,8 +20,15 @@ export function Wrapper(props: {
     )
 }
 
-export function Divider() {
-    return <div className={"mx-1 h-4 w-1 border-r border-neutral-300 dark:border-neutral-500"}/>
+export function Divider(props: {
+    horizontal?: boolean
+}) {
+    const {horizontal} = props
+    if (horizontal) {
+        return <div className={"h-1 w-full border-b border-neutral-300 dark:border-neutral-500"}/>
+    }
+
+    return <div className={"h-4 w-1 border-r border-neutral-300 dark:border-neutral-500"}/>
 }
 
 const defaultToastType = "info"
