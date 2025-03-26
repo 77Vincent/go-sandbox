@@ -33,6 +33,7 @@ export const FONT_SIZE_L = 16;
 export const FONT_SIZE_M = 14;
 export const FONT_SIZE_S = 12;
 
+export const MOBILE_WIDTH = 768;
 export const DEFAULT_CURSOR_POSITION = 0;
 
 export const CURSOR_UPDATE_DEBOUNCE_TIME = 100;

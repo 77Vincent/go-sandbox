@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState, ChangeEvent, useEffect, ReactNode} from "react";
-import {Button, Tooltip, useThemeMode} from "flowbite-react";
+import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
@@ -60,8 +60,16 @@ import {
     getCursorColumn,
     getCursorRow,
     getKeyBindings,
-    getEditorSize, getFontSize,
-    getLintOn, generateMarkers, getShowInvisible, getUrl, getLanguage, getSandboxVersion, getIsVerticalLayout
+    getEditorSize,
+    getFontSize,
+    getLintOn,
+    generateMarkers,
+    getShowInvisible,
+    getUrl,
+    getLanguage,
+    getSandboxVersion,
+    getIsVerticalLayout,
+    isMobileDevice
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages, resultI} from "../types";
@@ -94,7 +102,7 @@ function FetchErrorMessage(props: {
     )
 }
 
-const resizeHandlerHoverClasses = "hover:bg-cyan-200 transition-colors duration-300";
+const resizeHandlerHoverClasses = "hover:bg-cyan-400 transition-colors duration-300";
 
 export default function Component(props: {
     setToastError: (message: ReactNode) => void
@@ -105,6 +113,7 @@ export default function Component(props: {
     const statusBarRef = useRef<HTMLDivElement | null>(null);
 
     const [showAbout, setShowAbout] = useState<boolean>(false);
+    const [isMobile] = useState<boolean>(isMobileDevice());
 
     // error state
     const [errorRows, setErrorRows] = useState<IMarker[]>([]);
@@ -475,14 +484,14 @@ export default function Component(props: {
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
 
             <div
-                className="flex items-center justify-between border-b border-b-gray-300 py-1.5 pl-2 pr-1.5 shadow-sm dark:border-b-gray-600  dark:text-white">
+                className="flex items-center justify-between border-b border-b-gray-300 py-0.5 pl-2 pr-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
-                    <img src={"/logo.svg"} alt={"logo"} className={"h-5"}/>
+                    <img src={"/logo.svg"} alt={"logo"} className={"h-5 max-md:hidden"}/>
 
-                    <div className="text-2xl italic text-gray-700 dark:text-cyan-500">Go Sandbox</div>
+                    <div className="text-2xl italic text-gray-700 dark:text-cyan-500 max-md:text-base">Go Sandbox</div>
                 </Link>
 
-                <div className="flex items-center justify-end gap-2">
+                <div className="flex items-center justify-end gap-2 max-md:gap-1">
                     <Tooltip content={"cmd/win + enter"}>
                         <Button onClick={debouncedRun} disabled={isRunning || !codeRef.current}
                                 className={"shadow"}
@@ -513,11 +522,15 @@ export default function Component(props: {
                         </Button>
                     </Tooltip>
 
-                    <Divider/>
-
-                    <TemplateSelector isRunning={isRunning} onSelect={debouncedGetTemplate}/>
-                    <VersionSelector version={SANDBOX_VERSIONS[sandboxVersion]} isRunning={isRunning}
-                                     onSelect={onSandboxVersionChange}/>
+                    {
+                        isMobile ? null :
+                            <>
+                                <Divider/>
+                                <TemplateSelector isRunning={isRunning} onSelect={debouncedGetTemplate}/>
+                                <VersionSelector version={SANDBOX_VERSIONS[sandboxVersion]} isRunning={isRunning}
+                                                 onSelect={onSandboxVersionChange}/>
+                            </>
+                    }
 
                     <div className={"flex items-center"}>
                         <Divider/>
@@ -545,8 +558,10 @@ export default function Component(props: {
                         <Tooltip content={"About"}>
                             <AboutIcon
                                 onClick={() => setShowAbout(true)}
-                                className={"mx-1.5 cursor-pointer text-2xl text-gray-600 hover:opacity-50 dark:text-gray-300"}/>
+                                className={"mx-1.5 cursor-pointer text-2xl text-gray-600 hover:opacity-50 dark:text-gray-300 max-md:mx-0 max-md:text-lg"}/>
                         </Tooltip>
+
+                        <DarkThemeToggle/>
                     </div>
                 </div>
             </div>

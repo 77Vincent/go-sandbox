@@ -17,7 +17,7 @@ import {
     FONT_SIZE_M,
     KEY_BINDINGS_KEY, LANGUAGE_KEY,
     LINT_ON_KEY, SANDBOX_VERSION_KEY,
-    SHOW_INVISIBLE_KEY, DEFAULT_SANDBOX_VERSION, IS_VERTICAL_LAYOUT_KEY, DEFAULT_IS_VERTICAL_LAYOUT
+    SHOW_INVISIBLE_KEY, DEFAULT_SANDBOX_VERSION, IS_VERTICAL_LAYOUT_KEY, DEFAULT_IS_VERTICAL_LAYOUT, MOBILE_WIDTH
 } from "./constants.ts";
 import {KeyBindings, languages} from "./types";
 import {IMarker} from "react-ace";
@@ -54,7 +54,16 @@ export function getSandboxVersion(): string {
     return localStorage.getItem(SANDBOX_VERSION_KEY) || DEFAULT_SANDBOX_VERSION
 }
 
+export function isMobileDevice(): boolean {
+    return window.innerWidth < MOBILE_WIDTH
+}
+
 export function getIsVerticalLayout(): boolean {
+    // is mobile
+    if (isMobileDevice()) {
+        return true
+    }
+
     return JSON.parse(localStorage.getItem(IS_VERTICAL_LAYOUT_KEY) || DEFAULT_IS_VERTICAL_LAYOUT)
 }
 
