@@ -34,6 +34,7 @@ const (
 	// design patterns
 	singletonCase = "singleton"
 	factoryCase   = "factory"
+	strategyCase  = "strategy"
 )
 
 func GetTemplate(c *gin.Context) {
@@ -64,6 +65,7 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.Mutex
 	case tickerCase:
 		output = snippets.Ticker
+
 	// problems
 	case fibonacciCase:
 		output = snippets.Fibonacci
@@ -77,18 +79,22 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.Bfs
 	case dfsCase:
 		output = snippets.Dfs
-		// fun
+
+	// fun
 	case clearScreenCase:
 		output = snippets.ClearScreen
 	case httpServerCase:
 		output = snippets.HttpServer
 	case gameOfLifeCase:
 		output = snippets.GameOfLife
-		// design patterns
+
+	// design patterns
 	case singletonCase:
 		output = snippets.Singleton
 	case factoryCase:
 		output = snippets.Factory
+	case strategyCase:
+		output = snippets.Strategy
 
 	default:
 		c.String(http.StatusNotFound, notFoundError)
