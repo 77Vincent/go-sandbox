@@ -82,8 +82,8 @@ function ShareSuccessMessage(props: {
     const {url} = props
     return (
         <div>
-            <p>The link has been copied to clipboard, share it with others:</p>
-            <Link to={url} className={"text-cyan-500 underline"}>{url}</Link>
+            <p>The link to share:</p>
+            <Link target={"_blank"} to={url} className={"text-cyan-500 underline"}>{url}</Link>
         </div>
     )
 }
