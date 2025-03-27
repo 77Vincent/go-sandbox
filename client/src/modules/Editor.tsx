@@ -3,7 +3,7 @@ import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
-import {HiOutlineQuestionMarkCircle as AboutIcon} from "react-icons/hi"
+import {HiOutlineInformationCircle as AboutIcon} from "react-icons/hi"
 
 import {
     AUTO_RUN_KEY,
@@ -35,7 +35,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, ACTIVE_COLOR,
+    EDITOR_SIZE_MAX, ACTIVE_COLOR, TITLE,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -294,6 +294,7 @@ export default function Component(props: {
             setIsRunning(true)
             const code = await getTemplate(id);
             storeCode(code);
+            debouncedRun()
             setIsRunning(false)
         } catch (e) {
             setToastError((e as Error).message)
@@ -425,7 +426,6 @@ export default function Component(props: {
         const value = !isLayoutVertical
         localStorage.setItem(IS_VERTICAL_LAYOUT_KEY, JSON.stringify(value));
         setIsLayoutVertical(value)
-        location.reload()
     }
 
     function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
@@ -488,7 +488,7 @@ export default function Component(props: {
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5 max-md:hidden"}/>
 
-                    <div className="text-2xl italic text-gray-700 dark:text-cyan-500 max-md:text-base">Go Sandbox</div>
+                    <div className="text-2xl italic text-gray-700 dark:text-cyan-500 max-md:text-base">{TITLE}</div>
                 </Link>
 
                 <div className="flex items-center justify-end gap-2 max-md:gap-1">
@@ -631,7 +631,7 @@ export default function Component(props: {
                 />
             </div>
 
-            <ProgressBar show={isRunning} className={"absolute top-11"}/>
+            <ProgressBar show={isRunning} className={"absolute top-10"}/>
         </div>
     );
 }

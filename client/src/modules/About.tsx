@@ -1,6 +1,7 @@
 import {Button, Modal} from "flowbite-react";
-import {TRANSLATE} from "../constants.ts";
+import {TITLE, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
+import {Divider} from "./Common.tsx";
 
 export default function Component(props: {
     show: boolean,
@@ -10,15 +11,20 @@ export default function Component(props: {
     const {show, setShow, lan} = props
 
     return <Modal dismissible show={show} onClose={() => setShow(false)}>
-        <Modal.Header>{TRANSLATE.about[lan]}</Modal.Header>
-        <Modal.Body>
-            <p className="mb-6">
+        <Modal.Header>{TITLE}</Modal.Header>
+
+        <Modal.Body className={"flex flex-col items-center justify-between gap-4"}>
+            <p>
                 {TRANSLATE.aboutInfo[lan]}
             </p>
 
-            <Button gradientDuoTone={"purpleToBlue"} href={"https://www.buymeacoffee.com/"} target={"_blank"}>
-                {TRANSLATE.coffee[lan]} (1$)
-            </Button>
+            <Divider horizontal={true}/>
+
+            <div className="flex flex-wrap justify-center gap-4">
+                <Button size={"sm"}  outline={true} href={"https://www.buymeacoffee.com/"} target={"_blank"}>
+                    {TRANSLATE.coffee[lan]} (1$)
+                </Button>
+            </div>
         </Modal.Body>
     </Modal>
 }

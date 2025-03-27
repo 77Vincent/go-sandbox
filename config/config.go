@@ -1,6 +1,7 @@
 package config
 
 const (
+	WorkspacePath       = "/app"
 	APIGlobalTimeout    = 10      // seconds
 	SandboxCPUTimeLimit = 7       // seconds
 	CodeSnippetTTL      = 14 * 24 // hours

@@ -1,4 +1,4 @@
-package internal
+package handlers
 
 import (
 	"github.com/gin-gonic/gin"
@@ -10,7 +10,6 @@ const (
 	notFoundError = "template not found"
 	// basic
 	sleepCase         = "sleep"
-	httpServerCase    = "httpServer"
 	switchCaseCase    = "switchCase"
 	goroutineCase     = "goroutine"
 	channelCase       = "channel"
@@ -30,6 +29,13 @@ const (
 	dfsCase          = "dfs"
 	// fun
 	clearScreenCase = "clearScreen"
+	httpServerCase  = "httpServer"
+	gameOfLifeCase  = "gameOfLife"
+	// design patterns
+	singletonCase = "singleton"
+	factoryCase   = "factory"
+	strategyCase  = "strategy"
+	prototypeCase = "prototype"
 )
 
 func GetTemplate(c *gin.Context) {
@@ -40,8 +46,6 @@ func GetTemplate(c *gin.Context) {
 	switch id {
 	case sleepCase:
 		output = snippets.Sleep
-	case httpServerCase:
-		output = snippets.HttpServer
 	case switchCaseCase:
 		output = snippets.SwitchCase
 	case goroutineCase:
@@ -52,8 +56,6 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.Defer
 	case assertionCase:
 		output = snippets.Assertion
-	case clearScreenCase:
-		output = snippets.ClearScreen
 	case fileIOCase:
 		output = snippets.FileIO
 	case contextCancelCase:
@@ -64,6 +66,7 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.Mutex
 	case tickerCase:
 		output = snippets.Ticker
+
 	// problems
 	case fibonacciCase:
 		output = snippets.Fibonacci
@@ -77,6 +80,25 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.Bfs
 	case dfsCase:
 		output = snippets.Dfs
+
+	// fun
+	case clearScreenCase:
+		output = snippets.ClearScreen
+	case httpServerCase:
+		output = snippets.HttpServer
+	case gameOfLifeCase:
+		output = snippets.GameOfLife
+
+	// design patterns
+	case singletonCase:
+		output = snippets.Singleton
+	case factoryCase:
+		output = snippets.Factory
+	case strategyCase:
+		output = snippets.Strategy
+	case prototypeCase:
+		output = snippets.Prototype
+
 	default:
 		c.String(http.StatusNotFound, notFoundError)
 	}
