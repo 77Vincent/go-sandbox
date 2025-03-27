@@ -3,7 +3,7 @@ import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
-import {HiOutlineQuestionMarkCircle as AboutIcon} from "react-icons/hi"
+import {HiOutlineInformationCircle as AboutIcon} from "react-icons/hi"
 
 import {
     AUTO_RUN_KEY,

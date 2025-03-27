@@ -1,7 +1,6 @@
 package worker
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -23,8 +22,6 @@ func CleanupWorkspace(path string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(path)
-	fmt.Println(entries)
 
 	for _, entry := range entries {
 		name := entry.Name()

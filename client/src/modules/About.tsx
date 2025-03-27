@@ -13,19 +13,16 @@ export default function Component(props: {
     return <Modal dismissible show={show} onClose={() => setShow(false)}>
         <Modal.Header>{TITLE}</Modal.Header>
 
-        <Modal.Body className={"flex flex-col items-center gap-4 justify-between"}>
+        <Modal.Body className={"flex flex-col items-center justify-between gap-4"}>
             <p>
                 {TRANSLATE.aboutInfo[lan]}
             </p>
 
-            <Divider/>
+            <Divider horizontal={true}/>
 
-            <div className="flex flex-wrap gap-4 justify-center">
-                <Button size={"sm"} outline={true} href={"https://www.buymeacoffee.com/"} target={"_blank"}>
+            <div className="flex flex-wrap justify-center gap-4">
+                <Button size={"sm"}  outline={true} href={"https://www.buymeacoffee.com/"} target={"_blank"}>
                     {TRANSLATE.coffee[lan]} (1$)
-                </Button>
-                <Button size={"sm"} outline={true} href={"https://www.buymeacoffee.com/"} target={"_blank"}>
-                    {TRANSLATE.bugReport[lan]}
                 </Button>
             </div>
         </Modal.Body>
