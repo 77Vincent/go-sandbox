@@ -1,4 +1,4 @@
-package snippets
+package basic
 
 const Goroutine = `package main
 

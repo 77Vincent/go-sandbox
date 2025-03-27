@@ -1,4 +1,4 @@
-package snippets
+package basic
 
 const Ticker = `package main
 

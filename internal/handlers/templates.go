@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/basic"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/design_pattern"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/fun"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/problems"
 	"net/http"
 )
 
@@ -48,51 +50,51 @@ func GetTemplate(c *gin.Context) {
 	)
 	switch id {
 	case helloWorld:
-		output = snippets.HelloSandbox
+		output = basic.HelloSandbox
 	case sleepCase:
-		output = snippets.Sleep
+		output = basic.Sleep
 	case switchCaseCase:
-		output = snippets.SwitchCase
+		output = basic.SwitchCase
 	case goroutineCase:
-		output = snippets.Goroutine
+		output = basic.Goroutine
 	case channelCase:
-		output = snippets.Channel
+		output = basic.Channel
 	case deferCase:
-		output = snippets.Defer
+		output = basic.Defer
 	case assertionCase:
-		output = snippets.Assertion
+		output = basic.Assertion
 	case fileIOCase:
-		output = snippets.FileIO
+		output = basic.FileIO
 	case contextCancelCase:
-		output = snippets.ContextCancel
+		output = basic.ContextCancel
 	case jsonCase:
-		output = snippets.JSON
+		output = basic.JSON
 	case mutexCase:
-		output = snippets.Mutex
+		output = basic.Mutex
 	case tickerCase:
-		output = snippets.Ticker
+		output = basic.Ticker
 
 	// problems
 	case fibonacciCase:
-		output = snippets.Fibonacci
+		output = problems.Fibonacci
 	case quickSortCase:
-		output = snippets.QuickSort
+		output = problems.QuickSort
 	case mergeSortCase:
-		output = snippets.MergeSort
+		output = problems.MergeSort
 	case binarySearchCase:
-		output = snippets.BinarySearch
+		output = problems.BinarySearch
 	case bfsCase:
-		output = snippets.Bfs
+		output = problems.Bfs
 	case dfsCase:
-		output = snippets.Dfs
+		output = problems.Dfs
 
 	// fun
 	case clearScreenCase:
-		output = snippets.ClearScreen
+		output = fun.ClearScreen
 	case httpServerCase:
-		output = snippets.HttpServer
+		output = fun.HttpServer
 	case gameOfLifeCase:
-		output = snippets.GameOfLife
+		output = fun.GameOfLife
 
 	// design patterns
 	case singletonCase:
