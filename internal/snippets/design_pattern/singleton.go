@@ -1,6 +1,7 @@
 package design_pattern
 
-const Singleton = `package main
+const Singleton = `// Singleton pattern is about only creating one single instance throughout the lifecycle of the program
+package main
 
 import (
 	"fmt"

@@ -1,6 +1,8 @@
 package design_pattern
 
-const TemplatePattern = `package main
+const TemplatePattern = `// Template pattern provides a way to
+// create variations of a class without mutating the original class
+package main
 
 import "fmt"
 

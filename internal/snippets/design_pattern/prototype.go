@@ -1,6 +1,7 @@
 package design_pattern
 
-const Prototype = `package main
+const Prototype = `// Prototype pattern provides a way to create new instances by copying an existing instance
+package main
 
 import "fmt"
 
