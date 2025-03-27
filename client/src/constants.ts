@@ -191,6 +191,7 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
         clearScreen: "Clear screen",
         httpServer: "HTTP server",
         gameOfLife: "Game of Life",
+        concurrentPrime: "Concurrent prime",
     },
     "Design Patterns": {
         singleton: "Singleton",

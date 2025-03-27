@@ -32,9 +32,10 @@ const (
 	bfsCase          = "bfs"
 	dfsCase          = "dfs"
 	// fun
-	clearScreenCase = "clearScreen"
-	httpServerCase  = "httpServer"
-	gameOfLifeCase  = "gameOfLife"
+	clearScreenCase     = "clearScreen"
+	httpServerCase      = "httpServer"
+	gameOfLifeCase      = "gameOfLife"
+	concurrentPrimeCase = "concurrentPrime"
 	// design patterns
 	singletonCase = "singleton"
 	factoryCase   = "factory"
@@ -98,6 +99,8 @@ func GetTemplate(c *gin.Context) {
 		output = fun.HttpServer
 	case gameOfLifeCase:
 		output = fun.GameOfLife
+	case concurrentPrimeCase:
+		output = fun.ConcurrentPrime
 
 	// design patterns
 	case singletonCase:
