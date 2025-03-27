@@ -37,9 +37,9 @@ func main() {
 
 	// routes
 	r.GET("/status", timeout, internal.Status)
-	r.GET("/templates/:id", timeout, internal.GetTemplate)
-	r.POST("/format", timeout, internal.Format)
-	r.POST("/snippet", timeout, internal.ShareSnippet)
+	r.GET("/templates/:id", timeout, handlers.GetTemplate)
+	r.POST("/format", timeout, handlers.Format)
+	r.POST("/snippet", timeout, handlers.ShareSnippet)
 	r.GET("/snippet/:id", timeout, handlers.FetchSnippet)
 	r.POST("/execute", internal.Execute)
 
