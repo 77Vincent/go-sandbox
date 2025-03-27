@@ -37,6 +37,7 @@ const (
 	factoryCase   = "factory"
 	strategyCase  = "strategy"
 	prototypeCase = "prototype"
+	decoratorCase = "decorator"
 )
 
 func GetTemplate(c *gin.Context) {
@@ -101,6 +102,8 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.Strategy
 	case prototypeCase:
 		output = snippets.Prototype
+	case decoratorCase:
+		output = snippets.Decorator
 
 	default:
 		c.String(http.StatusNotFound, notFoundError)
