@@ -2,6 +2,8 @@ import {Dropdown} from "flowbite-react";
 import {TEMPLATES} from "../constants.ts";
 import {MouseEventHandler} from "react";
 
+const buttonLabel = "Snippets";
+
 export default function Component(props: {
     isRunning: boolean,
     onSelect: (id: string) => void
@@ -16,7 +18,7 @@ export default function Component(props: {
     }
 
     return (
-        <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"} label={"Templates"}>
+        <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"} label={buttonLabel}>
             {
                 Object.keys(TEMPLATES).map(key => {
                     return (
