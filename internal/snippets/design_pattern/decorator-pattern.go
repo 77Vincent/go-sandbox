@@ -1,6 +1,7 @@
-package snippets
+package design_pattern
 
-const Decorator = `package main
+const Decorator = `# A decorates B to produce variation without mutating A's original behavior
+package main
 
 import "fmt"
 

@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/design_pattern"
 	"net/http"
 )
 
@@ -103,7 +104,7 @@ func GetTemplate(c *gin.Context) {
 	case prototypeCase:
 		output = snippets.Prototype
 	case decoratorCase:
-		output = snippets.Decorator
+		output = design_pattern.Decorator
 
 	default:
 		c.String(http.StatusNotFound, notFoundError)
