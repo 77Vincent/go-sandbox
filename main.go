@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tianqi-wen_frgr/go-sandbox/config"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal"
+	handlers "github.com/tianqi-wen_frgr/go-sandbox/internal/handlers"
 	"time"
 )
 
@@ -30,16 +31,16 @@ func main() {
 	}))
 
 	// a global timeout middleware as a safety net
-	timeout := internal.Timeout(config.APIGlobalTimeout * time.Second)
+	timeout := handlers.Timeout(config.APIGlobalTimeout * time.Second)
 
-	r.Use(gin.CustomRecovery(internal.PanicRecovery))
+	r.Use(gin.CustomRecovery(handlers.PanicRecovery))
 
 	// routes
 	r.GET("/status", timeout, internal.Status)
 	r.GET("/templates/:id", timeout, internal.GetTemplate)
 	r.POST("/format", timeout, internal.Format)
 	r.POST("/snippet", timeout, internal.ShareSnippet)
-	r.GET("/snippet/:id", timeout, internal.FetchSnippet)
+	r.GET("/snippet/:id", timeout, handlers.FetchSnippet)
 	r.POST("/execute", internal.Execute)
 
 	r.Run(config.ApiServerPort)
