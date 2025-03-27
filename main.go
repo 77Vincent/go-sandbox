@@ -5,8 +5,25 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tianqi-wen_frgr/go-sandbox/config"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/handlers"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/worker"
 	"time"
 )
+
+func init() {
+	// do not stop the ticker throughout the lifecycle of the application
+	ticker := time.NewTicker(1 * time.Minute)
+
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				if err := worker.CleanupWorkspace(config.WorkspacePath); err != nil {
+					panic(err)
+				}
+			}
+		}
+	}()
+}
 
 func main() {
 	r := gin.Default()
