@@ -26,7 +26,7 @@ const (
 	sandboxRunner3  = "./go3/sandbox-runner"
 	sandboxRunner4  = "./go4/sandbox-runner"
 	tmpFileName     = "main.go"
-	tmpTestFileName = "code-*_test.go"
+	tmpTestFileName = "main_test.go"
 	timeoutError    = "exit status 124"
 )
 
@@ -69,11 +69,11 @@ func Execute(c *gin.Context) {
 	}
 
 	var (
-		//fileName       = tmpFileName
+		fileName       = tmpFileName
 		sandboxVersion = sandboxRunner1
 	)
 	if isTestCode(req.Code) {
-		//fileName = tmpTestFileName
+		fileName = tmpTestFileName
 	}
 
 	var (
@@ -104,7 +104,7 @@ func Execute(c *gin.Context) {
 	defer os.RemoveAll(tmpDir)
 
 	// write code to a file
-	codeFile := filepath.Join(tmpDir, "main.go")
+	codeFile := filepath.Join(tmpDir, fileName)
 	if err = os.WriteFile(codeFile, []byte(req.Code), 0644); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
