@@ -198,7 +198,7 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
         strategy: "Strategy",
         template: "Template",
         prototype: "Prototype",
-        observer: "Observer",
+        adaptor: "Adaptor",
         decorator: "Decorator",
         facade: "Facade",
     },
