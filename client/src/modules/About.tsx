@@ -10,8 +10,13 @@ export default function Component(props: {
 }) {
     const {show, setShow, lan} = props
 
-    return <Modal dismissible show={show} onClose={() => setShow(false)}>
-        <Modal.Header>{TITLE}</Modal.Header>
+    return <Modal className={"dark:text-gray-50"} dismissible show={show} onClose={() => setShow(false)}>
+        <Modal.Header>
+            <div className={"flex items-center gap-2"}>
+                <img src={"/logo.svg"} alt={"logo"} className={"h-5 max-md:hidden"}/>
+                {TITLE}
+            </div>
+        </Modal.Header>
 
         <Modal.Body className={"flex flex-col items-center justify-between gap-4"}>
             <p>
@@ -21,7 +26,7 @@ export default function Component(props: {
             <Divider horizontal={true}/>
 
             <div className="flex flex-wrap justify-center gap-4">
-                <Button size={"sm"}  outline={true} href={"https://www.buymeacoffee.com/"} target={"_blank"}>
+                <Button size={"sm"} href={"https://www.buymeacoffee.com/"} target={"_blank"}>
                     {TRANSLATE.coffee[lan]} (1$)
                 </Button>
             </div>

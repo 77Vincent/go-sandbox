@@ -171,10 +171,10 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         ja: "バグ報告",
     },
     aboutInfo: {
-        en: "This is an online Go playground. It is a web-based tool to write, compile, and run Go code. It is powered by the Go playground and the Monaco editor.",
-        zh_CN: "这是一个在线 Go playground。这是一个用于编写、编译和运行 Go 代码的基于 Web 的工具。它由 Go playground 和 Monaco 编辑器驱动。",
-        zh_TW: "這是一個在線 Go playground。這是一個用於編寫、編譯和運行 Go 代碼的基於 Web 的工具。它由 Go playground 和 Monaco 編輯器驅動。",
-        ja: "これはオンライン Go playground です。これは Go コードを書いて、コンパイルして、実行するための Web ベースのツールです。Go playground と Monaco エディターで動作します。",
+        en: "Experience seamless Golang development with Go Sandbox – a lightweight and advanced online editor featuring syntax highlighting and automatic realtime execution of your Go programs!",
+        zh_CN: "使用 Go Sandbox 体验无缝的 Golang 开发 - 一个轻量级和先进的在线编辑器，具有语法高亮显示功能，并自动实时执行您的 Go 程序。",
+        zh_TW: "使用 Go Sandbox 體驗無縫的 Golang 開發 - 一個輕量級和先進的在線編輯器，具有語法高亮顯示功能，並自動實時執行您的 Go 程序。",
+        ja: "Go Sandbox を使用して、シンタックスハイライトと自動リアルタイム実行を備えた軽量かつ高度なオンラインエディタでシームレスな Golang 開発を体験してください。",
     }
 }
 
