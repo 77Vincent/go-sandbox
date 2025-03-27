@@ -9,6 +9,7 @@ import (
 const (
 	notFoundError = "template not found"
 	// basic
+	helloWorld        = "helloWorld"
 	sleepCase         = "sleep"
 	switchCaseCase    = "switchCase"
 	goroutineCase     = "goroutine"
@@ -44,6 +45,8 @@ func GetTemplate(c *gin.Context) {
 		output = ""
 	)
 	switch id {
+	case helloWorld:
+		output = snippets.HelloSandbox
 	case sleepCase:
 		output = snippets.Sleep
 	case switchCaseCase:

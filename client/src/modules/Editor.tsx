@@ -30,7 +30,6 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    DEFAULT_CODE_CONTENT,
     SANDBOX_VERSIONS,
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
@@ -282,11 +281,6 @@ export default function Component(props: {
 
     const getTemplateCallback = useCallback(async (id: string) => {
         if (shouldAbort()) {
-            return
-        }
-
-        if (id === "helloWorld") {
-            storeCode(DEFAULT_CODE_CONTENT)
             return
         }
 
