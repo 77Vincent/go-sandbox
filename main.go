@@ -36,8 +36,8 @@ func main() {
 	r.GET("/status", timeout, handlers.Status)
 	r.GET("/templates/:id", timeout, handlers.GetTemplate)
 	r.POST("/format", timeout, handlers.Format)
-	r.POST("/snippet", timeout, handlers.ShareSnippet)
-	r.GET("/snippet/:id", timeout, handlers.FetchSnippet)
+	r.POST("/snippets", timeout, handlers.ShareSnippet)
+	r.GET("/snippets/:id", timeout, handlers.FetchSnippet)
 	r.POST("/execute", handlers.Execute)
 
 	r.Run(config.ApiServerPort)

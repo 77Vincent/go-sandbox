@@ -49,7 +49,7 @@ export default function Component(props: {
                         as={Link}
                         className={"hover:opacity-80"}
                         gradientMonochrome={"cyan"}
-                        to={"https://www.buymeacoffee.com/"} target={"_blank"}>
+                        to={""} target={"_blank"}>
                     <div className={"flex items-center gap-2"}>
                         <FaCoffee size={20}/>
                         {TRANSLATE.coffee[lan]}

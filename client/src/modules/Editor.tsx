@@ -240,7 +240,7 @@ export default function Component(props: {
     const shareCallback = useCallback(async () => {
         try {
             const id = await shareSnippet(codeRef.current);
-            const url = `${location.origin}/snippet/${id}`
+            const url = `${location.origin}/snippets/${id}`
             await navigator.clipboard.writeText(url);
             setToastInfo(<ShareSuccessMessage url={url}/>)
         } catch (e) {

@@ -22,7 +22,7 @@ export async function getTemplate(id: string): Promise<string> {
 }
 
 export async function fetchSnippet(id: string): Promise<string> {
-    const res = await fetch(getUrl(`/snippet/${id}`));
+    const res = await fetch(getUrl(`/snippets/${id}`));
     if (res.status >= HTTP_INTERNAL_ERROR || res.status === HTTP_NOT_FOUND) {
         const {error} = await res.json();
         throw new Error(error);
@@ -32,7 +32,7 @@ export async function fetchSnippet(id: string): Promise<string> {
 }
 
 export async function shareSnippet(code: string): Promise<string> {
-    const res = await fetch(getUrl("/snippet"), {
+    const res = await fetch(getUrl("/snippets"), {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
