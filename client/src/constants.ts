@@ -43,7 +43,7 @@ export const RUN_DEBOUNCE_TIME = 100;
 export const AUTO_RUN_DEBOUNCE_TIME = 1000;
 export const ACTIVE_COLOR = "cyan"
 
-export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9]+)/g;
+export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
 export const ERROR_PARSING_REGEX = /main\.go:(\d+)/g;
 export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;
 export const STATS_INFO_PREFIX = "STATS_INFO:"
