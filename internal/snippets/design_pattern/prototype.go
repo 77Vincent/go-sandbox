@@ -1,4 +1,4 @@
-package snippets
+package design_pattern
 
 const Prototype = `package main
 

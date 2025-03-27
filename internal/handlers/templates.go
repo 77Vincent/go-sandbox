@@ -96,13 +96,13 @@ func GetTemplate(c *gin.Context) {
 
 	// design patterns
 	case singletonCase:
-		output = snippets.Singleton
+		output = design_pattern.Singleton
 	case factoryCase:
-		output = snippets.Factory
+		output = design_pattern.Factory
 	case strategyCase:
-		output = snippets.Strategy
+		output = design_pattern.Strategy
 	case prototypeCase:
-		output = snippets.Prototype
+		output = design_pattern.Prototype
 	case decoratorCase:
 		output = design_pattern.Decorator
 

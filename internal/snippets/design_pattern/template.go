@@ -1,4 +1,4 @@
-package snippets
+package design_pattern
 
 const TemplatePattern = `type interface I {
   foo()
