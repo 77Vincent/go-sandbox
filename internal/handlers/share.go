@@ -15,7 +15,7 @@ import (
 // generateHashKey computes a SHA-256 hash for the given code snippet.
 func generateHashKey(code []byte) string {
 	hash := sha256.Sum256(code)
-	return base64.StdEncoding.EncodeToString(hash[:])[:16]
+	return base64.RawURLEncoding.EncodeToString(hash[:])[:16]
 }
 
 // ShareSnippet handles POST requests to save a snippet in Redis.
