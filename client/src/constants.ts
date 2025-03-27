@@ -170,12 +170,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "報告 Bug",
         ja: "バグ報告",
     },
-    aboutInfo: {
-        en: "Experience seamless Golang development with Go Sandbox – a lightweight and advanced online editor featuring syntax highlighting and automatic realtime execution of your Go programs!",
-        zh_CN: "使用 Go Sandbox 体验无缝的 Golang 开发 - 一个轻量级和先进的在线编辑器，具有语法高亮显示功能，并自动实时执行您的 Go 程序。",
-        zh_TW: "使用 Go Sandbox 體驗無縫的 Golang 開發 - 一個輕量級和先進的在線編輯器，具有語法高亮顯示功能，並自動實時執行您的 Go 程序。",
-        ja: "Go Sandbox を使用して、シンタックスハイライトと自動リアルタイム実行を備えた軽量かつ高度なオンラインエディタでシームレスな Golang 開発を体験してください。",
-    }
 }
 
 export const TEMPLATES: Record<string, Record<string, string>> = {

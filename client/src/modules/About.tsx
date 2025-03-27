@@ -21,14 +21,30 @@ export default function Component(props: {
             </div>
         </Modal.Header>
 
-        <Modal.Body className={"flex flex-col items-center justify-between gap-4"}>
-            <p className={"dark:text-gray-50"}>
-                {TRANSLATE.aboutInfo[lan]}
-            </p>
+        <Modal.Body>
+            <div className={"flex flex-col gap-4 font-light dark:text-gray-50"}>
+                <p className={"font-semibold"}>
+                    Experience seamless Golang development with Go Sandbox -
+                    A lightweight and advanced online editor
+                    featuring syntax highlighting and automatic realtime execution of your Go programs!
+                </p>
 
-            <Divider horizontal={true}/>
 
-            <div className="flex flex-wrap justify-center gap-3">
+                <Divider horizontal={true}/>
+
+                <p>
+                    This project is inspired by the official
+                    <a className={"mx-1 text-cyan-600"} href={"https://play.golang.org/"} target={"_blank"}>Go
+                        Playground</a>
+                    and another similar project
+                    <a className={"mx-1 text-cyan-600"} href={"https://goplay.tools/"} target={"_blank"}>Better Go
+                        Playground</a>.
+                </p>
+
+                <Divider horizontal={true}/>
+            </div>
+
+            <div className="mt-5 flex flex-wrap justify-center gap-3">
                 <Button size={"xs"}
                         as={Link}
                         className={"hover:opacity-80"}
