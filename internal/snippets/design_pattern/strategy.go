@@ -7,21 +7,21 @@ package main
 import "fmt"
 
 type I interface {
-	do()
+	do() string
 }
 
 type A struct{}
 type B struct{}
 type C struct{}
 
-func (a A) do() {
-	fmt.Println("a")
+func (a A) do() string {
+	return "a"
 }
-func (b B) do() {
-	fmt.Println("b")
+func (b B) do() string {
+	return "b"
 }
-func (c C) do() {
-	fmt.Println("c")
+func (c C) do() string {
+	return "c"
 }
 
 func main() {
@@ -39,5 +39,5 @@ func main() {
 		executor = new(C)
 	}
 
-	executor.do()
+	fmt.Println("Strategy:", executor.do())
 }`
