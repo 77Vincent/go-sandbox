@@ -294,6 +294,7 @@ export default function Component(props: {
             setIsRunning(true)
             const code = await getTemplate(id);
             storeCode(code);
+            debouncedRun()
             setIsRunning(false)
         } catch (e) {
             setToastError((e as Error).message)
@@ -425,7 +426,6 @@ export default function Component(props: {
         const value = !isLayoutVertical
         localStorage.setItem(IS_VERTICAL_LAYOUT_KEY, JSON.stringify(value));
         setIsLayoutVertical(value)
-        location.reload()
     }
 
     function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
@@ -631,7 +631,7 @@ export default function Component(props: {
                 />
             </div>
 
-            <ProgressBar show={isRunning} className={"absolute top-11"}/>
+            <ProgressBar show={isRunning} className={"absolute top-10"}/>
         </div>
     );
 }
