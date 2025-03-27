@@ -30,7 +30,6 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    DEFAULT_CODE_CONTENT,
     SANDBOX_VERSIONS,
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
@@ -83,8 +82,8 @@ function ShareSuccessMessage(props: {
     const {url} = props
     return (
         <div>
-            <p>The link has been copied to clipboard, share it with others:</p>
-            <Link to={url} className={"text-cyan-500 underline"}>{url}</Link>
+            <p>The link to share:</p>
+            <Link target={"_blank"} to={url} className={"text-cyan-500 underline"}>{url}</Link>
         </div>
     )
 }
@@ -241,7 +240,7 @@ export default function Component(props: {
     const shareCallback = useCallback(async () => {
         try {
             const id = await shareSnippet(codeRef.current);
-            const url = `${location.origin}/snippet/${id}`
+            const url = `${location.origin}/snippets/${id}`
             await navigator.clipboard.writeText(url);
             setToastInfo(<ShareSuccessMessage url={url}/>)
         } catch (e) {
@@ -281,15 +280,6 @@ export default function Component(props: {
     const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
 
     const getTemplateCallback = useCallback(async (id: string) => {
-        if (shouldAbort()) {
-            return
-        }
-
-        if (id === "helloWorld") {
-            storeCode(DEFAULT_CODE_CONTENT)
-            return
-        }
-
         try {
             setIsRunning(true)
             const code = await getTemplate(id);

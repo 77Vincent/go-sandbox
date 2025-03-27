@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"syscall"
 	"time"
@@ -18,10 +17,8 @@ const (
 	timeoutExitCode     = 124
 	sandboxCPUTimeLimit = 7                      // seconds
 	sandboxMemoryLimit  = 2 * 1024 * 1024 * 1024 // bytes
-)
-
-var (
-	testCodeRegex = regexp.MustCompile(`(?i)code-.*_test\.go`)
+	tmpFileName         = "main.go"
+	tmpTestFileName     = "main_test.go"
 )
 
 func main() {
@@ -29,31 +26,13 @@ func main() {
 		log.Fatalf("Usage: %s <code-file>", os.Args[0])
 	}
 	var (
-		codeFile  = os.Args[1]
-		moduleDir = strings.Split(codeFile, "/")[0]
+		codeFile   = os.Args[1]
+		fileName   = tmpFileName
+		isTestFlow = strings.Contains(codeFile, tmpTestFileName)
+		moduleDir  = strings.Split(codeFile, "/")[0]
 	)
-
-	// 0. 检查代码文件是否是测试文件
-	// test file flow
-	if testCodeRegex.MatchString(codeFile) {
-		cmd := exec.Command("go", "test", codeFile)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-
-		// 先设置 seccomp 筛选规则（必须在设置内存限制之前完成）
-		if err := SetupSeccomp(); err != nil {
-			log.Fatalf("Failed to setup seccomp: %v", err)
-		}
-
-		// 然后设置资源限制（CPU 和内存）
-		if err := SetLimits(); err != nil {
-			log.Fatalf("Failed to set resource limits: %v", err)
-		}
-
-		if err := cmd.Run(); err != nil {
-			// handle test failures or build errors
-			os.Exit(1)
-		}
+	if isTestFlow {
+		fileName = tmpTestFileName
 	}
 
 	// normal code flow
@@ -75,7 +54,7 @@ func main() {
 	}
 
 	// move the source code to the module dir
-	if err = os.Rename(codeFile, filepath.Join(moduleDir, "main.go")); err != nil {
+	if err = os.Rename(codeFile, filepath.Join(moduleDir, fileName)); err != nil {
 		log.Fatalf("Failed to move code file: %v", err)
 	}
 
@@ -84,6 +63,29 @@ func main() {
 	cmd.Dir = moduleDir
 	if err = cmd.Run(); err != nil {
 		log.Fatalf("Failed to tidy module: %v", err)
+	}
+
+	// test file flow
+	if isTestFlow {
+		cmd = exec.Command("go", "test", ".")
+		cmd.Dir = moduleDir
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		// 先设置 seccomp 筛选规则（必须在设置内存限制之前完成）
+		if err = SetupSeccomp(); err != nil {
+			log.Fatalf("Failed to setup seccomp: %v", err)
+		}
+
+		// 然后设置资源限制（CPU 和内存）
+		if err = SetLimits(); err != nil {
+			log.Fatalf("Failed to set resource limits: %v", err)
+		}
+
+		if err = cmd.Run(); err != nil {
+			// handle test failures or build errors
+			os.Exit(1)
+		}
 	}
 
 	// build the code

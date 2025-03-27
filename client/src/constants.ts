@@ -43,15 +43,7 @@ export const RUN_DEBOUNCE_TIME = 100;
 export const AUTO_RUN_DEBOUNCE_TIME = 1000;
 export const ACTIVE_COLOR = "cyan"
 
-export const DEFAULT_CODE_CONTENT = `package main
-
-import "fmt"
-
-func main() {
-    fmt.Println("Hello, Go Sandbox!")
-}`
-
-export const SNIPPET_REGEX = /\/snippet\/([a-zA-Z0-9]+)/g;
+export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
 export const ERROR_PARSING_REGEX = /main\.go:(\d+)/g;
 export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;
 export const STATS_INFO_PREFIX = "STATS_INFO:"
@@ -170,12 +162,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "報告 Bug",
         ja: "バグ報告",
     },
-    aboutInfo: {
-        en: "This is an online Go playground. It is a web-based tool to write, compile, and run Go code. It is powered by the Go playground and the Monaco editor.",
-        zh_CN: "这是一个在线 Go playground。这是一个用于编写、编译和运行 Go 代码的基于 Web 的工具。它由 Go playground 和 Monaco 编辑器驱动。",
-        zh_TW: "這是一個在線 Go playground。這是一個用於編寫、編譯和運行 Go 代碼的基於 Web 的工具。它由 Go playground 和 Monaco 編輯器驅動。",
-        ja: "これはオンライン Go playground です。これは Go コードを書いて、コンパイルして、実行するための Web ベースのツールです。Go playground と Monaco エディターで動作します。",
-    }
 }
 
 export const TEMPLATES: Record<string, Record<string, string>> = {

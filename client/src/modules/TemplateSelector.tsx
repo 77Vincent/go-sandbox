@@ -26,7 +26,7 @@ export default function Component(props: {
                             <Dropdown.Header key={key}
                                              className={"font-bold"}>{key}</Dropdown.Header>
 
-                            <Dropdown.Item className={"mb-2 grid grid-cols-4 gap-1.5"}>
+                            <Dropdown.Item disabled={isRunning} className={"mb-2 grid grid-cols-4 gap-1.5"}>
                                 {
                                     Object.entries(TEMPLATES[key]).map(([subkey, value]) => {
                                         return (

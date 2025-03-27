@@ -3,12 +3,14 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/design_pattern"
 	"net/http"
 )
 
 const (
 	notFoundError = "template not found"
 	// basic
+	helloWorld        = "helloWorld"
 	sleepCase         = "sleep"
 	switchCaseCase    = "switchCase"
 	goroutineCase     = "goroutine"
@@ -36,6 +38,7 @@ const (
 	factoryCase   = "factory"
 	strategyCase  = "strategy"
 	prototypeCase = "prototype"
+	decoratorCase = "decorator"
 )
 
 func GetTemplate(c *gin.Context) {
@@ -44,6 +47,8 @@ func GetTemplate(c *gin.Context) {
 		output = ""
 	)
 	switch id {
+	case helloWorld:
+		output = snippets.HelloSandbox
 	case sleepCase:
 		output = snippets.Sleep
 	case switchCaseCase:
@@ -98,6 +103,8 @@ func GetTemplate(c *gin.Context) {
 		output = snippets.Strategy
 	case prototypeCase:
 		output = snippets.Prototype
+	case decoratorCase:
+		output = design_pattern.Decorator
 
 	default:
 		c.String(http.StatusNotFound, notFoundError)
