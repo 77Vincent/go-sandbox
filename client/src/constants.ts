@@ -43,14 +43,6 @@ export const RUN_DEBOUNCE_TIME = 100;
 export const AUTO_RUN_DEBOUNCE_TIME = 1000;
 export const ACTIVE_COLOR = "cyan"
 
-export const DEFAULT_CODE_CONTENT = `package main
-
-import "fmt"
-
-func main() {
-    fmt.Println("Hello, Go Sandbox!")
-}`
-
 export const SNIPPET_REGEX = /\/snippet\/([a-zA-Z0-9]+)/g;
 export const ERROR_PARSING_REGEX = /main\.go:(\d+)/g;
 export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;

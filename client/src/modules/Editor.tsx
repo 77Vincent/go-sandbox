@@ -280,10 +280,6 @@ export default function Component(props: {
     const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
 
     const getTemplateCallback = useCallback(async (id: string) => {
-        if (shouldAbort()) {
-            return
-        }
-
         try {
             setIsRunning(true)
             const code = await getTemplate(id);

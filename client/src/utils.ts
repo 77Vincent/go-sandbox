@@ -5,7 +5,6 @@ import {
     CURSOR_COLUMN_KEY,
     CURSOR_ROW_KEY,
     DEFAULT_AUTO_RUN,
-    DEFAULT_CODE_CONTENT,
     DEFAULT_CURSOR_POSITION,
     DEFAULT_EDITOR_SIZE,
     DEFAULT_KEY_BINDINGS, DEFAULT_LANGUAGE,
@@ -39,7 +38,7 @@ export function getCursorColumn(): number {
 }
 
 export function getCodeContent(): string {
-    return localStorage.getItem(CODE_CONTENT_KEY) || DEFAULT_CODE_CONTENT
+    return localStorage.getItem(CODE_CONTENT_KEY) || ""
 }
 
 export function getKeyBindings(): KeyBindings {
