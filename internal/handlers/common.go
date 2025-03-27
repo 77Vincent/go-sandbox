@@ -1,20 +1,9 @@
-package internal
-
-import (
-	"github.com/gin-gonic/gin"
-	"net/http"
-)
+package handlers
 
 const (
 	badRequestMessage = "bad request"
 	buildErrorMessage = "build failed"
 )
-
-func Status(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "pong",
-	})
-}
 
 type request struct {
 	Code    string `json:"code" binding:"required"`
