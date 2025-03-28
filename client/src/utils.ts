@@ -127,3 +127,11 @@ export function getUrl(path: string): string {
     }
     return `${apiUrl}${path}`;
 }
+
+export function normalizeText(text: string = "") {
+    return text
+        .split(/\r?\n/)          // split text into lines
+        .map(line => line.trim()) // remove leading/trailing whitespace on each line
+        .filter(line => line !== '') // discard empty lines
+        .join('\n');             // join them together (or you could join with "" if you don't want newlines)
+}

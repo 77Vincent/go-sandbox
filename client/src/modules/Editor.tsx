@@ -69,7 +69,7 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice
+    isMobileDevice, normalizeText
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages, resultI} from "../types";
@@ -226,8 +226,8 @@ export default function Component(props: {
     }, [sandboxVersion]);
 
     function onChange(newCode: string = "") {
-        const processedPrevCode = codeRef.current.replace(/[\r\n]/g, "").trim();
-        const processedNewCode = newCode.replace(/[\r\n]/g, "").trim();
+        const processedPrevCode = normalizeText(codeRef.current);
+        const processedNewCode = normalizeText(newCode);
 
         storeCode(newCode);
 
