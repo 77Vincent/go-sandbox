@@ -128,6 +128,7 @@ export default function Component(props: {
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(getCodeContent());
+    const [prevCode, setPrevCode] = useState<string>(code);
 
     // result
     const [result, setResult] = useState<resultI[]>([]);
@@ -225,8 +226,9 @@ export default function Component(props: {
         sandboxVersionRef.current = sandboxVersion
     }, [sandboxVersion]);
 
-    function onChange(code: string = "") {
-        storeCode(code);
+    function onChange(newCode: string = "") {
+        setPrevCode(code)
+        storeCode(newCode);
 
         // only run if auto run is on
         if (isAutoRun) {
@@ -327,6 +329,13 @@ export default function Component(props: {
             setError("")
             setResult([])
             setErrorRows([]);
+
+            // do not run the same code after format
+            if (prevCode === formatted) {
+                setIsRunning(false)
+                return
+            }
+
             storeCode(formatted)
 
             const markers: IMarker[] = []
