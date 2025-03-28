@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState, ChangeEvent, useEffect, ReactNode} from "react";
-import {Button, DarkThemeToggle, Tooltip, useThemeMode} from "flowbite-react";
+import {DarkThemeToggle, useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
@@ -34,12 +34,13 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, ACTIVE_COLOR, TITLE,
+    EDITOR_SIZE_MAX, TITLE, HOVER_CLASS,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
+import Actions from "./Actions.tsx";
 import TemplateSelector from "./TemplateSelector.tsx";
 import VersionSelector from "./VersionSelector.tsx";
 import {fetchSnippet, formatCode, getTemplate, shareSnippet} from "../api/api.ts";
@@ -208,6 +209,7 @@ export default function Component(props: {
             // shortcut for share
             if (event.key.toLowerCase() === "e" && event.metaKey) {
                 event.preventDefault();
+                debouncedShare()
                 return;
             }
         }
@@ -223,12 +225,18 @@ export default function Component(props: {
         sandboxVersionRef.current = sandboxVersion
     }, [sandboxVersion]);
 
-    function onChange(code: string = "") {
-        storeCode(code);
+    function onChange(newCode: string = "") {
+        const processedPrevCode = code.replace(/[\r\n]/g, "").trim();
+        const processedNewCode = newCode.replace(/[\r\n]/g, "").trim();
+
+        storeCode(newCode);
 
         // only run if auto run is on
         if (isAutoRun) {
-            debouncedAutoRun();
+            // only run if the code is changed meaningfully
+            if (processedPrevCode !== processedNewCode) {
+                debouncedAutoRun();
+            }
         }
     }
 
@@ -482,35 +490,8 @@ export default function Component(props: {
                 </Link>
 
                 <div className="flex items-center justify-end gap-2 max-md:gap-1">
-                    <Tooltip content={"cmd/win + enter"}>
-                        <Button onClick={debouncedRun} disabled={isRunning || !codeRef.current}
-                                className={"shadow"}
-                                size={"xs"}
-                                color={mode === "dark" ? "light" : ACTIVE_COLOR}
-                        >
-                            {TRANSLATE.run[lan]}
-                        </Button>
-                    </Tooltip>
-
-                    <Tooltip content={"cmd/win + b"}>
-                        <Button onClick={debouncedFormat} disabled={isRunning || !codeRef.current}
-                                className={"shadow"}
-                                size={"xs"}
-                                color={mode === "dark" ? "light" : ACTIVE_COLOR}
-                        >
-                            {TRANSLATE.format[lan]}
-                        </Button>
-                    </Tooltip>
-
-                    <Tooltip content={"cmd/win + e"}>
-                        <Button onClick={debouncedShare} disabled={!codeRef.current}
-                                className={"shadow"}
-                                size={"xs"}
-                                gradientDuoTone={"greenToBlue"}
-                        >
-                            {TRANSLATE.share[lan]}
-                        </Button>
-                    </Tooltip>
+                    <Actions isRunning={isRunning} debouncedFormat={debouncedFormat} debouncedRun={debouncedRun}
+                             debouncedShare={debouncedShare} hasCode={codeRef.current.length > 0} lan={lan}/>
 
                     {
                         isMobile ? null :
@@ -545,11 +526,10 @@ export default function Component(props: {
                             onShowInvisible={onShowInvisible}
                         />
 
-                        <Tooltip content={"About"}>
-                            <AboutIcon
-                                onClick={() => setShowAbout(true)}
-                                className={"mx-1.5 cursor-pointer text-2xl text-gray-600 hover:opacity-50 dark:text-gray-300 max-md:mx-0 max-md:text-lg"}/>
-                        </Tooltip>
+                        <AboutIcon
+                            size={25}
+                            onClick={() => setShowAbout(true)}
+                            className={`mx-1 ${HOVER_CLASS} max-md:mx-0 max-md:text-lg`}/>
 
                         <DarkThemeToggle/>
                     </div>
@@ -622,6 +602,5 @@ export default function Component(props: {
             </div>
 
             <ProgressBar show={isRunning} className={"absolute top-10"}/>
-        </div>
-    );
+        </div>);
 }

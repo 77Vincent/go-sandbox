@@ -1,4 +1,4 @@
-package snippets
+package problems
 
 const Fibonacci = `package main
 

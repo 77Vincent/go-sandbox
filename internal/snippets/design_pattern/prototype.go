@@ -1,6 +1,7 @@
-package snippets
+package design_pattern
 
-const Prototype = `package main
+const Prototype = `// Prototype pattern provides a way to create new instances by copying an existing instance
+package main
 
 import "fmt"
 
@@ -28,8 +29,8 @@ func main() {
 		name: "foo",
 	}
 	b = a.clone()
-	fmt.Println(a, b)
+	fmt.Println("after clone: ", a, b)
 
 	b.change("bar")
-	fmt.Println(a, b)
+	fmt.Println("after change:", a, b)
 }`

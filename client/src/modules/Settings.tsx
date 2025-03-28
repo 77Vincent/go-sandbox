@@ -12,7 +12,7 @@ import {
 } from "react-icons/md";
 import {ImTextColor as TextMIcon} from "react-icons/im"
 
-import {ACTIVE_COLOR, FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, LANGUAGES, TRANSLATE} from "../constants.ts";
+import {ACTIVE_COLOR, FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, HOVER_CLASS, LANGUAGES, TRANSLATE} from "../constants.ts";
 import {KeyBindings, languages} from "../types";
 import {ToggleSwitch} from "./Common.tsx";
 
@@ -84,7 +84,8 @@ export default function Component(props: {
         <Dropdown disabled={disabled} className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"}
                   arrowIcon={false} label={
             <SettingsIcon
-                className={"cursor-pointer text-lg text-gray-700 hover:opacity-50 dark:text-gray-300 max-md:text-sm"}/>
+                size={20}
+                className={`${HOVER_CLASS} max-md:text-sm`}/>
         }>
             <Dropdown.Header>
                 <p className={"font-semibold"}>{TRANSLATE.settings[lan]}</p>

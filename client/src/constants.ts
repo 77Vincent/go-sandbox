@@ -40,8 +40,9 @@ export const DEFAULT_CURSOR_POSITION = 0;
 
 export const CURSOR_UPDATE_DEBOUNCE_TIME = 100;
 export const RUN_DEBOUNCE_TIME = 100;
-export const AUTO_RUN_DEBOUNCE_TIME = 1000;
+export const AUTO_RUN_DEBOUNCE_TIME = 1250;
 export const ACTIVE_COLOR = "cyan"
+export const HOVER_CLASS = "cursor-pointer hover:text-cyan-500"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
 export const ERROR_PARSING_REGEX = /main\.go:(\d+)/g;
@@ -191,6 +192,7 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
         clearScreen: "Clear screen",
         httpServer: "HTTP server",
         gameOfLife: "Game of Life",
+        concurrentPrime: "Concurrent prime",
     },
     "Design Patterns": {
         singleton: "Singleton",
@@ -198,7 +200,7 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
         strategy: "Strategy",
         template: "Template",
         prototype: "Prototype",
-        observer: "Observer",
+        adaptor: "Adaptor",
         decorator: "Decorator",
         facade: "Facade",
     },

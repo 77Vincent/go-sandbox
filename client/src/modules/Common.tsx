@@ -25,10 +25,10 @@ export function Divider(props: {
 }) {
     const {horizontal} = props
     if (horizontal) {
-        return <div className={"h-1 w-full border-b border-neutral-200 dark:border-neutral-500"}/>
+        return <div className={"h-0 w-full border-b border-neutral-200 dark:border-neutral-500"}/>
     }
 
-    return <div className={"h-4 w-1 border-r border-neutral-200 dark:border-neutral-500"}/>
+    return <div className={"h-4 w-0 border-r border-neutral-200 dark:border-neutral-500"}/>
 }
 
 const defaultToastType = "info"
@@ -45,17 +45,17 @@ export function MyToast(props: {
         : "bg-orange-100 text-orange-500 dark:bg-orange-700 dark:text-orange-200"
 
     return (
-        show && <Toast className={`absolute z-10 bottom-6 left-6 w-auto max-w-xl`}>
+        show && <Toast className={`absolute bottom-6 left-6 z-10 w-auto max-w-xl`}>
             <div
-                className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg mr-2 ${color}`}>
+                className={`mr-2 inline-flex size-8 shrink-0 items-center justify-center rounded-lg ${color}`}>
                 {
                     type === "info" ?
-                        <InfoIcon className="h-5 w-5"/> :
-                        <ErrorIcon className="h-5 w-5"/>
+                        <InfoIcon className="size-5"/> :
+                        <ErrorIcon className="size-5"/>
                 }
             </div>
 
-            <div className={"text-sm mr-2"}>
+            <div className={"mr-2 text-sm"}>
                 {children}
             </div>
 
@@ -72,11 +72,11 @@ export function ToggleSwitch(props: {
     const {checked, onChange, label} = props
 
     return (
-        <label className="mx-0.5 inline-flex items-center cursor-pointer">
+        <label className="mx-0.5 inline-flex cursor-pointer items-center">
             <div>
-                <input checked={checked} onChange={onChange} type="checkbox" value="" className="sr-only peer"/>
+                <input checked={checked} onChange={onChange} type="checkbox" value="" className="peer sr-only"/>
                 <div
-                    className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-cyan-500"></div>
+                    className="peer relative h-6 w-11 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-cyan-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:border-neutral-600 dark:bg-gray-700 dark:peer-focus:ring-cyan-800 rtl:peer-checked:after:-translate-x-full"></div>
             </div>
 
             {
@@ -107,7 +107,7 @@ export function ClickBoard(props: {
         <Flowbite theme={{theme: customTheme}}>
             <Clipboard.WithIcon
                 valueToCopy={content}
-                className={"absolute top-4 right-0.5 z-10 opacity-50"}
+                className={"absolute right-0.5 top-4 z-10 opacity-50"}
             />
         </Flowbite>
     )

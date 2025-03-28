@@ -1,6 +1,7 @@
-package snippets
+package design_pattern
 
-const Factory = `package main
+const Factory = `// Factory pattern provides a way to create instances of a class without exposing the creation logic to the client
+package main
 
 import "fmt"
 

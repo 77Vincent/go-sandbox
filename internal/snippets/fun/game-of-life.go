@@ -1,4 +1,4 @@
-package snippets
+package fun
 
 const GameOfLife = `// An implementation of Conway's Game of Life.
 package main

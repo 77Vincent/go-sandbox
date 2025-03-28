@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/basic"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/design_pattern"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/fun"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/problems"
 	"net/http"
 )
 
@@ -30,15 +32,19 @@ const (
 	bfsCase          = "bfs"
 	dfsCase          = "dfs"
 	// fun
-	clearScreenCase = "clearScreen"
-	httpServerCase  = "httpServer"
-	gameOfLifeCase  = "gameOfLife"
+	clearScreenCase     = "clearScreen"
+	httpServerCase      = "httpServer"
+	gameOfLifeCase      = "gameOfLife"
+	concurrentPrimeCase = "concurrentPrime"
 	// design patterns
 	singletonCase = "singleton"
 	factoryCase   = "factory"
 	strategyCase  = "strategy"
 	prototypeCase = "prototype"
 	decoratorCase = "decorator"
+	templateCase  = "template"
+	facadeCase    = "facade"
+	adaptorCase   = "adaptor"
 )
 
 func GetTemplate(c *gin.Context) {
@@ -48,63 +54,71 @@ func GetTemplate(c *gin.Context) {
 	)
 	switch id {
 	case helloWorld:
-		output = snippets.HelloSandbox
+		output = basic.HelloSandbox
 	case sleepCase:
-		output = snippets.Sleep
+		output = basic.Sleep
 	case switchCaseCase:
-		output = snippets.SwitchCase
+		output = basic.SwitchCase
 	case goroutineCase:
-		output = snippets.Goroutine
+		output = basic.Goroutine
 	case channelCase:
-		output = snippets.Channel
+		output = basic.Channel
 	case deferCase:
-		output = snippets.Defer
+		output = basic.Defer
 	case assertionCase:
-		output = snippets.Assertion
+		output = basic.Assertion
 	case fileIOCase:
-		output = snippets.FileIO
+		output = basic.FileIO
 	case contextCancelCase:
-		output = snippets.ContextCancel
+		output = basic.ContextCancel
 	case jsonCase:
-		output = snippets.JSON
+		output = basic.JSON
 	case mutexCase:
-		output = snippets.Mutex
+		output = basic.Mutex
 	case tickerCase:
-		output = snippets.Ticker
+		output = basic.Ticker
 
 	// problems
 	case fibonacciCase:
-		output = snippets.Fibonacci
+		output = problems.Fibonacci
 	case quickSortCase:
-		output = snippets.QuickSort
+		output = problems.QuickSort
 	case mergeSortCase:
-		output = snippets.MergeSort
+		output = problems.MergeSort
 	case binarySearchCase:
-		output = snippets.BinarySearch
+		output = problems.BinarySearch
 	case bfsCase:
-		output = snippets.Bfs
+		output = problems.Bfs
 	case dfsCase:
-		output = snippets.Dfs
+		output = problems.Dfs
 
 	// fun
 	case clearScreenCase:
-		output = snippets.ClearScreen
+		output = fun.ClearScreen
 	case httpServerCase:
-		output = snippets.HttpServer
+		output = fun.HttpServer
 	case gameOfLifeCase:
-		output = snippets.GameOfLife
+		output = fun.GameOfLife
+	case concurrentPrimeCase:
+		output = fun.ConcurrentPrime
 
 	// design patterns
 	case singletonCase:
-		output = snippets.Singleton
+		output = design_pattern.Singleton
 	case factoryCase:
-		output = snippets.Factory
+		output = design_pattern.Factory
 	case strategyCase:
-		output = snippets.Strategy
+		output = design_pattern.Strategy
 	case prototypeCase:
-		output = snippets.Prototype
+		output = design_pattern.Prototype
 	case decoratorCase:
 		output = design_pattern.Decorator
+	case templateCase:
+		output = design_pattern.TemplatePattern
+	case facadeCase:
+		output = design_pattern.Facade
+	case adaptorCase:
+		output = design_pattern.Adaptor
 
 	default:
 		c.String(http.StatusNotFound, notFoundError)

@@ -1,4 +1,4 @@
-package snippets
+package fun
 
 const ClearScreen = `package main
 
