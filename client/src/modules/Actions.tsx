@@ -16,22 +16,21 @@ export default function Component(props: {
     lan: languages;
 }) {
     const {debouncedRun, debouncedFormat, debouncedShare, hasCode, isRunning, lan} = props;
-    const common = `mx-1 ${HOVER_CLASS}`;
 
     return (
         <>
             <Tooltip content={`${TRANSLATE.run[lan]}: cmd/win + enter`}>
-                <RunICon className={`${common} ${hasCode && !isRunning ? "" : COLOR_INACTIVE}`}
+                <RunICon className={hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}
                          onClick={hasCode && !isRunning ? debouncedRun : undefined} size={24}/>
             </Tooltip>
 
             <Tooltip content={`${TRANSLATE.format[lan]}: cmd/win + b`}>
-                <FormatIcon className={`${common} ${hasCode && !isRunning ? "" : COLOR_INACTIVE}`}
+                <FormatIcon className={`mx-1.5 ${hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}`}
                             onClick={hasCode && !isRunning ? debouncedFormat : undefined} size={24}/>
             </Tooltip>
 
             <Tooltip content={`${TRANSLATE.share[lan]}: cmd/win + e`}>
-                <ShareIcon className={`${common} ${hasCode ? "" : COLOR_INACTIVE}`}
+                <ShareIcon className={hasCode ? HOVER_CLASS : COLOR_INACTIVE}
                            onClick={hasCode ? debouncedShare : undefined} size={24}/>
             </Tooltip>
         </>

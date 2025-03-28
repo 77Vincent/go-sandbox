@@ -522,7 +522,7 @@ export default function Component(props: {
                         <AboutIcon
                             size={25}
                             onClick={() => setShowAbout(true)}
-                            className={`mx-1.5 ${HOVER_CLASS} max-md:mx-0 max-md:text-lg`}/>
+                            className={`mx-1 ${HOVER_CLASS} max-md:mx-0 max-md:text-lg`}/>
 
                         <DarkThemeToggle/>
                     </div>
