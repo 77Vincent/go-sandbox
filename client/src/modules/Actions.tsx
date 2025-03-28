@@ -16,7 +16,7 @@ export default function Component(props: {
     lan: languages;
 }) {
     const {debouncedRun, debouncedFormat, debouncedShare, hasCode, isRunning, lan} = props;
-    const common = `mx-0.5 ${HOVER_CLASS}`;
+    const common = `mx-1 ${HOVER_CLASS}`;
 
     return (
         <>
