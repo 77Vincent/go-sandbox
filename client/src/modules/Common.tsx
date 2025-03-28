@@ -25,10 +25,10 @@ export function Divider(props: {
 }) {
     const {horizontal} = props
     if (horizontal) {
-        return <div className={"h-1 w-full border-b border-neutral-200 dark:border-neutral-500"}/>
+        return <div className={"h-0 w-full border-b border-neutral-200 dark:border-neutral-500"}/>
     }
 
-    return <div className={"h-4 w-1 border-r border-neutral-200 dark:border-neutral-500"}/>
+    return <div className={"h-4 w-0 border-r border-neutral-200 dark:border-neutral-500"}/>
 }
 
 const defaultToastType = "info"

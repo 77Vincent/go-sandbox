@@ -25,7 +25,7 @@ export default function Component(props: {
             </Tooltip>
 
             <Tooltip content={`${TRANSLATE.format[lan]}: cmd/win + b`}>
-                <FormatIcon className={`mx-1.5 ${hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}`}
+                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}`}
                             onClick={hasCode && !isRunning ? debouncedFormat : undefined} size={24}/>
             </Tooltip>
 
