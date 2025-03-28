@@ -44,7 +44,7 @@ const (
 	decoratorCase = "decorator"
 	templateCase  = "template"
 	facadeCase    = "facade"
-	adaptorCase   = "bridge"
+	adaptorCase   = "adaptor"
 )
 
 func GetTemplate(c *gin.Context) {
