@@ -1,7 +1,7 @@
 import {Button, Modal} from "flowbite-react";
-import {FaGithub, FaCoffee} from "react-icons/fa";
+import {FaGithub} from "react-icons/fa";
 
-import {TITLE, TRANSLATE} from "../constants.ts";
+import {TITLE} from "../constants.ts";
 import {languages} from "../types";
 import {Divider} from "./Common.tsx";
 import {Link} from "react-router";
@@ -11,7 +11,7 @@ export default function Component(props: {
     lan: languages,
     setShow: (show: boolean) => void,
 }) {
-    const {show, setShow, lan} = props
+    const {show, setShow} = props
 
     return <Modal dismissible show={show} onClose={() => setShow(false)}>
         <Modal.Header>
@@ -23,12 +23,18 @@ export default function Component(props: {
 
         <Modal.Body>
             <div className={"flex flex-col gap-4 font-light dark:text-gray-50"}>
-                <p className={"font-semibold"}>
-                    Experience seamless Golang development with Go Sandbox -
-                    A lightweight and advanced online editor
-                    featuring syntax highlighting and automatic realtime execution of your Go programs!
+                <p>
+                    Go Sandbox is a simplistic and advanced online editor
+                    featuring syntax recognition and automatic realtime execution of your Go programs!
                 </p>
 
+                <div className={"text-lg font-semibold italic"}>Key Features</div>
+                <ul className={"list-inside list-disc indent-4"}>
+                    <li>Write and run Go code in your browser</li>
+                    <li>Share your code with others</li>
+                    <li>Save your code snippets</li>
+                    <li>Supports multiple files</li>
+                </ul>
 
                 <Divider horizontal={true}/>
 
@@ -44,20 +50,21 @@ export default function Component(props: {
                 <Divider horizontal={true}/>
             </div>
 
-            <div className="mt-5 flex flex-wrap justify-center gap-3">
-                <Button size={"xs"}
-                        as={Link}
-                        className={"hover:opacity-80"}
-                        gradientMonochrome={"cyan"}
-                        to={""} target={"_blank"}>
-                    <div className={"flex items-center gap-2"}>
-                        <FaCoffee size={20}/>
-                        {TRANSLATE.coffee[lan]}
-                    </div>
-                </Button>
+            <div className="mt-5 flex flex-wrap gap-3">
+                {/*<Button size={"xs"}*/}
+                {/*        as={Link}*/}
+                {/*        className={"hover:opacity-80"}*/}
+                {/*        gradientMonochrome={"cyan"}*/}
+                {/*        to={""} target={"_blank"}>*/}
+                {/*    <div className={"flex items-center gap-2"}>*/}
+                {/*        <FaCoffee size={20}/>*/}
+                {/*        {TRANSLATE.coffee[lan]}*/}
+                {/*    </div>*/}
+                {/*</Button>*/}
 
                 <Button size={"xs"}
                         as={Link}
+                        gradientMonochrome={"teal"}
                         className={"hover:opacity-80"}
                         to={"https://github.com/77Vincent/go-sandbox"} target={"_blank"}>
                     <div className={"flex items-center gap-2"}>
