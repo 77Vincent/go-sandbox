@@ -135,3 +135,8 @@ export function normalizeText(text: string = "") {
         .filter(line => line !== '') // discard empty lines
         .join('\n');             // join them together (or you could join with "" if you don't want newlines)
 }
+
+export function isMac(): boolean {
+    const platform = navigator.userAgentData?.platform;
+    return platform?.toLowerCase().includes('mac') || navigator.platform.includes("Mac")
+}

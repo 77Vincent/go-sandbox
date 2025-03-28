@@ -489,7 +489,7 @@ export default function Component(props: {
                     <div className="text-2xl italic text-gray-700 dark:text-cyan-500 max-md:text-base">{TITLE}</div>
                 </Link>
 
-                <div className="flex items-center justify-end gap-2 max-md:gap-1">
+                <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
                     <Actions isRunning={isRunning} debouncedFormat={debouncedFormat} debouncedRun={debouncedRun}
                              debouncedShare={debouncedShare} hasCode={codeRef.current.length > 0} lan={lan}/>
 
