@@ -1,11 +1,16 @@
 import {Tooltip} from "flowbite-react";
-import {PiPlay as RunICon} from "react-icons/pi";
-import {HiCodeBracket as FormatIcon} from "react-icons/hi2";
+import {FiPlay as RunICon} from "react-icons/fi";
+import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
+
 import {HOVER_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
+import {isMac} from "../utils.ts";
 
 const COLOR_INACTIVE = "text-gray-300 dark:text-gray-600";
+const CMD = "Cmd"
+const WIN = "win"
+const COMMON_CLASSES = "text-xs font-light";
 
 export default function Component(props: {
     debouncedRun: () => void;
@@ -16,22 +21,23 @@ export default function Component(props: {
     lan: languages;
 }) {
     const {debouncedRun, debouncedFormat, debouncedShare, hasCode, isRunning, lan} = props;
+    const metaKey = isMac() ? CMD : WIN;
 
     return (
         <>
-            <Tooltip content={`${TRANSLATE.run[lan]}: cmd/win + enter`}>
+            <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.run[lan]}: ${metaKey} + enter`}>
                 <RunICon className={hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}
-                         onClick={hasCode && !isRunning ? debouncedRun : undefined} size={24}/>
+                         onClick={hasCode && !isRunning ? debouncedRun : undefined} size={23}/>
             </Tooltip>
 
-            <Tooltip content={`${TRANSLATE.format[lan]}: cmd/win + b`}>
+            <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.format[lan]}: ${metaKey} + b`}>
                 <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}`}
-                            onClick={hasCode && !isRunning ? debouncedFormat : undefined} size={24}/>
+                            onClick={hasCode && !isRunning ? debouncedFormat : undefined} size={23}/>
             </Tooltip>
 
-            <Tooltip content={`${TRANSLATE.share[lan]}: cmd/win + e`}>
+            <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.share[lan]}: ${metaKey} + e`}>
                 <ShareIcon className={hasCode ? HOVER_CLASS : COLOR_INACTIVE}
-                           onClick={hasCode ? debouncedShare : undefined} size={24}/>
+                           onClick={hasCode ? debouncedShare : undefined} size={22}/>
             </Tooltip>
         </>
     );

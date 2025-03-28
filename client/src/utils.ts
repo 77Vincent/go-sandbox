@@ -7,16 +7,24 @@ import {
     DEFAULT_AUTO_RUN,
     DEFAULT_CURSOR_POSITION,
     DEFAULT_EDITOR_SIZE,
-    DEFAULT_KEY_BINDINGS, DEFAULT_LANGUAGE,
+    DEFAULT_KEY_BINDINGS,
+    DEFAULT_LANGUAGE,
     DEFAULT_LINT_ON,
     DEFAULT_SHOW_INVISIBLE,
     EDITOR_SIZE_KEY,
     ERROR_PARSING_REGEX,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
-    KEY_BINDINGS_KEY, LANGUAGE_KEY,
-    LINT_ON_KEY, SANDBOX_VERSION_KEY,
-    SHOW_INVISIBLE_KEY, DEFAULT_SANDBOX_VERSION, IS_VERTICAL_LAYOUT_KEY, DEFAULT_IS_VERTICAL_LAYOUT, MOBILE_WIDTH
+    KEY_BINDINGS_KEY,
+    LANGUAGE_KEY,
+    LINT_ON_KEY,
+    SANDBOX_VERSION_KEY,
+    SHOW_INVISIBLE_KEY,
+    DEFAULT_SANDBOX_VERSION,
+    IS_VERTICAL_LAYOUT_KEY,
+    DEFAULT_IS_VERTICAL_LAYOUT,
+    MOBILE_WIDTH,
+    HELLO_WORLD
 } from "./constants.ts";
 import {KeyBindings, languages} from "./types";
 import {IMarker} from "react-ace";
@@ -38,7 +46,7 @@ export function getCursorColumn(): number {
 }
 
 export function getCodeContent(): string {
-    return localStorage.getItem(CODE_CONTENT_KEY) || ""
+    return localStorage.getItem(CODE_CONTENT_KEY) || HELLO_WORLD
 }
 
 export function getKeyBindings(): KeyBindings {
@@ -126,4 +134,17 @@ export function getUrl(path: string): string {
         return `/api${path}`;
     }
     return `${apiUrl}${path}`;
+}
+
+export function normalizeText(text: string = "") {
+    return text
+        .split(/\r?\n/)          // split text into lines
+        .map(line => line.trim()) // remove leading/trailing whitespace on each line
+        .filter(line => line !== '') // discard empty lines
+        .join('\n');             // join them together (or you could join with "" if you don't want newlines)
+}
+
+export function isMac(): boolean {
+    const platform = navigator.userAgentData?.platform;
+    return platform?.toLowerCase().includes('mac') || navigator.platform.includes("Mac")
 }

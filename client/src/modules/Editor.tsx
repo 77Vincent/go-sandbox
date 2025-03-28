@@ -69,7 +69,7 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice
+    isMobileDevice, normalizeText
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages, resultI} from "../types";
@@ -226,8 +226,8 @@ export default function Component(props: {
     }, [sandboxVersion]);
 
     function onChange(newCode: string = "") {
-        const processedPrevCode = code.replace(/[\r\n]/g, "").trim();
-        const processedNewCode = newCode.replace(/[\r\n]/g, "").trim();
+        const processedPrevCode = normalizeText(codeRef.current);
+        const processedNewCode = normalizeText(newCode);
 
         storeCode(newCode);
 
@@ -486,10 +486,10 @@ export default function Component(props: {
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5 max-md:hidden"}/>
 
-                    <div className="text-2xl italic text-gray-700 dark:text-cyan-500 max-md:text-base">{TITLE}</div>
+                    <div className="text-2xl font-semibold text-gray-800 dark:text-gray-200 max-md:text-base">{TITLE}</div>
                 </Link>
 
-                <div className="flex items-center justify-end gap-2 max-md:gap-1">
+                <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
                     <Actions isRunning={isRunning} debouncedFormat={debouncedFormat} debouncedRun={debouncedRun}
                              debouncedShare={debouncedShare} hasCode={codeRef.current.length > 0} lan={lan}/>
 
@@ -527,7 +527,7 @@ export default function Component(props: {
                         />
 
                         <AboutIcon
-                            size={25}
+                            size={24}
                             onClick={() => setShowAbout(true)}
                             className={`mx-1 ${HOVER_CLASS} max-md:mx-0 max-md:text-lg`}/>
 

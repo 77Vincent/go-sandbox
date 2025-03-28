@@ -8,6 +8,7 @@ export const EVENT_ERROR = "error";
 export const EVENT_CLEAR = "clear";
 export const EVENT_DONE = "done";
 
+export const FIRST_TIME_KEY = "firstTime";
 export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
 export const SANDBOX_VERSION_KEY = "sandboxVersion";
 export const KEY_BINDINGS_KEY = "keyBindings";
@@ -65,6 +66,13 @@ export const LANGUAGES: { value: languages, label: string }[] = [
     {value: "zh_TW", label: "繁體中文"},
     {value: "ja", label: "日本語"},
 ]
+export const HELLO_WORLD = `package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello, Go Sandbox!")
+}`
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
     layout: {

@@ -84,7 +84,7 @@ export default function Component(props: {
         <Dropdown disabled={disabled} className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"}
                   arrowIcon={false} label={
             <SettingsIcon
-                size={20}
+                size={19}
                 className={`${HOVER_CLASS} max-md:text-sm`}/>
         }>
             <Dropdown.Header>
