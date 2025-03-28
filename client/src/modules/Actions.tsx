@@ -5,6 +5,7 @@ import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
 import {HOVER_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
 
+const BUTTON_SIZE = 23;
 const COLOR_INACTIVE = "text-gray-300 dark:text-gray-600";
 
 export default function Component(props: {
@@ -21,17 +22,17 @@ export default function Component(props: {
         <>
             <Tooltip content={`${TRANSLATE.run[lan]}: cmd/win + enter`}>
                 <RunICon className={hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}
-                         onClick={hasCode && !isRunning ? debouncedRun : undefined} size={24}/>
+                         onClick={hasCode && !isRunning ? debouncedRun : undefined} size={BUTTON_SIZE}/>
             </Tooltip>
 
             <Tooltip content={`${TRANSLATE.format[lan]}: cmd/win + b`}>
                 <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}`}
-                            onClick={hasCode && !isRunning ? debouncedFormat : undefined} size={24}/>
+                            onClick={hasCode && !isRunning ? debouncedFormat : undefined} size={BUTTON_SIZE}/>
             </Tooltip>
 
             <Tooltip content={`${TRANSLATE.share[lan]}: cmd/win + e`}>
                 <ShareIcon className={hasCode ? HOVER_CLASS : COLOR_INACTIVE}
-                           onClick={hasCode ? debouncedShare : undefined} size={24}/>
+                           onClick={hasCode ? debouncedShare : undefined} size={BUTTON_SIZE}/>
             </Tooltip>
         </>
     );

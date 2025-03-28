@@ -30,10 +30,10 @@ export default function Component(props: {
 
                 <div className={"text-lg font-semibold italic"}>Key Features</div>
                 <ul className={"list-inside list-disc indent-4"}>
-                    <li>Write and run Go code in your browser</li>
-                    <li>Share your code with others</li>
-                    <li>Save your code snippets</li>
-                    <li>Supports multiple files</li>
+                    <li>Automatic and realtime code execution</li>
+                    <li>Syntax highlighting and linting</li>
+                    <li>Share your code snippet</li>
+                    <li>Rich code snippet library</li>
                 </ul>
 
                 <Divider horizontal={true}/>

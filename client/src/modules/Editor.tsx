@@ -527,7 +527,7 @@ export default function Component(props: {
                         />
 
                         <AboutIcon
-                            size={25}
+                            size={24}
                             onClick={() => setShowAbout(true)}
                             className={`mx-1 ${HOVER_CLASS} max-md:mx-0 max-md:text-lg`}/>
 
