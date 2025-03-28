@@ -7,16 +7,24 @@ import {
     DEFAULT_AUTO_RUN,
     DEFAULT_CURSOR_POSITION,
     DEFAULT_EDITOR_SIZE,
-    DEFAULT_KEY_BINDINGS, DEFAULT_LANGUAGE,
+    DEFAULT_KEY_BINDINGS,
+    DEFAULT_LANGUAGE,
     DEFAULT_LINT_ON,
     DEFAULT_SHOW_INVISIBLE,
     EDITOR_SIZE_KEY,
     ERROR_PARSING_REGEX,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
-    KEY_BINDINGS_KEY, LANGUAGE_KEY,
-    LINT_ON_KEY, SANDBOX_VERSION_KEY,
-    SHOW_INVISIBLE_KEY, DEFAULT_SANDBOX_VERSION, IS_VERTICAL_LAYOUT_KEY, DEFAULT_IS_VERTICAL_LAYOUT, MOBILE_WIDTH
+    KEY_BINDINGS_KEY,
+    LANGUAGE_KEY,
+    LINT_ON_KEY,
+    SANDBOX_VERSION_KEY,
+    SHOW_INVISIBLE_KEY,
+    DEFAULT_SANDBOX_VERSION,
+    IS_VERTICAL_LAYOUT_KEY,
+    DEFAULT_IS_VERTICAL_LAYOUT,
+    MOBILE_WIDTH,
+    HELLO_WORLD
 } from "./constants.ts";
 import {KeyBindings, languages} from "./types";
 import {IMarker} from "react-ace";
@@ -38,7 +46,7 @@ export function getCursorColumn(): number {
 }
 
 export function getCodeContent(): string {
-    return localStorage.getItem(CODE_CONTENT_KEY) || ""
+    return localStorage.getItem(CODE_CONTENT_KEY) || HELLO_WORLD
 }
 
 export function getKeyBindings(): KeyBindings {
