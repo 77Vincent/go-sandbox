@@ -226,7 +226,7 @@ export default function Component(props: {
     }, [sandboxVersion]);
 
     function onChange(newCode: string = "") {
-        const processedPrevCode = code.replace(/[\r\n]/g, "").trim();
+        const processedPrevCode = codeRef.current.replace(/[\r\n]/g, "").trim();
         const processedNewCode = newCode.replace(/[\r\n]/g, "").trim();
 
         storeCode(newCode);
