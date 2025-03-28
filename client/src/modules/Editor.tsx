@@ -209,6 +209,7 @@ export default function Component(props: {
             // shortcut for share
             if (event.key.toLowerCase() === "e" && event.metaKey) {
                 event.preventDefault();
+                debouncedShare()
                 return;
             }
         }

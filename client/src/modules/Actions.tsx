@@ -5,7 +5,7 @@ import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
 import {HOVER_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
 
-const COLOR_INACTIVE = "text-gray-300";
+const COLOR_INACTIVE = "text-gray-300 dark:text-gray-600";
 
 export default function Component(props: {
     debouncedRun: () => void;
