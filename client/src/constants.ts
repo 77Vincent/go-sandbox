@@ -174,7 +174,7 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
     },
 }
 
-export const TEMPLATES: Record<string, Record<string, string>> = {
+export const SNIPPETS: Record<string, Record<string, string>> = {
     Basic: {
         helloWorld: "Hello World",
         sleep: "Sleep",

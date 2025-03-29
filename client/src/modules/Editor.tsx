@@ -42,7 +42,7 @@ import Actions from "./Actions.tsx";
 import SnippetSelector from "./SnippetSelector.tsx";
 import VersionSelector from "./VersionSelector.tsx";
 import SandboxSelector from "./SandboxSelector.tsx";
-import {fetchSnippet, formatCode, getTemplate, shareSnippet} from "../api/api.ts";
+import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -296,7 +296,7 @@ export default function Component(props: {
     const getSnippetCallback = useCallback(async (id: string) => {
         try {
             setIsRunning(true)
-            const code = await getTemplate(id);
+            const code = await getSnippet(id);
             storeCode(code);
             debouncedRun()
             setIsRunning(false)

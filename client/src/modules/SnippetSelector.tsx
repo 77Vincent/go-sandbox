@@ -1,5 +1,5 @@
 import {Dropdown} from "flowbite-react";
-import {TEMPLATES} from "../constants.ts";
+import {SNIPPETS} from "../constants.ts";
 import {MouseEventHandler} from "react";
 
 const buttonLabel = "Snippets";
@@ -36,7 +36,7 @@ export default function Component(props: {
     return (
         <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"} label={buttonLabel}>
             {
-                Object.keys(TEMPLATES).map(key => {
+                Object.keys(SNIPPETS).map(key => {
                     return (
                         <div key={key}>
                             <Dropdown.Header key={key}
@@ -44,7 +44,7 @@ export default function Component(props: {
 
                             <Dropdown.Item disabled={isRunning} className={"mb-1 grid grid-cols-4 gap-1.5"}>
                                 {
-                                    Object.entries(TEMPLATES[key]).map(([subkey, value]) => {
+                                    Object.entries(SNIPPETS[key]).map(([subkey, value]) => {
                                         return (
                                             <Item key={subkey} id={subkey} value={value} onClick={onClick(subkey)}/>
                                         )
