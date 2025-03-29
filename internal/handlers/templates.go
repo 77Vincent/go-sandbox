@@ -38,6 +38,7 @@ const (
 	gameOfLifeCase        = "gameOfLife"
 	concurrentPrimeCase   = "concurrentPrime"
 	diningPhilosopherCase = "diningPhilosophers"
+	sudokuCase            = "sudoku"
 	// design patterns
 	singletonCase = "singleton"
 	factoryCase   = "factory"
@@ -109,6 +110,8 @@ func GetTemplate(c *gin.Context) {
 		output = advanced.LRU
 	case lcsCase:
 		output = advanced.LCS
+	case sudokuCase:
+		output = advanced.Sudoku
 
 	// design patterns
 	case singletonCase:
