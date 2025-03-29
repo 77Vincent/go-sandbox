@@ -32,7 +32,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, HOVER_CLASS, ACTIVE_SANDBOX_KEY,
+    EDITOR_SIZE_MAX, TITLE, ICON_BUTTON_CLASS, ACTIVE_SANDBOX_KEY,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -542,7 +542,7 @@ export default function Component(props: {
                         <AboutIcon
                             size={isMobile ? 22 : 24}
                             onClick={() => setShowAbout(true)}
-                            className={`mx-1 ${HOVER_CLASS} max-md:mx-0 max-md:text-lg`}/>
+                            className={`mx-1 ${ICON_BUTTON_CLASS} max-md:mx-0 max-md:text-lg`}/>
 
                         <DarkThemeToggle/>
                     </div>

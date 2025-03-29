@@ -44,7 +44,7 @@ export const RUN_DEBOUNCE_TIME = 100;
 export const AUTO_RUN_DEBOUNCE_TIME = 1250;
 export const ACTIVE_COLOR = "cyan"
 export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
-export const HOVER_CLASS = "cursor-pointer hover:text-cyan-500"
+export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
 export const ERROR_PARSING_REGEX = /main\.go:(\d+)/g;

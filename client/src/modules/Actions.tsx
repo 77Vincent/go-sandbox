@@ -3,7 +3,7 @@ import {FiPlay as RunICon} from "react-icons/fi";
 import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
 
-import {HOVER_CLASS, TRANSLATE} from "../constants.ts";
+import {ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
 import {isMac} from "../utils.ts";
 
@@ -28,17 +28,17 @@ export default function Component(props: {
     return (
         <>
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.run[lan]}: ${metaKey} + enter`}>
-                <RunICon className={isEnabled ? HOVER_CLASS : COLOR_INACTIVE}
+                <RunICon className={isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}
                          onClick={isEnabled ? debouncedRun : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.format[lan]}: ${metaKey} + b`}>
-                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${isEnabled ? HOVER_CLASS : COLOR_INACTIVE}`}
+                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}`}
                             onClick={isEnabled ? debouncedFormat : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.share[lan]}: ${metaKey} + e`}>
-                <ShareIcon className={isEnabled ? HOVER_CLASS : COLOR_INACTIVE}
+                <ShareIcon className={isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}
                            onClick={isEnabled ? debouncedShare : undefined} size={isMobile ? 20 : 22}/>
             </Tooltip>
         </>

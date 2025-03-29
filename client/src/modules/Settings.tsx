@@ -12,7 +12,7 @@ import {
 } from "react-icons/md";
 import {ImTextColor as TextMIcon} from "react-icons/im"
 
-import {ACTIVE_COLOR, FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, HOVER_CLASS, LANGUAGES, TRANSLATE} from "../constants.ts";
+import {ACTIVE_COLOR, FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, ICON_BUTTON_CLASS, LANGUAGES, TRANSLATE} from "../constants.ts";
 import {KeyBindings, languages} from "../types";
 import {ToggleSwitch} from "./Common.tsx";
 
@@ -87,7 +87,7 @@ export default function Component(props: {
                   arrowIcon={false} label={
             <SettingsIcon
                 size={isMobile ? 17 : 19}
-                className={`${HOVER_CLASS} max-md:text-sm`}/>
+                className={`${ICON_BUTTON_CLASS} max-md:text-sm`}/>
         }>
             <Dropdown.Header>
                 <p className={"font-semibold"}>{TRANSLATE.settings[lan]}</p>
