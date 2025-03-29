@@ -1,4 +1,4 @@
-package fun
+package advanced
 
 const HttpServer = `package main
 

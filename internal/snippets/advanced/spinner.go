@@ -1,4 +1,4 @@
-package fun
+package advanced
 
 const Spinner = `// Spinner is a simple spinner animation in the terminal.
 package main

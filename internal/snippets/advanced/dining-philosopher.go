@@ -1,4 +1,4 @@
-package fun
+package advanced
 
 const DiningPhilosopher = `// Dining Philosophers Problem
 package main

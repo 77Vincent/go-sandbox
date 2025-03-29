@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/advanced"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/basic"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/design_pattern"
-	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/fun"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/problems"
 	"net/http"
 )
@@ -83,15 +83,15 @@ func GetTemplate(c *gin.Context) {
 
 	// advanced
 	case spinner:
-		output = fun.Spinner
+		output = advanced.Spinner
 	case httpServerCase:
-		output = fun.HttpServer
+		output = advanced.HttpServer
 	case gameOfLifeCase:
-		output = fun.GameOfLife
+		output = advanced.GameOfLife
 	case concurrentPrimeCase:
-		output = fun.ConcurrentPrime
+		output = advanced.ConcurrentPrime
 	case diningPhilosopherCase:
-		output = fun.DiningPhilosopher
+		output = advanced.DiningPhilosopher
 	case fibonacciCase:
 		output = problems.Fibonacci
 	case quickSortCase:

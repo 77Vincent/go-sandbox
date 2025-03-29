@@ -1,4 +1,4 @@
-package fun
+package advanced
 
 const GameOfLife = `// Conway's Game of Life in Go
 package main
