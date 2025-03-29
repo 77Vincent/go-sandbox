@@ -31,6 +31,7 @@ const (
 	binarySearchCase = "binarySearch"
 	bfsCase          = "bfs"
 	dfsCase          = "dfs"
+	lruCase          = "lru"
 	// fun
 	clearScreenCase     = "clearScreen"
 	httpServerCase      = "httpServer"
@@ -91,6 +92,8 @@ func GetTemplate(c *gin.Context) {
 		output = problems.Bfs
 	case dfsCase:
 		output = problems.Dfs
+	case lruCase:
+		output = problems.LRU
 
 	// fun
 	case clearScreenCase:

@@ -196,6 +196,7 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         binarySearch: "Binary search",
         bfs: "BFS",
         dfs: "DFS",
+        lru: "LRU",
     },
     Fun: {
         clearScreen: "Clear screen",
