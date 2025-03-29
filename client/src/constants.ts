@@ -8,7 +8,7 @@ export const EVENT_ERROR = "error";
 export const EVENT_CLEAR = "clear";
 export const EVENT_DONE = "done";
 
-export const FIRST_TIME_KEY = "firstTime";
+export const ACTIVE_SANDBOX_KEY = "activeSandbox";
 export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
 export const SANDBOX_VERSION_KEY = "sandboxVersion";
 export const KEY_BINDINGS_KEY = "keyBindings";
@@ -35,6 +35,7 @@ export const DEFAULT_LANGUAGE = "en";
 export const FONT_SIZE_L = 16;
 export const FONT_SIZE_M = 14;
 export const FONT_SIZE_S = 12;
+export const DEFAULT_ACTIVE_SANDBOX = 1;
 
 export const MOBILE_WIDTH = 768;
 export const DEFAULT_CURSOR_POSITION = 0;

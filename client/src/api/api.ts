@@ -11,7 +11,7 @@ export async function healthCheck() {
     return await res.json();
 }
 
-export async function getTemplate(id: string): Promise<string> {
+export async function getSnippet(id: string): Promise<string> {
     const res = await fetch(getUrl(`/templates/${id}`));
     if (res.status >= HTTP_INTERNAL_ERROR) {
         const {error} = await res.json();

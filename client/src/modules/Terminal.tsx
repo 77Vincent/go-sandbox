@@ -36,7 +36,7 @@ export default function Component(props: {
 
             {info && <pre className={`${infoColor} ${common}`}>{info}</pre>}
 
-            <div className={`flex h-full w-full flex-col overflow-auto`}>
+            <div className={`flex size-full flex-col overflow-auto`}>
                 {
                     result.map((item, index) => {
                         return (

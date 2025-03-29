@@ -24,13 +24,17 @@ import {
     IS_VERTICAL_LAYOUT_KEY,
     DEFAULT_IS_VERTICAL_LAYOUT,
     MOBILE_WIDTH,
-    HELLO_WORLD
+    HELLO_WORLD, ACTIVE_SANDBOX_KEY, DEFAULT_ACTIVE_SANDBOX
 } from "./constants.ts";
 import {KeyBindings, languages} from "./types";
 import {IMarker} from "react-ace";
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
+}
+
+export function getActiveSandbox(): number {
+    return Number(localStorage.getItem(ACTIVE_SANDBOX_KEY)) || DEFAULT_ACTIVE_SANDBOX
 }
 
 export function getLanguage(): languages {
@@ -45,8 +49,8 @@ export function getCursorColumn(): number {
     return Number(localStorage.getItem(CURSOR_COLUMN_KEY)) || DEFAULT_CURSOR_POSITION
 }
 
-export function getCodeContent(): string {
-    return localStorage.getItem(CODE_CONTENT_KEY) || HELLO_WORLD
+export function getCodeContent(tab: number): string {
+    return localStorage.getItem(CODE_CONTENT_KEY+String(tab)) || HELLO_WORLD
 }
 
 export function getKeyBindings(): KeyBindings {
