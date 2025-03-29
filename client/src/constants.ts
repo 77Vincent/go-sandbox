@@ -191,6 +191,7 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
     },
     Advanced: {
         spinner: "Spinner",
+        progressBar: "Progress bar",
         httpServer: "HTTP server",
         gameOfLife: "Game of Life",
         concurrentPrime: "Concurrent prime",

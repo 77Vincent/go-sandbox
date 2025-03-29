@@ -23,16 +23,16 @@ const (
 	jsonCase          = "json"
 	mutexCase         = "mutex"
 	tickerCase        = "ticker"
-	// problems
-	fibonacciCase    = "fibonacci"
-	quickSortCase    = "quickSort"
-	mergeSortCase    = "mergeSort"
-	binarySearchCase = "binarySearch"
-	bfsCase          = "bfs"
-	dfsCase          = "dfs"
-	lruCase          = "lru"
-	lcsCase          = "lcs"
-	// fun
+	// advanced
+	fibonacciCase         = "fibonacci"
+	progressBarCase       = "progressBar"
+	quickSortCase         = "quickSort"
+	mergeSortCase         = "mergeSort"
+	binarySearchCase      = "binarySearch"
+	bfsCase               = "bfs"
+	dfsCase               = "dfs"
+	lruCase               = "lru"
+	lcsCase               = "lcs"
 	spinner               = "spinner"
 	httpServerCase        = "httpServer"
 	gameOfLifeCase        = "gameOfLife"
@@ -83,6 +83,8 @@ func GetTemplate(c *gin.Context) {
 	// advanced
 	case spinner:
 		output = advanced.Spinner
+	case progressBarCase:
+		output = advanced.ProgressBar
 	case httpServerCase:
 		output = advanced.HttpServer
 	case gameOfLifeCase:
