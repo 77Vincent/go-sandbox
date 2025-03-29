@@ -7,7 +7,7 @@ import {HiOutlineInformationCircle as AboutIcon} from "react-icons/hi"
 
 import {
     AUTO_RUN_KEY,
-    CODE_CONTENT_KEY,
+    MY_SANDBOX_KEY,
     CURSOR_COLUMN_KEY,
     CURSOR_ROW_KEY,
     CURSOR_UPDATE_DEBOUNCE_TIME,
@@ -293,7 +293,7 @@ export default function Component(props: {
             setIsRunning(true)
 
             // for loading local sandbox
-            if (id.startsWith(CODE_CONTENT_KEY)) {
+            if (id.startsWith(MY_SANDBOX_KEY)) {
                 onActiveSandboxChange(id as mySandboxes)
             }
 

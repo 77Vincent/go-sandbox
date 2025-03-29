@@ -1,5 +1,5 @@
 import {ExecuteResultI, mySandboxes} from "../types";
-import {CODE_CONTENT_KEY, HTTP_INTERNAL_ERROR, HTTP_NOT_FOUND} from "../constants.ts";
+import {MY_SANDBOX_KEY, HTTP_INTERNAL_ERROR, HTTP_NOT_FOUND} from "../constants.ts";
 import {getCodeContent, getUrl} from "../utils.ts";
 
 export async function healthCheck() {
@@ -13,7 +13,7 @@ export async function healthCheck() {
 
 export async function getTemplate(id: string): Promise<string> {
     // for loading local sandboxes
-    if (id.startsWith(CODE_CONTENT_KEY)) {
+    if (id.startsWith(MY_SANDBOX_KEY)) {
         return getCodeContent(id as mySandboxes);
     }
 

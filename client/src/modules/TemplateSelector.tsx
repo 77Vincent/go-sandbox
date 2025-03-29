@@ -5,16 +5,16 @@ import {MouseEventHandler} from "react";
 const buttonLabel = "Snippets";
 
 function Item(props: {
-    subkey: string,
+    id: string,
     value: string,
     onClick: MouseEventHandler<HTMLDivElement>
 }) {
-    const {subkey, value, onClick} = props;
+    const {id, value, onClick} = props;
 
     return (
         <div
             className={"rounded-md border border-gray-300 px-1.5 py-1 text-xs text-gray-900 shadow-sm hover:border-cyan-300 hover:bg-cyan-100 dark:text-gray-100 dark:hover:border-cyan-200 dark:hover:bg-cyan-900"}
-            onClick={onClick} key={subkey}>
+            onClick={onClick} key={id}>
             {value}
         </div>
     )
@@ -45,7 +45,7 @@ export default function Component(props: {
                     Array.from({length: 4}).map((_, index) => {
                         const i = index + 1;
                         const subkey = `my-sandbox-${i}`;
-                        return <Item key={index} subkey={subkey} value={`Sandbox ${i}`} onClick={onClick(subkey)}/>
+                        return <Item key={index} id={subkey} value={`Sandbox ${i}`} onClick={onClick(subkey)}/>
                     })
                 }
             </Dropdown.Item>
@@ -61,7 +61,7 @@ export default function Component(props: {
                                 {
                                     Object.entries(TEMPLATES[key]).map(([subkey, value]) => {
                                         return (
-                                            <Item key={subkey} subkey={subkey} value={value} onClick={onClick(subkey)}/>
+                                            <Item key={subkey} id={subkey} value={value} onClick={onClick(subkey)}/>
                                         )
                                     })
                                 }
