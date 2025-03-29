@@ -251,7 +251,7 @@ export default function Component(props: {
         return isRunningRef.current || !codeRef.current
     }
 
-    const shareCallback = useCallback(async () => {
+    const debouncedShare = useRef(debounce(useCallback(async () => {
         try {
             const id = await shareSnippet(codeRef.current);
             const url = `${location.origin}/snippets/${id}`
@@ -260,11 +260,9 @@ export default function Component(props: {
         } catch (e) {
             setToastError((e as Error).message)
         }
-    }, [setToastInfo, setToastError]);
-    const debouncedShare = useRef(debounce(shareCallback, RUN_DEBOUNCE_TIME)).current;
+    }, [setToastInfo, setToastError]), RUN_DEBOUNCE_TIME)).current;
 
-    // managed debounced format
-    const formatCallback = useCallback(async () => {
+    const debouncedFormat = useRef(debounce(useCallback(async () => {
         if (shouldAbort()) {
             return
         }
@@ -290,10 +288,9 @@ export default function Component(props: {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [setToastError]);
-    const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
+    }, [setToastError]), RUN_DEBOUNCE_TIME)).current;
 
-    const getSnippetCallback = useCallback(async (id: string) => {
+    const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
         try {
             setIsRunning(true)
             const code = await getSnippet(id);
@@ -304,8 +301,7 @@ export default function Component(props: {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [setToastError]);
-    const debouncedGetSnippet = useRef(debounce(getSnippetCallback, RUN_DEBOUNCE_TIME)).current;
+    }, [setToastError]), RUN_DEBOUNCE_TIME)).current;
 
     // manage debounced run
     const runCallback = useCallback(async () => {
@@ -392,9 +388,7 @@ export default function Component(props: {
     const debouncedAutoRun = useRef(debounce(runCallback, AUTO_RUN_DEBOUNCE_TIME)).current;
 
     // manage debounced cursor position update
-    const debouncedOnCursorChange = debounce(onCursorChange, CURSOR_UPDATE_DEBOUNCE_TIME);
-
-    function onCursorChange(value: any) {
+    const debouncedOnCursorChange = debounce(function onCursorChange(value: any) {
         const row = value.cursor.row;
         const col = value.cursor.column;
 
@@ -407,7 +401,8 @@ export default function Component(props: {
 
         setRow(row);
         setColumn(col);
-    }
+    }, CURSOR_UPDATE_DEBOUNCE_TIME);
+
 
     function onLint() {
         localStorage.setItem(LINT_ON_KEY, JSON.stringify(!isLintOn));
@@ -499,7 +494,8 @@ export default function Component(props: {
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-5 max-md:hidden"}/>
 
-                    <div className="text-2xl font-semibold text-gray-800 dark:text-gray-200 max-md:text-base">{TITLE}</div>
+                    <div
+                        className="text-2xl font-semibold text-gray-800 dark:text-gray-200 max-md:text-base">{TITLE}</div>
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
@@ -510,7 +506,8 @@ export default function Component(props: {
                         isMobile ? null :
                             <>
                                 <Divider/>
-                                <SandboxSelector onSelect={onActiveSandboxChange} isRunning={isRunning} active={activeSandbox}/>
+                                <SandboxSelector onSelect={onActiveSandboxChange} isRunning={isRunning}
+                                                 active={activeSandbox}/>
                                 <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
                                 <VersionSelector version={sandboxVersion} isRunning={isRunning}
                                                  onSelect={onSandboxVersionChange}/>
