@@ -23,22 +23,23 @@ export default function Component(props: {
 }) {
     const {isMobile, debouncedRun, debouncedFormat, debouncedShare, hasCode, isRunning, lan} = props;
     const metaKey = isMac() ? CMD : WIN;
+    const isEnabled = hasCode && !isRunning;
 
     return (
         <>
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.run[lan]}: ${metaKey} + enter`}>
-                <RunICon className={hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}
-                         onClick={hasCode && !isRunning ? debouncedRun : undefined} size={isMobile ? 21 : 23}/>
+                <RunICon className={isEnabled ? HOVER_CLASS : COLOR_INACTIVE}
+                         onClick={isEnabled ? debouncedRun : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.format[lan]}: ${metaKey} + b`}>
-                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}`}
-                            onClick={hasCode && !isRunning ? debouncedFormat : undefined} size={isMobile ? 21 : 23}/>
+                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${isEnabled ? HOVER_CLASS : COLOR_INACTIVE}`}
+                            onClick={isEnabled ? debouncedFormat : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.share[lan]}: ${metaKey} + e`}>
-                <ShareIcon className={hasCode ? HOVER_CLASS : COLOR_INACTIVE}
-                           onClick={hasCode ? debouncedShare : undefined} size={isMobile ? 20 : 22}/>
+                <ShareIcon className={isEnabled ? HOVER_CLASS : COLOR_INACTIVE}
+                           onClick={isEnabled ? debouncedShare : undefined} size={isMobile ? 20 : 22}/>
             </Tooltip>
         </>
     );
