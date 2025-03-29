@@ -1,4 +1,4 @@
-package problems
+package advanced
 
 const LRU = `package main
 

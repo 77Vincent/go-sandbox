@@ -5,7 +5,6 @@ import (
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/advanced"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/basic"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/design_pattern"
-	"github.com/tianqi-wen_frgr/go-sandbox/internal/snippets/problems"
 	"net/http"
 )
 
@@ -93,21 +92,21 @@ func GetTemplate(c *gin.Context) {
 	case diningPhilosopherCase:
 		output = advanced.DiningPhilosopher
 	case fibonacciCase:
-		output = problems.Fibonacci
+		output = advanced.Fibonacci
 	case quickSortCase:
-		output = problems.QuickSort
+		output = advanced.QuickSort
 	case mergeSortCase:
-		output = problems.MergeSort
+		output = advanced.MergeSort
 	case binarySearchCase:
-		output = problems.BinarySearch
+		output = advanced.BinarySearch
 	case bfsCase:
-		output = problems.Bfs
+		output = advanced.Bfs
 	case dfsCase:
-		output = problems.Dfs
+		output = advanced.Dfs
 	case lruCase:
-		output = problems.LRU
+		output = advanced.LRU
 	case lcsCase:
-		output = problems.LCS
+		output = advanced.LCS
 
 	// design patterns
 	case singletonCase:
