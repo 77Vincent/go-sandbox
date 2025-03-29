@@ -1,9 +1,8 @@
 import {useCallback, useRef, useState, ChangeEvent, useEffect, ReactNode} from "react";
-import {DarkThemeToggle, useThemeMode} from "flowbite-react";
+import {useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
-import {HiOutlineInformationCircle as AboutIcon} from "react-icons/hi"
 import Mousetrap from "mousetrap";
 
 import {
@@ -33,7 +32,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, ICON_BUTTON_CLASS, ACTIVE_SANDBOX_KEY,
+    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -43,6 +42,7 @@ import Actions from "./Actions.tsx";
 import SnippetSelector from "./SnippetSelector.tsx";
 import VersionSelector from "./VersionSelector.tsx";
 import SandboxSelector from "./SandboxSelector.tsx";
+import Info from "./Info.tsx";
 import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
@@ -112,6 +112,7 @@ export default function Component(props: {
     const {mode} = useThemeMode();
     const statusBarRef = useRef<HTMLDivElement | null>(null);
 
+    const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
     const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(getActiveSandbox());
@@ -504,9 +505,29 @@ export default function Component(props: {
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
+            <Settings
+                show={showSettings}
+                setShow={setShowSettings}
+                lan={lan}
+                fontSize={fontSize}
+                onFontL={onFontL}
+                onFontM={onFontM}
+                onFontS={onFontS}
+                isVerticalLayout={isLayoutVertical}
+                setIsVerticalLayout={onIsVerticalLayoutChange}
+                onKeyBindingsChange={onKeyBindingsChange}
+                onLanguageChange={onLanguageChange}
+                keyBindings={keyBindings}
+                isLintOn={isLintOn}
+                onLint={onLint}
+                isAutoRun={isAutoRun}
+                onAutoRun={onAutoRun}
+                isShowInvisible={isShowInvisible}
+                onShowInvisible={onShowInvisible}
+            />
 
             <div
-                className="flex items-center justify-between border-b border-b-gray-300 py-0.5 pl-2 pr-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0">
+                className="flex items-center justify-between border-b border-b-gray-300 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-4 max-md:hidden"}/>
 
@@ -533,34 +554,7 @@ export default function Component(props: {
 
                     <div className={"flex items-center"}>
                         <Divider/>
-
-                        <Settings
-                            isMobile={isMobile}
-                            disabled={isRunning}
-                            lan={lan}
-                            fontSize={fontSize}
-                            onFontL={onFontL}
-                            onFontM={onFontM}
-                            onFontS={onFontS}
-                            isVerticalLayout={isLayoutVertical}
-                            setIsVerticalLayout={onIsVerticalLayoutChange}
-                            onKeyBindingsChange={onKeyBindingsChange}
-                            onLanguageChange={onLanguageChange}
-                            keyBindings={keyBindings}
-                            isLintOn={isLintOn}
-                            onLint={onLint}
-                            isAutoRun={isAutoRun}
-                            onAutoRun={onAutoRun}
-                            isShowInvisible={isShowInvisible}
-                            onShowInvisible={onShowInvisible}
-                        />
-
-                        <AboutIcon
-                            size={isMobile ? 22 : 24}
-                            onClick={() => setShowAbout(true)}
-                            className={`mx-1 ${ICON_BUTTON_CLASS} max-md:mx-0 max-md:text-lg`}/>
-
-                        <DarkThemeToggle/>
+                        <Info isMobile={isMobile} setShowAbout={setShowAbout} setShowSettings={setShowSettings}/>
                     </div>
                 </div>
             </div>

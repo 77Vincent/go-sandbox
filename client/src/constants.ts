@@ -76,6 +76,12 @@ func main() {
 }`
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    theme: {
+        en: "Theme",
+        zh_CN: "主题",
+        zh_TW: "主題",
+        ja: "テーマ",
+    },
     layout: {
         en: "Layout",
         zh_CN: "布局",
