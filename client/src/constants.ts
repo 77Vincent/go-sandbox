@@ -1,4 +1,4 @@
-import {KeyBindings, languages} from "./types";
+import {KeyBindings, languages, mySandboxes} from "./types";
 
 export const TITLE = "Go Sandbox";
 
@@ -213,4 +213,11 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
         decorator: "Decorator",
         facade: "Facade",
     },
+}
+export const MY_SANDBOXES: Record<mySandboxes, string> = {
+    "my-sandbox-1": "Sandbox 1",
+    "my-sandbox-2": "Sandbox 2",
+    "my-sandbox-3": "Sandbox 3",
+    "my-sandbox-4": "Sandbox 4",
+    "my-sandbox-5": "Sandbox 5",
 }

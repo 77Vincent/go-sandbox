@@ -35,7 +35,7 @@ export interface SSEEvent {
     data: string;
 }
 
-export type mySandboxes = "my-sandbox-1" | "my-sandbox-2" | "my-sandbox-3" | "my-sandbox-4"
+export type mySandboxes = "my-sandbox-1" | "my-sandbox-2" | "my-sandbox-3" | "my-sandbox-4" | "my-sandbox-5"
 
 export type languages = "en" | "zh_CN" | "zh_TW" | "ja"
 
