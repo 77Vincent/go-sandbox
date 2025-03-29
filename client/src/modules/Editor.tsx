@@ -4,6 +4,7 @@ import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
 import {HiOutlineInformationCircle as AboutIcon} from "react-icons/hi"
+import Mousetrap from "mousetrap";
 
 import {
     AUTO_RUN_KEY,
@@ -68,7 +69,7 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, normalizeText, getActiveSandbox
+    isMobileDevice, normalizeText, getActiveSandbox, isMac
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages, mySandboxes, resultI} from "../types";
@@ -189,33 +190,47 @@ export default function Component(props: {
         // read to run
         setIsRunning(false);
 
-        // register keydown event
-        function handleKeyDown(event: KeyboardEvent) {
-            if (event.key.toLowerCase() === "enter" && event.metaKey) {
-                event.preventDefault();
-                debouncedRun()
-                return
-            }
-            // shortcut for editor focus
-            if (event.key.toLowerCase() === "escape") {
-                editor.focus();
-                return;
-            }
-            // shortcut for format
-            if (event.key.toLowerCase() === "b" && event.metaKey) {
-                event.preventDefault();
-                debouncedFormat()
-                return;
-            }
-            // shortcut for share
-            if (event.key.toLowerCase() === "e" && event.metaKey) {
-                event.preventDefault();
-                debouncedShare()
-                return;
-            }
-        }
+        const metaKey = isMac() ? "command" : "ctrl";
+        // global key bindings
+        Mousetrap.bind('esc', function() { editor.focus(); });
 
-        window.addEventListener('keydown', handleKeyDown);
+        // for run
+        Mousetrap.bind(`${metaKey}+return`, function() {
+            debouncedRun()
+        });
+        editor.commands.addCommand({
+            name: "runShortcut",
+            bindKey: {win: "Ctrl-Enter,", mac: "Command-Enter"},
+            exec: function () {
+                debouncedRun()
+            }
+        })
+
+        // for format
+        Mousetrap.bind(`${metaKey}+option+l`, function() {
+            debouncedFormat()
+            return false
+        });
+        editor.commands.addCommand({
+            name: "formatShortcut",
+            bindKey: {win: "Ctrl-Alt-L,", mac: "Command-Alt-L"},
+            exec: function () {
+                debouncedFormat()
+            }
+        })
+
+        // for share
+        Mousetrap.bind(`${metaKey}+shift+e`, function() {
+            debouncedShare()
+            return false
+        });
+        editor.commands.addCommand({
+            name: "shareShortcut",
+            bindKey: {win: "Ctrl-Shift-E,", mac: "Command-Shift-E"},
+            exec: function () {
+                debouncedShare()
+            }
+        })
     };
 
     // IMPORTANT: update the ref when the state changes
@@ -500,7 +515,8 @@ export default function Component(props: {
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
-                    <Actions isMobile={isMobile} isRunning={isRunning} debouncedFormat={debouncedFormat} debouncedRun={debouncedRun}
+                    <Actions isMobile={isMobile} isRunning={isRunning} debouncedFormat={debouncedFormat}
+                             debouncedRun={debouncedRun}
                              debouncedShare={debouncedShare} hasCode={codeRef.current.length > 0} lan={lan}/>
 
                     <Divider/>
