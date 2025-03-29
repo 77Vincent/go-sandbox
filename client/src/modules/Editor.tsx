@@ -418,6 +418,7 @@ export default function Component(props: {
     function onSandboxVersionChange(version: string) {
         localStorage.setItem(SANDBOX_VERSION_KEY, version);
         setSandboxVersion(version)
+        debouncedRun()
     }
 
     function onIsVerticalLayoutChange() {
