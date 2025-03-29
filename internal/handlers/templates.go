@@ -32,6 +32,7 @@ const (
 	bfsCase          = "bfs"
 	dfsCase          = "dfs"
 	lruCase          = "lru"
+	lcsCase          = "lcs"
 	// fun
 	clearScreenCase     = "clearScreen"
 	httpServerCase      = "httpServer"
@@ -79,6 +80,16 @@ func GetTemplate(c *gin.Context) {
 	case tickerCase:
 		output = basic.Ticker
 
+	// advanced
+	case clearScreenCase:
+		output = fun.ClearScreen
+	case httpServerCase:
+		output = fun.HttpServer
+	case gameOfLifeCase:
+		output = fun.GameOfLife
+	case concurrentPrimeCase:
+		output = fun.ConcurrentPrime
+
 	// problems
 	case fibonacciCase:
 		output = problems.Fibonacci
@@ -94,16 +105,8 @@ func GetTemplate(c *gin.Context) {
 		output = problems.Dfs
 	case lruCase:
 		output = problems.LRU
-
-	// fun
-	case clearScreenCase:
-		output = fun.ClearScreen
-	case httpServerCase:
-		output = fun.HttpServer
-	case gameOfLifeCase:
-		output = fun.GameOfLife
-	case concurrentPrimeCase:
-		output = fun.ConcurrentPrime
+	case lcsCase:
+		output = problems.LCS
 
 	// design patterns
 	case singletonCase:

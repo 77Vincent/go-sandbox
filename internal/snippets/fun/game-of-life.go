@@ -1,115 +1,88 @@
 package fun
 
-const GameOfLife = `// An implementation of Conway's Game of Life.
+const GameOfLife = `// Conway's Game of Life in Go
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"math/rand"
 	"time"
 )
 
-// Field represents a two-dimensional field of cells.
-type Field struct {
-	s    [][]bool
-	w, h int
-}
+const (
+	width  = 40
+	height = 20
+)
 
-// NewField returns an empty field of the specified width and height.
-func NewField(w, h int) *Field {
-	s := make([][]bool, h)
-	for i := range s {
-		s[i] = make([]bool, w)
+// printGrid outputs the grid to the console.
+func printGrid(grid [][]bool) {
+	for i := 0; i < height; i++ {
+		for j := 0; j < width; j++ {
+			if grid[i][j] {
+				fmt.Print("*")
+			} else {
+				fmt.Print(" ")
+			}
+		}
+		fmt.Println()
 	}
-	return &Field{s: s, w: w, h: h}
 }
 
-// Set sets the state of the specified cell to the given value.
-func (f *Field) Set(x, y int, b bool) {
-	f.s[y][x] = b
-}
-
-// Alive reports whether the specified cell is alive.
-// If the x or y coordinates are outside the field boundaries they are wrapped
-// toroidally. For instance, an x value of -1 is treated as width-1.
-func (f *Field) Alive(x, y int) bool {
-	x += f.w
-	x %= f.w
-	y += f.h
-	y %= f.h
-	return f.s[y][x]
-}
-
-// Next returns the state of the specified cell at the next time step.
-func (f *Field) Next(x, y int) bool {
-	// Count the adjacent cells that are alive.
-	alive := 0
-	for i := -1; i <= 1; i++ {
-		for j := -1; j <= 1; j++ {
-			if (j != 0 || i != 0) && f.Alive(x+i, y+j) {
-				alive++
+// countNeighbors counts live neighbors of cell (x, y).
+func countNeighbors(grid [][]bool, x, y int) int {
+	count := 0
+	for i := x - 1; i <= x+1; i++ {
+		for j := y - 1; j <= y+1; j++ {
+			if i == x && j == y {
+				continue
+			}
+			if i >= 0 && i < height && j >= 0 && j < width && grid[i][j] {
+				count++
 			}
 		}
 	}
-	// Return next state according to the game rules:
-	//   exactly 3 neighbors: on,
-	//   exactly 2 neighbors: maintain current state,
-	//   otherwise: off.
-	return alive == 3 || alive == 2 && f.Alive(x, y)
+	return count
 }
 
-// Life stores the state of a round of Conway's Game of Life.
-type Life struct {
-	a, b *Field
-	w, h int
-}
-
-// NewLife returns a new Life game state with a random initial state.
-func NewLife(w, h int) *Life {
-	a := NewField(w, h)
-	for i := 0; i < (w * h / 4); i++ {
-		a.Set(rand.Intn(w), rand.Intn(h), true)
+// nextGeneration computes the next state of the grid.
+func nextGeneration(grid [][]bool) [][]bool {
+	newGrid := make([][]bool, height)
+	for i := range newGrid {
+		newGrid[i] = make([]bool, width)
 	}
-	return &Life{
-		a: a, b: NewField(w, h),
-		w: w, h: h,
-	}
-}
-
-// Step advances the game by one instant, recomputing and updating all cells.
-func (l *Life) Step() {
-	// Update the state of the next field (b) from the current field (a).
-	for y := 0; y < l.h; y++ {
-		for x := 0; x < l.w; x++ {
-			l.b.Set(x, y, l.a.Next(x, y))
-		}
-	}
-	// Swap fields a and b.
-	l.a, l.b = l.b, l.a
-}
-
-// String returns the game board as a string.
-func (l *Life) String() string {
-	var buf bytes.Buffer
-	for y := 0; y < l.h; y++ {
-		for x := 0; x < l.w; x++ {
-			b := byte(' ')
-			if l.a.Alive(x, y) {
-				b = '*'
+	for i := 0; i < height; i++ {
+		for j := 0; j < width; j++ {
+			neighbors := countNeighbors(grid, i, j)
+			if grid[i][j] {
+				// Live cell survives with 2 or 3 neighbors.
+				newGrid[i][j] = (neighbors == 2 || neighbors == 3)
+			} else {
+				// Dead cell becomes live with exactly 3 neighbors.
+				newGrid[i][j] = (neighbors == 3)
 			}
-			buf.WriteByte(b)
 		}
-		buf.WriteByte('\n')
 	}
-	return buf.String()
+	return newGrid
 }
 
 func main() {
-	l := NewLife(40, 15)
-	for i := 0; i < 300; i++ {
-		l.Step()
-		fmt.Print("\x0c", l) // Clear screen and print field.
-		time.Sleep(time.Second / 30)
+	rand.Seed(time.Now().UnixNano())
+
+	// Initialize the grid with random live cells.
+	grid := make([][]bool, height)
+	for i := range grid {
+		grid[i] = make([]bool, width)
+		for j := 0; j < width; j++ {
+			grid[i][j] = rand.Float32() < 0.3
+		}
+	}
+
+	// Run for a fixed number of generations.
+	for gen := 0; gen < 100; gen++ {
+		fmt.Print("\x0c") // Clear screen.
+		fmt.Printf("Generation %d:\n", gen)
+		printGrid(grid)
+		grid = nextGeneration(grid)
+		time.Sleep(50 * time.Millisecond)
 	}
 }`

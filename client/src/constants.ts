@@ -189,6 +189,12 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         mutex: "Mutex",
         ticker: "Ticker",
     },
+    Advanced: {
+        clearScreen: "Clear screen",
+        httpServer: "HTTP server",
+        gameOfLife: "Game of Life",
+        concurrentPrime: "Concurrent prime",
+    },
     Problems: {
         fibonacci: "Fibonacci",
         quickSort: "Quick sort",
@@ -197,12 +203,7 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         bfs: "BFS",
         dfs: "DFS",
         lru: "LRU",
-    },
-    Fun: {
-        clearScreen: "Clear screen",
-        httpServer: "HTTP server",
-        gameOfLife: "Game of Life",
-        concurrentPrime: "Concurrent prime",
+        lcs: "LCS",
     },
     "Design Patterns": {
         singleton: "Singleton",
