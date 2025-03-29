@@ -39,7 +39,7 @@ import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import Actions from "./Actions.tsx";
-import TemplateSelector from "./TemplateSelector.tsx";
+import SnippetSelector from "./SnippetSelector.tsx";
 import VersionSelector from "./VersionSelector.tsx";
 import SandboxSelector from "./SandboxSelector.tsx";
 import {fetchSnippet, formatCode, getTemplate, shareSnippet} from "../api/api.ts";
@@ -293,7 +293,7 @@ export default function Component(props: {
     }, [setToastError]);
     const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
 
-    const getTemplateCallback = useCallback(async (id: string) => {
+    const getSnippetCallback = useCallback(async (id: string) => {
         try {
             setIsRunning(true)
             const code = await getTemplate(id);
@@ -305,7 +305,7 @@ export default function Component(props: {
             setIsRunning(false)
         }
     }, [setToastError]);
-    const debouncedGetTemplate = useRef(debounce(getTemplateCallback, RUN_DEBOUNCE_TIME)).current;
+    const debouncedGetSnippet = useRef(debounce(getSnippetCallback, RUN_DEBOUNCE_TIME)).current;
 
     // manage debounced run
     const runCallback = useCallback(async () => {
@@ -511,7 +511,7 @@ export default function Component(props: {
                             <>
                                 <Divider/>
                                 <SandboxSelector onSelect={onActiveSandboxChange} isRunning={isRunning} active={activeSandbox}/>
-                                <TemplateSelector isRunning={isRunning} onSelect={debouncedGetTemplate}/>
+                                <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
                                 <VersionSelector version={sandboxVersion} isRunning={isRunning}
                                                  onSelect={onSandboxVersionChange}/>
                             </>
