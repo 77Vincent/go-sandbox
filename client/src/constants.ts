@@ -190,7 +190,7 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         ticker: "Ticker",
     },
     Advanced: {
-        clearScreen: "Clear screen",
+        spinner: "Spinner",
         httpServer: "HTTP server",
         gameOfLife: "Game of Life",
         concurrentPrime: "Concurrent prime",

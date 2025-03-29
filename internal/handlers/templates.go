@@ -34,7 +34,7 @@ const (
 	lruCase          = "lru"
 	lcsCase          = "lcs"
 	// fun
-	clearScreenCase       = "clearScreen"
+	spinner               = "spinner"
 	httpServerCase        = "httpServer"
 	gameOfLifeCase        = "gameOfLife"
 	concurrentPrimeCase   = "concurrentPrime"
@@ -82,8 +82,8 @@ func GetTemplate(c *gin.Context) {
 		output = basic.Ticker
 
 	// advanced
-	case clearScreenCase:
-		output = fun.ClearScreen
+	case spinner:
+		output = fun.Spinner
 	case httpServerCase:
 		output = fun.HttpServer
 	case gameOfLifeCase:
