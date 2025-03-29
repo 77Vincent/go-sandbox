@@ -491,10 +491,10 @@ export default function Component(props: {
             <div
                 className="flex items-center justify-between border-b border-b-gray-300 py-0.5 pl-2 pr-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
-                    <img src={"/logo.svg"} alt={"logo"} className={"h-5 max-lg:hidden"}/>
+                    <img src={"/logo.svg"} alt={"logo"} className={"h-4 max-md:hidden"}/>
 
                     <div
-                        className="text-2xl font-semibold text-gray-800 dark:text-gray-200 max-lg:text-lg max-md:text-sm">{TITLE}</div>
+                        className="text-xl font-semibold text-gray-800 dark:text-gray-200 max-md:text-sm">{TITLE}</div>
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
