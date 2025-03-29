@@ -143,6 +143,7 @@ export default function Component(props: {
     function storeCode(code: string) {
         setCode(code);
         localStorage.setItem(activeSandboxRef.current, code);
+        codeRef.current = code;
     }
 
     // cursor status
