@@ -12,13 +12,14 @@ import {
 } from "react-icons/md";
 import {ImTextColor as TextMIcon} from "react-icons/im"
 
-import {ACTIVE_COLOR, FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, HOVER_CLASS, LANGUAGES, TRANSLATE} from "../constants.ts";
+import {ACTIVE_COLOR, FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, ICON_BUTTON_CLASS, LANGUAGES, TRANSLATE} from "../constants.ts";
 import {KeyBindings, languages} from "../types";
 import {ToggleSwitch} from "./Common.tsx";
 
 const activeClasses = "cursor-pointer hover:opacity-50";
 
 export default function Component(props: {
+    isMobile: boolean;
     disabled?: boolean;
     lan: languages;
     onLanguageChange: ChangeEventHandler<HTMLSelectElement>;
@@ -44,6 +45,7 @@ export default function Component(props: {
     onShowInvisible: () => void;
 }) {
     const {
+        isMobile,
         disabled,
         // for key bindings
         keyBindings,
@@ -84,8 +86,8 @@ export default function Component(props: {
         <Dropdown disabled={disabled} className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"}
                   arrowIcon={false} label={
             <SettingsIcon
-                size={19}
-                className={`${HOVER_CLASS} max-md:text-sm`}/>
+                size={isMobile ? 17 : 19}
+                className={`${ICON_BUTTON_CLASS} max-md:text-sm`}/>
         }>
             <Dropdown.Header>
                 <p className={"font-semibold"}>{TRANSLATE.settings[lan]}</p>

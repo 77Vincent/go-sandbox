@@ -7,7 +7,6 @@ import {HiOutlineInformationCircle as AboutIcon} from "react-icons/hi"
 
 import {
     AUTO_RUN_KEY,
-    CODE_CONTENT_KEY,
     CURSOR_COLUMN_KEY,
     CURSOR_ROW_KEY,
     CURSOR_UPDATE_DEBOUNCE_TIME,
@@ -30,20 +29,20 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    SANDBOX_VERSIONS,
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, HOVER_CLASS,
+    EDITOR_SIZE_MAX, TITLE, ICON_BUTTON_CLASS, ACTIVE_SANDBOX_KEY,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import Actions from "./Actions.tsx";
-import TemplateSelector from "./TemplateSelector.tsx";
+import SnippetSelector from "./SnippetSelector.tsx";
 import VersionSelector from "./VersionSelector.tsx";
-import {fetchSnippet, formatCode, getTemplate, shareSnippet} from "../api/api.ts";
+import SandboxSelector from "./SandboxSelector.tsx";
+import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-dawn";
@@ -69,10 +68,10 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, normalizeText
+    isMobileDevice, normalizeText, getActiveSandbox
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
-import {KeyBindings, languages, resultI} from "../types";
+import {KeyBindings, languages, mySandboxes, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
@@ -114,6 +113,7 @@ export default function Component(props: {
 
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
+    const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(getActiveSandbox());
 
     // error state
     const [errorRows, setErrorRows] = useState<IMarker[]>([]);
@@ -127,7 +127,7 @@ export default function Component(props: {
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
-    const [code, setCode] = useState<string>(getCodeContent());
+    const [code, setCode] = useState<string>(getCodeContent(activeSandbox));
 
     // result
     const [result, setResult] = useState<resultI[]>([]);
@@ -137,11 +137,12 @@ export default function Component(props: {
     // reference the latest state
     const codeRef = useRef(code);
     const sandboxVersionRef = useRef(sandboxVersion);
+    const activeSandboxRef = useRef(activeSandbox);
     const isRunningRef = useRef(isRunning);
 
     function storeCode(code: string) {
         setCode(code);
-        localStorage.setItem(CODE_CONTENT_KEY, code);
+        localStorage.setItem(activeSandboxRef.current, code);
         codeRef.current = code;
     }
 
@@ -219,11 +220,17 @@ export default function Component(props: {
 
     // IMPORTANT: update the ref when the state changes
     useEffect(() => {
+        codeRef.current = code
+    }, [code]);
+    useEffect(() => {
         isRunningRef.current = isRunning
     }, [isRunning]);
     useEffect(() => {
         sandboxVersionRef.current = sandboxVersion
     }, [sandboxVersion]);
+    useEffect(() => {
+        activeSandboxRef.current = activeSandbox
+    }, [activeSandbox]);
 
     function onChange(newCode: string = "") {
         const processedPrevCode = normalizeText(codeRef.current);
@@ -245,7 +252,7 @@ export default function Component(props: {
         return isRunningRef.current || !codeRef.current
     }
 
-    const shareCallback = useCallback(async () => {
+    const debouncedShare = useRef(debounce(useCallback(async () => {
         try {
             const id = await shareSnippet(codeRef.current);
             const url = `${location.origin}/snippets/${id}`
@@ -254,11 +261,9 @@ export default function Component(props: {
         } catch (e) {
             setToastError((e as Error).message)
         }
-    }, [setToastInfo, setToastError]);
-    const debouncedShare = useRef(debounce(shareCallback, RUN_DEBOUNCE_TIME)).current;
+    }, [setToastInfo, setToastError]), RUN_DEBOUNCE_TIME)).current;
 
-    // managed debounced format
-    const formatCallback = useCallback(async () => {
+    const debouncedFormat = useRef(debounce(useCallback(async () => {
         if (shouldAbort()) {
             return
         }
@@ -284,24 +289,8 @@ export default function Component(props: {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [setToastError]);
-    const debouncedFormat = useRef(debounce(formatCallback, RUN_DEBOUNCE_TIME)).current;
+    }, [setToastError]), RUN_DEBOUNCE_TIME)).current;
 
-    const getTemplateCallback = useCallback(async (id: string) => {
-        try {
-            setIsRunning(true)
-            const code = await getTemplate(id);
-            storeCode(code);
-            debouncedRun()
-            setIsRunning(false)
-        } catch (e) {
-            setToastError((e as Error).message)
-            setIsRunning(false)
-        }
-    }, [setToastError]);
-    const debouncedGetTemplate = useRef(debounce(getTemplateCallback, RUN_DEBOUNCE_TIME)).current;
-
-    // manage debounced run
     const runCallback = useCallback(async () => {
         if (shouldAbort()) {
             return
@@ -385,10 +374,21 @@ export default function Component(props: {
     const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
     const debouncedAutoRun = useRef(debounce(runCallback, AUTO_RUN_DEBOUNCE_TIME)).current;
 
-    // manage debounced cursor position update
-    const debouncedOnCursorChange = debounce(onCursorChange, CURSOR_UPDATE_DEBOUNCE_TIME);
+    const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
+        try {
+            setIsRunning(true)
+            const code = await getSnippet(id);
+            storeCode(code);
+            debouncedRun()
+            setIsRunning(false)
+        } catch (e) {
+            setToastError((e as Error).message)
+            setIsRunning(false)
+        }
+    }, [debouncedRun, setToastError]), RUN_DEBOUNCE_TIME)).current;
 
-    function onCursorChange(value: any) {
+    // manage debounced cursor position update
+    const debouncedOnCursorChange = debounce(function onCursorChange(value: any) {
         const row = value.cursor.row;
         const col = value.cursor.column;
 
@@ -401,7 +401,8 @@ export default function Component(props: {
 
         setRow(row);
         setColumn(col);
-    }
+    }, CURSOR_UPDATE_DEBOUNCE_TIME);
+
 
     function onLint() {
         localStorage.setItem(LINT_ON_KEY, JSON.stringify(!isLintOn));
@@ -418,12 +419,20 @@ export default function Component(props: {
     function onSandboxVersionChange(version: string) {
         localStorage.setItem(SANDBOX_VERSION_KEY, version);
         setSandboxVersion(version)
+        debouncedRun()
     }
 
     function onIsVerticalLayoutChange() {
         const value = !isLayoutVertical
         localStorage.setItem(IS_VERTICAL_LAYOUT_KEY, JSON.stringify(value));
         setIsLayoutVertical(value)
+    }
+
+    function onActiveSandboxChange(id: mySandboxes) {
+        localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
+        setActiveSandbox(id)
+        setCode(getCodeContent(id))
+        debouncedRun()
     }
 
     function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
@@ -445,7 +454,7 @@ export default function Component(props: {
 
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         // calculate the size
-        let size = 0
+        let size
         if (isLayoutVertical) {
             size = (refToElement.clientHeight / (window.innerHeight - 45)) * 100
         } else {
@@ -484,29 +493,33 @@ export default function Component(props: {
             <div
                 className="flex items-center justify-between border-b border-b-gray-300 py-0.5 pl-2 pr-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
-                    <img src={"/logo.svg"} alt={"logo"} className={"h-5 max-md:hidden"}/>
+                    <img src={"/logo.svg"} alt={"logo"} className={"h-4 max-md:hidden"}/>
 
-                    <div className="text-2xl font-semibold text-gray-800 dark:text-gray-200 max-md:text-base">{TITLE}</div>
+                    <div
+                        className="text-xl font-semibold text-gray-800 dark:text-gray-200 max-md:text-sm">{TITLE}</div>
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
-                    <Actions isRunning={isRunning} debouncedFormat={debouncedFormat} debouncedRun={debouncedRun}
+                    <Actions isMobile={isMobile} isRunning={isRunning} debouncedFormat={debouncedFormat} debouncedRun={debouncedRun}
                              debouncedShare={debouncedShare} hasCode={codeRef.current.length > 0} lan={lan}/>
 
+                    <Divider/>
                     {
-                        isMobile ? null :
-                            <>
-                                <Divider/>
-                                <TemplateSelector isRunning={isRunning} onSelect={debouncedGetTemplate}/>
-                                <VersionSelector version={SANDBOX_VERSIONS[sandboxVersion]} isRunning={isRunning}
-                                                 onSelect={onSandboxVersionChange}/>
-                            </>
+                        isMobile ? null : <SandboxSelector onSelect={onActiveSandboxChange} isRunning={isRunning}
+                                                           active={activeSandbox}/>
+                    }
+                    {/*only snippets is available in mobile too*/}
+                    <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
+                    {
+                        isMobile ? null : <VersionSelector version={sandboxVersion} isRunning={isRunning}
+                                                           onSelect={onSandboxVersionChange}/>
                     }
 
                     <div className={"flex items-center"}>
                         <Divider/>
 
                         <Settings
+                            isMobile={isMobile}
                             disabled={isRunning}
                             lan={lan}
                             fontSize={fontSize}
@@ -527,9 +540,9 @@ export default function Component(props: {
                         />
 
                         <AboutIcon
-                            size={24}
+                            size={isMobile ? 22 : 24}
                             onClick={() => setShowAbout(true)}
-                            className={`mx-1 ${HOVER_CLASS} max-md:mx-0 max-md:text-lg`}/>
+                            className={`mx-1 ${ICON_BUTTON_CLASS} max-md:mx-0 max-md:text-lg`}/>
 
                         <DarkThemeToggle/>
                     </div>

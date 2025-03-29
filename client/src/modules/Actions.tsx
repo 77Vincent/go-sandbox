@@ -3,7 +3,7 @@ import {FiPlay as RunICon} from "react-icons/fi";
 import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
 
-import {HOVER_CLASS, TRANSLATE} from "../constants.ts";
+import {ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
 import {isMac} from "../utils.ts";
 
@@ -13,6 +13,7 @@ const WIN = "win"
 const COMMON_CLASSES = "text-xs font-light";
 
 export default function Component(props: {
+    isMobile: boolean;
     debouncedRun: () => void;
     debouncedFormat: () => void;
     debouncedShare: () => void;
@@ -20,24 +21,25 @@ export default function Component(props: {
     isRunning: boolean;
     lan: languages;
 }) {
-    const {debouncedRun, debouncedFormat, debouncedShare, hasCode, isRunning, lan} = props;
+    const {isMobile, debouncedRun, debouncedFormat, debouncedShare, hasCode, isRunning, lan} = props;
     const metaKey = isMac() ? CMD : WIN;
+    const isEnabled = hasCode && !isRunning;
 
     return (
         <>
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.run[lan]}: ${metaKey} + enter`}>
-                <RunICon className={hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}
-                         onClick={hasCode && !isRunning ? debouncedRun : undefined} size={23}/>
+                <RunICon className={isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}
+                         onClick={isEnabled ? debouncedRun : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.format[lan]}: ${metaKey} + b`}>
-                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}`}
-                            onClick={hasCode && !isRunning ? debouncedFormat : undefined} size={23}/>
+                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}`}
+                            onClick={isEnabled ? debouncedFormat : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.share[lan]}: ${metaKey} + e`}>
-                <ShareIcon className={hasCode ? HOVER_CLASS : COLOR_INACTIVE}
-                           onClick={hasCode ? debouncedShare : undefined} size={22}/>
+                <ShareIcon className={isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}
+                           onClick={isEnabled ? debouncedShare : undefined} size={isMobile ? 20 : 22}/>
             </Tooltip>
         </>
     );

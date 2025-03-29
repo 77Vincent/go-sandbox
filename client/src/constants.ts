@@ -1,4 +1,4 @@
-import {KeyBindings, languages} from "./types";
+import {KeyBindings, languages, mySandboxes} from "./types";
 
 export const TITLE = "Go Sandbox";
 
@@ -8,7 +8,7 @@ export const EVENT_ERROR = "error";
 export const EVENT_CLEAR = "clear";
 export const EVENT_DONE = "done";
 
-export const FIRST_TIME_KEY = "firstTime";
+export const ACTIVE_SANDBOX_KEY = "activeSandbox";
 export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
 export const SANDBOX_VERSION_KEY = "sandboxVersion";
 export const KEY_BINDINGS_KEY = "keyBindings";
@@ -18,7 +18,6 @@ export const LINT_ON_KEY = "isLintOn";
 export const SHOW_INVISIBLE_KEY = "isShowInvisible";
 export const EDITOR_SIZE_KEY = "editorSize";
 export const FONT_SIZE_KEY = "fontSize";
-export const CODE_CONTENT_KEY = "codeContent";
 export const CURSOR_ROW_KEY = "cursorPositionRow";
 export const CURSOR_COLUMN_KEY = "cursorPositionColumn";
 
@@ -35,6 +34,7 @@ export const DEFAULT_LANGUAGE = "en";
 export const FONT_SIZE_L = 16;
 export const FONT_SIZE_M = 14;
 export const FONT_SIZE_S = 12;
+export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
 
 export const MOBILE_WIDTH = 768;
 export const DEFAULT_CURSOR_POSITION = 0;
@@ -43,7 +43,8 @@ export const CURSOR_UPDATE_DEBOUNCE_TIME = 100;
 export const RUN_DEBOUNCE_TIME = 100;
 export const AUTO_RUN_DEBOUNCE_TIME = 1250;
 export const ACTIVE_COLOR = "cyan"
-export const HOVER_CLASS = "cursor-pointer hover:text-cyan-500"
+export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
+export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
 export const ERROR_PARSING_REGEX = /main\.go:(\d+)/g;
@@ -173,7 +174,7 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
     },
 }
 
-export const TEMPLATES: Record<string, Record<string, string>> = {
+export const SNIPPETS: Record<string, Record<string, string>> = {
     Basic: {
         helloWorld: "Hello World",
         sleep: "Sleep",
@@ -212,4 +213,11 @@ export const TEMPLATES: Record<string, Record<string, string>> = {
         decorator: "Decorator",
         facade: "Facade",
     },
+}
+export const MY_SANDBOXES: Record<mySandboxes, string> = {
+    "my-sandbox-1": "Sandbox 1",
+    "my-sandbox-2": "Sandbox 2",
+    "my-sandbox-3": "Sandbox 3",
+    "my-sandbox-4": "Sandbox 4",
+    "my-sandbox-5": "Sandbox 5",
 }
