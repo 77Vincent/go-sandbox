@@ -194,8 +194,7 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         httpServer: "HTTP server",
         gameOfLife: "Game of Life",
         concurrentPrime: "Concurrent prime",
-    },
-    Problems: {
+        diningPhilosophers: "Dining philosophers",
         fibonacci: "Fibonacci",
         quickSort: "Quick sort",
         mergeSort: "Merge sort",
