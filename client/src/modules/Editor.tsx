@@ -498,25 +498,26 @@ export default function Component(props: {
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
-                    <Actions isRunning={isRunning} debouncedFormat={debouncedFormat} debouncedRun={debouncedRun}
+                    <Actions isMobile={isMobile} isRunning={isRunning} debouncedFormat={debouncedFormat} debouncedRun={debouncedRun}
                              debouncedShare={debouncedShare} hasCode={codeRef.current.length > 0} lan={lan}/>
 
+                    <Divider/>
                     {
-                        isMobile ? null :
-                            <>
-                                <Divider/>
-                                <SandboxSelector onSelect={onActiveSandboxChange} isRunning={isRunning}
-                                                 active={activeSandbox}/>
-                                <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
-                                <VersionSelector version={sandboxVersion} isRunning={isRunning}
-                                                 onSelect={onSandboxVersionChange}/>
-                            </>
+                        isMobile ? null : <SandboxSelector onSelect={onActiveSandboxChange} isRunning={isRunning}
+                                                           active={activeSandbox}/>
+                    }
+                    {/*only snippets is available in mobile too*/}
+                    <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
+                    {
+                        isMobile ? null : <VersionSelector version={sandboxVersion} isRunning={isRunning}
+                                                           onSelect={onSandboxVersionChange}/>
                     }
 
                     <div className={"flex items-center"}>
                         <Divider/>
 
                         <Settings
+                            isMobile={isMobile}
                             disabled={isRunning}
                             lan={lan}
                             fontSize={fontSize}
@@ -537,7 +538,7 @@ export default function Component(props: {
                         />
 
                         <AboutIcon
-                            size={24}
+                            size={isMobile ? 22 : 24}
                             onClick={() => setShowAbout(true)}
                             className={`mx-1 ${HOVER_CLASS} max-md:mx-0 max-md:text-lg`}/>
 

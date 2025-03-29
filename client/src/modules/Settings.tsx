@@ -19,6 +19,7 @@ import {ToggleSwitch} from "./Common.tsx";
 const activeClasses = "cursor-pointer hover:opacity-50";
 
 export default function Component(props: {
+    isMobile: boolean;
     disabled?: boolean;
     lan: languages;
     onLanguageChange: ChangeEventHandler<HTMLSelectElement>;
@@ -44,6 +45,7 @@ export default function Component(props: {
     onShowInvisible: () => void;
 }) {
     const {
+        isMobile,
         disabled,
         // for key bindings
         keyBindings,
@@ -84,7 +86,7 @@ export default function Component(props: {
         <Dropdown disabled={disabled} className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"}
                   arrowIcon={false} label={
             <SettingsIcon
-                size={19}
+                size={isMobile ? 17 : 19}
                 className={`${HOVER_CLASS} max-md:text-sm`}/>
         }>
             <Dropdown.Header>

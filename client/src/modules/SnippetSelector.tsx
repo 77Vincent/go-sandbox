@@ -42,7 +42,7 @@ export default function Component(props: {
                             <Dropdown.Header key={key}
                                              className={"pb-0 font-bold"}>{key}</Dropdown.Header>
 
-                            <Dropdown.Item disabled={isRunning} className={"mb-1 grid grid-cols-4 gap-1.5"}>
+                            <Dropdown.Item disabled={isRunning} className={"mb-1 grid grid-cols-4 gap-1.5 max-md:grid-cols-3"}>
                                 {
                                     Object.entries(SNIPPETS[key]).map(([subkey, value]) => {
                                         return (

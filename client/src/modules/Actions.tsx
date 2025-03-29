@@ -13,6 +13,7 @@ const WIN = "win"
 const COMMON_CLASSES = "text-xs font-light";
 
 export default function Component(props: {
+    isMobile: boolean;
     debouncedRun: () => void;
     debouncedFormat: () => void;
     debouncedShare: () => void;
@@ -20,24 +21,24 @@ export default function Component(props: {
     isRunning: boolean;
     lan: languages;
 }) {
-    const {debouncedRun, debouncedFormat, debouncedShare, hasCode, isRunning, lan} = props;
+    const {isMobile, debouncedRun, debouncedFormat, debouncedShare, hasCode, isRunning, lan} = props;
     const metaKey = isMac() ? CMD : WIN;
 
     return (
         <>
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.run[lan]}: ${metaKey} + enter`}>
                 <RunICon className={hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}
-                         onClick={hasCode && !isRunning ? debouncedRun : undefined} size={23}/>
+                         onClick={hasCode && !isRunning ? debouncedRun : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.format[lan]}: ${metaKey} + b`}>
                 <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${hasCode && !isRunning ? HOVER_CLASS : COLOR_INACTIVE}`}
-                            onClick={hasCode && !isRunning ? debouncedFormat : undefined} size={23}/>
+                            onClick={hasCode && !isRunning ? debouncedFormat : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.share[lan]}: ${metaKey} + e`}>
                 <ShareIcon className={hasCode ? HOVER_CLASS : COLOR_INACTIVE}
-                           onClick={hasCode ? debouncedShare : undefined} size={22}/>
+                           onClick={hasCode ? debouncedShare : undefined} size={isMobile ? 20 : 22}/>
             </Tooltip>
         </>
     );
