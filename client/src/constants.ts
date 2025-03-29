@@ -18,7 +18,6 @@ export const LINT_ON_KEY = "isLintOn";
 export const SHOW_INVISIBLE_KEY = "isShowInvisible";
 export const EDITOR_SIZE_KEY = "editorSize";
 export const FONT_SIZE_KEY = "fontSize";
-export const MY_SANDBOX_KEY = "my-sandbox-";
 export const CURSOR_ROW_KEY = "cursorPositionRow";
 export const CURSOR_COLUMN_KEY = "cursorPositionColumn";
 
