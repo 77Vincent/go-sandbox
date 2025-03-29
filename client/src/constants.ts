@@ -43,6 +43,7 @@ export const CURSOR_UPDATE_DEBOUNCE_TIME = 100;
 export const RUN_DEBOUNCE_TIME = 100;
 export const AUTO_RUN_DEBOUNCE_TIME = 1250;
 export const ACTIVE_COLOR = "cyan"
+export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
 export const HOVER_CLASS = "cursor-pointer hover:text-cyan-500"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded

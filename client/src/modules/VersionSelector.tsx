@@ -1,5 +1,5 @@
 import {Dropdown} from "flowbite-react";
-import {SANDBOX_VERSIONS} from "../constants.ts";
+import {SELECTED_COLOR_CLASS, SANDBOX_VERSIONS} from "../constants.ts";
 
 export default function Component(props: {
     isRunning: boolean,
@@ -9,10 +9,10 @@ export default function Component(props: {
     const {onSelect, isRunning, version} = props;
 
     return (
-        <Dropdown disabled={isRunning} color={"light"} size={"xs"} label={version}>
+        <Dropdown disabled={isRunning} color={"light"} size={"xs"} label={SANDBOX_VERSIONS[version]}>
             {
                 Object.keys(SANDBOX_VERSIONS).map((id) => (
-                    <Dropdown.Item key={id} onClick={() => onSelect(id)}>
+                    <Dropdown.Item className={version === id ? SELECTED_COLOR_CLASS : ""} key={id} onClick={() => onSelect(id)}>
                         {SANDBOX_VERSIONS[id]}
                     </Dropdown.Item>
                 ))

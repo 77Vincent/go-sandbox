@@ -29,7 +29,6 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    SANDBOX_VERSIONS,
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
@@ -513,7 +512,7 @@ export default function Component(props: {
                                 <Divider/>
                                 <SandboxSelector onSelect={onActiveSandboxChange} isRunning={isRunning} active={activeSandbox}/>
                                 <TemplateSelector isRunning={isRunning} onSelect={debouncedGetTemplate}/>
-                                <VersionSelector version={SANDBOX_VERSIONS[sandboxVersion]} isRunning={isRunning}
+                                <VersionSelector version={sandboxVersion} isRunning={isRunning}
                                                  onSelect={onSandboxVersionChange}/>
                             </>
                     }
