@@ -1,6 +1,8 @@
 package fun
 
-const ClearScreen = `package main
+const ClearScreen = `// An example of a progress bar in Go.
+// From the official Go Playground: https://play.golang.org/
+package main
 
 import (
 	"fmt"
