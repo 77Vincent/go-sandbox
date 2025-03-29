@@ -193,7 +193,23 @@ export default function Component(props: {
 
         const metaKey = isMac() ? "command" : "ctrl";
         // global key bindings
-        Mousetrap.bind('esc', function() { editor.focus(); });
+        Mousetrap.bind('esc', function() {
+            editor.focus();
+            return false
+        });
+
+        // for settings
+        Mousetrap.bind(`${metaKey}+,`, function() {
+            setShowSettings(true);
+            return false
+        });
+        editor.commands.addCommand({
+            name: "settingsShortcut",
+            bindKey: {win: "Ctrl-,", mac: "Command-,"},
+            exec: function () {
+                setShowSettings(true);
+            }
+        })
 
         // for run
         Mousetrap.bind(`${metaKey}+return`, function() {
