@@ -22,7 +22,7 @@ function Item(props: {
 
 export default function Component(props: {
     isRunning: boolean,
-    onSelect: (id: string) => void
+    onSelect: (id: string) => void,
 }) {
     const {onSelect, isRunning} = props;
 
@@ -35,21 +35,6 @@ export default function Component(props: {
 
     return (
         <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"} label={buttonLabel}>
-            <Dropdown.Header className={"flex items-center justify-between pb-0 font-bold"}>
-                My Sandbox
-                <span className={"text-xs font-light text-gray-500"}>Up to 4 local sandboxes</span>
-            </Dropdown.Header>
-
-            <Dropdown.Item disabled={isRunning} className={"mb-1 grid grid-cols-4 gap-1.5"}>
-                {
-                    Array.from({length: 4}).map((_, index) => {
-                        const i = index + 1;
-                        const subkey = `my-sandbox-${i}`;
-                        return <Item key={index} id={subkey} value={`Sandbox ${i}`} onClick={onClick(subkey)}/>
-                    })
-                }
-            </Dropdown.Item>
-
             {
                 Object.keys(TEMPLATES).map(key => {
                     return (
