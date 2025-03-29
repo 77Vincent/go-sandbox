@@ -570,7 +570,7 @@ export default function Component(props: {
 
                     <div className={"flex items-center"}>
                         <Divider/>
-                        <Info isMobile={isMobile} setShowAbout={setShowAbout} setShowSettings={setShowSettings}/>
+                        <Info lan={lan} isMobile={isMobile} setShowAbout={setShowAbout} setShowSettings={setShowSettings}/>
                     </div>
                 </div>
             </div>

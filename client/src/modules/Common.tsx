@@ -5,6 +5,8 @@ import {
     HiInformationCircle as InfoIcon,
 } from "react-icons/hi";
 import {toastType} from "../types";
+import {isMac} from "../utils.ts";
+import {MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
 
 export function Wrapper(props: {
     children: ReactNode,
@@ -18,6 +20,10 @@ export function Wrapper(props: {
             {children}
         </div>
     )
+}
+
+export function MetaKey() {
+    return isMac() ? <MdKeyboardCommandKey/> : <MdKeyboardControlKey/>;
 }
 
 export function Divider(props: {

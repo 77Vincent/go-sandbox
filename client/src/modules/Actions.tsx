@@ -2,12 +2,12 @@ import {Tooltip} from "flowbite-react";
 import {FiPlay as RunICon} from "react-icons/fi";
 import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
-import {MdKeyboardCommandKey, MdKeyboardControlKey, MdKeyboardReturn, MdKeyboardOptionKey} from "react-icons/md";
+import {MdKeyboardReturn, MdKeyboardOptionKey} from "react-icons/md";
 
 
 import {ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
-import {isMac} from "../utils.ts";
+import {MetaKey} from "./Common.tsx";
 
 const COLOR_INACTIVE = "text-gray-300 dark:text-gray-600";
 const COMMON_CLASSES = "text-xs font-light";
@@ -22,7 +22,6 @@ export default function Component(props: {
     lan: languages;
 }) {
     const {isMobile, debouncedRun, debouncedFormat, debouncedShare, hasCode, isRunning, lan} = props;
-    const metaKey = isMac() ? <MdKeyboardCommandKey/> : <MdKeyboardControlKey/>;
     const isEnabled = hasCode && !isRunning;
 
     return (
@@ -31,7 +30,7 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1"}>
                     {TRANSLATE.run[lan]}
                     <div className={"flex items-center"}>
-                        {metaKey} <MdKeyboardReturn/>
+                        {MetaKey} <MdKeyboardReturn/>
                     </div>
                 </div>
             }>
@@ -43,7 +42,7 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1"}>
                     {TRANSLATE.format[lan]}
                     <div className={"flex items-center"}>
-                        {metaKey} <MdKeyboardOptionKey/> L
+                        {MetaKey} <MdKeyboardOptionKey/> L
                     </div>
                 </div>
             }>
@@ -55,7 +54,7 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1"}>
                     {TRANSLATE.share[lan]}
                     <div className={"flex items-center"}>
-                        {metaKey} <MdKeyboardOptionKey/> E
+                        {MetaKey} <MdKeyboardOptionKey/> E
                     </div>
                 </div>
             }>
