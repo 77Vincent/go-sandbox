@@ -21,7 +21,7 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1"}>
                     {TRANSLATE.settings[lan]}
                     <div className={"flex items-center"}>
-                        {MetaKey},
+                        <MetaKey/>,
                     </div>
                 </div>
             }>
