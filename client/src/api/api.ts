@@ -1,6 +1,6 @@
-import {ExecuteResultI} from "../types";
-import {HTTP_INTERNAL_ERROR, HTTP_NOT_FOUND} from "../constants.ts";
-import {getUrl} from "../utils.ts";
+import {ExecuteResultI, mySandboxes} from "../types";
+import {CODE_CONTENT_KEY, HTTP_INTERNAL_ERROR, HTTP_NOT_FOUND} from "../constants.ts";
+import {getCodeContent, getUrl} from "../utils.ts";
 
 export async function healthCheck() {
     const res = await fetch(getUrl("/status"));
@@ -11,7 +11,12 @@ export async function healthCheck() {
     return await res.json();
 }
 
-export async function getSnippet(id: string): Promise<string> {
+export async function getTemplate(id: string): Promise<string> {
+    // for loading local sandboxes
+    if (id.startsWith(CODE_CONTENT_KEY)) {
+        return getCodeContent(id as mySandboxes);
+    }
+
     const res = await fetch(getUrl(`/templates/${id}`));
     if (res.status >= HTTP_INTERNAL_ERROR) {
         const {error} = await res.json();
