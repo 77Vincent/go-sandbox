@@ -290,20 +290,6 @@ export default function Component(props: {
         }
     }, [setToastError]), RUN_DEBOUNCE_TIME)).current;
 
-    const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
-        try {
-            setIsRunning(true)
-            const code = await getSnippet(id);
-            storeCode(code);
-            debouncedRun()
-            setIsRunning(false)
-        } catch (e) {
-            setToastError((e as Error).message)
-            setIsRunning(false)
-        }
-    }, [setToastError]), RUN_DEBOUNCE_TIME)).current;
-
-    // manage debounced run
     const runCallback = useCallback(async () => {
         if (shouldAbort()) {
             return
@@ -387,6 +373,19 @@ export default function Component(props: {
     const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
     const debouncedAutoRun = useRef(debounce(runCallback, AUTO_RUN_DEBOUNCE_TIME)).current;
 
+    const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
+        try {
+            setIsRunning(true)
+            const code = await getSnippet(id);
+            storeCode(code);
+            debouncedRun()
+            setIsRunning(false)
+        } catch (e) {
+            setToastError((e as Error).message)
+            setIsRunning(false)
+        }
+    }, [debouncedRun, setToastError]), RUN_DEBOUNCE_TIME)).current;
+
     // manage debounced cursor position update
     const debouncedOnCursorChange = debounce(function onCursorChange(value: any) {
         const row = value.cursor.row;
@@ -453,7 +452,7 @@ export default function Component(props: {
 
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         // calculate the size
-        let size = 0
+        let size
         if (isLayoutVertical) {
             size = (refToElement.clientHeight / (window.innerHeight - 45)) * 100
         } else {
