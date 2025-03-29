@@ -7,7 +7,6 @@ import {HiOutlineInformationCircle as AboutIcon} from "react-icons/hi"
 
 import {
     AUTO_RUN_KEY,
-    MY_SANDBOX_KEY,
     CURSOR_COLUMN_KEY,
     CURSOR_ROW_KEY,
     CURSOR_UPDATE_DEBOUNCE_TIME,
@@ -43,6 +42,7 @@ import Terminal from "./Terminal.tsx"
 import Actions from "./Actions.tsx";
 import TemplateSelector from "./TemplateSelector.tsx";
 import VersionSelector from "./VersionSelector.tsx";
+import SandboxSelector from "./SandboxSelector.tsx";
 import {fetchSnippet, formatCode, getTemplate, shareSnippet} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
@@ -138,12 +138,12 @@ export default function Component(props: {
     // reference the latest state
     const codeRef = useRef(code);
     const sandboxVersionRef = useRef(sandboxVersion);
+    const activeSandboxRef = useRef(activeSandbox);
     const isRunningRef = useRef(isRunning);
 
     function storeCode(code: string) {
         setCode(code);
-        localStorage.setItem(activeSandbox, code);
-        codeRef.current = code;
+        localStorage.setItem(activeSandboxRef.current, code);
     }
 
     // cursor status
@@ -220,11 +220,17 @@ export default function Component(props: {
 
     // IMPORTANT: update the ref when the state changes
     useEffect(() => {
+        codeRef.current = code
+    }, [code]);
+    useEffect(() => {
         isRunningRef.current = isRunning
     }, [isRunning]);
     useEffect(() => {
         sandboxVersionRef.current = sandboxVersion
     }, [sandboxVersion]);
+    useEffect(() => {
+        activeSandboxRef.current = activeSandbox
+    }, [activeSandbox]);
 
     function onChange(newCode: string = "") {
         const processedPrevCode = normalizeText(codeRef.current);
@@ -291,12 +297,6 @@ export default function Component(props: {
     const getTemplateCallback = useCallback(async (id: string) => {
         try {
             setIsRunning(true)
-
-            // for loading local sandbox
-            if (id.startsWith(MY_SANDBOX_KEY)) {
-                onActiveSandboxChange(id as mySandboxes)
-            }
-
             const code = await getTemplate(id);
             storeCode(code);
             debouncedRun()
@@ -433,9 +433,11 @@ export default function Component(props: {
         setIsLayoutVertical(value)
     }
 
-    function onActiveSandboxChange(sandbox: mySandboxes) {
-        localStorage.setItem(ACTIVE_SANDBOX_KEY, sandbox);
-        setActiveSandbox(sandbox)
+    function onActiveSandboxChange(id: mySandboxes) {
+        localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
+        setActiveSandbox(id)
+        setCode(getCodeContent(id))
+        debouncedRun()
     }
 
     function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
@@ -509,6 +511,7 @@ export default function Component(props: {
                         isMobile ? null :
                             <>
                                 <Divider/>
+                                <SandboxSelector onSelect={onActiveSandboxChange} isRunning={isRunning} active={activeSandbox}/>
                                 <TemplateSelector isRunning={isRunning} onSelect={debouncedGetTemplate}/>
                                 <VersionSelector version={SANDBOX_VERSIONS[sandboxVersion]} isRunning={isRunning}
                                                  onSelect={onSandboxVersionChange}/>
