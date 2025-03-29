@@ -1,7 +1,6 @@
 import {
     AUTO_RUN_KEY,
     BUILD_ERROR_PARSING_REGEX,
-    CODE_CONTENT_KEY,
     CURSOR_COLUMN_KEY,
     CURSOR_ROW_KEY,
     DEFAULT_AUTO_RUN,
@@ -26,15 +25,15 @@ import {
     MOBILE_WIDTH,
     HELLO_WORLD, ACTIVE_SANDBOX_KEY, DEFAULT_ACTIVE_SANDBOX
 } from "./constants.ts";
-import {KeyBindings, languages} from "./types";
+import {KeyBindings, languages, mySandboxes} from "./types";
 import {IMarker} from "react-ace";
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
 }
 
-export function getActiveSandbox(): number {
-    return Number(localStorage.getItem(ACTIVE_SANDBOX_KEY)) || DEFAULT_ACTIVE_SANDBOX
+export function getActiveSandbox(): mySandboxes {
+    return localStorage.getItem(ACTIVE_SANDBOX_KEY) as mySandboxes || DEFAULT_ACTIVE_SANDBOX
 }
 
 export function getLanguage(): languages {
@@ -49,8 +48,8 @@ export function getCursorColumn(): number {
     return Number(localStorage.getItem(CURSOR_COLUMN_KEY)) || DEFAULT_CURSOR_POSITION
 }
 
-export function getCodeContent(tab: number): string {
-    return localStorage.getItem(CODE_CONTENT_KEY+String(tab)) || HELLO_WORLD
+export function getCodeContent(sandbox: mySandboxes): string {
+    return localStorage.getItem(sandbox) || HELLO_WORLD
 }
 
 export function getKeyBindings(): KeyBindings {

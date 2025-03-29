@@ -18,7 +18,7 @@ export const LINT_ON_KEY = "isLintOn";
 export const SHOW_INVISIBLE_KEY = "isShowInvisible";
 export const EDITOR_SIZE_KEY = "editorSize";
 export const FONT_SIZE_KEY = "fontSize";
-export const CODE_CONTENT_KEY = "codeContent";
+export const CODE_CONTENT_KEY = "my-sandbox-";
 export const CURSOR_ROW_KEY = "cursorPositionRow";
 export const CURSOR_COLUMN_KEY = "cursorPositionColumn";
 
@@ -35,7 +35,7 @@ export const DEFAULT_LANGUAGE = "en";
 export const FONT_SIZE_L = 16;
 export const FONT_SIZE_M = 14;
 export const FONT_SIZE_S = 12;
-export const DEFAULT_ACTIVE_SANDBOX = 1;
+export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
 
 export const MOBILE_WIDTH = 768;
 export const DEFAULT_CURSOR_POSITION = 0;

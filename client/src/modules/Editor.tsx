@@ -34,7 +34,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, HOVER_CLASS,
+    EDITOR_SIZE_MAX, TITLE, HOVER_CLASS, ACTIVE_SANDBOX_KEY,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -69,10 +69,10 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, normalizeText
+    isMobileDevice, normalizeText, getActiveSandbox
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
-import {KeyBindings, languages, resultI} from "../types";
+import {KeyBindings, languages, mySandboxes, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
@@ -114,6 +114,7 @@ export default function Component(props: {
 
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
+    const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(getActiveSandbox());
 
     // error state
     const [errorRows, setErrorRows] = useState<IMarker[]>([]);
@@ -127,7 +128,7 @@ export default function Component(props: {
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
-    const [code, setCode] = useState<string>(getCodeContent());
+    const [code, setCode] = useState<string>(getCodeContent(activeSandbox));
 
     // result
     const [result, setResult] = useState<resultI[]>([]);
@@ -141,7 +142,7 @@ export default function Component(props: {
 
     function storeCode(code: string) {
         setCode(code);
-        localStorage.setItem(CODE_CONTENT_KEY, code);
+        localStorage.setItem(activeSandbox, code);
         codeRef.current = code;
     }
 
@@ -290,6 +291,12 @@ export default function Component(props: {
     const getTemplateCallback = useCallback(async (id: string) => {
         try {
             setIsRunning(true)
+
+            // for loading local sandbox
+            if (id.startsWith(CODE_CONTENT_KEY)) {
+                onActiveSandboxChange(id as mySandboxes)
+            }
+
             const code = await getTemplate(id);
             storeCode(code);
             debouncedRun()
@@ -424,6 +431,11 @@ export default function Component(props: {
         const value = !isLayoutVertical
         localStorage.setItem(IS_VERTICAL_LAYOUT_KEY, JSON.stringify(value));
         setIsLayoutVertical(value)
+    }
+
+    function onActiveSandboxChange(sandbox: mySandboxes) {
+        localStorage.setItem(ACTIVE_SANDBOX_KEY, sandbox);
+        setActiveSandbox(sandbox)
     }
 
     function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
