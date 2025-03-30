@@ -42,10 +42,9 @@ export default function Component(props: {
                 <p>
                     This project is inspired by the official
                     <a className={"mx-1 text-cyan-600"} href={"https://play.golang.org/"} target={"_blank"}>Go
-                        Playground</a>
-                    and another similar project
-                    <a className={"mx-1 text-cyan-600"} href={"https://goplay.tools/"} target={"_blank"}>Better Go
-                        Playground</a>.
+                        Playground</a> and <a className={"mx-1 text-cyan-600"} href={"https://goplay.tools/"}
+                                              target={"_blank"}>Better Go
+                    Playground</a>.
                 </p>
 
                 <Divider horizontal={true}/>
