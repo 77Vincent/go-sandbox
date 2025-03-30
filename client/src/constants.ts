@@ -237,3 +237,4 @@ export const MY_SANDBOXES: Record<mySandboxes, string> = {
     "my-sandbox-4": "Sandbox 4",
     "my-sandbox-5": "Sandbox 5",
 }
+export const BUTTON_INACTIVE = "cursor-not-allowed text-gray-300 dark:text-gray-600";

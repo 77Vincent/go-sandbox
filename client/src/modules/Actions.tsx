@@ -2,14 +2,13 @@ import {Tooltip} from "flowbite-react";
 import {FiPlay as RunICon} from "react-icons/fi";
 import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
-import {MdKeyboardReturn, MdKeyboardOptionKey} from "react-icons/md";
+import {MdKeyboardOptionKey, MdKeyboardReturn} from "react-icons/md";
 
 
-import {ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
+import {BUTTON_INACTIVE, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
 import {MetaKey} from "./Common.tsx";
 
-const COLOR_INACTIVE = "text-gray-300 dark:text-gray-600";
 const COMMON_CLASSES = "text-xs font-light";
 
 export default function Component(props: {
@@ -34,7 +33,7 @@ export default function Component(props: {
                     </div>
                 </div>
             }>
-                <RunICon className={isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}
+                <RunICon className={isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
                          onClick={isEnabled ? debouncedRun : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
@@ -46,7 +45,7 @@ export default function Component(props: {
                     </div>
                 </div>
             }>
-                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}`}
+                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}`}
                             onClick={isEnabled ? debouncedFormat : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
@@ -58,7 +57,7 @@ export default function Component(props: {
                     </div>
                 </div>
             }>
-                <ShareIcon className={isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}
+                <ShareIcon className={isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
                            onClick={isEnabled ? debouncedShare : undefined} size={isMobile ? 20 : 22}/>
             </Tooltip>
         </>
