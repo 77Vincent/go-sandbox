@@ -223,6 +223,13 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         facade: "Facade",
     },
 }
+
+export const keyBindingsMap: Record<KeyBindings, string> = {
+    vim: "Vim",
+    emacs: "Emacs",
+    "": "None",
+}
+
 export const MY_SANDBOXES: Record<mySandboxes, string> = {
     "my-sandbox-1": "Sandbox 1",
     "my-sandbox-2": "Sandbox 2",

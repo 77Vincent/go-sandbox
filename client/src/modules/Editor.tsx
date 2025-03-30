@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState, ChangeEvent, useEffect, ReactNode} from "react";
+import {useCallback, useRef, useState, useEffect, ReactNode} from "react";
 import {useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
@@ -441,9 +441,7 @@ export default function Component(props: {
         setIsLintOn(!isLintOn);
     }
 
-    function onKeyBindingsChange(event: ChangeEvent<HTMLSelectElement>) {
-        event.stopPropagation();
-        const value = event.target.value as KeyBindings
+    function onKeyBindingsChange(value: KeyBindings) {
         localStorage.setItem(KEY_BINDINGS_KEY, value);
         setKeyBindings(value)
     }
@@ -467,9 +465,7 @@ export default function Component(props: {
         debouncedRun()
     }
 
-    function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
-        event.stopPropagation();
-        const value = event.target.value as languages
+    function onLanguageChange(value: languages) {
         localStorage.setItem(LANGUAGE_KEY, value);
         setLan(value)
     }

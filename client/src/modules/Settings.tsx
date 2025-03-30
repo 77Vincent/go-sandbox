@@ -1,5 +1,5 @@
-import {DarkThemeToggle, Label, Modal, Select, useThemeMode} from "flowbite-react";
-import {ChangeEventHandler, MouseEvent, ReactNode} from "react";
+import {DarkThemeToggle, Dropdown, Label, Modal, useThemeMode} from "flowbite-react";
+import {ReactNode} from "react";
 
 import {
     VscLayoutSidebarRight as LayoutHorizontalIcon,
@@ -15,7 +15,7 @@ import {
     ACTIVE_COLOR,
     FONT_SIZE_L,
     FONT_SIZE_M,
-    FONT_SIZE_S,
+    FONT_SIZE_S, keyBindingsMap,
     LANGUAGES,
     TRANSLATE
 } from "../constants.ts";
@@ -45,7 +45,7 @@ export default function Component(props: {
     setShow: (show: boolean) => void;
 
     lan: languages;
-    onLanguageChange: ChangeEventHandler<HTMLSelectElement>;
+    onLanguageChange: (id: languages) => void;
     // for layout
     isVerticalLayout: boolean;
     setIsVerticalLayout: () => void;
@@ -56,7 +56,7 @@ export default function Component(props: {
     onFontM: () => void;
     // for keyBindings
     keyBindings: KeyBindings;
-    onKeyBindingsChange: ChangeEventHandler<HTMLSelectElement>;
+    onKeyBindingsChange: (id: KeyBindings) => void;
     // for lint
     isLintOn: boolean;
     onLint: () => void;
@@ -93,9 +93,22 @@ export default function Component(props: {
         // for modal
         show, setShow,
     } = props;
-    const handleSelectClick = (e: MouseEvent<HTMLSelectElement>) => {
-        e.stopPropagation();
-    };
+
+    function onKeyBinding(id: KeyBindings) {
+        return () => {
+            if (id !== keyBindings) {
+                onKeyBindingsChange(id);
+            }
+        }
+    }
+
+    function onLanguage(id: languages) {
+        return () => {
+            if (id !== lan) {
+                onLanguageChange(id);
+            }
+        }
+    }
 
     return (
         <>
@@ -153,25 +166,25 @@ export default function Component(props: {
                     <Grid>
                         <Row>
                             <Label htmlFor="keyBindings" value={TRANSLATE.keyBindings[lan]}/>
-                            <Select defaultValue={keyBindings} onChange={onKeyBindingsChange}
-                                    onClick={handleSelectClick}
-                                    sizing={"sm"} id="keyBindings">
-                                <option value={""}>None</option>
-                                <option value={"vim"}>VIM</option>
-                                <option value={"emacs"}>Emacs</option>
-                            </Select>
+                            <Dropdown color={"light"} label={keyBindingsMap[keyBindings]} size={"xs"} id="keyBindings">
+                                <Dropdown.Item value={""} onClick={onKeyBinding("")}>None</Dropdown.Item>
+                                <Dropdown.Item value={"vim"} onClick={onKeyBinding("vim")}>VIM</Dropdown.Item>
+                                <Dropdown.Item value={"emacs"} onClick={onKeyBinding("emacs")}>Emacs</Dropdown.Item>
+                            </Dropdown>
                         </Row>
 
                         <Row>
                             <Label htmlFor="language" value={TRANSLATE.language[lan]}/>
-                            <Select defaultValue={lan} onChange={onLanguageChange} onClick={handleSelectClick}
-                                    sizing={"sm"} id="language">
+                            <Dropdown color={"light"} label={LANGUAGES.filter((v) => v.value === lan)[0].label}
+                                      size={"xs"} id="keyBindings">
                                 {
                                     LANGUAGES.map(({value, label}) => {
-                                        return <option key={value} value={value}>{label}</option>
+                                        return <Dropdown.Item key={value} onClick={onLanguage(value)}>
+                                            {label}
+                                        </Dropdown.Item>
                                     })
                                 }
-                            </Select>
+                            </Dropdown>
                         </Row>
                     </Grid>
 
