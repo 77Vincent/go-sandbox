@@ -636,6 +636,6 @@ export default function Component(props: {
                 />
             </div>
 
-            <ProgressBar show={isRunning} className={"absolute top-10"}/>
+            <ProgressBar show={isRunning} className={"absolute top-10 z-10"}/>
         </div>);
 }
