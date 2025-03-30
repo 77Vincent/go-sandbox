@@ -1,8 +1,7 @@
-import {Dropdown, Label, Select} from "flowbite-react";
-import {ChangeEventHandler, MouseEvent} from "react";
+import {DarkThemeToggle, Dropdown, Label, Modal, useThemeMode} from "flowbite-react";
+import {ReactNode} from "react";
 
 import {
-    VscSettingsGear as SettingsIcon,
     VscLayoutSidebarRight as LayoutHorizontalIcon,
     VscLayoutPanel as LayoutVerticalIcon,
 } from "react-icons/vsc";
@@ -12,17 +11,41 @@ import {
 } from "react-icons/md";
 import {ImTextColor as TextMIcon} from "react-icons/im"
 
-import {ACTIVE_COLOR, FONT_SIZE_L, FONT_SIZE_M, FONT_SIZE_S, ICON_BUTTON_CLASS, LANGUAGES, TRANSLATE} from "../constants.ts";
+import {
+    ACTIVE_COLOR,
+    FONT_SIZE_L,
+    FONT_SIZE_M,
+    FONT_SIZE_S, keyBindingsMap,
+    LANGUAGES,
+    TRANSLATE
+} from "../constants.ts";
 import {KeyBindings, languages} from "../types";
-import {ToggleSwitch} from "./Common.tsx";
+import {Divider, ToggleSwitch} from "./Common.tsx";
 
 const activeClasses = "cursor-pointer hover:opacity-50";
 
+function Grid(props: {
+    children: ReactNode;
+}) {
+    return <div className={"grid grid-cols-2 gap-x-10 gap-y-4"}>
+        {props.children}
+    </div>
+}
+
+function Row(props: {
+    children: ReactNode;
+}) {
+    return <div className={"flex items-center justify-between"}>
+        {props.children}
+    </div>
+}
+
 export default function Component(props: {
-    isMobile: boolean;
-    disabled?: boolean;
+    show: boolean;
+    setShow: (show: boolean) => void;
+
     lan: languages;
-    onLanguageChange: ChangeEventHandler<HTMLSelectElement>;
+    onLanguageChange: (id: languages) => void;
     // for layout
     isVerticalLayout: boolean;
     setIsVerticalLayout: () => void;
@@ -33,7 +56,7 @@ export default function Component(props: {
     onFontM: () => void;
     // for keyBindings
     keyBindings: KeyBindings;
-    onKeyBindingsChange: ChangeEventHandler<HTMLSelectElement>;
+    onKeyBindingsChange: (id: KeyBindings) => void;
     // for lint
     isLintOn: boolean;
     onLint: () => void;
@@ -44,123 +67,137 @@ export default function Component(props: {
     isShowInvisible: boolean;
     onShowInvisible: () => void;
 }) {
+    const {mode} = useThemeMode()
     const {
-        isMobile,
-        disabled,
         // for key bindings
-        keyBindings,
-        onKeyBindingsChange,
+        keyBindings, onKeyBindingsChange,
 
         // for language
-        lan,
-        onLanguageChange,
+        lan, onLanguageChange,
 
         // for layout
-        isVerticalLayout,
-        setIsVerticalLayout,
+        isVerticalLayout, setIsVerticalLayout,
 
         // for font size
-        fontSize,
-        onFontL,
-        onFontS,
-        onFontM,
+        fontSize, onFontL, onFontS, onFontM,
 
         // for lint
-        isLintOn,
-        onLint,
+        isLintOn, onLint,
 
         // for auto run
-        isAutoRun,
-        onAutoRun,
+        isAutoRun, onAutoRun,
 
         // for show invisible characters
-        isShowInvisible,
-        onShowInvisible,
+        isShowInvisible, onShowInvisible,
+
+        // for modal
+        show, setShow,
     } = props;
-    const layoutClasses = "cursor-auto flex justify-between items-center gap-8";
-    const handleSelectClick = (e: MouseEvent<HTMLSelectElement>) => {
-        e.stopPropagation();
-    };
+
+    function onKeyBinding(id: KeyBindings) {
+        return () => {
+            if (id !== keyBindings) {
+                onKeyBindingsChange(id);
+            }
+        }
+    }
+
+    function onLanguage(id: languages) {
+        return () => {
+            if (id !== lan) {
+                onLanguageChange(id);
+            }
+        }
+    }
 
     return (
-        <Dropdown disabled={disabled} className={"z-20"} size={"xs"} dismissOnClick={false} color={"auto"}
-                  arrowIcon={false} label={
-            <SettingsIcon
-                size={isMobile ? 17 : 19}
-                className={`${ICON_BUTTON_CLASS} max-md:text-sm`}/>
-        }>
-            <Dropdown.Header>
-                <p className={"font-semibold"}>{TRANSLATE.settings[lan]}</p>
-            </Dropdown.Header>
+        <>
+            <Modal dismissible show={show} onClose={() => setShow(false)}>
+                <Modal.Header>
+                    {TRANSLATE.settings[lan]}
+                </Modal.Header>
 
-            <Dropdown.Item className={layoutClasses}>
-                <span>{TRANSLATE.autoRun[lan]}</span>
+                <Modal.Body>
+                    <Grid>
+                        <Row>
+                            <Label value={TRANSLATE.autoRun[lan]}/>
+                            <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
+                        </Row>
 
-                <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
-            </Dropdown.Item>
+                        <Row>
+                            <Label value={TRANSLATE.showInvisible[lan]}/>
+                            <ToggleSwitch checked={isShowInvisible} onChange={onShowInvisible}/>
+                        </Row>
 
-            <Dropdown.Item className={layoutClasses}>
-                <span>{TRANSLATE.lint[lan]}</span>
+                        <Row>
+                            <Label value={TRANSLATE.lint[lan]}/>
+                            <ToggleSwitch checked={isLintOn} onChange={onLint}/>
+                        </Row>
+                    </Grid>
 
-                <ToggleSwitch checked={isLintOn} onChange={onLint}/>
-            </Dropdown.Item>
+                    <Divider horizontal={true} className={"my-4"}/>
 
-            <Dropdown.Item className={layoutClasses}>
-                <span>{TRANSLATE.showInvisible[lan]}</span>
+                    <Grid>
+                        <Row>
+                            <Label value={TRANSLATE.fontSize[lan]}/>
+                            <div className={"flex items-center gap-3"}>
+                                <TextSIcon color={fontSize === FONT_SIZE_S ? ACTIVE_COLOR : ""}
+                                           onClick={onFontS} className={`${activeClasses} text-lg`}/>
+                                <TextMIcon color={fontSize === FONT_SIZE_M ? ACTIVE_COLOR : ""}
+                                           onClick={onFontM} className={`${activeClasses} text-xl`}/>
+                                <TextLIcon color={fontSize === FONT_SIZE_L ? ACTIVE_COLOR : ""}
+                                           onClick={onFontL} className={`${activeClasses} text-2xl`}/>
+                            </div>
+                        </Row>
 
-                <ToggleSwitch checked={isShowInvisible} onChange={onShowInvisible}/>
-            </Dropdown.Item>
-            <Dropdown.Divider/>
+                        <Row>
+                            <Label value={TRANSLATE.layout[lan]}/>
+                            <div className={"flex items-center gap-3"}>
+                                <LayoutHorizontalIcon color={!isVerticalLayout ? ACTIVE_COLOR : ""}
+                                                      onClick={setIsVerticalLayout} className={activeClasses}/>
+                                <LayoutVerticalIcon color={isVerticalLayout ? ACTIVE_COLOR : ""}
+                                                    onClick={setIsVerticalLayout} className={activeClasses}/>
+                            </div>
+                        </Row>
+                    </Grid>
 
-            <Dropdown.Item className={layoutClasses}>
-                <span>{TRANSLATE.fontSize[lan]}</span>
+                    <Divider horizontal={true} className={"my-4"}/>
 
-                <div className={"flex items-center gap-3"}>
-                    <TextSIcon color={fontSize === FONT_SIZE_S ? ACTIVE_COLOR : ""}
-                               onClick={onFontS} className={`${activeClasses} text-lg`}/>
-                    <TextMIcon color={fontSize === FONT_SIZE_M ? ACTIVE_COLOR : ""}
-                               onClick={onFontM} className={`${activeClasses} text-xl`}/>
-                    <TextLIcon color={fontSize === FONT_SIZE_L ? ACTIVE_COLOR : ""}
-                               onClick={onFontL} className={`${activeClasses} text-2xl`}/>
-                </div>
-            </Dropdown.Item>
+                    <Grid>
+                        <Row>
+                            <Label htmlFor="keyBindings" value={TRANSLATE.keyBindings[lan]}/>
+                            <Dropdown color={"light"} label={keyBindingsMap[keyBindings]} size={"xs"} id="keyBindings">
+                                <Dropdown.Item value={""} onClick={onKeyBinding("")}>None</Dropdown.Item>
+                                <Dropdown.Item value={"vim"} onClick={onKeyBinding("vim")}>VIM</Dropdown.Item>
+                                <Dropdown.Item value={"emacs"} onClick={onKeyBinding("emacs")}>Emacs</Dropdown.Item>
+                            </Dropdown>
+                        </Row>
 
-            <Dropdown.Item className={layoutClasses}>
-                <span>{TRANSLATE.layout[lan]}</span>
+                        <Row>
+                            <Label htmlFor="language" value={TRANSLATE.language[lan]}/>
+                            <Dropdown color={"light"} label={LANGUAGES.filter((v) => v.value === lan)[0].label}
+                                      size={"xs"} id="keyBindings">
+                                {
+                                    LANGUAGES.map(({value, label}) => {
+                                        return <Dropdown.Item key={value} onClick={onLanguage(value)}>
+                                            {label}
+                                        </Dropdown.Item>
+                                    })
+                                }
+                            </Dropdown>
+                        </Row>
+                    </Grid>
 
-                <div className={"flex items-center gap-3"}>
-                    <LayoutHorizontalIcon color={!isVerticalLayout ? ACTIVE_COLOR : ""}
-                                          onClick={setIsVerticalLayout} className={activeClasses}/>
-                    <LayoutVerticalIcon color={isVerticalLayout ? ACTIVE_COLOR : ""}
-                                        onClick={setIsVerticalLayout} className={activeClasses}/>
-                </div>
-            </Dropdown.Item>
+                    <Divider horizontal={true} className={"my-4"}/>
 
-            <Dropdown.Divider/>
-
-            <Dropdown.Item className={layoutClasses}>
-                <Label className={"font-normal"} htmlFor="keyBindings" value={TRANSLATE.keyBindings[lan]}/>
-
-                <Select defaultValue={keyBindings} onChange={onKeyBindingsChange} onClick={handleSelectClick}
-                        sizing={"sm"} id="keyBindings">
-                    <option value={""}>None</option>
-                    <option value={"vim"}>VIM</option>
-                    <option value={"emacs"}>Emacs</option>
-                </Select>
-            </Dropdown.Item>
-
-            <Dropdown.Item className={layoutClasses}>
-                <Label className={"font-normal"} htmlFor="language" value={TRANSLATE.language[lan]}/>
-
-                <Select defaultValue={lan} onChange={onLanguageChange} onClick={handleSelectClick}
-                        sizing={"sm"} id="language">
-                    {
-                        LANGUAGES.map(({value, label}) => {
-                            return <option key={value} value={value}>{label}</option>
-                        })
-                    }
-                </Select>
-            </Dropdown.Item>
-        </Dropdown>
+                    <Grid>
+                        <div className={"flex items-center justify-between"}>
+                            <Label value={`${TRANSLATE.theme[lan]} / ${mode}`}/>
+                            <DarkThemeToggle/>
+                        </div>
+                    </Grid>
+                </Modal.Body>
+            </Modal>
+        </>
     );
 }

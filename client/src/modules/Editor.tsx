@@ -1,9 +1,9 @@
-import {useCallback, useRef, useState, ChangeEvent, useEffect, ReactNode} from "react";
-import {DarkThemeToggle, useThemeMode} from "flowbite-react";
+import {useCallback, useRef, useState, useEffect, ReactNode} from "react";
+import {useThemeMode} from "flowbite-react";
 import AceEditor, {IMarker} from "react-ace";
 import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
-import {HiOutlineInformationCircle as AboutIcon} from "react-icons/hi"
+import Mousetrap from "mousetrap";
 
 import {
     AUTO_RUN_KEY,
@@ -32,7 +32,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, ICON_BUTTON_CLASS, ACTIVE_SANDBOX_KEY,
+    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY,
 } from "../constants.ts";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -42,6 +42,7 @@ import Actions from "./Actions.tsx";
 import SnippetSelector from "./SnippetSelector.tsx";
 import VersionSelector from "./VersionSelector.tsx";
 import SandboxSelector from "./SandboxSelector.tsx";
+import Info from "./Info.tsx";
 import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
 
 import "ace-builds/src-noconflict/mode-golang";
@@ -68,7 +69,7 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, normalizeText, getActiveSandbox
+    isMobileDevice, normalizeText, getActiveSandbox, isMac
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindings, languages, mySandboxes, resultI} from "../types";
@@ -101,7 +102,7 @@ function FetchErrorMessage(props: {
     )
 }
 
-const resizeHandlerHoverClasses = "hover:bg-cyan-400 transition-colors duration-300";
+const resizeHandlerHoverClasses = "z-10 hover:bg-cyan-500 transition-colors";
 
 export default function Component(props: {
     setToastError: (message: ReactNode) => void
@@ -111,6 +112,7 @@ export default function Component(props: {
     const {mode} = useThemeMode();
     const statusBarRef = useRef<HTMLDivElement | null>(null);
 
+    const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
     const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(getActiveSandbox());
@@ -189,33 +191,63 @@ export default function Component(props: {
         // read to run
         setIsRunning(false);
 
-        // register keydown event
-        function handleKeyDown(event: KeyboardEvent) {
-            if (event.key.toLowerCase() === "enter" && event.metaKey) {
-                event.preventDefault();
-                debouncedRun()
-                return
-            }
-            // shortcut for editor focus
-            if (event.key.toLowerCase() === "escape") {
-                editor.focus();
-                return;
-            }
-            // shortcut for format
-            if (event.key.toLowerCase() === "b" && event.metaKey) {
-                event.preventDefault();
-                debouncedFormat()
-                return;
-            }
-            // shortcut for share
-            if (event.key.toLowerCase() === "e" && event.metaKey) {
-                event.preventDefault();
-                debouncedShare()
-                return;
-            }
-        }
+        const metaKey = isMac() ? "command" : "ctrl";
+        // global key bindings
+        Mousetrap.bind('esc', function() {
+            editor.focus();
+            return false
+        });
 
-        window.addEventListener('keydown', handleKeyDown);
+        // for settings
+        Mousetrap.bind(`${metaKey}+,`, function() {
+            setShowSettings(true);
+            return false
+        });
+        editor.commands.addCommand({
+            name: "settingsShortcut",
+            bindKey: {win: "Ctrl-,", mac: "Command-,"},
+            exec: function () {
+                setShowSettings(true);
+            }
+        })
+
+        // for run
+        Mousetrap.bind(`${metaKey}+return`, function() {
+            debouncedRun()
+        });
+        editor.commands.addCommand({
+            name: "runShortcut",
+            bindKey: {win: "Ctrl-Enter,", mac: "Command-Enter"},
+            exec: function () {
+                debouncedRun()
+            }
+        })
+
+        // for format
+        Mousetrap.bind(`${metaKey}+option+l`, function() {
+            debouncedFormat()
+            return false
+        });
+        editor.commands.addCommand({
+            name: "formatShortcut",
+            bindKey: {win: "Ctrl-Alt-L,", mac: "Command-Alt-L"},
+            exec: function () {
+                debouncedFormat()
+            }
+        })
+
+        // for share
+        Mousetrap.bind(`${metaKey}+shift+e`, function() {
+            debouncedShare()
+            return false
+        });
+        editor.commands.addCommand({
+            name: "shareShortcut",
+            bindKey: {win: "Ctrl-Shift-E,", mac: "Command-Shift-E"},
+            exec: function () {
+                debouncedShare()
+            }
+        })
     };
 
     // IMPORTANT: update the ref when the state changes
@@ -409,9 +441,7 @@ export default function Component(props: {
         setIsLintOn(!isLintOn);
     }
 
-    function onKeyBindingsChange(event: ChangeEvent<HTMLSelectElement>) {
-        event.stopPropagation();
-        const value = event.target.value as KeyBindings
+    function onKeyBindingsChange(value: KeyBindings) {
         localStorage.setItem(KEY_BINDINGS_KEY, value);
         setKeyBindings(value)
     }
@@ -435,9 +465,7 @@ export default function Component(props: {
         debouncedRun()
     }
 
-    function onLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
-        event.stopPropagation();
-        const value = event.target.value as languages
+    function onLanguageChange(value: languages) {
         localStorage.setItem(LANGUAGE_KEY, value);
         setLan(value)
     }
@@ -489,9 +517,29 @@ export default function Component(props: {
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
+            <Settings
+                show={showSettings}
+                setShow={setShowSettings}
+                lan={lan}
+                fontSize={fontSize}
+                onFontL={onFontL}
+                onFontM={onFontM}
+                onFontS={onFontS}
+                isVerticalLayout={isLayoutVertical}
+                setIsVerticalLayout={onIsVerticalLayoutChange}
+                onKeyBindingsChange={onKeyBindingsChange}
+                onLanguageChange={onLanguageChange}
+                keyBindings={keyBindings}
+                isLintOn={isLintOn}
+                onLint={onLint}
+                isAutoRun={isAutoRun}
+                onAutoRun={onAutoRun}
+                isShowInvisible={isShowInvisible}
+                onShowInvisible={onShowInvisible}
+            />
 
             <div
-                className="flex items-center justify-between border-b border-b-gray-300 py-0.5 pl-2 pr-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0">
+                className="flex items-center justify-between border-b border-b-gray-300 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
                     <img src={"/logo.svg"} alt={"logo"} className={"h-4 max-md:hidden"}/>
 
@@ -500,7 +548,8 @@ export default function Component(props: {
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
-                    <Actions isMobile={isMobile} isRunning={isRunning} debouncedFormat={debouncedFormat} debouncedRun={debouncedRun}
+                    <Actions isMobile={isMobile} isRunning={isRunning} debouncedFormat={debouncedFormat}
+                             debouncedRun={debouncedRun}
                              debouncedShare={debouncedShare} hasCode={codeRef.current.length > 0} lan={lan}/>
 
                     <Divider/>
@@ -517,34 +566,7 @@ export default function Component(props: {
 
                     <div className={"flex items-center"}>
                         <Divider/>
-
-                        <Settings
-                            isMobile={isMobile}
-                            disabled={isRunning}
-                            lan={lan}
-                            fontSize={fontSize}
-                            onFontL={onFontL}
-                            onFontM={onFontM}
-                            onFontS={onFontS}
-                            isVerticalLayout={isLayoutVertical}
-                            setIsVerticalLayout={onIsVerticalLayoutChange}
-                            onKeyBindingsChange={onKeyBindingsChange}
-                            onLanguageChange={onLanguageChange}
-                            keyBindings={keyBindings}
-                            isLintOn={isLintOn}
-                            onLint={onLint}
-                            isAutoRun={isAutoRun}
-                            onAutoRun={onAutoRun}
-                            isShowInvisible={isShowInvisible}
-                            onShowInvisible={onShowInvisible}
-                        />
-
-                        <AboutIcon
-                            size={isMobile ? 22 : 24}
-                            onClick={() => setShowAbout(true)}
-                            className={`mx-1 ${ICON_BUTTON_CLASS} max-md:mx-0 max-md:text-lg`}/>
-
-                        <DarkThemeToggle/>
+                        <Info lan={lan} isMobile={isMobile} setShowAbout={setShowAbout} setShowSettings={setShowSettings}/>
                     </div>
                 </div>
             </div>

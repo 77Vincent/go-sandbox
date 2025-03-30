@@ -5,6 +5,8 @@ import {
     HiInformationCircle as InfoIcon,
 } from "react-icons/hi";
 import {toastType} from "../types";
+import {isMac} from "../utils.ts";
+import {MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
 
 export function Wrapper(props: {
     children: ReactNode,
@@ -20,15 +22,20 @@ export function Wrapper(props: {
     )
 }
 
+export function MetaKey() {
+    return isMac() ? <MdKeyboardCommandKey/> : <MdKeyboardControlKey/>;
+}
+
 export function Divider(props: {
     horizontal?: boolean
+    className?: string
 }) {
-    const {horizontal} = props
+    const {horizontal, className} = props
     if (horizontal) {
-        return <div className={"h-0 w-full border-b border-neutral-200 dark:border-neutral-500"}/>
+        return <div className={`h-0 w-full border-b border-neutral-200 dark:border-neutral-500 ${className}`}/>
     }
 
-    return <div className={"h-4 w-0 border-r border-neutral-200 dark:border-neutral-500"}/>
+    return <div className={`h-4 w-0 border-r border-neutral-200 dark:border-neutral-500 ${className}`}/>
 }
 
 const defaultToastType = "info"
@@ -76,7 +83,7 @@ export function ToggleSwitch(props: {
             <div>
                 <input checked={checked} onChange={onChange} type="checkbox" value="" className="peer sr-only"/>
                 <div
-                    className="peer relative h-6 w-11 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-cyan-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:border-neutral-600 dark:bg-gray-700 dark:peer-focus:ring-cyan-800 rtl:peer-checked:after:-translate-x-full"></div>
+                    className="peer relative h-6 w-11 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-cyan-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 dark:border-neutral-600 dark:bg-gray-500 dark:peer-focus:ring-cyan-800 rtl:peer-checked:after:-translate-x-full"></div>
             </div>
 
             {

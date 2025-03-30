@@ -23,7 +23,7 @@ import {
     IS_VERTICAL_LAYOUT_KEY,
     DEFAULT_IS_VERTICAL_LAYOUT,
     MOBILE_WIDTH,
-    HELLO_WORLD, ACTIVE_SANDBOX_KEY, DEFAULT_ACTIVE_SANDBOX
+    HELLO_WORLD, ACTIVE_SANDBOX_KEY, DEFAULT_ACTIVE_SANDBOX, MY_SANDBOXES
 } from "./constants.ts";
 import {KeyBindings, languages, mySandboxes} from "./types";
 import {IMarker} from "react-ace";
@@ -75,6 +75,25 @@ export function getIsVerticalLayout(): boolean {
     }
 
     return JSON.parse(localStorage.getItem(IS_VERTICAL_LAYOUT_KEY) || DEFAULT_IS_VERTICAL_LAYOUT)
+}
+
+export function getSandboxes(): mySandboxes[] {
+    const sandboxes: mySandboxes[] = []
+    Object.keys(MY_SANDBOXES).forEach((key) => {
+        if (localStorage.getItem(key) !== null) {
+            sandboxes.push(key as mySandboxes)
+        }
+    })
+
+    // if no sandboxes are found, create a default one
+    if (sandboxes.length === 0) {
+        const i = DEFAULT_ACTIVE_SANDBOX
+        sandboxes.push(i)
+        localStorage.setItem(ACTIVE_SANDBOX_KEY, i)
+        localStorage.setItem(i, HELLO_WORLD)
+    }
+
+    return sandboxes
 }
 
 export function getAutoRun(): boolean {

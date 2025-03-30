@@ -76,6 +76,12 @@ func main() {
 }`
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    theme: {
+        en: "Theme",
+        zh_CN: "主题",
+        zh_TW: "主題",
+        ja: "テーマ",
+    },
     layout: {
         en: "Layout",
         zh_CN: "布局",
@@ -189,19 +195,22 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         mutex: "Mutex",
         ticker: "Ticker",
     },
-    Problems: {
+    Advanced: {
+        spinner: "Spinner",
+        progressBar: "Progress bar",
+        httpServer: "HTTP server",
+        gameOfLife: "Game of Life",
+        concurrentPrime: "Concurrent prime",
+        diningPhilosophers: "Dining philosophers",
         fibonacci: "Fibonacci",
         quickSort: "Quick sort",
         mergeSort: "Merge sort",
         binarySearch: "Binary search",
+        sudoku: "Sudoku",
         bfs: "BFS",
         dfs: "DFS",
-    },
-    Fun: {
-        clearScreen: "Clear screen",
-        httpServer: "HTTP server",
-        gameOfLife: "Game of Life",
-        concurrentPrime: "Concurrent prime",
+        lru: "LRU",
+        lcs: "LCS",
     },
     "Design Patterns": {
         singleton: "Singleton",
@@ -214,6 +223,13 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         facade: "Facade",
     },
 }
+
+export const keyBindingsMap: Record<KeyBindings, string> = {
+    vim: "Vim",
+    emacs: "Emacs",
+    "": "None",
+}
+
 export const MY_SANDBOXES: Record<mySandboxes, string> = {
     "my-sandbox-1": "Sandbox 1",
     "my-sandbox-2": "Sandbox 2",
@@ -221,3 +237,4 @@ export const MY_SANDBOXES: Record<mySandboxes, string> = {
     "my-sandbox-4": "Sandbox 4",
     "my-sandbox-5": "Sandbox 5",
 }
+export const BUTTON_INACTIVE = "cursor-not-allowed text-gray-300 dark:text-gray-600";

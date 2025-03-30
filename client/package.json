@@ -16,6 +16,7 @@
   "dependencies": {
     "ace-builds": "^1.39.0",
     "flowbite-react": "^0.10.2",
+    "mousetrap": "^1.6.5",
     "re-resizable": "^6.11.2",
     "react": "^18.2.0",
     "react-ace": "^14.0.1",
@@ -24,6 +25,7 @@
     "sse.js": "^2.6.0"
   },
   "devDependencies": {
+    "@types/mousetrap": "^1.6.15",
     "@types/react": "^18.2.67",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.3.1",

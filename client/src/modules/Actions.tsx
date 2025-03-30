@@ -2,14 +2,13 @@ import {Tooltip} from "flowbite-react";
 import {FiPlay as RunICon} from "react-icons/fi";
 import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
+import {MdKeyboardOptionKey, MdKeyboardReturn} from "react-icons/md";
+import { BsShift } from "react-icons/bs";
 
-import {ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
+import {BUTTON_INACTIVE, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
-import {isMac} from "../utils.ts";
+import {MetaKey} from "./Common.tsx";
 
-const COLOR_INACTIVE = "text-gray-300 dark:text-gray-600";
-const CMD = "Cmd"
-const WIN = "win"
 const COMMON_CLASSES = "text-xs font-light";
 
 export default function Component(props: {
@@ -22,23 +21,43 @@ export default function Component(props: {
     lan: languages;
 }) {
     const {isMobile, debouncedRun, debouncedFormat, debouncedShare, hasCode, isRunning, lan} = props;
-    const metaKey = isMac() ? CMD : WIN;
     const isEnabled = hasCode && !isRunning;
 
     return (
         <>
-            <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.run[lan]}: ${metaKey} + enter`}>
-                <RunICon className={isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}
+            <Tooltip className={COMMON_CLASSES} content={
+                <div className={"flex items-center gap-1"}>
+                    {TRANSLATE.run[lan]}
+                    <div className={"flex items-center"}>
+                        <MetaKey/><MdKeyboardReturn/>
+                    </div>
+                </div>
+            }>
+                <RunICon className={isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
                          onClick={isEnabled ? debouncedRun : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
-            <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.format[lan]}: ${metaKey} + b`}>
-                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}`}
+            <Tooltip className={COMMON_CLASSES} content={
+                <div className={"flex items-center gap-1"}>
+                    {TRANSLATE.format[lan]}
+                    <div className={"flex items-center"}>
+                        <MetaKey/><MdKeyboardOptionKey/>L
+                    </div>
+                </div>
+            }>
+                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}`}
                             onClick={isEnabled ? debouncedFormat : undefined} size={isMobile ? 21 : 23}/>
             </Tooltip>
 
-            <Tooltip className={COMMON_CLASSES} content={`${TRANSLATE.share[lan]}: ${metaKey} + e`}>
-                <ShareIcon className={isEnabled ? ICON_BUTTON_CLASS : COLOR_INACTIVE}
+            <Tooltip className={COMMON_CLASSES} content={
+                <div className={"flex items-center gap-1"}>
+                    {TRANSLATE.share[lan]}
+                    <div className={"flex items-center"}>
+                        <MetaKey/><BsShift/>E
+                    </div>
+                </div>
+            }>
+                <ShareIcon className={isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
                            onClick={isEnabled ? debouncedShare : undefined} size={isMobile ? 20 : 22}/>
             </Tooltip>
         </>
