@@ -24,6 +24,7 @@ const (
 	mutexCase         = "mutex"
 	tickerCase        = "ticker"
 	// advanced
+	mazeCase              = "maze"
 	fibonacciCase         = "fibonacci"
 	progressBarCase       = "progressBar"
 	quickSortCase         = "quickSort"
@@ -82,6 +83,8 @@ func GetTemplate(c *gin.Context) {
 		output = basic.Ticker
 
 	// advanced
+	case mazeCase:
+		output = advanced.Maze
 	case spinner:
 		output = advanced.Spinner
 	case progressBarCase:

@@ -207,6 +207,7 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         mergeSort: "Merge sort",
         binarySearch: "Binary search",
         sudoku: "Sudoku",
+        maze: "Maze",
         bfs: "BFS",
         dfs: "DFS",
         lru: "LRU",
