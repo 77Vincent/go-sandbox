@@ -24,6 +24,7 @@ const (
 	mutexCase         = "mutex"
 	tickerCase        = "ticker"
 	// advanced
+	mazeCase              = "maze"
 	fibonacciCase         = "fibonacci"
 	progressBarCase       = "progressBar"
 	quickSortCase         = "quickSort"
@@ -48,6 +49,10 @@ const (
 	templateCase  = "template"
 	facadeCase    = "facade"
 	adaptorCase   = "adaptor"
+	observerCase  = "observer"
+	bridgeCase    = "bridge"
+	proxyCase     = "proxy"
+	compositeCase = "composite"
 )
 
 func GetTemplate(c *gin.Context) {
@@ -82,6 +87,8 @@ func GetTemplate(c *gin.Context) {
 		output = basic.Ticker
 
 	// advanced
+	case mazeCase:
+		output = advanced.Maze
 	case spinner:
 		output = advanced.Spinner
 	case progressBarCase:
@@ -114,6 +121,14 @@ func GetTemplate(c *gin.Context) {
 		output = advanced.Sudoku
 
 	// design patterns
+	case observerCase:
+		output = design_pattern.Observer
+	case bridgeCase:
+		output = design_pattern.Bridge
+	case proxyCase:
+		output = design_pattern.Proxy
+	case compositeCase:
+		output = design_pattern.Composite
 	case singletonCase:
 		output = design_pattern.Singleton
 	case factoryCase:

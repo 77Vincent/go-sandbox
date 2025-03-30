@@ -207,6 +207,7 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         mergeSort: "Merge sort",
         binarySearch: "Binary search",
         sudoku: "Sudoku",
+        maze: "Maze",
         bfs: "BFS",
         dfs: "DFS",
         lru: "LRU",
@@ -221,6 +222,10 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         adaptor: "Adaptor",
         decorator: "Decorator",
         facade: "Facade",
+        observer: "Observer",
+        bridge: "Bridge",
+        composite: "Composite",
+        proxy: "Proxy",
     },
 }
 
