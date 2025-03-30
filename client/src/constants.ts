@@ -222,6 +222,10 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         adaptor: "Adaptor",
         decorator: "Decorator",
         facade: "Facade",
+        observer: "Observer",
+        bridge: "Bridge",
+        composite: "Composite",
+        proxy: "Proxy",
     },
 }
 
