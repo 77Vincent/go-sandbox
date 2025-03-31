@@ -8,6 +8,7 @@ export const EVENT_ERROR = "error";
 export const EVENT_CLEAR = "clear";
 export const EVENT_DONE = "done";
 
+export const SANDBOX_NAMES_KEY = "sandboxNames";
 export const ACTIVE_SANDBOX_KEY = "activeSandbox";
 export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
 export const SANDBOX_VERSION_KEY = "sandboxVersion";
@@ -177,6 +178,18 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_CN: "报告 Bug",
         zh_TW: "報告 Bug",
         ja: "バグ報告",
+    },
+    rename: {
+        en: "Rename",
+        zh_CN: "重命名",
+        zh_TW: "重命名",
+        ja: "名前を変更",
+    },
+    remove: {
+        en: "Remove",
+        zh_CN: "删除",
+        zh_TW: "刪除",
+        ja: "削除",
     },
 }
 
