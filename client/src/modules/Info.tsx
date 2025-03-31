@@ -3,7 +3,7 @@ import {ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {HiOutlineInformationCircle as AboutIcon} from "react-icons/hi";
 import {Tooltip} from "flowbite-react";
 import {languages} from "../types";
-import {MetaKey} from "./Common.tsx";
+import {Divider, MetaKey} from "./Common.tsx";
 
 const commonClasses = `${ICON_BUTTON_CLASS} max-md:mx-0 max-md:text-lg`
 
@@ -16,7 +16,8 @@ export default function Component(props: {
     const {lan, isMobile, setShowSettings, setShowAbout} = props
 
     return (
-        <div className={"ml-3 flex items-center gap-3"}>
+        <div className={"flex items-center gap-3 max-md:gap-2"}>
+            <Divider/>
             <Tooltip content={
                 <div className={"flex items-center gap-1"}>
                     {TRANSLATE.settings[lan]}
@@ -27,7 +28,7 @@ export default function Component(props: {
             }>
                 <SettingsIcon
                     onClick={() => setShowSettings(true)}
-                    size={isMobile ? 17 : 19}
+                    size={isMobile ? 18 : 19}
                     className={commonClasses}/>
             </Tooltip>
             <AboutIcon

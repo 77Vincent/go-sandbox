@@ -193,13 +193,13 @@ export default function Component(props: {
 
         const metaKey = isMac() ? "command" : "ctrl";
         // global key bindings
-        Mousetrap.bind('esc', function() {
+        Mousetrap.bind('esc', function () {
             editor.focus();
             return false
         });
 
         // for settings
-        Mousetrap.bind(`${metaKey}+,`, function() {
+        Mousetrap.bind(`${metaKey}+,`, function () {
             setShowSettings(true);
             return false
         });
@@ -212,7 +212,7 @@ export default function Component(props: {
         })
 
         // for run
-        Mousetrap.bind(`${metaKey}+return`, function() {
+        Mousetrap.bind(`${metaKey}+return`, function () {
             debouncedRun()
         });
         editor.commands.addCommand({
@@ -224,7 +224,7 @@ export default function Component(props: {
         })
 
         // for format
-        Mousetrap.bind(`${metaKey}+option+l`, function() {
+        Mousetrap.bind(`${metaKey}+option+l`, function () {
             debouncedFormat()
             return false
         });
@@ -237,7 +237,7 @@ export default function Component(props: {
         })
 
         // for share
-        Mousetrap.bind(`${metaKey}+shift+e`, function() {
+        Mousetrap.bind(`${metaKey}+shift+e`, function () {
             debouncedShare()
             return false
         });
@@ -552,21 +552,20 @@ export default function Component(props: {
                              debouncedRun={debouncedRun}
                              debouncedShare={debouncedShare} hasCode={codeRef.current.length > 0} lan={lan}/>
 
-                    <Divider/>
                     {
-                        isMobile ? null : <SandboxSelector lan={lan} onSelect={onActiveSandboxChange} isRunning={isRunning}
-                                                           active={activeSandbox}/>
-                    }
-                    {/*only snippets is available in mobile too*/}
-                    <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
-                    {
-                        isMobile ? null : <VersionSelector version={sandboxVersion} isRunning={isRunning}
-                                                           onSelect={onSandboxVersionChange}/>
+                        isMobile ? null : <>
+                            <Divider/>
+                            <SandboxSelector lan={lan} onSelect={onActiveSandboxChange} isRunning={isRunning}
+                                             active={activeSandbox}/>
+                            <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
+                            <VersionSelector version={sandboxVersion} isRunning={isRunning}
+                                             onSelect={onSandboxVersionChange}/>
+                        </>
                     }
 
                     <div className={"flex items-center"}>
-                        <Divider/>
-                        <Info lan={lan} isMobile={isMobile} setShowAbout={setShowAbout} setShowSettings={setShowSettings}/>
+                        <Info lan={lan} isMobile={isMobile} setShowAbout={setShowAbout}
+                              setShowSettings={setShowSettings}/>
                     </div>
                 </div>
             </div>
