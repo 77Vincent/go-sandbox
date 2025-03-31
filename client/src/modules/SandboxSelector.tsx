@@ -4,16 +4,16 @@ import {
     DEFAULT_ACTIVE_SANDBOX,
     HELLO_WORLD,
     ICON_BUTTON_CLASS,
-    MY_SANDBOXES,
+    MY_SANDBOXES, SANDBOX_NAMES_KEY,
     SELECTED_COLOR_CLASS
 } from "../constants.ts";
 
-import {MdOutlineAdd as AddIcon} from "react-icons/md";
+import {MdOutlineAdd as AddIcon, MdOutlineEdit as EditButton} from "react-icons/md";
 import {IoMdRemoveCircleOutline as RemoveIcon} from "react-icons/io";
 
 import {Dropdown, Tooltip} from "flowbite-react";
 import {MouseEventHandler, useEffect, useRef, useState} from "react";
-import {getSandboxes} from "../utils.ts";
+import {getSandboxes, getSandboxesNames} from "../utils.ts";
 
 const MY_SANDBOX_PREFIX = "my-sandbox-";
 
@@ -34,6 +34,7 @@ export default function Component(props: {
 }) {
     const {isRunning, active, onSelect} = props;
     const [sandboxes, setSandboxes] = useState(getSandboxes())
+    const [sandboxNames, setSandboxNames] = useState(getSandboxesNames());
     const sandboxesRef = useRef(sandboxes);
     const upperLimit = Object.keys(MY_SANDBOXES).length;
     const lowerLimit = 1;
@@ -59,12 +60,40 @@ export default function Component(props: {
 
             if (sandboxesRef.current.length > lowerLimit) {
                 const next = sandboxesRef.current.filter((k) => k !== id);
+                // update state
                 setSandboxes(next);
+                setSandboxNames((prev) => ({
+                    ...prev,
+                    [id]: ""
+                }))
+                // update local storage
+                // remove sandbox
                 localStorage.removeItem(id);
+                // remove name mappings
+                localStorage.setItem(SANDBOX_NAMES_KEY, JSON.stringify({
+                    ...sandboxNames,
+                    [id]: ""
+                }))
+                // select next sandbox if available
                 if (next.length > 0) {
                     onSelect(next[0]);
                 }
             }
+        }
+    }
+
+    const onRename = (id: mySandboxes): MouseEventHandler<SVGAElement> => {
+        return (e) => {
+            e.stopPropagation();
+            const newName = prompt("Enter new name", sandboxNames[id]) || sandboxNames[id];
+            localStorage.setItem(SANDBOX_NAMES_KEY, JSON.stringify({
+                ...sandboxNames,
+                [id]: newName
+            }));
+            setSandboxNames((prev) => ({
+                ...prev,
+                [id]: newName
+            }))
         }
     }
 
@@ -73,7 +102,7 @@ export default function Component(props: {
     }, [sandboxes]);
 
     return (
-        <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"} label={MY_SANDBOXES[active]}>
+        <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"} label={sandboxNames[active] || MY_SANDBOXES[active]}>
             {
                 sandboxes.map((key) => {
                     return (
@@ -81,13 +110,21 @@ export default function Component(props: {
                             className={`flex items-center justify-between gap-3 ${active === key ? SELECTED_COLOR_CLASS : ""}`}
                             key={key}
                             onClick={onClick(key)}>
-                            {MY_SANDBOXES[key]}
+                            {sandboxNames[key] || MY_SANDBOXES[key]}
 
-                            <Tooltip content={"remove"} className={"text-xs"}>
-                                <RemoveIcon size={18}
-                                            onClick={onRemove(key)}
-                                            className={`opacity-80 ${sandboxes.length === lowerLimit ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}`}/>
-                            </Tooltip>
+                            <div className={"flex gap-1.5"}>
+                                <Tooltip content={"Rename"} className={"text-xs"}>
+                                    <EditButton size={18}
+                                                onClick={onRename(key)}
+                                                className={`opacity-80 ${ICON_BUTTON_CLASS}`}/>
+                                </Tooltip>
+
+                                <Tooltip content={"Remove"} className={"text-xs"}>
+                                    <RemoveIcon size={18}
+                                                onClick={onRemove(key)}
+                                                className={`opacity-80 ${sandboxes.length === lowerLimit ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}`}/>
+                                </Tooltip>
+                            </div>
                         </Dropdown.Item>
                     )
                 })
