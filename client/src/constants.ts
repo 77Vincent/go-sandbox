@@ -179,6 +179,18 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "報告 Bug",
         ja: "バグ報告",
     },
+    rename: {
+        en: "Rename",
+        zh_CN: "重命名",
+        zh_TW: "重命名",
+        ja: "名前を変更",
+    },
+    remove: {
+        en: "Remove",
+        zh_CN: "删除",
+        zh_TW: "刪除",
+        ja: "削除",
+    },
 }
 
 export const SNIPPETS: Record<string, Record<string, string>> = {

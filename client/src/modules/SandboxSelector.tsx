@@ -1,11 +1,11 @@
-import {mySandboxes} from "../types";
+import {languages, mySandboxes} from "../types";
 import {
     BUTTON_INACTIVE,
     DEFAULT_ACTIVE_SANDBOX,
     HELLO_WORLD,
     ICON_BUTTON_CLASS,
     MY_SANDBOXES, SANDBOX_NAMES_KEY,
-    SELECTED_COLOR_CLASS
+    SELECTED_COLOR_CLASS, TRANSLATE
 } from "../constants.ts";
 
 import {MdOutlineAdd as AddIcon, MdOutlineEdit as EditButton} from "react-icons/md";
@@ -28,11 +28,12 @@ function getNextSandboxId(sandboxes: mySandboxes[]): mySandboxes {
 }
 
 export default function Component(props: {
+    lan: languages,
     isRunning: boolean,
     active: mySandboxes,
     onSelect: (id: mySandboxes) => void
 }) {
-    const {isRunning, active, onSelect} = props;
+    const {isRunning, active, onSelect, lan} = props;
     const [sandboxes, setSandboxes] = useState(getSandboxes())
     const [sandboxNames, setSandboxNames] = useState(getSandboxesNames());
     const sandboxesRef = useRef(sandboxes);
@@ -113,13 +114,13 @@ export default function Component(props: {
                             {sandboxNames[key] || MY_SANDBOXES[key]}
 
                             <div className={"flex gap-1.5"}>
-                                <Tooltip content={"Rename"} className={"text-xs"}>
+                                <Tooltip content={TRANSLATE.rename[lan]} className={"text-xs"}>
                                     <EditButton size={18}
                                                 onClick={onRename(key)}
                                                 className={`opacity-80 ${ICON_BUTTON_CLASS}`}/>
                                 </Tooltip>
 
-                                <Tooltip content={"Remove"} className={"text-xs"}>
+                                <Tooltip content={TRANSLATE.remove[lan]} className={"text-xs"}>
                                     <RemoveIcon size={18}
                                                 onClick={onRemove(key)}
                                                 className={`opacity-80 ${sandboxes.length === lowerLimit ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}`}/>

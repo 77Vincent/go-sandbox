@@ -554,7 +554,7 @@ export default function Component(props: {
 
                     <Divider/>
                     {
-                        isMobile ? null : <SandboxSelector onSelect={onActiveSandboxChange} isRunning={isRunning}
+                        isMobile ? null : <SandboxSelector lan={lan} onSelect={onActiveSandboxChange} isRunning={isRunning}
                                                            active={activeSandbox}/>
                     }
                     {/*only snippets is available in mobile too*/}
