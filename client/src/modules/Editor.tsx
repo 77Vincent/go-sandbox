@@ -250,11 +250,10 @@ export default function Component(props: {
             }
         })
         // Function to request completions based on the current cursor position.
-        function requestCompletion(editor: Ace.Editor) {
-            const pos = editor.getCursorPosition();
+        function requestCompletion(row: number, column: number) {
             lspClient.sendRequest("textDocument/completion", {
                 textDocument: { uri: "file:///workspace/main.go" },
-                position: { line: pos.row, character: pos.column },
+                position: { line: row, character: column },
             })
                 .then(response => {
                     console.log("Completion response:", response);
@@ -292,7 +291,7 @@ export default function Component(props: {
                 });
 
                 // Example: request completions
-                requestCompletion(editor);
+                requestCompletion(editor.getCursorPosition().row, editor.getCursorPosition().column);
             })
             .catch(error => {
                 console.error("Initialize error:", error);

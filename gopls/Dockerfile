@@ -4,6 +4,9 @@ RUN go install golang.org/x/tools/gopls@latest
 
 # Create the workspace directory
 WORKDIR /workspace
+# Create a workspace directory and a dummy go.mod file.
+RUN cd /workspace && \
+    echo "module tmp" > go.mod
 
 # Expose the port gopls will listen on
 EXPOSE 4389

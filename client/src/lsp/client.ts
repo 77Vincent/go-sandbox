@@ -1,4 +1,4 @@
-export default class LSPCLient {
+export default class LSPClient {
     ws: WebSocket;
     requestId: number;
     pendingRequests: Map<number, { resolve: (result: any) => void; reject: (error: any) => void }>;
