@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tianqi-wen_frgr/go-sandbox/config"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/handlers"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/handlers/ws"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/worker"
 	"time"
 )
@@ -39,6 +40,8 @@ func main() {
 	r.POST("/snippets", timeout, handlers.ShareSnippet)
 	r.GET("/snippets/:id", timeout, handlers.FetchSnippet)
 	r.POST("/execute", handlers.Execute)
+
+	r.GET("/ws", ws.WS)
 
 	r.Run(config.ApiServerPort)
 }

@@ -76,6 +76,7 @@ import {KeyBindings, languages, mySandboxes, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
+import LSPClient from "../lsp/client.ts";
 
 function ShareSuccessMessage(props: {
     url: string,
@@ -248,6 +249,55 @@ export default function Component(props: {
                 debouncedShare()
             }
         })
+        // Function to request completions based on the current cursor position.
+        function requestCompletion(editor: Ace.Editor) {
+            const pos = editor.getCursorPosition();
+            lspClient.sendRequest("textDocument/completion", {
+                textDocument: { uri: "file:///workspace/main.go" },
+                position: { line: pos.row, character: pos.column },
+            })
+                .then(response => {
+                    console.log("Completion response:", response);
+                    // TODO: Process the completion suggestions and display them in your UI.
+                })
+                .catch(error => {
+                    console.error("Completion request error:", error);
+                });
+        }
+
+        // Example: send a "textDocument/didOpen" notification when a file is loaded
+        const lspClient = new LSPClient("ws://localhost:3000/ws");
+
+        lspClient.sendRequest("initialize", {
+            rootUri: "file:///workspace",
+            workspaceFolders: [
+                { uri: "file:///workspace", name: "workspace" }
+            ],
+            capabilities: {}
+        })
+            .then(initResp => {
+                console.log("Initialize response:", initResp);
+
+                // (B) **Now** notify the server that the client is initialized
+                lspClient.sendNotification("initialized", {});
+
+                // (C) After that, you can send didOpen or other notifications
+                lspClient.sendNotification("textDocument/didOpen", {
+                    textDocument: {
+                        uri: "file:///workspace/main.go",
+                        languageId: "go",
+                        version: 1,
+                        text: editor.getValue(),
+                    },
+                });
+
+                // Example: request completions
+                requestCompletion(editor);
+            })
+            .catch(error => {
+                console.error("Initialize error:", error);
+            });
+
     };
 
     // IMPORTANT: update the ref when the state changes

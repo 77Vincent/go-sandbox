@@ -4,7 +4,7 @@ client:
 
 # for backend
 log:
-	docker logs -f go-sandbox-server
+	docker-compose logs -f
 exec:
 	docker exec -it go-sandbox-server /bin/sh
 server:
