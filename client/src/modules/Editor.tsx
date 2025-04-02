@@ -72,7 +72,7 @@ import {
     isMobileDevice, normalizeText, getActiveSandbox, isMac
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
-import {KeyBindings, languages, mySandboxes, resultI} from "../types";
+import {KeyBindings, languages, mySandboxes, onCursorChangeI, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
@@ -111,7 +111,6 @@ export default function Component(props: {
 }) {
     const {setToastError, setToastInfo} = props
     const {mode} = useThemeMode();
-    const statusBarRef = useRef<HTMLDivElement | null>(null);
 
     const [docVersion, setDocVersion] = useState<number>(1);
     const [showSettings, setShowSettings] = useState<boolean>(false);
@@ -139,6 +138,7 @@ export default function Component(props: {
     const [info, setInfo] = useState<string>("")
 
     // reference the latest state
+    const statusBarRef = useRef<HTMLDivElement | null>(null);
     const lspClientRef = useRef<LSP | null>(null);
     const codeRef = useRef(code);
     const sandboxVersionRef = useRef(sandboxVersion);
@@ -163,7 +163,7 @@ export default function Component(props: {
     const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
     const [isShowInvisible, setIsShowInvisible] = useState<boolean>(getShowInvisible())
 
-    // fetch the snippet if the url contains the snippet id
+    // fetch the snippet if the url contains the snippet id, do only once
     useEffect(() => {
         (async () => {
             const matches = location.pathname.match(SNIPPET_REGEX)
@@ -192,9 +192,6 @@ export default function Component(props: {
         }
         editor.focus();
         editor.moveCursorTo(row, column);
-
-        // read to run
-        setIsRunning(false);
 
         const metaKey = isMac() ? "command" : "ctrl";
         // global key bindings
@@ -260,21 +257,25 @@ export default function Component(props: {
                 await client.initialize();
                 lspClientRef.current = client;
 
-                editor.completers = editor.completers || [];
                 editor.completers.push({
+                    id: "lsp",
                     getCompletions: async (_editor: Ace.Editor, _session: Ace.EditSession, _pos: Ace.Point, _prefix: string, callback) => {
+                        const completions = await client.getCompletions();
                         try {
-                            callback(null, await client.getCompletions());
+                            callback(null, completions);
                         } catch (error) {
                             console.error("Completion request error:", error);
                             callback(error, []);
                         }
                     },
-                });
+                })
             } catch (e) {
                 setToastError((e as Error).message)
             }
         })()
+
+        // read to run
+        setIsRunning(false);
     };
 
     // IMPORTANT: update the ref when the state changes
@@ -291,7 +292,7 @@ export default function Component(props: {
         const processedNewCode = normalizeText(newCode);
 
         // update ref immediately
-        const newVersion = docVersion+1
+        const newVersion = docVersion + 1
 
         storeCode(newCode);
         setDocVersion(newVersion);
@@ -450,19 +451,18 @@ export default function Component(props: {
     }, [debouncedRun, setToastError]), RUN_DEBOUNCE_TIME)).current;
 
     // manage debounced cursor position update
-    const debouncedOnCursorChange = debounce(function onCursorChange(value: any) {
-        const row = value.cursor.row;
-        const col = value.cursor.column;
+    const debouncedOnCursorChange = debounce(function onCursorChange(value: onCursorChangeI) {
+        const {cursor: {row, column}} = value;
 
         if (statusBarRef.current) {
-            statusBarRef.current.textContent = `${row + 1}:${col + 1}`;
+            statusBarRef.current.textContent = `${row + 1}:${column + 1}`;
         }
 
-        localStorage.setItem(CURSOR_ROW_KEY, row);
-        localStorage.setItem(CURSOR_COLUMN_KEY, col);
+        localStorage.setItem(CURSOR_ROW_KEY, String(row));
+        localStorage.setItem(CURSOR_COLUMN_KEY, String(column));
 
         setRow(row);
-        setColumn(col);
+        setColumn(column);
     }, CURSOR_UPDATE_DEBOUNCE_TIME);
 
 

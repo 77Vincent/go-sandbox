@@ -1,5 +1,5 @@
 import {Ace} from "ace-builds";
-import {LSPCompletionItem, LSPCompletionResponse} from "../types";
+import {LSPCompletionItem, LSPCompletionResponse, pendingRequests} from "../types";
 
 const WORKSPACE = "workspace";
 const URI_BASE = `file:///${WORKSPACE}`
@@ -11,13 +11,6 @@ const EVENT_INITIALIZED = "initialized"
 const EVENT_COMPLETION = "textDocument/completion"
 const EVENT_DID_OPEN = "textDocument/didOpen"
 const EVENT_DID_CHANGE = "textDocument/didChange"
-
-function isFunc(kind: number | undefined): boolean {
-    if (kind === undefined) {
-        return false;
-    }
-    return kind === 2 || kind === 3
-}
 
 export function getCompletions(response: LSPCompletionResponse): Ace.Completion[] {
     // Check if the response contains an error.
@@ -38,12 +31,13 @@ export function getCompletions(response: LSPCompletionResponse): Ace.Completion[
     const completions: Ace.Completion[] = []
     items.forEach(v => {
         completions.push({
+            completerId: "lsp",
             caption: v.label, // The text to display in the completion list.
-            value: v.label, // The text to insert when the completion is selected.
-            snippet: isFunc(v.kind) ? v.insertText || v.label : undefined,
+            value: v.insertText || v.label, // The text to insert when the completion is selected.
+            snippet: v.insertText || v.label, // The text to insert when the completion is selected.
             meta: v.detail || 'LSP', // The type of completion (e.g., function, variable).
-            docText: v.documentation?.value || undefined,
-            score: v.sortText ? parseInt(v.sortText) : 0,
+            docText: v.documentation?.value,
+            score: v.sortText ? parseInt(v.sortText) + 100 : 0,
         })
     })
 
@@ -54,7 +48,7 @@ export default class LSPClient {
     editor: Ace.Editor;
     ws: WebSocket;
     requestId: number;
-    pendingRequests: Map<number, { resolve: (result: any) => void; reject: (error: any) => void }>;
+    pendingRequests: pendingRequests;
 
     constructor(url: string, editor: Ace.Editor) {
         this.editor = editor;
@@ -75,12 +69,8 @@ export default class LSPClient {
         this.ws.onclose = (e) => console.log("LSP WebSocket closed:", e);
     }
 
-    sendNotification(method: string, params: any): void {
-        const notification = {
-            jsonrpc: "2.0",
-            method,
-            params,
-        };
+    sendNotification(method: string, params: object): void {
+        const notification = {jsonrpc: "2.0", method, params,};
 
         if (this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(JSON.stringify(notification));
@@ -96,7 +86,7 @@ export default class LSPClient {
         );
     }
 
-    sendRequest(method: string, params: any): Promise<any> {
+    sendRequest(method: string, params: object): Promise<LSPCompletionResponse> {
         const id = ++this.requestId;
         const request = {jsonrpc: "2.0", id, method, params,};
         return new Promise((resolve, reject) => {
@@ -127,7 +117,6 @@ export default class LSPClient {
                 textDocument: {uri: URI},
                 position: {line: pos.row, character: pos.column},
             });
-            console.log("Completion response:", response);
             return getCompletions(response);
         } catch (e) {
             console.error("Completion request error:", e);
@@ -165,7 +154,7 @@ export default class LSPClient {
                 this.pendingRequests.delete(message.id);
             } else {
                 // Handle notifications or unsolicited messages
-                console.log("LSP notification:", message);
+                // console.log("LSP notification:", message);
             }
         } catch (error) {
             console.error("Error parsing LSP message:", error);

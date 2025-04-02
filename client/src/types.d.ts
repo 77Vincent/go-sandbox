@@ -49,8 +49,29 @@ export interface resultI {
     content: string;
 }
 
+export interface LSPResponse {
+    jsonrpc: string;
+    id: number;
+    result?: any;
+    error?: { code: number; message: string; data?: any };
+}
+
+export interface PendingRequestI {
+    resolve: (result: LSPResponse) => void;
+    reject: (error: LSPResponse) => void;
+}
+
+export type pendingRequests = Map<number, PendingRequestI>;
+
 export interface LSPCompletionItem {
     label: string;
+    additionalTextEdits?: Array<{
+        range: {
+            start: { line: number; character: number };
+            end: { line: number; character: number };
+        };
+        newText: string;
+    }>
     insertText?: string;
     insertTextFormat?: number;
     detail?: string;
@@ -76,4 +97,11 @@ export interface LSPCompletionResponse {
     id: number;
     result?: LSPCompletionItem[] | { items: LSPCompletionItem[]; isIncomplete?: boolean };
     error?: { code: number; message: string; data?: any };
+}
+
+export interface onCursorChangeI {
+    cursor: {
+        row: number;
+        column: number;
+    }
 }
