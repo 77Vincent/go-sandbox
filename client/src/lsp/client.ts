@@ -5,6 +5,13 @@ const WORKSPACE = "workspace";
 const URI_BASE = `file:///${WORKSPACE}`
 const URI = `${URI_BASE}/main.go`
 
+// LSP events
+const EVENT_INITIALIZE = "initialize"
+const EVENT_INITIALIZED = "initialized"
+const EVENT_COMPLETION = "textDocument/completion"
+const EVENT_DID_OPEN = "textDocument/didOpen"
+const EVENT_DID_CHANGE = "textDocument/didChange"
+
 function isFunc(kind: number | undefined): boolean {
     if (kind === undefined) {
         return false;
@@ -57,7 +64,7 @@ export default class LSPClient {
 
         this.ws.onopen = () => {
             // Optionally send the initialize request here:
-            this.sendRequest("initialize", {capabilities: {}})
+            this.sendRequest(EVENT_INITIALIZE, {capabilities: {}})
                 .then(() => {
                 })
                 .catch((err) => console.error("Initialize error:", err));
@@ -91,26 +98,23 @@ export default class LSPClient {
 
     sendRequest(method: string, params: any): Promise<any> {
         const id = ++this.requestId;
-        const request = {
-            jsonrpc: "2.0",
-            id,
-            method,
-            params,
-        };
+        const request = {jsonrpc: "2.0", id, method, params,};
         return new Promise((resolve, reject) => {
             this.pendingRequests.set(id, {resolve, reject});
+
             if (this.ws.readyState === WebSocket.OPEN) {
                 this.ws.send(JSON.stringify(request));
-            } else {
-                this.ws.addEventListener("open", () => {
-                    this.ws.send(JSON.stringify(request));
-                }, {once: true});
+                return
             }
+
+            this.ws.addEventListener("open", () => {
+                this.ws.send(JSON.stringify(request));
+            }, {once: true});
         });
     }
 
     async didChange(version: number, text: string): Promise<void> {
-        this.sendNotification("textDocument/didChange", {
+        this.sendNotification(EVENT_DID_CHANGE, {
             textDocument: {uri: URI, version}, // Update version as needed.
             contentChanges: [{text}],
         });
@@ -119,11 +123,11 @@ export default class LSPClient {
     async getCompletions(): Promise<Ace.Completion[]> {
         try {
             const pos = this.editor.getCursorPosition();
-            const response = await this.sendRequest("textDocument/completion", {
+            const response = await this.sendRequest(EVENT_COMPLETION, {
                 textDocument: {uri: URI},
                 position: {line: pos.row, character: pos.column},
             });
-            console.log("Completion response:", response.result.items);
+            console.log("Completion response:", response);
             return getCompletions(response);
         } catch (e) {
             console.error("Completion request error:", e);
@@ -133,13 +137,13 @@ export default class LSPClient {
 
     async initialize(): Promise<void> {
         try {
-            await this.sendRequest("initialize", {
+            await this.sendRequest(EVENT_INITIALIZE, {
                 rootUri: URI_BASE,
                 workspaceFolders: [{uri: URI_BASE, name: WORKSPACE}],
                 capabilities: {},
             })
-            this.sendNotification("initialized", {});
-            this.sendNotification("textDocument/didOpen", {
+            this.sendNotification(EVENT_INITIALIZED, {});
+            this.sendNotification(EVENT_DID_OPEN, {
                 textDocument: {
                     uri: URI,
                     languageId: "go",
