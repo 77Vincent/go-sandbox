@@ -76,7 +76,7 @@ import {KeyBindings, languages, mySandboxes, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
-import LSPClient from "../lsp/client.ts";
+import LSP from "../lsp/client.ts";
 
 function ShareSuccessMessage(props: {
     url: string,
@@ -113,6 +113,7 @@ export default function Component(props: {
     const {mode} = useThemeMode();
     const statusBarRef = useRef<HTMLDivElement | null>(null);
 
+    const [docVersion, setDocVersion] = useState<number>(1);
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
@@ -138,15 +139,18 @@ export default function Component(props: {
     const [info, setInfo] = useState<string>("")
 
     // reference the latest state
+    const lspClientRef = useRef<LSP | null>(null);
     const codeRef = useRef(code);
     const sandboxVersionRef = useRef(sandboxVersion);
     const activeSandboxRef = useRef(activeSandbox);
     const isRunningRef = useRef(isRunning);
+    const docVersionRef = useRef(docVersion);
 
     function storeCode(code: string) {
         setCode(code);
         localStorage.setItem(activeSandboxRef.current, code);
         codeRef.current = code;
+        docVersionRef.current += 1;
     }
 
     // cursor status
@@ -248,76 +252,57 @@ export default function Component(props: {
             exec: function () {
                 debouncedShare()
             }
-        })
-        // Function to request completions based on the current cursor position.
-        function requestCompletion(row: number, column: number) {
-            lspClient.sendRequest("textDocument/completion", {
-                textDocument: { uri: "file:///workspace/main.go" },
-                position: { line: row, character: column },
-            })
-                .then(response => {
-                    console.log("Completion response:", response);
-                    // TODO: Process the completion suggestions and display them in your UI.
-                })
-                .catch(error => {
-                    console.error("Completion request error:", error);
-                });
-        }
+        });
 
-        // Example: send a "textDocument/didOpen" notification when a file is loaded
-        const lspClient = new LSPClient("ws://localhost:3000/ws");
+        (async () => {
+            try {
+                const client = new LSP("ws://localhost:3000/ws", editor);
+                await client.initialize();
+                lspClientRef.current = client;
 
-        lspClient.sendRequest("initialize", {
-            rootUri: "file:///workspace",
-            workspaceFolders: [
-                { uri: "file:///workspace", name: "workspace" }
-            ],
-            capabilities: {}
-        })
-            .then(initResp => {
-                console.log("Initialize response:", initResp);
-
-                // (B) **Now** notify the server that the client is initialized
-                lspClient.sendNotification("initialized", {});
-
-                // (C) After that, you can send didOpen or other notifications
-                lspClient.sendNotification("textDocument/didOpen", {
-                    textDocument: {
-                        uri: "file:///workspace/main.go",
-                        languageId: "go",
-                        version: 1,
-                        text: editor.getValue(),
+                editor.completers = editor.completers || [];
+                editor.completers.push({
+                    getCompletions: async (_editor: Ace.Editor, _session: Ace.EditSession, _pos: Ace.Point, _prefix: string, callback) => {
+                        try {
+                            callback(null, await client.getCompletions());
+                        } catch (error) {
+                            console.error("Completion request error:", error);
+                            callback(error, []);
+                        }
                     },
                 });
-
-                // Example: request completions
-                requestCompletion(editor.getCursorPosition().row, editor.getCursorPosition().column);
-            })
-            .catch(error => {
-                console.error("Initialize error:", error);
-            });
-
+            } catch (e) {
+                setToastError((e as Error).message)
+            }
+        })()
     };
 
     // IMPORTANT: update the ref when the state changes
     useEffect(() => {
+        docVersionRef.current = docVersion
         codeRef.current = code
-    }, [code]);
-    useEffect(() => {
         isRunningRef.current = isRunning
-    }, [isRunning]);
-    useEffect(() => {
         sandboxVersionRef.current = sandboxVersion
-    }, [sandboxVersion]);
-    useEffect(() => {
         activeSandboxRef.current = activeSandbox
-    }, [activeSandbox]);
+    }, [code, docVersion, isRunning, sandboxVersion, activeSandbox]);
 
     function onChange(newCode: string = "") {
         const processedPrevCode = normalizeText(codeRef.current);
         const processedNewCode = normalizeText(newCode);
 
         storeCode(newCode);
+
+        // update the docVersion
+        setDocVersion(prev => prev + 1);
+
+        // get auto-completion if the lint is on
+        if (isLintOn) {
+            // send the didChange notification
+            lspClientRef?.current?.sendNotification("textDocument/didChange", {
+                textDocument: {uri: "file:///workspace/main.go", version: docVersionRef.current}, // Update version as needed.
+                contentChanges: [{text: codeRef.current}],
+            });
+        }
 
         // only run if auto run is on
         if (isAutoRun) {
@@ -590,10 +575,10 @@ export default function Component(props: {
             <div
                 className="flex items-center justify-between border-b border-b-gray-300 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0.5">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
-                    <img src={"/logo.svg"} alt={"logo"} className={"h-4 max-md:hidden"}/>
+                    <img src={"/logo.svg"} alt={"logo"} className={"mr-1 h-4 max-md:hidden"}/>
 
                     <div
-                        className="text-xl font-semibold text-gray-800 dark:text-gray-200 max-md:text-sm">{TITLE}</div>
+                        className="text-xl font-light text-gray-600 dark:text-gray-300 max-md:text-sm">{TITLE}</div>
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">

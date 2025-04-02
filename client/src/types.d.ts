@@ -14,6 +14,7 @@ declare global {
     interface Window {
         ace: any;
     }
+
     interface Navigator {
         userAgentData?: NavigatorUAData;
     }
@@ -46,4 +47,33 @@ export type toastType = "info" | "error"
 export interface resultI {
     type: resultType;
     content: string;
+}
+
+export interface LSPCompletionItem {
+    label: string;
+    insertText?: string;
+    insertTextFormat?: number;
+    detail?: string;
+    kind?: number;
+    filterText?: string;
+    preselect?: boolean; // Whether this item is preselected
+    sortText?: string;
+    documentation?: {
+        kind: string;
+        value: string;
+    };
+    textEdit?: {
+        range: {
+            start: { line: number; character: number };
+            end: { line: number; character: number };
+        };
+        newText: string;
+    }
+}
+
+export interface LSPCompletionResponse {
+    jsonrpc: string;
+    id: number;
+    result?: LSPCompletionItem[] | { items: LSPCompletionItem[]; isIncomplete?: boolean };
+    error?: { code: number; message: string; data?: any };
 }
