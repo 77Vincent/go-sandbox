@@ -290,25 +290,21 @@ export default function Component(props: {
         const processedPrevCode = normalizeText(codeRef.current);
         const processedNewCode = normalizeText(newCode);
 
+        // update ref immediately
+        const newVersion = docVersion+1
+
         storeCode(newCode);
+        setDocVersion(newVersion);
 
-        // update the docVersion
-        setDocVersion(prev => prev + 1);
-
-        // get auto-completion if the lint is on
-        if (isLintOn) {
-            // send the didChange notification
-            lspClientRef?.current?.sendNotification("textDocument/didChange", {
-                textDocument: {uri: "file:///workspace/main.go", version: docVersionRef.current}, // Update version as needed.
-                contentChanges: [{text: codeRef.current}],
-            });
-        }
-
-        // only run if auto run is on
-        if (isAutoRun) {
-            // only run if the code is changed meaningfully
-            if (processedPrevCode !== processedNewCode) {
+        // only act if the there is diff
+        if (processedPrevCode !== processedNewCode) {
+            // only run if auto run is on
+            if (isAutoRun) {
                 debouncedAutoRun();
+            }
+
+            if (isLintOn) {
+                lspClientRef?.current?.didChange(newVersion, newCode);
             }
         }
     }
