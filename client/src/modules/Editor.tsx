@@ -72,10 +72,11 @@ import {
     isMobileDevice, normalizeText, getActiveSandbox, isMac
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
-import {KeyBindings, languages, mySandboxes, resultI} from "../types";
+import {KeyBindings, languages, mySandboxes, onCursorChangeI, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
+import LSP from "../lsp/client.ts";
 
 function ShareSuccessMessage(props: {
     url: string,
@@ -110,8 +111,8 @@ export default function Component(props: {
 }) {
     const {setToastError, setToastInfo} = props
     const {mode} = useThemeMode();
-    const statusBarRef = useRef<HTMLDivElement | null>(null);
 
+    const [docVersion, setDocVersion] = useState<number>(1);
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
@@ -137,15 +138,19 @@ export default function Component(props: {
     const [info, setInfo] = useState<string>("")
 
     // reference the latest state
+    const statusBarRef = useRef<HTMLDivElement | null>(null);
+    const lspClientRef = useRef<LSP | null>(null);
     const codeRef = useRef(code);
     const sandboxVersionRef = useRef(sandboxVersion);
     const activeSandboxRef = useRef(activeSandbox);
     const isRunningRef = useRef(isRunning);
+    const docVersionRef = useRef(docVersion);
 
     function storeCode(code: string) {
         setCode(code);
         localStorage.setItem(activeSandboxRef.current, code);
         codeRef.current = code;
+        docVersionRef.current += 1;
     }
 
     // cursor status
@@ -158,7 +163,7 @@ export default function Component(props: {
     const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
     const [isShowInvisible, setIsShowInvisible] = useState<boolean>(getShowInvisible())
 
-    // fetch the snippet if the url contains the snippet id
+    // fetch the snippet if the url contains the snippet id, do only once
     useEffect(() => {
         (async () => {
             const matches = location.pathname.match(SNIPPET_REGEX)
@@ -187,9 +192,6 @@ export default function Component(props: {
         }
         editor.focus();
         editor.moveCursorTo(row, column);
-
-        // read to run
-        setIsRunning(false);
 
         const metaKey = isMac() ? "command" : "ctrl";
         // global key bindings
@@ -247,34 +249,63 @@ export default function Component(props: {
             exec: function () {
                 debouncedShare()
             }
-        })
+        });
+
+        (async () => {
+            try {
+                const client = new LSP("ws://localhost:3000/ws", editor);
+                await client.initialize();
+                lspClientRef.current = client;
+
+                editor.completers.push({
+                    id: "lsp",
+                    getCompletions: async (_editor: Ace.Editor, _session: Ace.EditSession, _pos: Ace.Point, _prefix: string, callback) => {
+                        const completions = await client.getCompletions();
+                        try {
+                            callback(null, completions);
+                        } catch (error) {
+                            console.error("Completion request error:", error);
+                            callback(error, []);
+                        }
+                    },
+                })
+            } catch (e) {
+                setToastError((e as Error).message)
+            }
+        })()
+
+        // read to run
+        setIsRunning(false);
     };
 
     // IMPORTANT: update the ref when the state changes
     useEffect(() => {
+        docVersionRef.current = docVersion
         codeRef.current = code
-    }, [code]);
-    useEffect(() => {
         isRunningRef.current = isRunning
-    }, [isRunning]);
-    useEffect(() => {
         sandboxVersionRef.current = sandboxVersion
-    }, [sandboxVersion]);
-    useEffect(() => {
         activeSandboxRef.current = activeSandbox
-    }, [activeSandbox]);
+    }, [code, docVersion, isRunning, sandboxVersion, activeSandbox]);
 
     function onChange(newCode: string = "") {
         const processedPrevCode = normalizeText(codeRef.current);
         const processedNewCode = normalizeText(newCode);
 
-        storeCode(newCode);
+        // update ref immediately
+        const newVersion = docVersion + 1
 
-        // only run if auto run is on
-        if (isAutoRun) {
-            // only run if the code is changed meaningfully
-            if (processedPrevCode !== processedNewCode) {
+        storeCode(newCode);
+        setDocVersion(newVersion);
+
+        // only act if the there is diff
+        if (processedPrevCode !== processedNewCode) {
+            // only run if auto run is on
+            if (isAutoRun) {
                 debouncedAutoRun();
+            }
+
+            if (isLintOn) {
+                lspClientRef?.current?.didChange(newVersion, newCode);
             }
         }
     }
@@ -420,19 +451,18 @@ export default function Component(props: {
     }, [debouncedRun, setToastError]), RUN_DEBOUNCE_TIME)).current;
 
     // manage debounced cursor position update
-    const debouncedOnCursorChange = debounce(function onCursorChange(value: any) {
-        const row = value.cursor.row;
-        const col = value.cursor.column;
+    const debouncedOnCursorChange = debounce(function onCursorChange(value: onCursorChangeI) {
+        const {cursor: {row, column}} = value;
 
         if (statusBarRef.current) {
-            statusBarRef.current.textContent = `${row + 1}:${col + 1}`;
+            statusBarRef.current.textContent = `${row + 1}:${column + 1}`;
         }
 
-        localStorage.setItem(CURSOR_ROW_KEY, row);
-        localStorage.setItem(CURSOR_COLUMN_KEY, col);
+        localStorage.setItem(CURSOR_ROW_KEY, String(row));
+        localStorage.setItem(CURSOR_COLUMN_KEY, String(column));
 
         setRow(row);
-        setColumn(col);
+        setColumn(column);
     }, CURSOR_UPDATE_DEBOUNCE_TIME);
 
 
@@ -541,10 +571,10 @@ export default function Component(props: {
             <div
                 className="flex items-center justify-between border-b border-b-gray-300 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0.5">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
-                    <img src={"/logo.svg"} alt={"logo"} className={"h-4 max-md:hidden"}/>
+                    <img src={"/logo.svg"} alt={"logo"} className={"mr-1 h-4 max-md:hidden"}/>
 
                     <div
-                        className="text-xl font-semibold text-gray-800 dark:text-gray-200 max-md:text-sm">{TITLE}</div>
+                        className="text-xl font-light text-gray-600 dark:text-gray-300 max-md:text-sm">{TITLE}</div>
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">

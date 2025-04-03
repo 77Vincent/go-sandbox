@@ -9,6 +9,7 @@ services:
       - "3000:3000"
     depends_on:
       - redis
+      - gopls
     restart: always
 
   redis:
@@ -17,3 +18,9 @@ services:
     ports:
       - "6379:6379"
     restart: always
+
+  gopls:
+    build:
+      context: ./gopls
+    ports:
+      - "4389:4389"
