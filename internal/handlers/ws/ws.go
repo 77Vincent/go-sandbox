@@ -33,17 +33,16 @@ func WS(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
-	fmt.Println("Connected to gopls TCP", conn.RemoteAddr())
 
 	// WebSocket → gopls TCP (with Content-Length framing)
 	go func() {
 		for {
-			_, msg, err := ws.ReadMessage()
+			var msg []byte
+			_, msg, err = ws.ReadMessage()
 			if err != nil {
 				log.Println("WS read error:", err)
 				return
 			}
-			fmt.Println("🔹 Incoming from frontend:", string(msg))
 
 			header := fmt.Sprintf("Content-Length: %d\r\n\r\n", len(msg))
 			conn.Write([]byte(header))
@@ -76,8 +75,6 @@ func WS(c *gin.Context) {
 			log.Println("Read body error:", err)
 			return
 		}
-		// 🔍 Add log here
-		fmt.Println("🔸 Response from gopls:", string(body))
 
 		ws.WriteMessage(websocket.TextMessage, body)
 	}
