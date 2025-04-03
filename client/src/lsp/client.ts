@@ -11,6 +11,33 @@ const EVENT_INITIALIZED = "initialized"
 const EVENT_COMPLETION = "textDocument/completion"
 const EVENT_DID_OPEN = "textDocument/didOpen"
 const EVENT_DID_CHANGE = "textDocument/didChange"
+const KIND_MAP: Record<number, string> = {
+    1: "Text",
+    2: "Method",
+    3: "Function",
+    4: "Constructor",
+    5: "Field",
+    6: "Variable",
+    7: "Class",
+    8: "Interface",
+    9: "Module",
+    10: "Property",
+    11: "Unit",
+    12: "Value",
+    13: "Enum",
+    14: "Keyword",
+    15: "Snippet",
+    16: "Color",
+    17: "File",
+    18: "Reference",
+    19: "Folder",
+    20: "EnumMember",
+    21: "Constant",
+    22: "Struct",
+    23: "Event",
+    24: "Operator",
+    25: "TypeParameter",
+}
 
 export function getCompletions(response: LSPCompletionResponse): Ace.Completion[] {
     // Check if the response contains an error.
@@ -30,14 +57,16 @@ export function getCompletions(response: LSPCompletionResponse): Ace.Completion[
     // Map LSP completion items to Ace's format.
     const completions: Ace.Completion[] = []
     items.forEach(v => {
+        const doc = `<div class="mb-1.5 italic text-blue-600 dark:text-lime-400">${v.detail || ''}</div><div>${v.documentation?.value || ''}</div>`;
+
         completions.push({
             completerId: "lsp",
             caption: v.label, // The text to display in the completion list.
             value: v.insertText || v.label, // The text to insert when the completion is selected.
             snippet: v.insertText || v.label, // The text to insert when the completion is selected.
-            meta: v.detail || 'LSP', // The type of completion (e.g., function, variable).
-            docText: v.documentation?.value,
-            score: v.sortText ? parseInt(v.sortText) + 100 : 0,
+            meta: KIND_MAP[v.kind || 1], // The type of completion (e.g., function, variable).
+            docHTML: doc,
+            score: v.sortText ? parseInt(v.sortText) + 1000 : 0,
         })
     })
 
@@ -116,6 +145,7 @@ export default class LSPClient {
             const response = await this.sendRequest(EVENT_COMPLETION, {
                 textDocument: {uri: URI},
                 position: {line: pos.row, character: pos.column},
+                context: {triggerKind: 2}, // Triggered by typing
             });
             return getCompletions(response);
         } catch (e) {

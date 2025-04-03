@@ -15,3 +15,7 @@
     from { width: 0; }
     to { width: 100%; }
 }
+
+.ace_tooltip {
+    max-height: 500px;
+}

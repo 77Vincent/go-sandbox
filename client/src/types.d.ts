@@ -95,7 +95,7 @@ export interface LSPCompletionItem {
 export interface LSPCompletionResponse {
     jsonrpc: string;
     id: number;
-    result?: LSPCompletionItem[] | { items: LSPCompletionItem[]; isIncomplete?: boolean };
+    result?: { items: LSPCompletionItem[]; isIncomplete?: boolean };
     error?: { code: number; message: string; data?: any };
 }
 
