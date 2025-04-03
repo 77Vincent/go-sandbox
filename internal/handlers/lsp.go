@@ -1,4 +1,4 @@
-package ws
+package handlers
 
 import (
 	"bufio"
@@ -17,7 +17,7 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
-func WS(c *gin.Context) {
+func LSP(c *gin.Context) {
 	// Upgrade connection
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -40,7 +40,7 @@ func WS(c *gin.Context) {
 			var msg []byte
 			_, msg, err = ws.ReadMessage()
 			if err != nil {
-				log.Println("WS read error:", err)
+				log.Println("LSP read error:", err)
 				return
 			}
 
