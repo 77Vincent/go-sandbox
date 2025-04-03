@@ -57,16 +57,18 @@ export function getCompletions(response: LSPCompletionResponse): Ace.Completion[
     // Map LSP completion items to Ace's format.
     const completions: Ace.Completion[] = []
     items.forEach(v => {
-        const doc = `<div class="mb-1.5 italic text-blue-600 dark:text-lime-400">${v.detail || ''}</div><div>${v.documentation?.value || ''}</div>`;
+        const value = v.insertText || v.label;
+        const doc = (v.detail || v.documentation?.value) ? `<div class="mb-1.5 italic text-blue-600 dark:text-lime-400">${v.detail || ''}</div><div>${v.documentation?.value || ''}</div>` : "";
+        const toInsert = v.kind === 2 || v.kind === 3 ? `${value}()` : value;
 
         completions.push({
             completerId: "lsp",
             caption: v.label, // The text to display in the completion list.
-            value: v.insertText || v.label, // The text to insert when the completion is selected.
-            snippet: v.insertText || v.label, // The text to insert when the completion is selected.
+            value: toInsert, // The text to insert when the completion is selected.
+            snippet: toInsert,
             meta: KIND_MAP[v.kind || 1], // The type of completion (e.g., function, variable).
             docHTML: doc,
-            score: v.sortText ? parseInt(v.sortText) + 1000 : 0,
+            score: v.sortText ? parseInt(v.sortText) : 0,
         })
     })
 

@@ -251,13 +251,27 @@ export default function Component(props: {
             }
         });
 
+        editor.commands.addCommand({
+            name: "dotAutocomplete",
+            bindKey: { win: ".", mac: "." },
+            exec: function(editor) {
+                // Insert the dot normally.
+                editor.insert(".");
+                // Optionally, delay slightly to ensure the dot is inserted.
+                setTimeout(() => {
+                    // Trigger the autocomplete popup.
+                    editor.execCommand("startAutocomplete");
+                }, 0);
+            }
+        });
+
         (async () => {
             try {
                 const client = new LSP("ws://localhost:3000/ws", editor);
                 await client.initialize();
                 lspClientRef.current = client;
 
-                editor.completers.push({
+                editor.completers = [{
                     id: "lsp",
                     getCompletions: async (_editor: Ace.Editor, _session: Ace.EditSession, _pos: Ace.Point, _prefix: string, callback) => {
                         const completions = await client.getCompletions();
@@ -268,7 +282,7 @@ export default function Component(props: {
                             callback(error, []);
                         }
                     },
-                })
+                }]
             } catch (e) {
                 setToastError((e as Error).message)
             }
