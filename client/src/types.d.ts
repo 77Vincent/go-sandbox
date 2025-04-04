@@ -20,7 +20,7 @@ declare global {
     }
 }
 
-export type KeyBindings = "" | "vim" | "emacs";
+export type KeyBindingsType = "" | "vim" | "emacs";
 
 export {};
 

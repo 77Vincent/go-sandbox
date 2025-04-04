@@ -1,4 +1,4 @@
-import {KeyBindings, languages, mySandboxes} from "./types";
+import {KeyBindingsType, languages, mySandboxes} from "./types";
 
 export const TITLE = "Go Sandbox";
 
@@ -24,7 +24,7 @@ export const CURSOR_COLUMN_KEY = "cursorPositionColumn";
 
 export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
 export const DEFAULT_SANDBOX_VERSION = "1";
-export const DEFAULT_KEY_BINDINGS: KeyBindings = "";
+export const DEFAULT_KEY_BINDINGS: KeyBindingsType = "";
 export const DEFAULT_AUTO_RUN = "true";
 export const DEFAULT_LINT_ON = "false";
 export const DEFAULT_SHOW_INVISIBLE = "false";
@@ -33,8 +33,8 @@ export const EDITOR_SIZE_MAX = 90
 export const EDITOR_SIZE_MIN = 10
 export const DEFAULT_LANGUAGE = "en";
 export const FONT_SIZE_L = 15;
-export const FONT_SIZE_M = 13;
-export const FONT_SIZE_S = 11;
+export const FONT_SIZE_M = 13.5;
+export const FONT_SIZE_S = 11.5;
 export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
 
 export const MOBILE_WIDTH = 768;
@@ -242,7 +242,7 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
     },
 }
 
-export const keyBindingsMap: Record<KeyBindings, string> = {
+export const keyBindingsMap: Record<KeyBindingsType, string> = {
     vim: "Vim",
     emacs: "Emacs",
     "": "None",

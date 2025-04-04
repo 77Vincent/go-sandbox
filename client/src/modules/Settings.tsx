@@ -19,7 +19,7 @@ import {
     LANGUAGES,
     TRANSLATE
 } from "../constants.ts";
-import {KeyBindings, languages} from "../types";
+import {KeyBindingsType, languages} from "../types";
 import {Divider, ToggleSwitch} from "./Common.tsx";
 
 const activeClasses = "cursor-pointer hover:opacity-50";
@@ -55,8 +55,8 @@ export default function Component(props: {
     onFontS: () => void;
     onFontM: () => void;
     // for keyBindings
-    keyBindings: KeyBindings;
-    onKeyBindingsChange: (id: KeyBindings) => void;
+    keyBindings: KeyBindingsType;
+    onKeyBindingsChange: (id: KeyBindingsType) => void;
     // for lint
     isLintOn: boolean;
     onLint: () => void;
@@ -94,7 +94,7 @@ export default function Component(props: {
         show, setShow,
     } = props;
 
-    function onKeyBinding(id: KeyBindings) {
+    function onKeyBinding(id: KeyBindingsType) {
         return () => {
             if (id !== keyBindings) {
                 onKeyBindingsChange(id);

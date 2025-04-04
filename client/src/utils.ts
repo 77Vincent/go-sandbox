@@ -25,7 +25,7 @@ import {
     MOBILE_WIDTH,
     HELLO_WORLD, ACTIVE_SANDBOX_KEY, DEFAULT_ACTIVE_SANDBOX, MY_SANDBOXES, SANDBOX_NAMES_KEY
 } from "./constants.ts";
-import {KeyBindings, languages, mySandboxes} from "./types";
+import {KeyBindingsType, languages, mySandboxes} from "./types";
 import {IMarker} from "react-ace";
 
 export function getFontSize(): number {
@@ -52,8 +52,8 @@ export function getCodeContent(sandbox: mySandboxes): string {
     return localStorage.getItem(sandbox) || HELLO_WORLD
 }
 
-export function getKeyBindings(): KeyBindings {
-    return localStorage.getItem(KEY_BINDINGS_KEY) as KeyBindings || DEFAULT_KEY_BINDINGS
+export function getKeyBindings(): KeyBindingsType {
+    return localStorage.getItem(KEY_BINDINGS_KEY) as KeyBindingsType || DEFAULT_KEY_BINDINGS
 }
 
 export function getEditorSize(): number {
