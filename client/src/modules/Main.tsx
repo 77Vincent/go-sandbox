@@ -12,7 +12,6 @@ import Mousetrap from "mousetrap";
 
 import {KeyBindingsType} from "../types";
 import {EMACS, NONE, VIM} from "../constants.ts";
-import {isMac} from "../utils.ts";
 
 // Compartments for dynamic config
 const fontSizeCompartment = new Compartment();
@@ -49,9 +48,9 @@ export default function Component(props: {
     onCursorChange: (value: ViewUpdate) => void;
     // setters
     setShowSettings: (v: boolean) => void;
+    // actions
+    debouncedRun: () => void;
 }) {
-    const metaKeyUnfocused = isMac() ? "command" : "ctrl";
-    const metaKeyFocused = isMac() ? "cmd" : "ctrl";
     const {
         code, cursorHead, fontSize, indent, keyBindings,
         // handlers
@@ -59,16 +58,26 @@ export default function Component(props: {
         onCursorChange,
         // setters
         setShowSettings,
+        // action
+        debouncedRun,
     } = props;
     const {mode} = useThemeMode();
     const viewRef = useRef<EditorView | null>(null);
 
     const focusedKeymap = keymap.of([
         {
-            key: `${metaKeyFocused}-,`, // "Cmd+," on Mac, "Ctrl+," on Windows
+            key: `Mod-,`,
             preventDefault: true,
             run: () => {
                 setShowSettings(true);
+                return true;
+            }
+        },
+        {
+            key: `Mod-r`,
+            preventDefault: true,
+            run: () => {
+                debouncedRun()
                 return true;
             }
         }
@@ -96,8 +105,12 @@ export default function Component(props: {
             view.focus();
             return false
         });
-        Mousetrap.bind(`${metaKeyUnfocused}+,`, function () {
+        Mousetrap.bind(`mod+,`, function () {
             setShowSettings(true);
+            return false
+        });
+        Mousetrap.bind(`mod+r`, function () {
+            debouncedRun()
             return false
         });
     }
