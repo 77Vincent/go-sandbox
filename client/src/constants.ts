@@ -8,6 +8,10 @@ export const EVENT_ERROR = "error";
 export const EVENT_CLEAR = "clear";
 export const EVENT_DONE = "done";
 
+export const VIM = "vim"
+export const EMACS = "emacs"
+export const NONE = ""
+
 export const SANDBOX_NAMES_KEY = "sandboxNames";
 export const ACTIVE_SANDBOX_KEY = "activeSandbox";
 export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";

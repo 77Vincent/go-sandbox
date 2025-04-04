@@ -5,10 +5,11 @@ import {vim} from "@replit/codemirror-vim";
 import {emacs} from "@replit/codemirror-emacs";
 import {Compartment} from "@codemirror/state";
 import {indentUnit} from "@codemirror/language";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, {ViewUpdate} from "@uiw/react-codemirror";
 import {useThemeMode} from "flowbite-react";
 
 import {KeyBindingsType} from "../types";
+import {EMACS, NONE, VIM} from "../constants.ts";
 
 // Compartments for dynamic config
 const fontSizeCompartment = new Compartment();
@@ -23,23 +24,25 @@ const setIndent = (indent: number) => {
 }
 const setKeyBindings = (keyBindings: KeyBindingsType) => {
     switch (keyBindings) {
-        case "vim":
+        case VIM:
             return vim();
-        case "emacs":
+        case EMACS:
             return emacs();
+        case NONE:
+            return []
         default:
             return [];
     }
 }
 
 export default function Component(props: {
-    keyBindings: "" | "vim" | "emacs";
+    keyBindings: KeyBindingsType;
     code: string;
     cursorHead: number;
     fontSize: number;
     indent: number;
     onChange: (code: string) => void;
-    onCursorChange: (value: any) => void;
+    onCursorChange: (value: ViewUpdate) => void;
 }) {
     const {code, cursorHead, onChange, fontSize, indent, keyBindings, onCursorChange} = props;
     const {mode} = useThemeMode();
