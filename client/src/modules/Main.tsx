@@ -1,3 +1,4 @@
+import {keymap} from "@codemirror/view";
 import {useEffect, useRef, useState} from "react";
 import {EditorView} from "codemirror";
 import {go} from "@codemirror/lang-go";
@@ -7,9 +8,11 @@ import {Compartment} from "@codemirror/state";
 import {indentUnit} from "@codemirror/language";
 import CodeMirror, {ViewUpdate} from "@uiw/react-codemirror";
 import {useThemeMode} from "flowbite-react";
+import Mousetrap from "mousetrap";
 
 import {KeyBindingsType} from "../types";
 import {EMACS, NONE, VIM} from "../constants.ts";
+import {isMac} from "../utils.ts";
 
 // Compartments for dynamic config
 const fontSizeCompartment = new Compartment();
@@ -41,15 +44,39 @@ export default function Component(props: {
     cursorHead: number;
     fontSize: number;
     indent: number;
+    // handler
     onChange: (code: string) => void;
     onCursorChange: (value: ViewUpdate) => void;
+    // setters
+    setShowSettings: (v: boolean) => void;
 }) {
-    const {code, cursorHead, onChange, fontSize, indent, keyBindings, onCursorChange} = props;
+    const metaKeyUnfocused = isMac() ? "command" : "ctrl";
+    const metaKeyFocused = isMac() ? "cmd" : "ctrl";
+    const {
+        code, cursorHead, fontSize, indent, keyBindings,
+        // handlers
+        onChange,
+        onCursorChange,
+        // setters
+        setShowSettings,
+    } = props;
     const {mode} = useThemeMode();
     const viewRef = useRef<EditorView | null>(null);
 
+    const focusedKeymap = keymap.of([
+        {
+            key: `${metaKeyFocused}-,`, // "Cmd+," on Mac, "Ctrl+," on Windows
+            preventDefault: true,
+            run: () => {
+                setShowSettings(true);
+                return true;
+            }
+        }
+    ]);
+
     const [extensions] = useState(() => [
         go(),
+        focusedKeymap,
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(indent)),
         keyBindingsCompartment.of(setKeyBindings(keyBindings)),
@@ -63,6 +90,16 @@ export default function Component(props: {
             selection: {anchor: cursorHead},
             scrollIntoView: true,
         })
+
+        // key bindings for unfocused editor
+        Mousetrap.bind('esc', function () {
+            view.focus();
+            return false
+        });
+        Mousetrap.bind(`${metaKeyUnfocused}+,`, function () {
+            setShowSettings(true);
+            return false
+        });
     }
 
     // Dynamically reconfigure compartments when props change
