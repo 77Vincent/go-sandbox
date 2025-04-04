@@ -23,7 +23,13 @@ import {
     IS_VERTICAL_LAYOUT_KEY,
     DEFAULT_IS_VERTICAL_LAYOUT,
     MOBILE_WIDTH,
-    HELLO_WORLD, ACTIVE_SANDBOX_KEY, DEFAULT_ACTIVE_SANDBOX, MY_SANDBOXES, SANDBOX_NAMES_KEY
+    HELLO_WORLD,
+    ACTIVE_SANDBOX_KEY,
+    DEFAULT_ACTIVE_SANDBOX,
+    MY_SANDBOXES,
+    SANDBOX_NAMES_KEY,
+    CURSOR_HEAD_KEY,
+    DEFAULT_CURSOR_HEAD
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes} from "./types";
 import {IMarker} from "react-ace";
@@ -38,6 +44,10 @@ export function getActiveSandbox(): mySandboxes {
 
 export function getLanguage(): languages {
     return localStorage.getItem(LANGUAGE_KEY) as languages || DEFAULT_LANGUAGE
+}
+
+export function getCursorHead(): number {
+    return Number(localStorage.getItem(CURSOR_HEAD_KEY)) || DEFAULT_CURSOR_HEAD
 }
 
 export function getCursorRow(): number {

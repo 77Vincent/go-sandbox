@@ -35,12 +35,13 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
 export default function Component(props: {
     keyBindings: "" | "vim" | "emacs";
     code: string;
+    cursorHead: number;
     fontSize: number;
     indent: number;
     onChange: (code: string) => void;
     onCursorChange: (value: any) => void;
 }) {
-    const {code, onChange, fontSize, indent, keyBindings} = props;
+    const {code, cursorHead, onChange, fontSize, indent, keyBindings, onCursorChange} = props;
     const {mode} = useThemeMode();
     const viewRef = useRef<EditorView | null>(null);
 
@@ -49,11 +50,16 @@ export default function Component(props: {
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(indent)),
         keyBindingsCompartment.of(setKeyBindings(keyBindings)),
+        EditorView.updateListener.of(onCursorChange),
     ]);
 
     function onCreateEditor(view: EditorView) {
         viewRef.current = view;
         view.focus();
+        view.dispatch({
+            selection: {anchor: cursorHead},
+            scrollIntoView: true,
+        })
     }
 
     // Dynamically reconfigure compartments when props change
@@ -61,7 +67,6 @@ export default function Component(props: {
         if (!viewRef.current) return;
 
         viewRef.current.dispatch({
-            scrollIntoView: true,
             effects: [
                 fontSizeCompartment.reconfigure(setFontSize(fontSize)),
                 indentCompartment.reconfigure(setIndent(indent)),
