@@ -23,9 +23,7 @@ export const LINT_ON_KEY = "isLintOn";
 export const SHOW_INVISIBLE_KEY = "isShowInvisible";
 export const EDITOR_SIZE_KEY = "editorSize";
 export const FONT_SIZE_KEY = "fontSize";
-export const CURSOR_ROW_KEY = "cursorPositionRow";
 export const CURSOR_HEAD_KEY = "cursorHead";
-export const CURSOR_COLUMN_KEY = "cursorPositionColumn";
 
 export const DEFAULT_CURSOR_HEAD = 0;
 export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
@@ -44,7 +42,6 @@ export const FONT_SIZE_S = 11.5;
 export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
 
 export const MOBILE_WIDTH = 768;
-export const DEFAULT_CURSOR_POSITION = 0;
 
 export const CURSOR_UPDATE_DEBOUNCE_TIME = 100;
 export const RUN_DEBOUNCE_TIME = 100;

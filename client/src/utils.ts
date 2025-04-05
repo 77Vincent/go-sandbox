@@ -1,10 +1,7 @@
 import {
     AUTO_RUN_KEY,
     BUILD_ERROR_PARSING_REGEX,
-    CURSOR_COLUMN_KEY,
-    CURSOR_ROW_KEY,
     DEFAULT_AUTO_RUN,
-    DEFAULT_CURSOR_POSITION,
     DEFAULT_EDITOR_SIZE,
     DEFAULT_KEY_BINDINGS,
     DEFAULT_LANGUAGE,
@@ -48,14 +45,6 @@ export function getLanguage(): languages {
 
 export function getCursorHead(): number {
     return Number(localStorage.getItem(CURSOR_HEAD_KEY)) || DEFAULT_CURSOR_HEAD
-}
-
-export function getCursorRow(): number {
-    return Number(localStorage.getItem(CURSOR_ROW_KEY)) || DEFAULT_CURSOR_POSITION
-}
-
-export function getCursorColumn(): number {
-    return Number(localStorage.getItem(CURSOR_COLUMN_KEY)) || DEFAULT_CURSOR_POSITION
 }
 
 export function getCodeContent(sandbox: mySandboxes): string {
