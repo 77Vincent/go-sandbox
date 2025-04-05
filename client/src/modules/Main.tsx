@@ -50,6 +50,7 @@ export default function Component(props: {
     setShowSettings: (v: boolean) => void;
     // actions
     debouncedRun: () => void;
+    debouncedFormat: () => void;
 }) {
     const {
         code, cursorHead, fontSize, indent, keyBindings,
@@ -60,6 +61,7 @@ export default function Component(props: {
         setShowSettings,
         // action
         debouncedRun,
+        debouncedFormat,
     } = props;
     const {mode} = useThemeMode();
     const viewRef = useRef<EditorView | null>(null);
@@ -80,7 +82,15 @@ export default function Component(props: {
                 debouncedRun()
                 return true;
             }
-        }
+        },
+        {
+            key: `Mod-Alt-l`,
+            preventDefault: true,
+            run: () => {
+                debouncedFormat()
+                return true;
+            }
+        },
     ]);
 
     const [extensions] = useState(() => [
@@ -111,6 +121,10 @@ export default function Component(props: {
         });
         Mousetrap.bind(`mod+r`, function () {
             debouncedRun()
+            return false
+        });
+        Mousetrap.bind(`mod+option+l`, function () {
+            debouncedFormat()
             return false
         });
     }
