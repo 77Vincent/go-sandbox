@@ -1,17 +1,19 @@
 import {keymap} from "@codemirror/view";
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {EditorView} from "codemirror";
 import {go} from "@codemirror/lang-go";
 import {vim} from "@replit/codemirror-vim";
 import {emacs} from "@replit/codemirror-emacs";
-import {Compartment} from "@codemirror/state";
+import {Compartment, EditorSelection} from "@codemirror/state";
 import {indentUnit} from "@codemirror/language";
 import CodeMirror, {ViewUpdate} from "@uiw/react-codemirror";
 import {useThemeMode} from "flowbite-react";
 import Mousetrap from "mousetrap";
 
 import {KeyBindingsType} from "../types";
-import {EMACS, NONE, VIM} from "../constants.ts";
+import {CURSOR_HEAD_KEY, EMACS, NONE, RUN_DEBOUNCE_TIME, VIM} from "../constants.ts";
+import {getCursorHead} from "../utils.ts";
+import debounce from "debounce";
 
 // Compartments for dynamic config
 const fontSizeCompartment = new Compartment();
@@ -40,12 +42,10 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
 export default function Component(props: {
     keyBindings: KeyBindingsType;
     code: string;
-    cursorHead: number;
     fontSize: number;
     indent: number;
     // handler
     onChange: (code: string) => void;
-    onCursorChange: (value: ViewUpdate) => void;
     // setters
     setShowSettings: (v: boolean) => void;
     // actions
@@ -54,10 +54,9 @@ export default function Component(props: {
     debouncedShare: () => void;
 }) {
     const {
-        code, cursorHead, fontSize, indent, keyBindings,
+        code, fontSize, indent, keyBindings,
         // handlers
         onChange,
-        onCursorChange,
         // setters
         setShowSettings,
         // action
@@ -66,7 +65,15 @@ export default function Component(props: {
         debouncedShare,
     } = props;
     const {mode} = useThemeMode();
-    const viewRef = useRef<EditorView | null>(null);
+    const view = useRef<EditorView | null>(null);
+    const [cursor] = useState<number>(getCursorHead());
+
+    const onCursorChange = useRef(debounce(useCallback((v: ViewUpdate) => {
+        if (v.docChanged || v.selectionSet) {
+            const head = v.state.selection.main.head;
+            localStorage.setItem(CURSOR_HEAD_KEY, String(head))
+        }
+    }, []), RUN_DEBOUNCE_TIME)).current
 
     const focusedKeymap = keymap.of([
         {
@@ -112,17 +119,13 @@ export default function Component(props: {
         EditorView.updateListener.of(onCursorChange),
     ]);
 
-    function onCreateEditor(view: EditorView) {
-        viewRef.current = view;
-        view.focus();
-        view.dispatch({
-            selection: {anchor: cursorHead},
-            scrollIntoView: true,
-        })
+    function onCreateEditor(v: EditorView) {
+        // initialize refs
+        view.current = v;
 
         // key bindings for unfocused editor
         Mousetrap.bind('esc', function () {
-            view.focus();
+            v.focus();
             return false
         });
         Mousetrap.bind(`mod+,`, function () {
@@ -145,9 +148,9 @@ export default function Component(props: {
 
     // Dynamically reconfigure compartments when props change
     useEffect(() => {
-        if (!viewRef.current) return;
+        if (!view.current) return;
 
-        viewRef.current.dispatch({
+        view.current.dispatch({
             effects: [
                 fontSizeCompartment.reconfigure(setFontSize(fontSize)),
                 indentCompartment.reconfigure(setIndent(indent)),
@@ -159,10 +162,12 @@ export default function Component(props: {
     return (
         <CodeMirror
             value={code}
+            autoFocus={true}
             theme={mode === "light" ? "light" : "dark"}
             className={"flex-1 overflow-auto"}
             extensions={extensions}
             onCreateEditor={onCreateEditor}
+            selection={EditorSelection.cursor(Math.min(cursor, code.length))}
             onChange={onChange}/>
     )
 };

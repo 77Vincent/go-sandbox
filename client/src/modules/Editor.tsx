@@ -1,11 +1,9 @@
-import {ViewUpdate} from "@uiw/react-codemirror";
 import {useCallback, useRef, useState, useEffect, ReactNode} from "react";
 import {Resizable, ResizeDirection} from "re-resizable";
 import debounce from 'debounce';
 
 import {
     AUTO_RUN_KEY,
-    CURSOR_UPDATE_DEBOUNCE_TIME,
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
     FONT_SIZE_L,
@@ -28,7 +26,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, CURSOR_HEAD_KEY,
+    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY,
 } from "../constants.ts";
 import Main from "./Main.tsx";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
@@ -53,7 +51,7 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, normalizeText, getActiveSandbox, getCursorHead
+    isMobileDevice, normalizeText, getActiveSandbox
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindingsType, languages, mySandboxes, resultI} from "../types";
@@ -131,9 +129,6 @@ export default function Component(props: {
         codeRef.current = code;
         docVersionRef.current += 1;
     }
-
-    // cursor status
-    const [cursorHead] = useState<number>(getCursorHead())
 
     // mode status
     const [keyBindings, setKeyBindings] = useState<KeyBindingsType>(getKeyBindings())
@@ -328,13 +323,6 @@ export default function Component(props: {
         }
     }, [debouncedRun, setToastError]), RUN_DEBOUNCE_TIME)).current;
 
-    // manage debounced cursor position update
-    const debouncedOnCursorChange = debounce(function onCursorChange(value: ViewUpdate) {
-        const head = value.state.selection.main.head;
-        localStorage.setItem(CURSOR_HEAD_KEY, String(head));
-    }, CURSOR_UPDATE_DEBOUNCE_TIME);
-
-
     function onLint() {
         localStorage.setItem(LINT_ON_KEY, JSON.stringify(!isLintOn));
         setIsLintOn(!isLintOn);
@@ -495,11 +483,9 @@ export default function Component(props: {
                         <ClickBoard content={code}/>
 
                         <Main
-                            cursorHead={cursorHead}
                             code={code} fontSize={fontSize} indent={4}
                             keyBindings={keyBindings}
                             onChange={onChange}
-                            onCursorChange={debouncedOnCursorChange}
                             setShowSettings={setShowSettings}
                             debouncedRun={debouncedRun}
                             debouncedFormat={debouncedFormat}
