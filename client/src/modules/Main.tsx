@@ -51,6 +51,7 @@ export default function Component(props: {
     // actions
     debouncedRun: () => void;
     debouncedFormat: () => void;
+    debouncedShare: () => void;
 }) {
     const {
         code, cursorHead, fontSize, indent, keyBindings,
@@ -62,6 +63,7 @@ export default function Component(props: {
         // action
         debouncedRun,
         debouncedFormat,
+        debouncedShare,
     } = props;
     const {mode} = useThemeMode();
     const viewRef = useRef<EditorView | null>(null);
@@ -88,6 +90,14 @@ export default function Component(props: {
             preventDefault: true,
             run: () => {
                 debouncedFormat()
+                return true;
+            }
+        },
+        {
+            key: `Mod-Shift-e`,
+            preventDefault: true,
+            run: () => {
+                debouncedShare()
                 return true;
             }
         },
@@ -125,6 +135,10 @@ export default function Component(props: {
         });
         Mousetrap.bind(`mod+option+l`, function () {
             debouncedFormat()
+            return false
+        });
+        Mousetrap.bind(`mod+shift+e`, function () {
+            debouncedShare()
             return false
         });
     }
