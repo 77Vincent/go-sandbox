@@ -1,6 +1,7 @@
 import {ViewUpdate} from "@uiw/react-codemirror";
 import {useCallback, useRef, useState, useEffect, ReactNode} from "react";
 import {Resizable, ResizeDirection} from "re-resizable";
+import debounce from 'debounce';
 
 import {
     AUTO_RUN_KEY,
@@ -40,7 +41,6 @@ import SandboxSelector from "./SandboxSelector.tsx";
 import Info from "./Info.tsx";
 import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
 
-import {debounce} from "react-ace/lib/editorOptions";
 import {
     getAutoRun,
     getCodeContent,

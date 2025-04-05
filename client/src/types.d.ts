@@ -1,24 +1,4 @@
-declare module "monaco-vim" {
-    // Tweak these signatures to be more specific if desired
-    export function initVimMode(editor: any, statusBar: HTMLElement): void;
-}
-
-interface NavigatorUAData {
-    platform: string;
-    // Add any other properties you need
-    // brands?: Array<{ brand: string; version: string }>;
-    // mobile?: boolean;
-}
-
-declare global {
-    interface Window {
-        ace: any;
-    }
-
-    interface Navigator {
-        userAgentData?: NavigatorUAData;
-    }
-}
+declare global {}
 
 export type KeyBindingsType = "" | "vim" | "emacs";
 
@@ -97,11 +77,4 @@ export interface LSPCompletionResponse {
     id: number;
     result?: { items: LSPCompletionItem[]; isIncomplete?: boolean };
     error?: { code: number; message: string; data?: any };
-}
-
-export interface onCursorChangeI {
-    cursor: {
-        row: number;
-        column: number;
-    }
 }
