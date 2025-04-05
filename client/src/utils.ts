@@ -29,7 +29,6 @@ import {
     DEFAULT_CURSOR_HEAD
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes} from "./types";
-import {IMarker} from "react-ace";
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
@@ -133,22 +132,6 @@ export function mapFontSize(size: number): "xs" | "sm" | "md" {
     if (size < 14) return "xs";
     if (size >= 16) return "md";
     return "sm";
-}
-
-export function generateMarkers(error: string): IMarker[] {
-    const errs = parseExecutionError(error)
-    const markers: IMarker[] = []
-    for (const row of errs) {
-        markers.push({
-            startRow: row - 1,
-            endRow: row - 1,
-            startCol: 0,
-            endCol: 1,
-            className: "error-marker",
-            type: "fullLine"
-        })
-    }
-    return markers
 }
 
 const apiUrl = import.meta.env.VITE_API_URL || "";

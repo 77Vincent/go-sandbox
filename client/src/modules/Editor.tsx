@@ -1,14 +1,9 @@
+import {ViewUpdate} from "@uiw/react-codemirror";
 import {useCallback, useRef, useState, useEffect, ReactNode} from "react";
-import {useThemeMode} from "flowbite-react";
-import AceEditor, {IMarker} from "react-ace";
-import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
-import Mousetrap from "mousetrap";
 
 import {
     AUTO_RUN_KEY,
-    CURSOR_COLUMN_KEY,
-    CURSOR_ROW_KEY,
     CURSOR_UPDATE_DEBOUNCE_TIME,
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
@@ -32,10 +27,10 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY,
+    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, CURSOR_HEAD_KEY,
 } from "../constants.ts";
+import Main from "./Main.tsx";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
-import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import Actions from "./Actions.tsx";
@@ -45,34 +40,23 @@ import SandboxSelector from "./SandboxSelector.tsx";
 import Info from "./Info.tsx";
 import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
 
-import "ace-builds/src-noconflict/mode-golang";
-import "ace-builds/src-noconflict/theme-dawn";
-import "ace-builds/src-noconflict/theme-nord_dark";
-import "ace-builds/src-noconflict/ext-language_tools";
-import "ace-builds/src-noconflict/keybinding-vim"
-import "ace-builds/src-noconflict/keybinding-emacs"
-import "ace-builds/src-noconflict/ext-statusbar";
-import "ace-builds/src-noconflict/ext-searchbox";
 import {debounce} from "react-ace/lib/editorOptions";
 import {
     getAutoRun,
     getCodeContent,
-    getCursorColumn,
-    getCursorRow,
     getKeyBindings,
     getEditorSize,
     getFontSize,
     getLintOn,
-    generateMarkers,
     getShowInvisible,
     getUrl,
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, normalizeText, getActiveSandbox, isMac
+    isMobileDevice, normalizeText, getActiveSandbox, getCursorHead
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
-import {KeyBindings, languages, mySandboxes, onCursorChangeI, resultI} from "../types";
+import {KeyBindingsType, languages, mySandboxes, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
@@ -110,16 +94,12 @@ export default function Component(props: {
     setToastInfo: (message: ReactNode) => void
 }) {
     const {setToastError, setToastInfo} = props
-    const {mode} = useThemeMode();
 
     const [docVersion, setDocVersion] = useState<number>(1);
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
     const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(getActiveSandbox());
-
-    // error state
-    const [errorRows, setErrorRows] = useState<IMarker[]>([]);
 
     // settings
     const [fontSize, setFontSize] = useState<number>(getFontSize());
@@ -138,7 +118,6 @@ export default function Component(props: {
     const [info, setInfo] = useState<string>("")
 
     // reference the latest state
-    const statusBarRef = useRef<HTMLDivElement | null>(null);
     const lspClientRef = useRef<LSP | null>(null);
     const codeRef = useRef(code);
     const sandboxVersionRef = useRef(sandboxVersion);
@@ -154,11 +133,10 @@ export default function Component(props: {
     }
 
     // cursor status
-    const [row, setRow] = useState<number>(getCursorRow());
-    const [column, setColumn] = useState<number>(getCursorColumn());
+    const [cursorHead] = useState<number>(getCursorHead())
 
     // mode status
-    const [keyBindings, setKeyBindings] = useState<KeyBindings>(getKeyBindings())
+    const [keyBindings, setKeyBindings] = useState<KeyBindingsType>(getKeyBindings())
     const [isAutoRun, setIsAutoRun] = useState<boolean>(getAutoRun())
     const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
     const [isShowInvisible, setIsShowInvisible] = useState<boolean>(getShowInvisible())
@@ -181,116 +159,6 @@ export default function Component(props: {
             }
         })()
     }, [setToastError]);
-
-    const onEditorLoad = (editor: Ace.Editor) => {
-        // not ready to run
-        setIsRunning(true);
-
-        if (statusBarRef.current) {
-            const StatusBar = window.ace.require("ace/ext/statusbar").StatusBar;
-            new StatusBar(editor, statusBarRef.current);
-        }
-        editor.focus();
-        editor.moveCursorTo(row, column);
-
-        const metaKey = isMac() ? "command" : "ctrl";
-        // global key bindings
-        Mousetrap.bind('esc', function () {
-            editor.focus();
-            return false
-        });
-
-        // for settings
-        Mousetrap.bind(`${metaKey}+,`, function () {
-            setShowSettings(true);
-            return false
-        });
-        editor.commands.addCommand({
-            name: "settingsShortcut",
-            bindKey: {win: "Ctrl-,", mac: "Command-,"},
-            exec: function () {
-                setShowSettings(true);
-            }
-        })
-
-        // for run
-        Mousetrap.bind(`${metaKey}+return`, function () {
-            debouncedRun()
-        });
-        editor.commands.addCommand({
-            name: "runShortcut",
-            bindKey: {win: "Ctrl-Enter,", mac: "Command-Enter"},
-            exec: function () {
-                debouncedRun()
-            }
-        })
-
-        // for format
-        Mousetrap.bind(`${metaKey}+option+l`, function () {
-            debouncedFormat()
-            return false
-        });
-        editor.commands.addCommand({
-            name: "formatShortcut",
-            bindKey: {win: "Ctrl-Alt-L,", mac: "Command-Alt-L"},
-            exec: function () {
-                debouncedFormat()
-            }
-        })
-
-        // for share
-        Mousetrap.bind(`${metaKey}+shift+e`, function () {
-            debouncedShare()
-            return false
-        });
-        editor.commands.addCommand({
-            name: "shareShortcut",
-            bindKey: {win: "Ctrl-Shift-E,", mac: "Command-Shift-E"},
-            exec: function () {
-                debouncedShare()
-            }
-        });
-
-        editor.commands.addCommand({
-            name: "dotAutocomplete",
-            bindKey: { win: ".", mac: "." },
-            exec: function(editor) {
-                // Insert the dot normally.
-                editor.insert(".");
-                // Optionally, delay slightly to ensure the dot is inserted.
-                setTimeout(() => {
-                    // Trigger the autocomplete popup.
-                    editor.execCommand("startAutocomplete");
-                }, 0);
-            }
-        });
-
-        (async () => {
-            try {
-                const client = new LSP("ws://localhost:3000/ws", editor);
-                await client.initialize();
-                lspClientRef.current = client;
-
-                editor.completers = [{
-                    id: "lsp",
-                    getCompletions: async (_editor: Ace.Editor, _session: Ace.EditSession, _pos: Ace.Point, _prefix: string, callback) => {
-                        const completions = await client.getCompletions();
-                        try {
-                            callback(null, completions);
-                        } catch (error) {
-                            console.error("Completion request error:", error);
-                            callback(error, []);
-                        }
-                    },
-                }]
-            } catch (e) {
-                setToastError((e as Error).message)
-            }
-        })()
-
-        // read to run
-        setIsRunning(false);
-    };
 
     // IMPORTANT: update the ref when the state changes
     useEffect(() => {
@@ -355,7 +223,7 @@ export default function Component(props: {
             }
             if (error) {
                 setResult([{type: EVENT_STDERR, content: error}])
-                setErrorRows(generateMarkers(error))
+                // TODO: annotations or marker
             }
             if (message) {
                 setError(message)
@@ -390,7 +258,7 @@ export default function Component(props: {
                 setError(formatMessage)
                 setResult([{type: EVENT_STDERR, content: formatError}])
 
-                setErrorRows(generateMarkers(formatError))
+                // TODO: annotation or marker
                 setIsRunning(false)
                 return
             }
@@ -398,10 +266,8 @@ export default function Component(props: {
             // clean up
             setError("")
             setResult([])
-            setErrorRows([]);
+            // TODO: annotation or marker
             storeCode(formatted)
-
-            const markers: IMarker[] = []
 
             const source = new SSE(getUrl("/execute"), {
                 headers: {'Content-Type': 'application/json'},
@@ -425,10 +291,8 @@ export default function Component(props: {
                     return
                 }
 
-                markers.push(...generateMarkers(data))
-                if (markers.length > 0) {
-                    setErrorRows(markers)
-                }
+                // TODO: generate annotation or marker
+                // TODO: annotation or marker
 
                 setResult(prev => prev.concat({type: EVENT_STDERR, content: data}))
             });
@@ -443,7 +307,7 @@ export default function Component(props: {
             });
         } catch (e) {
             const err = e as Error
-            setErrorRows(generateMarkers(err.message))
+            // TODO: annotation or marker
             setResult([{type: EVENT_STDERR, content: err.message}])
             setIsRunning(false)
         }
@@ -465,18 +329,9 @@ export default function Component(props: {
     }, [debouncedRun, setToastError]), RUN_DEBOUNCE_TIME)).current;
 
     // manage debounced cursor position update
-    const debouncedOnCursorChange = debounce(function onCursorChange(value: onCursorChangeI) {
-        const {cursor: {row, column}} = value;
-
-        if (statusBarRef.current) {
-            statusBarRef.current.textContent = `${row + 1}:${column + 1}`;
-        }
-
-        localStorage.setItem(CURSOR_ROW_KEY, String(row));
-        localStorage.setItem(CURSOR_COLUMN_KEY, String(column));
-
-        setRow(row);
-        setColumn(column);
+    const debouncedOnCursorChange = debounce(function onCursorChange(value: ViewUpdate) {
+        const head = value.state.selection.main.head;
+        localStorage.setItem(CURSOR_HEAD_KEY, String(head));
     }, CURSOR_UPDATE_DEBOUNCE_TIME);
 
 
@@ -485,7 +340,7 @@ export default function Component(props: {
         setIsLintOn(!isLintOn);
     }
 
-    function onKeyBindingsChange(value: KeyBindings) {
+    function onKeyBindingsChange(value: KeyBindingsType) {
         localStorage.setItem(KEY_BINDINGS_KEY, value);
         setKeyBindings(value)
     }
@@ -639,32 +494,17 @@ export default function Component(props: {
                         className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                         <ClickBoard content={code}/>
 
-                        <AceEditor
-                            className={"flex-1"}
-                            mode="golang"
-                            width={"100%"}
-                            theme={mode === "dark" ? "nord_dark" : "dawn"}
-                            defaultValue={code}
-                            value={code}
-                            onCursorChange={debouncedOnCursorChange}
-                            fontSize={fontSize}
-                            name="UNIQUE_ID_OF_DIV"
-                            keyboardHandler={keyBindings}
-                            editorProps={{$blockScrolling: true}}
-                            setOptions={{
-                                mergeUndoDeltas: true,
-                                printMargin: false,
-                                enableBasicAutocompletion: true,
-                                enableLiveAutocompletion: isLintOn,
-                                showInvisibles: isShowInvisible,
-                                enableSnippets: true,
-                            }}
+                        <Main
+                            cursorHead={cursorHead}
+                            code={code} fontSize={fontSize} indent={4}
+                            keyBindings={keyBindings}
                             onChange={onChange}
-                            onLoad={onEditorLoad}
-                            markers={errorRows}
+                            onCursorChange={debouncedOnCursorChange}
+                            setShowSettings={setShowSettings}
+                            debouncedRun={debouncedRun}
+                            debouncedFormat={debouncedFormat}
+                            debouncedShare={debouncedShare}
                         />
-
-                        <StatusBar statusBarRef={statusBarRef} errors={errorRows.length}/>
                     </Wrapper>
                 </Resizable>
 
