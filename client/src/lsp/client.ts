@@ -1,4 +1,3 @@
-import {Ace} from "ace-builds";
 import {LSPCompletionItem, LSPCompletionResponse, pendingRequests} from "../types";
 
 const WORKSPACE = "workspace";
@@ -39,50 +38,12 @@ const KIND_MAP: Record<number, string> = {
     25: "TypeParameter",
 }
 
-export function getCompletions(response: LSPCompletionResponse): Ace.Completion[] {
-    // Check if the response contains an error.
-    if (response.error) {
-        console.error("LSP completion response error:", response.error.message);
-        return [];
-    }
-
-    // Get the items from the response.
-    let items: LSPCompletionItem[] = [];
-    if (Array.isArray(response.result)) {
-        items = response.result;
-    } else if (response.result && Array.isArray(response.result.items)) {
-        items = response.result.items;
-    }
-
-    // Map LSP completion items to Ace's format.
-    const completions: Ace.Completion[] = []
-    items.forEach(v => {
-        const value = v.insertText || v.label;
-        const doc = (v.detail || v.documentation?.value) ? `<div class="mb-1.5 italic text-blue-600 dark:text-lime-400">${v.detail || ''}</div><div>${v.documentation?.value || ''}</div>` : "";
-        const toInsert = v.kind === 2 || v.kind === 3 ? `${value}()` : value;
-
-        completions.push({
-            completerId: "lsp",
-            caption: v.label, // The text to display in the completion list.
-            value: toInsert, // The text to insert when the completion is selected.
-            snippet: toInsert,
-            meta: KIND_MAP[v.kind || 1], // The type of completion (e.g., function, variable).
-            docHTML: doc,
-            score: v.sortText ? parseInt(v.sortText) : 0,
-        })
-    })
-
-    return completions;
-}
-
 export default class LSPClient {
-    editor: Ace.Editor;
     ws: WebSocket;
     requestId: number;
     pendingRequests: pendingRequests;
 
-    constructor(url: string, editor: Ace.Editor) {
-        this.editor = editor;
+    constructor(url: string) {
         this.ws = new WebSocket(url);
         this.requestId = 0;
         this.pendingRequests = new Map();
@@ -141,15 +102,14 @@ export default class LSPClient {
         });
     }
 
-    async getCompletions(): Promise<Ace.Completion[]> {
+    // TODO: Implement a method to handle the response from the server
+    async getCompletions() {
         try {
-            const pos = this.editor.getCursorPosition();
-            const response = await this.sendRequest(EVENT_COMPLETION, {
+            return await this.sendRequest(EVENT_COMPLETION, {
                 textDocument: {uri: URI},
-                position: {line: pos.row, character: pos.column},
+                // position: {line: pos.row, character: pos.column},
                 context: {triggerKind: 2}, // Triggered by typing
             });
-            return getCompletions(response);
         } catch (e) {
             console.error("Completion request error:", e);
             return [];
@@ -169,7 +129,7 @@ export default class LSPClient {
                     uri: URI,
                     languageId: "go",
                     version: 1,
-                    text: this.editor.getValue(),
+                    text: "" // TODO: Add the initial text content here
                 },
             });
         } catch (error) {
