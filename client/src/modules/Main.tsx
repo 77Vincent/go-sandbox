@@ -1,3 +1,5 @@
+import { acceptCompletion, completionStatus } from "@codemirror/autocomplete";
+
 import {keymap} from "@codemirror/view";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {EditorView} from "codemirror";
@@ -11,9 +13,10 @@ import {useThemeMode} from "flowbite-react";
 import Mousetrap from "mousetrap";
 
 import {KeyBindingsType} from "../types";
-import {CURSOR_HEAD_KEY, EMACS, NONE, RUN_DEBOUNCE_TIME, VIM} from "../constants.ts";
-import {getCursorHead} from "../utils.ts";
+import {EMACS, NONE, RUN_DEBOUNCE_TIME, VIM} from "../constants.ts";
+import {getCursorHead, setCursorHead} from "../utils.ts";
 import debounce from "debounce";
+import {indentLess, indentMore} from "@codemirror/commands";
 
 // Compartments for dynamic config
 const fontSizeCompartment = new Compartment();
@@ -21,7 +24,11 @@ const indentCompartment = new Compartment();
 const keyBindingsCompartment = new Compartment();
 
 const setFontSize = (fontSize: number) => {
-    return EditorView.theme({"&": {fontSize: `${fontSize}px`}})
+    return EditorView.theme({
+        "&": {
+            fontSize: `${fontSize}px`,
+        }
+    })
 }
 const setIndent = (indent: number) => {
     return indentUnit.of(" ".repeat(indent));
@@ -66,13 +73,11 @@ export default function Component(props: {
     } = props;
     const {mode} = useThemeMode();
     const view = useRef<EditorView | null>(null);
-    const [cursor] = useState<number>(getCursorHead());
+    const codeRef = useRef<string>(code);
 
+    // manage cursor
     const onCursorChange = useRef(debounce(useCallback((v: ViewUpdate) => {
-        if (v.docChanged || v.selectionSet) {
-            const head = v.state.selection.main.head;
-            localStorage.setItem(CURSOR_HEAD_KEY, String(head))
-        }
+        setCursorHead(v.state.selection.main.head);
     }, []), RUN_DEBOUNCE_TIME)).current
 
     const focusedKeymap = keymap.of([
@@ -108,6 +113,23 @@ export default function Component(props: {
                 return true;
             }
         },
+        {
+            key: "Tab",
+            preventDefault: true,
+            run: (v) => {
+                if (!completionStatus(v.state))  {
+                    return indentMore(v);
+                }
+                return acceptCompletion(v);
+            },
+        },
+        {
+            key: "Shift-Tab",
+            preventDefault: true,
+            run: (v) => {
+                return indentLess(v)
+            },
+        },
     ]);
 
     const [extensions] = useState(() => [
@@ -122,6 +144,7 @@ export default function Component(props: {
     function onCreateEditor(v: EditorView) {
         // initialize refs
         view.current = v;
+        codeRef.current = code;
 
         // key bindings for unfocused editor
         Mousetrap.bind('esc', function () {
@@ -161,13 +184,14 @@ export default function Component(props: {
 
     return (
         <CodeMirror
+            indentWithTab={false}
             value={code}
             autoFocus={true}
             theme={mode === "light" ? "light" : "dark"}
-            className={"flex-1 overflow-auto"}
+            className={`${mode === "dark" ? "editor-bg-color" : ""} flex-1 overflow-auto`}
             extensions={extensions}
             onCreateEditor={onCreateEditor}
-            selection={EditorSelection.cursor(Math.min(cursor, code.length))}
+            selection={EditorSelection.cursor(Math.min(getCursorHead(), code.length))}
             onChange={onChange}/>
     )
 };
