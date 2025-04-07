@@ -320,17 +320,15 @@ export default function Component(props: {
     const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
         try {
             setIsRunning(true)
-            const code = await getSnippet(id);
-            // must call together
-            setCode(code);
-            setPatch(code);
-            debouncedRun()
+            const data = await getSnippet(id);
+            setCode(data);
+            setPatch(data);
             setIsRunning(false)
         } catch (e) {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [debouncedRun, setToastError]), RUN_DEBOUNCE_TIME)).current;
+    }, [setToastError]), RUN_DEBOUNCE_TIME)).current;
 
     function onLint() {
         localStorage.setItem(LINT_ON_KEY, JSON.stringify(!isLintOn));
@@ -358,10 +356,8 @@ export default function Component(props: {
         localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
         setActiveSandbox(id)
         const data = getCodeContent(id)
-        // must call together
         setCode(data)
         setPatch(data)
-        debouncedRun()
     }
 
     function onLanguageChange(value: languages) {
