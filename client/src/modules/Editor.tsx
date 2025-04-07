@@ -23,7 +23,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY,
+    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY, INDENTATION_SIZE_KEY,
 } from "../constants.ts";
 import Main from "./Main.tsx";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
@@ -46,7 +46,7 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, getActiveSandbox, setCodeContent, getAutoCompletionOn
+    isMobileDevice, getActiveSandbox, setCodeContent, getAutoCompletionOn, getIndentationSize
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
@@ -92,6 +92,7 @@ const initialLanguage = getLanguage()
 const initialFontSize = getFontSize()
 const initialEditorSize = getEditorSize()
 const initialKeyBindings = getKeyBindings()
+const initialIndentationSize = getIndentationSize()
 
 export default function Component(props: {
     setToastError: (message: ReactNode) => void
@@ -110,6 +111,7 @@ export default function Component(props: {
     const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
     const [lan, setLan] = useState<languages>(initialLanguage)
     const [sandboxVersion, setSandboxVersion] = useState<string>(initialSandboxVersion)
+    const [indentationSize, setIndentationSize] = useState<number>(initialIndentationSize)
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -356,6 +358,11 @@ export default function Component(props: {
         setLan(value)
     }
 
+    function onIndentationSizeChange(value: number) {
+        localStorage.setItem(INDENTATION_SIZE_KEY, JSON.stringify(value));
+        setIndentationSize(value)
+    }
+
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         // calculate the size
         let size
@@ -405,6 +412,8 @@ export default function Component(props: {
                 setIsVerticalLayout={onIsVerticalLayoutChange}
                 onKeyBindingsChange={onKeyBindingsChange}
                 onLanguageChange={onLanguageChange}
+                indentationSize={indentationSize}
+                onIndentationSizeChange={onIndentationSizeChange}
                 keyBindings={keyBindings}
                 isLintOn={isLintOn}
                 onLint={onLint}
@@ -474,7 +483,7 @@ export default function Component(props: {
                             isAutoCompletionOn={isAutoCompletionOn}
                             value={code}
                             patch={patch}
-                            fontSize={fontSize} indent={4}
+                            fontSize={fontSize} indent={indentationSize}
                             keyBindings={keyBindings}
                             onChange={onChange}
                             setShowSettings={setShowSettings}

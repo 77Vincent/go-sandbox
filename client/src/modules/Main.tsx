@@ -202,54 +202,31 @@ export default function Component(props: {
 
     const [extensions] = useState(() => [
         go(),
-        // A line number gutter
-        lineNumbers(),
-        lintGutter(),
-        // A gutter with code folding markers
-        foldGutter(),
-        // Replace non-printable characters with placeholders
-        highlightSpecialChars(),
-        // The undo history
-        history(),
-        // Replace native cursor/selection with our own
-        drawSelection(),
-        // Show a drop cursor when dragging over the editor
-        dropCursor(),
-        // Allow multiple cursors/selections
-        EditorState.allowMultipleSelections.of(true),
-        // Re-indent lines when typing specific input
-        indentOnInput(),
-        // Highlight matching brackets near cursor
-        bracketMatching(),
-        // Automatically close brackets
-        closeBrackets(),
-        // Allow alt-drag to select rectangular regions
-        rectangularSelection(),
-        // Change the cursor to a crosshair when holding alt
-        crosshairCursor(),
-        // Style the current line specially
-        highlightActiveLine(),
-        // Style the gutter for current line specially
-        highlightActiveLineGutter(),
-        // Highlight text that matches the selected text
-        highlightSelectionMatches(),
+        lineNumbers(), // A line number gutter
+        lintGutter(), // A gutter with lint icon
+        foldGutter(), // A gutter with code folding markers
+        highlightSpecialChars(), // Replace non-printable characters with placeholders
+        history(), // The undo history
+        drawSelection(), // Replace native cursor/selection with our own
+        dropCursor(), // Show a drop cursor when dragging over the editor
+        EditorState.allowMultipleSelections.of(true), // Allow multiple cursors/selections
+        indentOnInput(), // Re-indent lines when typing specific input
+        bracketMatching(), // Highlight matching brackets near cursor
+        closeBrackets(), // Automatically close brackets
+        rectangularSelection(), // Allow alt-drag to select rectangular regions
+        crosshairCursor(), // Change the cursor to a crosshair when holding alt
+        highlightActiveLine(), // Style the current line specially
+        highlightActiveLineGutter(), // Style the gutter for current line specially
+        highlightSelectionMatches(), // Highlight text that matches the selected text
         keymap.of([
-            // Closed-brackets aware backspace
-            ...closeBracketsKeymap,
-            // A large set of basic bindings
-            ...defaultKeymap,
-            // Search-related keys
-            ...searchKeymap,
-            // Redo/undo keys
-            ...historyKeymap,
-            // Code folding bindings
-            ...foldKeymap,
-            // Autocompletion keys
-            ...completionKeymap,
-            // Keys related to the linter system
-            ...lintKeymap,
-            // Custom key bindings
-            ...focusedKeymap,
+            ...closeBracketsKeymap, // Closed-brackets aware backspace
+            ...defaultKeymap, // A large set of basic bindings
+            ...searchKeymap, // Search-related keys
+            ...historyKeymap, // Redo/undo keys
+            ...foldKeymap, // Code folding bindings
+            ...completionKeymap, // Autocompletion keys
+            ...lintKeymap, // Keys related to the linter system
+            ...focusedKeymap, // Custom key bindings
         ]),
         lintCompartment.of(setLint(isLintOn, diagnostics)),
         autoCompletionCompartment.of(setAutoCompletion(isAutoCompletionOn)),

@@ -63,6 +63,9 @@ export default function Component(props: {
     // for auto completion
     isAutoCompletionOn: boolean;
     onAutoCompletion: () => void;
+    // for indentation size
+    indentationSize: number;
+    onIndentationSizeChange: (size: number) => void;
 }) {
     const {mode} = useThemeMode()
     const {
@@ -84,6 +87,9 @@ export default function Component(props: {
         // for auto completion
         isAutoCompletionOn, onAutoCompletion,
 
+        // for indentation size
+        indentationSize, onIndentationSizeChange,
+
         // for modal
         show, setShow,
     } = props;
@@ -100,6 +106,14 @@ export default function Component(props: {
         return () => {
             if (id !== lan) {
                 onLanguageChange(id);
+            }
+        }
+    }
+
+    function onIndentationSize(size: number) {
+        return () => {
+            if (size !== indentationSize) {
+                onIndentationSizeChange(size);
             }
         }
     }
@@ -170,6 +184,23 @@ export default function Component(props: {
                                     LANGUAGES.map(({value, label}) => {
                                         return <Dropdown.Item key={value} onClick={onLanguage(value)}>
                                             {label}
+                                        </Dropdown.Item>
+                                    })
+                                }
+                            </Dropdown>
+                        </Row>
+                    </Grid>
+
+                    <Divider horizontal={true} className={"my-4"}/>
+
+                    <Grid>
+                        <Row>
+                            <Label htmlFor="indentation" value={TRANSLATE.indentation[lan]}/>
+                            <Dropdown color={"light"} label={indentationSize} size={"xs"} id="indentation">
+                                {
+                                    [1, 2, 4, 8].map((size) => {
+                                        return <Dropdown.Item key={size} onClick={onIndentationSize(size)}>
+                                            {size}
                                         </Dropdown.Item>
                                     })
                                 }
