@@ -491,6 +491,7 @@ export default function Component(props: {
                         <ClickBoard content={code}/>
 
                         <Main
+                            isAutoRun={isAutoRun}
                             value={code}
                             patch={patch}
                             fontSize={fontSize} indent={4}

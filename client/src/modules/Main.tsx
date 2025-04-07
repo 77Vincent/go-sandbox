@@ -222,7 +222,7 @@ export default function Component(props: {
                 onViewUpdateCompartment.reconfigure(EditorView.updateListener.of(onViewUpdate)),
             ]
         });
-    }, [onViewUpdate, isAutoRun, fontSize, indent, mode, keyBindings]);
+    }, [isAutoRun, fontSize, indent, mode, keyBindings]);
 
     return (
         <div className={`flex-1 overflow-auto ${mode === "dark" ? "bg-gray-950" : ""}`} ref={editor}/>
