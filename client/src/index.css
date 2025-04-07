@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.editor-bg-dark {
+    background-color: #1e1e1e;
+}
+
 .progress-bar {
     /* 定义动画：名称 progressAnimation，持续 5 秒，线性过渡，动画结束后保持最终状态 */
     animation: progressAnimation 10s linear forwards;

@@ -1,19 +1,40 @@
 import {acceptCompletion, completionStatus} from "@codemirror/autocomplete";
+import {EditorState} from "@codemirror/state"
+import {
+    EditorView, keymap, highlightSpecialChars, drawSelection,
+    highlightActiveLine, dropCursor, rectangularSelection,
+    crosshairCursor, lineNumbers, highlightActiveLineGutter
+} from "@codemirror/view"
+import {
+    indentOnInput,
+    bracketMatching, foldGutter, foldKeymap
+} from "@codemirror/language"
+import {
+    defaultKeymap, history, historyKeymap
+} from "@codemirror/commands"
+import {
+    searchKeymap, highlightSelectionMatches
+} from "@codemirror/search"
+import {
+    autocompletion, completionKeymap, closeBrackets,
+    closeBracketsKeymap
+} from "@codemirror/autocomplete"
+import {lintKeymap} from "@codemirror/lint"
+import { vsCodeDark as themeDark } from '@fsegurai/codemirror-theme-vscode-dark'
+import { vsCodeLight as themeLight } from '@fsegurai/codemirror-theme-vscode-light'
 
-import {keymap} from "@codemirror/view";
 import {useCallback, useEffect, useRef, useState} from "react";
-import {basicSetup, EditorView} from "codemirror";
 import {go} from "@codemirror/lang-go";
 import {vim} from "@replit/codemirror-vim";
 import {emacs} from "@replit/codemirror-emacs";
 import {Compartment, EditorSelection} from "@codemirror/state";
 import {indentUnit} from "@codemirror/language";
 import {ViewUpdate} from "@uiw/react-codemirror";
-import {useThemeMode} from "flowbite-react";
+import {ThemeMode, useThemeMode} from "flowbite-react";
 import Mousetrap from "mousetrap";
 
 import {KeyBindingsType, patchI} from "../types";
-import {EMACS, NONE, RUN_DEBOUNCE_TIME, VIM} from "../constants.ts";
+import {EMACS, NONE, DEBOUNCE_TIME, VIM} from "../constants.ts";
 import {getCursorHead, setCursorHead} from "../utils.ts";
 import debounce from "debounce";
 import {indentLess, indentMore} from "@codemirror/commands";
@@ -22,14 +43,13 @@ import {indentLess, indentMore} from "@codemirror/commands";
 const fontSizeCompartment = new Compartment();
 const indentCompartment = new Compartment();
 const keyBindingsCompartment = new Compartment();
-const onViewUpdateCompartment = new Compartment();
+const themeCompartment = new Compartment();
 
+const setTheme = (mode: ThemeMode) => {
+    return mode === "dark" ? themeDark : themeLight;
+}
 const setFontSize = (fontSize: number) => {
-    return EditorView.theme({
-        "&": {
-            fontSize: `${fontSize}px`,
-        }
-    })
+    return EditorView.theme({"&": {fontSize: `${fontSize}px`}})
 }
 const setIndent = (indent: number) => {
     return indentUnit.of(" ".repeat(indent));
@@ -50,10 +70,14 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
 export default function Component(props: {
     value: string;
     patch: patchI;
+
+    // settings
     keyBindings: KeyBindingsType;
     fontSize: number;
     indent: number;
-    isAutoRun: boolean;
+    isLintOn: boolean;
+    isAutoCompletionOn: boolean;
+
     // handler
     onChange: (code: string) => void;
     // setters
@@ -64,7 +88,9 @@ export default function Component(props: {
     debouncedShare: () => void;
 }) {
     const {
-        value, patch, fontSize, indent, keyBindings, isAutoRun,
+        value, patch,
+        fontSize, indent, keyBindings,
+        isLintOn, isAutoCompletionOn,
         // handlers
         onChange,
         // setters
@@ -81,7 +107,7 @@ export default function Component(props: {
     // manage cursor
     const onCursorChange = useRef(debounce(useCallback((v: ViewUpdate) => {
         setCursorHead(v.state.selection.main.head);
-    }, []), RUN_DEBOUNCE_TIME)).current
+    }, []), DEBOUNCE_TIME)).current
 
     // manage content
     const onViewUpdate = (v: ViewUpdate) => {
@@ -90,7 +116,7 @@ export default function Component(props: {
         }
     }
 
-    const focusedKeymap = keymap.of([
+    const focusedKeymap = [
         {
             key: `Mod-,`,
             preventDefault: true,
@@ -126,7 +152,7 @@ export default function Component(props: {
         {
             key: "Tab",
             preventDefault: true,
-            run: (v) => {
+            run: (v: EditorView) => {
                 if (!completionStatus(v.state)) {
                     return indentMore(v);
                 }
@@ -136,21 +162,70 @@ export default function Component(props: {
         {
             key: "Shift-Tab",
             preventDefault: true,
-            run: (v) => {
+            run: (v: EditorView) => {
                 return indentLess(v)
             },
         },
-    ]);
+    ]
 
     const [extensions] = useState(() => [
         go(),
-        basicSetup,
-        focusedKeymap,
+        // A line number gutter
+        lineNumbers(),
+        // A gutter with code folding markers
+        foldGutter(),
+        // Replace non-printable characters with placeholders
+        highlightSpecialChars(),
+        // The undo history
+        history(),
+        // Replace native cursor/selection with our own
+        drawSelection(),
+        // Show a drop cursor when dragging over the editor
+        dropCursor(),
+        // Allow multiple cursors/selections
+        EditorState.allowMultipleSelections.of(true),
+        // Re-indent lines when typing specific input
+        indentOnInput(),
+        // Highlight matching brackets near cursor
+        bracketMatching(),
+        // Automatically close brackets
+        closeBrackets(),
+        // Load the autocompletion system
+        isAutoCompletionOn ? autocompletion() : [],
+        // Allow alt-drag to select rectangular regions
+        rectangularSelection(),
+        // Change the cursor to a crosshair when holding alt
+        crosshairCursor(),
+        // Style the current line specially
+        highlightActiveLine(),
+        // Style the gutter for current line specially
+        highlightActiveLineGutter(),
+        // Highlight text that matches the selected text
+        highlightSelectionMatches(),
+        keymap.of([
+            // Closed-brackets aware backspace
+            ...closeBracketsKeymap,
+            // A large set of basic bindings
+            ...defaultKeymap,
+            // Search-related keys
+            ...searchKeymap,
+            // Redo/undo keys
+            ...historyKeymap,
+            // Code folding bindings
+            ...foldKeymap,
+            // Autocompletion keys
+            ...completionKeymap,
+            // Keys related to the linter system
+            ...lintKeymap,
+            // Custom key bindings
+            ...focusedKeymap,
+        ]),
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(indent)),
         keyBindingsCompartment.of(setKeyBindings(keyBindings)),
+        themeCompartment.of(setTheme(mode)),
         EditorView.updateListener.of(onCursorChange),
-        onViewUpdateCompartment.of(EditorView.updateListener.of(onViewUpdate)),
+        EditorView.updateListener.of(onViewUpdate),
     ]);
 
     // update the view when the value changes from outside
@@ -219,12 +294,13 @@ export default function Component(props: {
                 fontSizeCompartment.reconfigure(setFontSize(fontSize)),
                 indentCompartment.reconfigure(setIndent(indent)),
                 keyBindingsCompartment.reconfigure(setKeyBindings(keyBindings)),
-                onViewUpdateCompartment.reconfigure(EditorView.updateListener.of(onViewUpdate)),
+                themeCompartment.reconfigure(setTheme(mode)),
             ]
         });
-    }, [isAutoRun, fontSize, indent, mode, keyBindings]);
+    }, [fontSize, indent, mode, keyBindings]);
 
     return (
-        <div className={`flex-1 overflow-auto ${mode === "dark" ? "bg-gray-950" : ""}`} ref={editor}/>
+        // eslint-disable-next-line tailwindcss/no-custom-classname
+        <div className={`flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}/>
     )
 };
