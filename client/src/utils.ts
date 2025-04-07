@@ -24,7 +24,7 @@ import {
     MY_SANDBOXES,
     SANDBOX_NAMES_KEY,
     CURSOR_HEAD_KEY,
-    DEFAULT_CURSOR_HEAD
+    DEFAULT_CURSOR_HEAD, IS_AUTOCOMPLETION_ON_KEY, DEFAULT_AUTOCOMPLETION_ON
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes} from "./types";
 
@@ -104,6 +104,10 @@ export function getSandboxes(): mySandboxes[] {
 
 export function getLintOn(): boolean {
     return JSON.parse(localStorage.getItem(LINT_ON_KEY) || DEFAULT_LINT_ON)
+}
+
+export function getAutoCompletionOn(): boolean {
+    return JSON.parse(localStorage.getItem(IS_AUTOCOMPLETION_ON_KEY) || DEFAULT_AUTOCOMPLETION_ON)
 }
 
 export function getShowInvisible(): boolean {

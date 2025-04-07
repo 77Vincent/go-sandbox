@@ -19,6 +19,7 @@ export const SANDBOX_VERSION_KEY = "sandboxVersion";
 export const KEY_BINDINGS_KEY = "keyBindings";
 export const LANGUAGE_KEY = "languageKey";
 export const LINT_ON_KEY = "isLintOn";
+export const IS_AUTOCOMPLETION_ON_KEY = "isAutoCompletionOn";
 export const SHOW_INVISIBLE_KEY = "isShowInvisible";
 export const EDITOR_SIZE_KEY = "editorSize";
 export const FONT_SIZE_KEY = "fontSize";
@@ -28,7 +29,8 @@ export const DEFAULT_CURSOR_HEAD = 0;
 export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
 export const DEFAULT_SANDBOX_VERSION = "1";
 export const DEFAULT_KEY_BINDINGS: KeyBindingsType = "";
-export const DEFAULT_LINT_ON = "false";
+export const DEFAULT_LINT_ON = "true";
+export const DEFAULT_AUTOCOMPLETION_ON = "true";
 export const DEFAULT_SHOW_INVISIBLE = "false";
 export const DEFAULT_EDITOR_SIZE = 50;
 export const EDITOR_SIZE_MAX = 90
@@ -144,15 +146,15 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
     },
     lint: {
         en: "Lint",
-        zh_CN: "代码提示",
-        zh_TW: "代碼提示",
+        zh_CN: "提示",
+        zh_TW: "提示",
         ja: "リント",
     },
-    showInvisible: {
-        en: "Show Invisible Characters",
-        zh_CN: "显示不可见字符",
-        zh_TW: "顯示不可見字符",
-        ja: "不可視文字を表示",
+    autoCompletion: {
+        en: "Auto Completion",
+        zh_CN: "自动补全",
+        zh_TW: "自動補全",
+        ja: "自動補完",
     },
     coffee: {
         en: "Buy me a coffee",

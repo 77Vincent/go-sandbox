@@ -48,7 +48,7 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, normalizeText, getActiveSandbox, setCodeContent
+    isMobileDevice, normalizeText, getActiveSandbox, setCodeContent, getAutoCompletionOn
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
@@ -83,7 +83,19 @@ function FetchErrorMessage(props: {
 }
 
 const resizeHandlerHoverClasses = "z-10 hover:bg-cyan-500 transition-colors";
+
+// default values
 const initialValue = getCodeContent(getActiveSandbox());
+const initialIsLintOn = getLintOn()
+const initialIsAutoCompletionOn = getAutoCompletionOn()
+const initialSandboxVersion = getSandboxVersion()
+const initialActiveSandbox = getActiveSandbox();
+const initialIsVerticalLayout = getIsVerticalLayout();
+const initialShowInvisible = getShowInvisible()
+const initialLanguage = getLanguage()
+const initialFontSize = getFontSize()
+const initialEditorSize = getEditorSize()
+const initialKeyBindings = getKeyBindings()
 
 export default function Component(props: {
     setToastError: (message: ReactNode) => void
@@ -95,14 +107,14 @@ export default function Component(props: {
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
-    const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(getActiveSandbox());
+    const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(initialActiveSandbox);
 
     // settings
-    const [fontSize, setFontSize] = useState<number>(getFontSize());
-    const [editorSize, setEditorSize] = useState<number>(getEditorSize())
-    const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(getIsVerticalLayout())
-    const [lan, setLan] = useState<languages>(getLanguage())
-    const [sandboxVersion, setSandboxVersion] = useState<string>(getSandboxVersion())
+    const [fontSize, setFontSize] = useState<number>(initialFontSize);
+    const [editorSize, setEditorSize] = useState<number>(initialEditorSize);
+    const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
+    const [lan, setLan] = useState<languages>(initialLanguage)
+    const [sandboxVersion, setSandboxVersion] = useState<string>(initialSandboxVersion)
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -123,9 +135,10 @@ export default function Component(props: {
     const docVersionRef = useRef(docVersion);
 
     // mode status
-    const [keyBindings, setKeyBindings] = useState<KeyBindingsType>(getKeyBindings())
-    const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
-    const [isShowInvisible, setIsShowInvisible] = useState<boolean>(getShowInvisible())
+    const [keyBindings, setKeyBindings] = useState<KeyBindingsType>(initialKeyBindings);
+    const [isLintOn, setIsLintOn] = useState<boolean>(initialIsLintOn)
+    const [isAutoCompletionOn, setIsAutoCompletionOn] = useState<boolean>(initialIsAutoCompletionOn)
+    const [isShowInvisible, setIsShowInvisible] = useState<boolean>(initialShowInvisible)
 
     // fetch the snippet if the url contains the snippet id, do only once
     useEffect(() => {
@@ -327,6 +340,11 @@ export default function Component(props: {
         setIsLintOn(!isLintOn);
     }
 
+    function onAutoCompletion() {
+        localStorage.setItem(LINT_ON_KEY, JSON.stringify(!isAutoCompletionOn));
+        setIsAutoCompletionOn(!isAutoCompletionOn);
+    }
+
     function onKeyBindingsChange(value: KeyBindingsType) {
         localStorage.setItem(KEY_BINDINGS_KEY, value);
         setKeyBindings(value)
@@ -415,6 +433,8 @@ export default function Component(props: {
                 keyBindings={keyBindings}
                 isLintOn={isLintOn}
                 onLint={onLint}
+                isAutoCompletionOn={isAutoCompletionOn}
+                onAutoCompletion={onAutoCompletion}
                 isShowInvisible={isShowInvisible}
                 onShowInvisible={onShowInvisible}
             />
@@ -478,6 +498,7 @@ export default function Component(props: {
 
                         <Main
                             isLintOn={isLintOn}
+                            isAutoCompletionOn={isAutoCompletionOn}
                             value={code}
                             patch={patch}
                             fontSize={fontSize} indent={4}
