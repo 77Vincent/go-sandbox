@@ -8,7 +8,7 @@ import {
     FONT_SIZE_L,
     FONT_SIZE_S,
     LINT_ON_KEY,
-    RUN_DEBOUNCE_TIME,
+    DEBOUNCE_TIME,
     KEY_BINDINGS_KEY,
     FONT_SIZE_M,
     TRANSLATE,
@@ -186,12 +186,12 @@ export default function Component(props: {
         } catch (e) {
             setToastError((e as Error).message)
         }
-    }, [setToastInfo, setToastError]), RUN_DEBOUNCE_TIME)).current;
+    }, [setToastInfo, setToastError]), DEBOUNCE_TIME)).current;
 
     // store code asynchronously
     const debouncedStoreCode = useRef(debounce(useCallback((data: string) => {
         setCodeContent(activeSandboxRef.current, data);
-    }, [activeSandboxRef]), RUN_DEBOUNCE_TIME)).current;
+    }, [activeSandboxRef]), DEBOUNCE_TIME)).current;
     useEffect(() => {
         debouncedStoreCode(code);
     }, [debouncedStoreCode, code]);
@@ -225,7 +225,7 @@ export default function Component(props: {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [setToastError]), RUN_DEBOUNCE_TIME)).current;
+    }, [setToastError]), DEBOUNCE_TIME)).current;
 
     const runCallback = useCallback(async () => {
         if (shouldAbort()) {
@@ -306,7 +306,7 @@ export default function Component(props: {
             setIsRunning(false)
         }
     }, []);
-    const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
+    const debouncedRun = useRef(debounce(runCallback, DEBOUNCE_TIME)).current;
 
     const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
         try {
@@ -320,7 +320,7 @@ export default function Component(props: {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [debouncedRun, setToastError]), RUN_DEBOUNCE_TIME)).current;
+    }, [debouncedRun, setToastError]), DEBOUNCE_TIME)).current;
 
     function onLint() {
         localStorage.setItem(LINT_ON_KEY, JSON.stringify(!isLintOn));
