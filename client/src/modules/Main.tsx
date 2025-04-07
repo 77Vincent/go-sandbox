@@ -1,3 +1,5 @@
+import { linter, Diagnostic } from "@codemirror/lint";
+
 import {acceptCompletion, completionStatus} from "@codemirror/autocomplete";
 import {EditorState} from "@codemirror/state"
 import {
@@ -45,7 +47,12 @@ const indentCompartment = new Compartment();
 const keyBindingsCompartment = new Compartment();
 const themeCompartment = new Compartment();
 const autoCompletionCompartment = new Compartment();
+const lintCompartment = new Compartment();
 
+// setters of compartments
+const setLint = (isLintOn: boolean) => {
+    return isLintOn ? goLinter : [];
+}
 const setAutoCompletion = (isAutoCompletionOn: boolean) => {
     return isAutoCompletionOn ? autocompletion() : [];
 }
@@ -70,6 +77,29 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
             return [];
     }
 }
+
+// linting
+// This runs every time the code changes
+const goLinter = linter((view) => {
+    const code = view.state.doc.toString();
+
+    // Fake example: check for TODO comment
+    const diagnostics: Diagnostic[] = [];
+
+    const lines = code.split("\n");
+    lines.forEach((line, i) => {
+        if (line.includes("TODO")) {
+            diagnostics.push({
+                from: view.state.doc.line(i + 1).from + line.indexOf("TODO"),
+                to: view.state.doc.line(i + 1).from + line.indexOf("TODO") + 4,
+                severity: "warning",
+                message: "Avoid TODOs in code"
+            });
+        }
+    });
+
+    return diagnostics;
+});
 
 export default function Component(props: {
     value: string;
@@ -222,6 +252,7 @@ export default function Component(props: {
             // Custom key bindings
             ...focusedKeymap,
         ]),
+        lintCompartment.of(setLint(isLintOn)),
         autoCompletionCompartment.of(setAutoCompletion(isAutoCompletionOn)),
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(indent)),
@@ -299,6 +330,7 @@ export default function Component(props: {
                 keyBindingsCompartment.reconfigure(setKeyBindings(keyBindings)),
                 themeCompartment.reconfigure(setTheme(mode)),
                 autoCompletionCompartment.reconfigure(setAutoCompletion(isAutoCompletionOn)),
+                lintCompartment.reconfigure(setLint(isLintOn)),
             ]
         });
     }, [fontSize, indent, mode, keyBindings, isAutoCompletionOn]);
