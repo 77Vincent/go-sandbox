@@ -12,6 +12,7 @@ export const VIM = "vim"
 export const EMACS = "emacs"
 export const NONE = ""
 
+export const INDENTATION_SIZE_KEY = "indentationSize";
 export const SANDBOX_NAMES_KEY = "sandboxNames";
 export const ACTIVE_SANDBOX_KEY = "activeSandbox";
 export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
@@ -24,6 +25,7 @@ export const EDITOR_SIZE_KEY = "editorSize";
 export const FONT_SIZE_KEY = "fontSize";
 export const CURSOR_HEAD_KEY = "cursorHead";
 
+export const DEFAULT_INDENTATION_SIZE = 4;
 export const DEFAULT_CURSOR_HEAD = 0;
 export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
 export const DEFAULT_SANDBOX_VERSION = "1";
@@ -76,6 +78,12 @@ func main() {
 }`
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    indentation: {
+        en: "Indentation",
+        zh_CN: "缩进",
+        zh_TW: "縮進",
+        ja: "インデント",
+    },
     theme: {
         en: "Theme",
         zh_CN: "主题",

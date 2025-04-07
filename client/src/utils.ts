@@ -22,7 +22,11 @@ import {
     MY_SANDBOXES,
     SANDBOX_NAMES_KEY,
     CURSOR_HEAD_KEY,
-    DEFAULT_CURSOR_HEAD, IS_AUTOCOMPLETION_ON_KEY, DEFAULT_AUTOCOMPLETION_ON
+    DEFAULT_CURSOR_HEAD,
+    IS_AUTOCOMPLETION_ON_KEY,
+    DEFAULT_AUTOCOMPLETION_ON,
+    DEFAULT_INDENTATION_SIZE,
+    INDENTATION_SIZE_KEY
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes} from "./types";
 
@@ -50,6 +54,10 @@ export function setCodeContent(sandbox: mySandboxes, code: string): void {
 }
 export function getCodeContent(sandbox: mySandboxes): string {
     return localStorage.getItem(sandbox) || HELLO_WORLD
+}
+
+export function getIndentationSize(): number {
+    return Number(localStorage.getItem(INDENTATION_SIZE_KEY)) || DEFAULT_INDENTATION_SIZE
 }
 
 export function getKeyBindings(): KeyBindingsType {
