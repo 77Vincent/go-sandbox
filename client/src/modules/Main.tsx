@@ -260,8 +260,16 @@ export default function Component(props: {
 
     // update the view when the value changes from outside
     useEffect(() => {
-        if (patch.value === "" || !view.current) return;
+        if (!view.current) return;
 
+        // no dispatch if the value is the same or empty
+        switch (patch.value) {
+            case view.current.state.doc.toString():
+            case "":
+                return;
+        }
+
+        // update the view
         view.current.dispatch({
             changes: {
                 from: 0,
