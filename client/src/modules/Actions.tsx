@@ -2,7 +2,7 @@ import {Tooltip} from "flowbite-react";
 import {FiPlay as RunICon} from "react-icons/fi";
 import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
-import {MdKeyboardOptionKey, MdKeyboardReturn} from "react-icons/md";
+import {MdKeyboardOptionKey} from "react-icons/md";
 import { BsShift } from "react-icons/bs";
 
 import {BUTTON_INACTIVE, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
@@ -26,10 +26,10 @@ export default function Component(props: {
     return (
         <>
             <Tooltip className={COMMON_CLASSES} content={
-                <div className={"flex items-center gap-1"}>
+                <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.run[lan]}
-                    <div className={"flex items-center"}>
-                        <MetaKey/><MdKeyboardReturn/>
+                    <div className={"flex items-center gap-0.5"}>
+                        <MetaKey/>r
                     </div>
                 </div>
             }>
@@ -38,10 +38,10 @@ export default function Component(props: {
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={
-                <div className={"flex items-center gap-1"}>
+                <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.format[lan]}
-                    <div className={"flex items-center"}>
-                        <MetaKey/><MdKeyboardOptionKey/>L
+                    <div className={"flex items-center gap-0.5"}>
+                        <MetaKey/><MdKeyboardOptionKey/>l
                     </div>
                 </div>
             }>
@@ -50,10 +50,10 @@ export default function Component(props: {
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={
-                <div className={"flex items-center gap-1"}>
+                <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.share[lan]}
-                    <div className={"flex items-center"}>
-                        <MetaKey/><BsShift/>E
+                    <div className={"flex items-center gap-0.5"}>
+                        <MetaKey/><BsShift/>e
                     </div>
                 </div>
             }>
