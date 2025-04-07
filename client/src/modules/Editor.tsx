@@ -51,7 +51,7 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, normalizeText, getActiveSandbox
+    isMobileDevice, normalizeText, getActiveSandbox, setCodeContent
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindingsType, languages, mySandboxes, resultI} from "../types";
@@ -86,6 +86,7 @@ function FetchErrorMessage(props: {
 }
 
 const resizeHandlerHoverClasses = "z-10 hover:bg-cyan-500 transition-colors";
+const initialValue = getCodeContent(getActiveSandbox());
 
 export default function Component(props: {
     setToastError: (message: ReactNode) => void
@@ -108,7 +109,7 @@ export default function Component(props: {
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
-    const [code, setCode] = useState<string>(getCodeContent(activeSandbox));
+    const [code, setCode] = useState<string>(initialValue);
 
     // result
     const [result, setResult] = useState<resultI[]>([]);
@@ -122,13 +123,6 @@ export default function Component(props: {
     const activeSandboxRef = useRef(activeSandbox);
     const isRunningRef = useRef(isRunning);
     const docVersionRef = useRef(docVersion);
-
-    function storeCode(code: string) {
-        setCode(code);
-        localStorage.setItem(activeSandboxRef.current, code);
-        codeRef.current = code;
-        docVersionRef.current += 1;
-    }
 
     // mode status
     const [keyBindings, setKeyBindings] = useState<KeyBindingsType>(getKeyBindings())
@@ -167,20 +161,16 @@ export default function Component(props: {
     function onChange(newCode: string = "") {
         const processedPrevCode = normalizeText(codeRef.current);
         const processedNewCode = normalizeText(newCode);
-
-        // update ref immediately
         const newVersion = docVersion + 1
 
-        storeCode(newCode);
+        setCode(newCode);
         setDocVersion(newVersion);
 
-        // only act if the there is diff
         if (processedPrevCode !== processedNewCode) {
             // only run if auto run is on
             if (isAutoRun) {
                 debouncedAutoRun();
             }
-
             if (isLintOn) {
                 lspClientRef?.current?.didChange(newVersion, newCode);
             }
@@ -203,6 +193,15 @@ export default function Component(props: {
         }
     }, [setToastInfo, setToastError]), RUN_DEBOUNCE_TIME)).current;
 
+    // store code asynchronously
+    const debouncedStoreCode = useRef(debounce(useCallback((data: string) => {
+        setCodeContent(activeSandboxRef.current, data);
+    }, [activeSandboxRef]), RUN_DEBOUNCE_TIME)).current;
+    useEffect(() => {
+        debouncedStoreCode(code);
+    }, [debouncedStoreCode, code]);
+
+
     const debouncedFormat = useRef(debounce(useCallback(async () => {
         if (shouldAbort()) {
             return
@@ -214,7 +213,7 @@ export default function Component(props: {
             const {stdout, error, message} = await formatCode(codeRef.current);
 
             if (stdout) {
-                storeCode(stdout)
+                setCode(stdout)
             }
             if (error) {
                 setResult([{type: EVENT_STDERR, content: error}])
@@ -262,7 +261,8 @@ export default function Component(props: {
             setError("")
             setResult([])
             // TODO: annotation or marker
-            storeCode(formatted)
+            setCode(formatted)
+            codeRef.current = formatted // important: update immediately
 
             const source = new SSE(getUrl("/execute"), {
                 headers: {'Content-Type': 'application/json'},
@@ -314,7 +314,7 @@ export default function Component(props: {
         try {
             setIsRunning(true)
             const code = await getSnippet(id);
-            storeCode(code);
+            setCode(code);
             debouncedRun()
             setIsRunning(false)
         } catch (e) {
@@ -483,7 +483,8 @@ export default function Component(props: {
                         <ClickBoard content={code}/>
 
                         <Main
-                            code={code} fontSize={fontSize} indent={4}
+                            value={code}
+                            fontSize={fontSize} indent={4}
                             keyBindings={keyBindings}
                             onChange={onChange}
                             setShowSettings={setShowSettings}
