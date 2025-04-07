@@ -1,18 +1,22 @@
-import {linter, Diagnostic} from "@codemirror/lint";
+// react
+import {useCallback, useEffect, useRef, useState} from "react";
+import {ThemeMode, useThemeMode} from "flowbite-react";
 
+// codemirror imports
+import {lintKeymap, lintGutter, linter, Diagnostic} from "@codemirror/lint";
 import {acceptCompletion, completionStatus} from "@codemirror/autocomplete";
-import {EditorState} from "@codemirror/state"
+import {EditorState, Compartment, EditorSelection} from "@codemirror/state"
 import {
-    EditorView, keymap, highlightSpecialChars, drawSelection,
+    ViewUpdate, EditorView, keymap, highlightSpecialChars, drawSelection,
     highlightActiveLine, dropCursor, rectangularSelection,
     crosshairCursor, lineNumbers, highlightActiveLineGutter
 } from "@codemirror/view"
 import {
     indentOnInput,
-    bracketMatching, foldGutter, foldKeymap
+    bracketMatching, foldGutter, foldKeymap, indentUnit,
 } from "@codemirror/language"
 import {
-    defaultKeymap, history, historyKeymap
+    defaultKeymap, history, historyKeymap, indentMore, indentLess
 } from "@codemirror/commands"
 import {
     searchKeymap, highlightSelectionMatches
@@ -21,25 +25,23 @@ import {
     autocompletion, completionKeymap, closeBrackets,
     closeBracketsKeymap
 } from "@codemirror/autocomplete"
-import {lintKeymap} from "@codemirror/lint"
+
+// theme import
 import {vsCodeDark as themeDark} from '@fsegurai/codemirror-theme-vscode-dark'
 import {vsCodeLight as themeLight} from '@fsegurai/codemirror-theme-vscode-light'
 
-import {useCallback, useEffect, useRef, useState} from "react";
 import {go} from "@codemirror/lang-go";
 import {vim} from "@replit/codemirror-vim";
 import {emacs} from "@replit/codemirror-emacs";
-import {Compartment, EditorSelection} from "@codemirror/state";
-import {indentUnit} from "@codemirror/language";
-import {ViewUpdate} from "@uiw/react-codemirror";
-import {ThemeMode, useThemeMode} from "flowbite-react";
-import Mousetrap from "mousetrap";
 
+// other imports
+import Mousetrap from "mousetrap";
+import debounce from "debounce";
+
+// local imports
 import {KeyBindingsType, patchI} from "../types";
 import {EMACS, NONE, DEBOUNCE_TIME, VIM} from "../constants.ts";
 import {getCursorHead, getUrl, setCursorHead} from "../utils.ts";
-import debounce from "debounce";
-import {indentLess, indentMore} from "@codemirror/commands";
 import LSP from "../lsp/client.ts";
 
 // Compartments for dynamic config
@@ -202,6 +204,7 @@ export default function Component(props: {
         go(),
         // A line number gutter
         lineNumbers(),
+        lintGutter(),
         // A gutter with code folding markers
         foldGutter(),
         // Replace non-printable characters with placeholders
