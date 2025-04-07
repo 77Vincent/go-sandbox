@@ -20,8 +20,8 @@ import {
     closeBracketsKeymap
 } from "@codemirror/autocomplete"
 import {lintKeymap} from "@codemirror/lint"
-import { vsCodeDark as themeDark } from '@fsegurai/codemirror-theme-vscode-dark'
-import { vsCodeLight as themeLight } from '@fsegurai/codemirror-theme-vscode-light'
+import {vsCodeDark as themeDark} from '@fsegurai/codemirror-theme-vscode-dark'
+import {vsCodeLight as themeLight} from '@fsegurai/codemirror-theme-vscode-light'
 
 import {useCallback, useEffect, useRef, useState} from "react";
 import {go} from "@codemirror/lang-go";
@@ -44,7 +44,11 @@ const fontSizeCompartment = new Compartment();
 const indentCompartment = new Compartment();
 const keyBindingsCompartment = new Compartment();
 const themeCompartment = new Compartment();
+const autoCompletionCompartment = new Compartment();
 
+const setAutoCompletion = (isAutoCompletionOn: boolean) => {
+    return isAutoCompletionOn ? autocompletion() : [];
+}
 const setTheme = (mode: ThemeMode) => {
     return mode === "dark" ? themeDark : themeLight;
 }
@@ -190,8 +194,6 @@ export default function Component(props: {
         bracketMatching(),
         // Automatically close brackets
         closeBrackets(),
-        // Load the autocompletion system
-        isAutoCompletionOn ? autocompletion() : [],
         // Allow alt-drag to select rectangular regions
         rectangularSelection(),
         // Change the cursor to a crosshair when holding alt
@@ -220,6 +222,7 @@ export default function Component(props: {
             // Custom key bindings
             ...focusedKeymap,
         ]),
+        autoCompletionCompartment.of(setAutoCompletion(isAutoCompletionOn)),
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(indent)),
         keyBindingsCompartment.of(setKeyBindings(keyBindings)),
@@ -295,9 +298,10 @@ export default function Component(props: {
                 indentCompartment.reconfigure(setIndent(indent)),
                 keyBindingsCompartment.reconfigure(setKeyBindings(keyBindings)),
                 themeCompartment.reconfigure(setTheme(mode)),
+                autoCompletionCompartment.reconfigure(setAutoCompletion(isAutoCompletionOn)),
             ]
         });
-    }, [fontSize, indent, mode, keyBindings]);
+    }, [fontSize, indent, mode, keyBindings, isAutoCompletionOn]);
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
