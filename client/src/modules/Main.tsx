@@ -40,7 +40,7 @@ import debounce from "debounce";
 
 // local imports
 import {KeyBindingsType, patchI} from "../types";
-import {EMACS, NONE, DEBOUNCE_TIME, VIM, CURSOR_HEAD_KEY} from "../constants.ts";
+import {EMACS, NONE, DEBOUNCE_TIME, VIM, CURSOR_HEAD_KEY, DEFAULT_INDENTATION_SIZE} from "../constants.ts";
 import {getCursorHead, getUrl} from "../utils.ts";
 import LSP from "../lsp/client.ts";
 
@@ -88,7 +88,6 @@ export default function Component(props: {
     // settings
     keyBindings: KeyBindingsType;
     fontSize: number;
-    indent: number;
     isLintOn: boolean;
     isAutoCompletionOn: boolean;
 
@@ -103,7 +102,7 @@ export default function Component(props: {
 }) {
     const {
         value, patch,
-        fontSize, indent, keyBindings,
+        fontSize, keyBindings,
         isLintOn, isAutoCompletionOn,
         // handlers
         onChange,
@@ -231,7 +230,7 @@ export default function Component(props: {
         lintCompartment.of(setLint(isLintOn, diagnostics)),
         autoCompletionCompartment.of(setAutoCompletion(isAutoCompletionOn)),
         fontSizeCompartment.of(setFontSize(fontSize)),
-        indentCompartment.of(setIndent(indent)),
+        indentCompartment.of(setIndent(DEFAULT_INDENTATION_SIZE)),
         keyBindingsCompartment.of(setKeyBindings(keyBindings)),
         themeCompartment.of(setTheme(mode)),
         EditorView.updateListener.of(onCursorChange),
@@ -318,10 +317,6 @@ export default function Component(props: {
         if (!view.current) return;
         view.current.dispatch({effects: [keyBindingsCompartment.reconfigure(setKeyBindings(keyBindings))]})
     }, [keyBindings]);
-    useEffect(() => {
-        if (!view.current) return;
-        view.current.dispatch({effects: [indentCompartment.reconfigure(setIndent(indent))]})
-    }, [indent]);
     useEffect(() => {
         if (!view.current) return;
         view.current.dispatch({effects: [fontSizeCompartment.reconfigure(setFontSize(fontSize))]})

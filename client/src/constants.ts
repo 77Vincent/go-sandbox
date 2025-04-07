@@ -12,7 +12,6 @@ export const VIM = "vim"
 export const EMACS = "emacs"
 export const NONE = ""
 
-export const INDENTATION_SIZE_KEY = "indentationSize";
 export const SANDBOX_NAMES_KEY = "sandboxNames";
 export const ACTIVE_SANDBOX_KEY = "activeSandbox";
 export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
