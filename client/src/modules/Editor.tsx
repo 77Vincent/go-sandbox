@@ -3,7 +3,6 @@ import {Resizable, ResizeDirection} from "re-resizable";
 import debounce from 'debounce';
 
 import {
-    AUTO_RUN_KEY,
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
     FONT_SIZE_L,
@@ -12,7 +11,6 @@ import {
     RUN_DEBOUNCE_TIME,
     KEY_BINDINGS_KEY,
     FONT_SIZE_M,
-    AUTO_RUN_DEBOUNCE_TIME,
     TRANSLATE,
     STATS_INFO_PREFIX,
     SHOW_INVISIBLE_KEY,
@@ -40,7 +38,6 @@ import Info from "./Info.tsx";
 import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
 
 import {
-    getAutoRun,
     getCodeContent,
     getKeyBindings,
     getEditorSize,
@@ -127,7 +124,6 @@ export default function Component(props: {
 
     // mode status
     const [keyBindings, setKeyBindings] = useState<KeyBindingsType>(getKeyBindings())
-    const [isAutoRun, setIsAutoRun] = useState<boolean>(getAutoRun())
     const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
     const [isShowInvisible, setIsShowInvisible] = useState<boolean>(getShowInvisible())
 
@@ -170,10 +166,6 @@ export default function Component(props: {
         setDocVersion(newVersion);
 
         if (processedPrevCode !== processedNewCode) {
-            // only run if auto run is on
-            if (isAutoRun) {
-                debouncedAutoRun();
-            }
             if (isLintOn) {
                 lspClientRef?.current?.didChange(newVersion, newCode);
             }
@@ -315,7 +307,6 @@ export default function Component(props: {
         }
     }, []);
     const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
-    const debouncedAutoRun = useRef(debounce(runCallback, AUTO_RUN_DEBOUNCE_TIME)).current;
 
     const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
         try {
@@ -363,11 +354,6 @@ export default function Component(props: {
     function onLanguageChange(value: languages) {
         localStorage.setItem(LANGUAGE_KEY, value);
         setLan(value)
-    }
-
-    function onAutoRun() {
-        localStorage.setItem(AUTO_RUN_KEY, JSON.stringify(!isAutoRun));
-        setIsAutoRun(!isAutoRun);
     }
 
     function onShowInvisible() {
@@ -427,8 +413,6 @@ export default function Component(props: {
                 keyBindings={keyBindings}
                 isLintOn={isLintOn}
                 onLint={onLint}
-                isAutoRun={isAutoRun}
-                onAutoRun={onAutoRun}
                 isShowInvisible={isShowInvisible}
                 onShowInvisible={onShowInvisible}
             />
@@ -491,7 +475,7 @@ export default function Component(props: {
                         <ClickBoard content={code}/>
 
                         <Main
-                            isAutoRun={isAutoRun}
+                            isLintOn={isLintOn}
                             value={code}
                             patch={patch}
                             fontSize={fontSize} indent={4}
@@ -507,7 +491,7 @@ export default function Component(props: {
 
                 <Terminal
                     lan={lan}
-                    hint={isAutoRun ? TRANSLATE.hintAuto[lan] : TRANSLATE.hintManual[lan]}
+                    hint={TRANSLATE.hintManual[lan]}
                     running={isRunning}
                     fontSize={fontSize}
                     result={result}

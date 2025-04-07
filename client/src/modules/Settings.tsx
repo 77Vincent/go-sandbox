@@ -60,9 +60,6 @@ export default function Component(props: {
     // for lint
     isLintOn: boolean;
     onLint: () => void;
-    // for auto run
-    isAutoRun: boolean;
-    onAutoRun: () => void;
     // for show invisible characters
     isShowInvisible: boolean;
     onShowInvisible: () => void;
@@ -83,9 +80,6 @@ export default function Component(props: {
 
         // for lint
         isLintOn, onLint,
-
-        // for auto run
-        isAutoRun, onAutoRun,
 
         // for show invisible characters
         isShowInvisible, onShowInvisible,
@@ -119,11 +113,6 @@ export default function Component(props: {
 
                 <Modal.Body>
                     <Grid>
-                        <Row>
-                            <Label value={TRANSLATE.autoRun[lan]}/>
-                            <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
-                        </Row>
-
                         <Row>
                             <Label value={TRANSLATE.showInvisible[lan]}/>
                             <ToggleSwitch checked={isShowInvisible} onChange={onShowInvisible}/>

@@ -1,7 +1,5 @@
 import {
-    AUTO_RUN_KEY,
     BUILD_ERROR_PARSING_REGEX,
-    DEFAULT_AUTO_RUN,
     DEFAULT_EDITOR_SIZE,
     DEFAULT_KEY_BINDINGS,
     DEFAULT_LANGUAGE,
@@ -102,10 +100,6 @@ export function getSandboxes(): mySandboxes[] {
     }
 
     return sandboxes
-}
-
-export function getAutoRun(): boolean {
-    return JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || DEFAULT_AUTO_RUN)
 }
 
 export function getLintOn(): boolean {

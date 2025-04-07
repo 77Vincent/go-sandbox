@@ -25,7 +25,7 @@ export default function Component(props: {
             <div className={"flex flex-col gap-4 font-light dark:text-gray-50"}>
                 <p>
                     Go Sandbox is a simplistic and advanced online editor
-                    featuring syntax recognition and automatic realtime execution of your Go programs!
+                    featuring syntax recognition and realtime execution of your Go programs!
                 </p>
 
                 <div className={"text-lg font-semibold italic"}>Key Features</div>

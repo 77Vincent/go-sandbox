@@ -18,7 +18,6 @@ export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
 export const SANDBOX_VERSION_KEY = "sandboxVersion";
 export const KEY_BINDINGS_KEY = "keyBindings";
 export const LANGUAGE_KEY = "languageKey";
-export const AUTO_RUN_KEY = "isAutoRum";
 export const LINT_ON_KEY = "isLintOn";
 export const SHOW_INVISIBLE_KEY = "isShowInvisible";
 export const EDITOR_SIZE_KEY = "editorSize";
@@ -29,7 +28,6 @@ export const DEFAULT_CURSOR_HEAD = 0;
 export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
 export const DEFAULT_SANDBOX_VERSION = "1";
 export const DEFAULT_KEY_BINDINGS: KeyBindingsType = "";
-export const DEFAULT_AUTO_RUN = "true";
 export const DEFAULT_LINT_ON = "false";
 export const DEFAULT_SHOW_INVISIBLE = "false";
 export const DEFAULT_EDITOR_SIZE = 50;
@@ -44,7 +42,6 @@ export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
 export const MOBILE_WIDTH = 768;
 
 export const RUN_DEBOUNCE_TIME = 100;
-export const AUTO_RUN_DEBOUNCE_TIME = 1250;
 export const ACTIVE_COLOR = "cyan"
 export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
 export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
@@ -121,12 +118,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "設置",
         ja: "設定",
     },
-    hintAuto: {
-        en: "Type something to run automatically",
-        zh_CN: "输入内容以自动运行",
-        zh_TW: "輸入內容以自動運行",
-        ja: "自動実行するには何かを入力してください",
-    },
     hintManual: {
         en: "Press 'Run' to execute",
         zh_CN: "按运行键以执行",
@@ -156,12 +147,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_CN: "代码提示",
         zh_TW: "代碼提示",
         ja: "リント",
-    },
-    autoRun: {
-        en: "Auto Run",
-        zh_CN: "自动运行",
-        zh_TW: "自動運行",
-        ja: "オートラン",
     },
     showInvisible: {
         en: "Show Invisible Characters",
