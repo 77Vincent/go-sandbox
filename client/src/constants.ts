@@ -112,6 +112,12 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "分享",
         ja: "共有",
     },
+    new: {
+        en: "New",
+        zh_CN: "新建",
+        zh_TW: "新建",
+        ja: "新規作成",
+    },
     settings: {
         en: "Settings",
         zh_CN: "设置",
