@@ -1,4 +1,4 @@
-import { linter, Diagnostic } from "@codemirror/lint";
+import {linter, Diagnostic} from "@codemirror/lint";
 
 import {acceptCompletion, completionStatus} from "@codemirror/autocomplete";
 import {EditorState} from "@codemirror/state"
@@ -37,9 +37,10 @@ import Mousetrap from "mousetrap";
 
 import {KeyBindingsType, patchI} from "../types";
 import {EMACS, NONE, DEBOUNCE_TIME, VIM} from "../constants.ts";
-import {getCursorHead, setCursorHead} from "../utils.ts";
+import {getCursorHead, getUrl, setCursorHead} from "../utils.ts";
 import debounce from "debounce";
 import {indentLess, indentMore} from "@codemirror/commands";
+import LSP from "../lsp/client.ts";
 
 // Compartments for dynamic config
 const fontSizeCompartment = new Compartment();
@@ -50,8 +51,8 @@ const autoCompletionCompartment = new Compartment();
 const lintCompartment = new Compartment();
 
 // setters of compartments
-const setLint = (isLintOn: boolean) => {
-    return isLintOn ? goLinter : [];
+const setLint = (isLintOn: boolean, diagnostics: Diagnostic[]) => {
+    return isLintOn ? linter(() => diagnostics) : [];
 }
 const setAutoCompletion = (isAutoCompletionOn: boolean) => {
     return isAutoCompletionOn ? autocompletion() : [];
@@ -77,29 +78,6 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
             return [];
     }
 }
-
-// linting
-// This runs every time the code changes
-const goLinter = linter((view) => {
-    const code = view.state.doc.toString();
-
-    // Fake example: check for TODO comment
-    const diagnostics: Diagnostic[] = [];
-
-    const lines = code.split("\n");
-    lines.forEach((line, i) => {
-        if (line.includes("TODO")) {
-            diagnostics.push({
-                from: view.state.doc.line(i + 1).from + line.indexOf("TODO"),
-                to: view.state.doc.line(i + 1).from + line.indexOf("TODO") + 4,
-                severity: "warning",
-                message: "Avoid TODOs in code"
-            });
-        }
-    });
-
-    return diagnostics;
-});
 
 export default function Component(props: {
     value: string;
@@ -135,8 +113,15 @@ export default function Component(props: {
         debouncedShare,
     } = props;
     const {mode} = useThemeMode();
+
+    // ref
     const editor = useRef<HTMLDivElement>(null);
     const view = useRef<EditorView | null>(null);
+    const lspClientRef = useRef<LSP | null>(null);
+    const docVersion = useRef<number>(1);
+
+    // local state
+    const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
 
     // manage cursor
     const onCursorChange = useRef(debounce(useCallback((v: ViewUpdate) => {
@@ -147,6 +132,17 @@ export default function Component(props: {
     const onViewUpdate = (v: ViewUpdate) => {
         if (v.docChanged) {
             onChange(v.state.doc.toString());
+            // version increment
+            docVersion.current += 1;
+
+            (async function () {
+                try {
+                    if (!lspClientRef.current) return
+                    await lspClientRef.current.didChange(docVersion.current, v.state.doc.toString());
+                } catch (e) {
+                    console.error("LSP didChange error:", e);
+                }
+            }());
         }
     }
 
@@ -252,7 +248,7 @@ export default function Component(props: {
             // Custom key bindings
             ...focusedKeymap,
         ]),
-        lintCompartment.of(setLint(isLintOn)),
+        lintCompartment.of(setLint(isLintOn, diagnostics)),
         autoCompletionCompartment.of(setAutoCompletion(isAutoCompletionOn)),
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(indent)),
@@ -290,6 +286,12 @@ export default function Component(props: {
         });
         view.current.focus();
 
+        lspClientRef.current = new LSP(getUrl("/ws"), view.current, setDiagnostics);
+
+        (async function () {
+            await lspClientRef.current?.initialize(value)
+        }());
+
         // key bindings for unfocused editor
         Mousetrap.bind('esc', function () {
             view.current?.focus();
@@ -319,21 +321,31 @@ export default function Component(props: {
         };
     }, []);
 
-    // Dynamically reconfigure compartments when props change
+    // dynamically update configuration
     useEffect(() => {
         if (!view.current) return;
-
-        view.current.dispatch({
-            effects: [
-                fontSizeCompartment.reconfigure(setFontSize(fontSize)),
-                indentCompartment.reconfigure(setIndent(indent)),
-                keyBindingsCompartment.reconfigure(setKeyBindings(keyBindings)),
-                themeCompartment.reconfigure(setTheme(mode)),
-                autoCompletionCompartment.reconfigure(setAutoCompletion(isAutoCompletionOn)),
-                lintCompartment.reconfigure(setLint(isLintOn)),
-            ]
-        });
-    }, [fontSize, indent, mode, keyBindings, isAutoCompletionOn]);
+        view.current.dispatch({effects: [themeCompartment.reconfigure(setTheme(mode))]})
+    }, [mode]);
+    useEffect(() => {
+        if (!view.current) return;
+        view.current.dispatch({effects: [keyBindingsCompartment.reconfigure(setKeyBindings(keyBindings))]})
+    }, [keyBindings]);
+    useEffect(() => {
+        if (!view.current) return;
+        view.current.dispatch({effects: [indentCompartment.reconfigure(setIndent(indent))]})
+    }, [indent]);
+    useEffect(() => {
+        if (!view.current) return;
+        view.current.dispatch({effects: [fontSizeCompartment.reconfigure(setFontSize(fontSize))]})
+    }, [fontSize]);
+    useEffect(() => {
+        if (!view.current) return;
+        view.current.dispatch({effects: [autoCompletionCompartment.reconfigure(setAutoCompletion(isAutoCompletionOn))]})
+    }, [isAutoCompletionOn]);
+    useEffect(() => {
+        if (!view.current) return;
+        view.current.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, diagnostics))]})
+    }, [diagnostics, isLintOn]);
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname

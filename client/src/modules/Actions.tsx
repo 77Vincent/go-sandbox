@@ -28,7 +28,7 @@ export default function Component(props: {
             <Tooltip className={COMMON_CLASSES} content={
                 <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.run[lan]}
-                    <div className={"flex items-center gap-0.5"}>
+                    <div className={"flex items-center"}>
                         <MetaKey/>r
                     </div>
                 </div>
@@ -40,7 +40,7 @@ export default function Component(props: {
             <Tooltip className={COMMON_CLASSES} content={
                 <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.format[lan]}
-                    <div className={"flex items-center gap-0.5"}>
+                    <div className={"flex items-center"}>
                         <MetaKey/><MdKeyboardOptionKey/>l
                     </div>
                 </div>
@@ -52,7 +52,7 @@ export default function Component(props: {
             <Tooltip className={COMMON_CLASSES} content={
                 <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.share[lan]}
-                    <div className={"flex items-center gap-0.5"}>
+                    <div className={"flex items-center"}>
                         <MetaKey/><BsShift/>e
                     </div>
                 </div>

@@ -46,14 +46,13 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, normalizeText, getActiveSandbox, setCodeContent, getAutoCompletionOn
+    isMobileDevice, getActiveSandbox, setCodeContent, getAutoCompletionOn
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
-import LSP from "../lsp/client.ts";
 
 function ShareSuccessMessage(props: {
     url: string,
@@ -100,7 +99,6 @@ export default function Component(props: {
 }) {
     const {setToastError, setToastInfo} = props
 
-    const [docVersion, setDocVersion] = useState<number>(1);
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
@@ -124,12 +122,10 @@ export default function Component(props: {
     const [info, setInfo] = useState<string>("")
 
     // reference the latest state
-    const lspClientRef = useRef<LSP | null>(null);
     const codeRef = useRef(code);
     const sandboxVersionRef = useRef(sandboxVersion);
     const activeSandboxRef = useRef(activeSandbox);
     const isRunningRef = useRef(isRunning);
-    const docVersionRef = useRef(docVersion);
 
     // mode status
     const [keyBindings, setKeyBindings] = useState<KeyBindingsType>(initialKeyBindings);
@@ -159,26 +155,14 @@ export default function Component(props: {
 
     // IMPORTANT: update the ref when the state changes
     useEffect(() => {
-        docVersionRef.current = docVersion
         codeRef.current = code
         isRunningRef.current = isRunning
         sandboxVersionRef.current = sandboxVersion
         activeSandboxRef.current = activeSandbox
-    }, [code, docVersion, isRunning, sandboxVersion, activeSandbox]);
+    }, [code, isRunning, sandboxVersion, activeSandbox]);
 
     function onChange(newCode: string = "") {
-        const processedPrevCode = normalizeText(codeRef.current);
-        const processedNewCode = normalizeText(newCode);
-        const newVersion = docVersion + 1
-
         setCode(newCode);
-        setDocVersion(newVersion);
-
-        if (processedPrevCode !== processedNewCode) {
-            if (isLintOn) {
-                lspClientRef?.current?.didChange(newVersion, newCode);
-            }
-        }
     }
 
     function shouldAbort(): boolean {

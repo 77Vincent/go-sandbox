@@ -1,8 +1,17 @@
 import {LSPCompletionItem, LSPCompletionResponse, pendingRequests} from "../types";
+import {Diagnostic} from "@codemirror/lint";
+import {EditorView} from "@codemirror/view";
 
 const WORKSPACE = "workspace";
 const URI_BASE = `file:///${WORKSPACE}`
 const URI = `${URI_BASE}/main.go`
+const DIAGNOSTICS_METHOD = "textDocument/publishDiagnostics";
+const SEVERITY_MAP: Record<number, string> = {
+    1: "error",
+    2: "warning",
+    3: "info",
+    4: "hint",
+}
 
 // LSP events
 const EVENT_INITIALIZE = "initialize"
@@ -42,11 +51,15 @@ export default class LSPClient {
     ws: WebSocket;
     requestId: number;
     pendingRequests: pendingRequests;
+    view: EditorView;
+    setDiagnostic: (diagnostic: Diagnostic[]) => void;
 
-    constructor(url: string) {
+    constructor(url: string, view: EditorView, setDiagnostic: (diagnostic: Diagnostic[]) => void) {
         this.ws = new WebSocket(url);
         this.requestId = 0;
         this.pendingRequests = new Map();
+        this.setDiagnostic = setDiagnostic;
+        this.view = view;
 
         this.ws.onopen = () => {
             // Optionally send the initialize request here:
@@ -116,7 +129,7 @@ export default class LSPClient {
         }
     }
 
-    async initialize(): Promise<void> {
+    async initialize(value: string): Promise<void> {
         try {
             await this.sendRequest(EVENT_INITIALIZE, {
                 rootUri: URI_BASE,
@@ -129,7 +142,7 @@ export default class LSPClient {
                     uri: URI,
                     languageId: "go",
                     version: 1,
-                    text: "" // TODO: Add the initial text content here
+                    text: value,
                 },
             });
         } catch (error) {
@@ -146,7 +159,19 @@ export default class LSPClient {
                 this.pendingRequests.delete(message.id);
             } else {
                 // Handle notifications or unsolicited messages
-                // console.log("LSP notification:", message);
+                if (message.method === DIAGNOSTICS_METHOD) {
+                    this.setDiagnostic(message.params.diagnostics.map((diagnostic: any) => {
+                            const {range, severity, message, source} = diagnostic;
+                            return {
+                                from: this.view.state.doc.line(range.start.line + 1).from + range.start.character,
+                                to: this.view.state.doc.line(range.end.line + 1).from + range.end.character,
+                                severity: SEVERITY_MAP[severity],
+                                message,
+                                source,
+                            }
+                        }
+                    ))
+                }
             }
         } catch (error) {
             console.error("Error parsing LSP message:", error);
