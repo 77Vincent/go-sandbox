@@ -110,6 +110,7 @@ export default function Component(props: {
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(initialValue);
+    const [patch, setPatch] = useState<string>("");
 
     // result
     const [result, setResult] = useState<resultI[]>([]);
@@ -140,7 +141,9 @@ export default function Component(props: {
                 try {
                     const data = await fetchSnippet(id)
                     if (data) {
+                        // must call together
                         setCode(data)
+                        setPatch(data)
                     }
                 } catch (e) {
                     setToastError(<FetchErrorMessage error={(e as Error).message}/>)
@@ -213,7 +216,9 @@ export default function Component(props: {
             const {stdout, error, message} = await formatCode(codeRef.current);
 
             if (stdout) {
+                // must call together
                 setCode(stdout)
+                setPatch(stdout)
             }
             if (error) {
                 setResult([{type: EVENT_STDERR, content: error}])
@@ -261,7 +266,9 @@ export default function Component(props: {
             setError("")
             setResult([])
             // TODO: annotation or marker
+            // must call together
             setCode(formatted)
+            setPatch(formatted)
             codeRef.current = formatted // important: update immediately
 
             const source = new SSE(getUrl("/execute"), {
@@ -314,7 +321,9 @@ export default function Component(props: {
         try {
             setIsRunning(true)
             const code = await getSnippet(id);
+            // must call together
             setCode(code);
+            setPatch(code);
             debouncedRun()
             setIsRunning(false)
         } catch (e) {
@@ -348,7 +357,10 @@ export default function Component(props: {
     function onActiveSandboxChange(id: mySandboxes) {
         localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
         setActiveSandbox(id)
-        setCode(getCodeContent(id))
+        const data = getCodeContent(id)
+        // must call together
+        setCode(data)
+        setPatch(data)
         debouncedRun()
     }
 
@@ -484,6 +496,7 @@ export default function Component(props: {
 
                         <Main
                             value={code}
+                            patch={patch}
                             fontSize={fontSize} indent={4}
                             keyBindings={keyBindings}
                             onChange={onChange}

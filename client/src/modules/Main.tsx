@@ -48,6 +48,7 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
 
 export default function Component(props: {
     value: string;
+    patch: string;
     keyBindings: KeyBindingsType;
     fontSize: number;
     indent: number;
@@ -61,7 +62,7 @@ export default function Component(props: {
     debouncedShare: () => void;
 }) {
     const {
-        value, fontSize, indent, keyBindings,
+        value, patch, fontSize, indent, keyBindings,
         // handlers
         onChange,
         // setters
@@ -149,6 +150,22 @@ export default function Component(props: {
         EditorView.updateListener.of(onCursorChange),
         EditorView.updateListener.of(onViewUpdate),
     ]);
+
+    // update the view when the value changes from outside
+    useEffect(() => {
+        if (patch === "" || !view.current) return;
+
+        view.current.dispatch({
+            changes: {
+                from: 0,
+                to: view.current.state.doc.length,
+                insert: patch
+            },
+            selection: {
+                anchor: getCursorHead(),
+            },
+        });
+    }, [patch]);
 
     useEffect(() => {
         if (!editor.current || view.current) return;

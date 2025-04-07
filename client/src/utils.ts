@@ -159,6 +159,6 @@ export function normalizeText(text: string = "") {
 }
 
 export function isMac(): boolean {
-    const platform = navigator.userAgentData?.platform;
+    const platform = navigator.userAgent;
     return platform?.toLowerCase().includes('mac') || navigator.platform.includes("Mac")
 }
