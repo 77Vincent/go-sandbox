@@ -6,7 +6,7 @@ import {
 } from "react-icons/hi";
 import {toastType} from "../types";
 import {isMac} from "../utils.ts";
-import {MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
+import {MdContentCopy as CopyIcon, MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
 
 export function Wrapper(props: {
     children: ReactNode,
@@ -113,8 +113,9 @@ export function ClickBoard(props: {
         content &&
         <Flowbite theme={{theme: customTheme}}>
             <Clipboard.WithIcon
+                icon={CopyIcon}
                 valueToCopy={content}
-                className={"absolute right-0.5 top-4 z-10 opacity-60"}
+                className={"absolute right-0.5 top-4 z-10 opacity-90"}
             />
         </Flowbite>
     )
