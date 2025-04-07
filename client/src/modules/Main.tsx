@@ -12,7 +12,7 @@ import {ViewUpdate} from "@uiw/react-codemirror";
 import {useThemeMode} from "flowbite-react";
 import Mousetrap from "mousetrap";
 
-import {KeyBindingsType} from "../types";
+import {KeyBindingsType, patchI} from "../types";
 import {EMACS, NONE, RUN_DEBOUNCE_TIME, VIM} from "../constants.ts";
 import {getCursorHead, setCursorHead} from "../utils.ts";
 import debounce from "debounce";
@@ -49,7 +49,7 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
 
 export default function Component(props: {
     value: string;
-    patch: string;
+    patch: patchI;
     keyBindings: KeyBindingsType;
     fontSize: number;
     indent: number;
@@ -155,16 +155,16 @@ export default function Component(props: {
 
     // update the view when the value changes from outside
     useEffect(() => {
-        if (patch === "" || !view.current) return;
+        if (patch.value === "" || !view.current) return;
 
         view.current.dispatch({
             changes: {
                 from: 0,
                 to: view.current.state.doc.length,
-                insert: patch
+                insert: patch.value
             },
             selection: {
-                anchor: Math.min(getCursorHead(), patch.length),
+                anchor: patch.keepCursor ? Math.min(getCursorHead(), patch.value.length) : 0,
             },
             scrollIntoView: true,
         });

@@ -54,7 +54,7 @@ import {
     isMobileDevice, normalizeText, getActiveSandbox, setCodeContent
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
-import {KeyBindingsType, languages, mySandboxes, resultI} from "../types";
+import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
@@ -110,7 +110,7 @@ export default function Component(props: {
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(initialValue);
-    const [patch, setPatch] = useState<string>("");
+    const [patch, setPatch] = useState<patchI>({value: "", keepCursor: false});
 
     // result
     const [result, setResult] = useState<resultI[]>([]);
@@ -143,7 +143,7 @@ export default function Component(props: {
                     if (data) {
                         // must call together
                         setCode(data)
-                        setPatch(data)
+                        setPatch({value: data})
                     }
                 } catch (e) {
                     setToastError(<FetchErrorMessage error={(e as Error).message}/>)
@@ -218,7 +218,7 @@ export default function Component(props: {
             if (stdout) {
                 // must call together
                 setCode(stdout)
-                setPatch(stdout)
+                setPatch({value: stdout, keepCursor: true})
             }
             if (error) {
                 setResult([{type: EVENT_STDERR, content: error}])
@@ -268,7 +268,7 @@ export default function Component(props: {
             // TODO: annotation or marker
             // must call together
             setCode(formatted)
-            setPatch(formatted)
+            setPatch({value: formatted, keepCursor: true})
             codeRef.current = formatted // important: update immediately
 
             const source = new SSE(getUrl("/execute"), {
@@ -322,7 +322,7 @@ export default function Component(props: {
             setIsRunning(true)
             const data = await getSnippet(id);
             setCode(data);
-            setPatch(data);
+            setPatch({value: data});
             setIsRunning(false)
         } catch (e) {
             setToastError((e as Error).message)
@@ -357,7 +357,7 @@ export default function Component(props: {
         setActiveSandbox(id)
         const data = getCodeContent(id)
         setCode(data)
-        setPatch(data)
+        setPatch({value: data})
     }
 
     function onLanguageChange(value: languages) {
