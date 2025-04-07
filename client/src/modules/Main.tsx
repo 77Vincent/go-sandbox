@@ -22,6 +22,7 @@ import {indentLess, indentMore} from "@codemirror/commands";
 const fontSizeCompartment = new Compartment();
 const indentCompartment = new Compartment();
 const keyBindingsCompartment = new Compartment();
+const onViewUpdateCompartment = new Compartment();
 
 const setFontSize = (fontSize: number) => {
     return EditorView.theme({
@@ -52,6 +53,7 @@ export default function Component(props: {
     keyBindings: KeyBindingsType;
     fontSize: number;
     indent: number;
+    isAutoRun: boolean;
     // handler
     onChange: (code: string) => void;
     // setters
@@ -62,7 +64,7 @@ export default function Component(props: {
     debouncedShare: () => void;
 }) {
     const {
-        value, patch, fontSize, indent, keyBindings,
+        value, patch, fontSize, indent, keyBindings, isAutoRun,
         // handlers
         onChange,
         // setters
@@ -148,7 +150,7 @@ export default function Component(props: {
         indentCompartment.of(setIndent(indent)),
         keyBindingsCompartment.of(setKeyBindings(keyBindings)),
         EditorView.updateListener.of(onCursorChange),
-        EditorView.updateListener.of(onViewUpdate),
+        onViewUpdateCompartment.of(EditorView.updateListener.of(onViewUpdate)),
     ]);
 
     // update the view when the value changes from outside
@@ -162,8 +164,9 @@ export default function Component(props: {
                 insert: patch
             },
             selection: {
-                anchor: getCursorHead(),
+                anchor: Math.min(getCursorHead(), patch.length),
             },
+            scrollIntoView: true,
         });
     }, [patch]);
 
@@ -216,9 +219,10 @@ export default function Component(props: {
                 fontSizeCompartment.reconfigure(setFontSize(fontSize)),
                 indentCompartment.reconfigure(setIndent(indent)),
                 keyBindingsCompartment.reconfigure(setKeyBindings(keyBindings)),
+                onViewUpdateCompartment.reconfigure(EditorView.updateListener.of(onViewUpdate)),
             ]
         });
-    }, [fontSize, indent, mode, keyBindings]);
+    }, [onViewUpdate, isAutoRun, fontSize, indent, mode, keyBindings]);
 
     return (
         <div className={`flex-1 overflow-auto ${mode === "dark" ? "bg-gray-950" : ""}`} ref={editor}/>
