@@ -241,5 +241,10 @@ export const MY_SANDBOXES: Record<mySandboxes, string> = {
     "my-sandbox-3": "Sandbox 3",
     "my-sandbox-4": "Sandbox 4",
     "my-sandbox-5": "Sandbox 5",
+    "my-sandbox-6": "Sandbox 6",
+    "my-sandbox-7": "Sandbox 7",
+    "my-sandbox-8": "Sandbox 8",
+    "my-sandbox-9": "Sandbox 9",
+    "my-sandbox-10": "Sandbox 10",
 }
 export const BUTTON_INACTIVE = "cursor-not-allowed text-gray-300 dark:text-gray-600";
