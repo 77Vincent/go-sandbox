@@ -10,7 +10,7 @@ import {
     FONT_SIZE_M,
     KEY_BINDINGS_KEY,
     LANGUAGE_KEY,
-    LINT_ON_KEY,
+    IS_LINT_ON_KEY,
     SANDBOX_VERSION_KEY,
     DEFAULT_SANDBOX_VERSION,
     IS_VERTICAL_LAYOUT_KEY,
@@ -101,7 +101,7 @@ export function getSandboxes(): mySandboxes[] {
 }
 
 export function getLintOn(): boolean {
-    return JSON.parse(localStorage.getItem(LINT_ON_KEY) || DEFAULT_LINT_ON)
+    return JSON.parse(localStorage.getItem(IS_LINT_ON_KEY) || DEFAULT_LINT_ON)
 }
 
 export function getAutoCompletionOn(): boolean {

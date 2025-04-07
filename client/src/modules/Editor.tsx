@@ -7,7 +7,7 @@ import {
     FONT_SIZE_KEY,
     FONT_SIZE_L,
     FONT_SIZE_S,
-    LINT_ON_KEY,
+    IS_LINT_ON_KEY,
     DEBOUNCE_TIME,
     KEY_BINDINGS_KEY,
     FONT_SIZE_M,
@@ -23,7 +23,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY,
+    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY,
 } from "../constants.ts";
 import Main from "./Main.tsx";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
@@ -332,12 +332,12 @@ export default function Component(props: {
     }, [debouncedRun, setToastError]), DEBOUNCE_TIME)).current;
 
     function onLint() {
-        localStorage.setItem(LINT_ON_KEY, JSON.stringify(!isLintOn));
+        localStorage.setItem(IS_LINT_ON_KEY, JSON.stringify(!isLintOn));
         setIsLintOn(!isLintOn);
     }
 
     function onAutoCompletion() {
-        localStorage.setItem(LINT_ON_KEY, JSON.stringify(!isAutoCompletionOn));
+        localStorage.setItem(IS_AUTOCOMPLETION_ON_KEY, JSON.stringify(!isAutoCompletionOn));
         setIsAutoCompletionOn(!isAutoCompletionOn);
     }
 
