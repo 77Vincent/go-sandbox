@@ -4,7 +4,6 @@ import {
     DEFAULT_KEY_BINDINGS,
     DEFAULT_LANGUAGE,
     DEFAULT_LINT_ON,
-    DEFAULT_SHOW_INVISIBLE,
     EDITOR_SIZE_KEY,
     ERROR_PARSING_REGEX,
     FONT_SIZE_KEY,
@@ -13,7 +12,6 @@ import {
     LANGUAGE_KEY,
     LINT_ON_KEY,
     SANDBOX_VERSION_KEY,
-    SHOW_INVISIBLE_KEY,
     DEFAULT_SANDBOX_VERSION,
     IS_VERTICAL_LAYOUT_KEY,
     DEFAULT_IS_VERTICAL_LAYOUT,
@@ -108,10 +106,6 @@ export function getLintOn(): boolean {
 
 export function getAutoCompletionOn(): boolean {
     return JSON.parse(localStorage.getItem(IS_AUTOCOMPLETION_ON_KEY) || DEFAULT_AUTOCOMPLETION_ON)
-}
-
-export function getShowInvisible(): boolean {
-    return JSON.parse(localStorage.getItem(SHOW_INVISIBLE_KEY) || DEFAULT_SHOW_INVISIBLE)
 }
 
 export function parseExecutionError(error: string): number[] {

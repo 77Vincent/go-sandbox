@@ -13,7 +13,6 @@ import {
     FONT_SIZE_M,
     TRANSLATE,
     STATS_INFO_PREFIX,
-    SHOW_INVISIBLE_KEY,
     LANGUAGE_KEY,
     EVENT_STDOUT,
     EVENT_ERROR,
@@ -43,7 +42,6 @@ import {
     getEditorSize,
     getFontSize,
     getLintOn,
-    getShowInvisible,
     getUrl,
     getLanguage,
     getSandboxVersion,
@@ -91,7 +89,6 @@ const initialIsAutoCompletionOn = getAutoCompletionOn()
 const initialSandboxVersion = getSandboxVersion()
 const initialActiveSandbox = getActiveSandbox();
 const initialIsVerticalLayout = getIsVerticalLayout();
-const initialShowInvisible = getShowInvisible()
 const initialLanguage = getLanguage()
 const initialFontSize = getFontSize()
 const initialEditorSize = getEditorSize()
@@ -138,7 +135,6 @@ export default function Component(props: {
     const [keyBindings, setKeyBindings] = useState<KeyBindingsType>(initialKeyBindings);
     const [isLintOn, setIsLintOn] = useState<boolean>(initialIsLintOn)
     const [isAutoCompletionOn, setIsAutoCompletionOn] = useState<boolean>(initialIsAutoCompletionOn)
-    const [isShowInvisible, setIsShowInvisible] = useState<boolean>(initialShowInvisible)
 
     // fetch the snippet if the url contains the snippet id, do only once
     useEffect(() => {
@@ -376,11 +372,6 @@ export default function Component(props: {
         setLan(value)
     }
 
-    function onShowInvisible() {
-        localStorage.setItem(SHOW_INVISIBLE_KEY, JSON.stringify(!isShowInvisible));
-        setIsShowInvisible(!isShowInvisible);
-    }
-
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         // calculate the size
         let size
@@ -435,8 +426,6 @@ export default function Component(props: {
                 onLint={onLint}
                 isAutoCompletionOn={isAutoCompletionOn}
                 onAutoCompletion={onAutoCompletion}
-                isShowInvisible={isShowInvisible}
-                onShowInvisible={onShowInvisible}
             />
 
             <div

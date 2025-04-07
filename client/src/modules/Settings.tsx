@@ -60,9 +60,9 @@ export default function Component(props: {
     // for lint
     isLintOn: boolean;
     onLint: () => void;
-    // for show invisible characters
-    isShowInvisible: boolean;
-    onShowInvisible: () => void;
+    // for auto completion
+    isAutoCompletionOn: boolean;
+    onAutoCompletion: () => void;
 }) {
     const {mode} = useThemeMode()
     const {
@@ -81,8 +81,8 @@ export default function Component(props: {
         // for lint
         isLintOn, onLint,
 
-        // for show invisible characters
-        isShowInvisible, onShowInvisible,
+        // for auto completion
+        isAutoCompletionOn, onAutoCompletion,
 
         // for modal
         show, setShow,
@@ -114,13 +114,13 @@ export default function Component(props: {
                 <Modal.Body>
                     <Grid>
                         <Row>
-                            <Label value={TRANSLATE.showInvisible[lan]}/>
-                            <ToggleSwitch checked={isShowInvisible} onChange={onShowInvisible}/>
+                            <Label value={TRANSLATE.lint[lan]}/>
+                            <ToggleSwitch checked={isLintOn} onChange={onLint}/>
                         </Row>
 
                         <Row>
-                            <Label value={TRANSLATE.lint[lan]}/>
-                            <ToggleSwitch checked={isLintOn} onChange={onLint}/>
+                            <Label value={TRANSLATE.autoCompletion[lan]}/>
+                            <ToggleSwitch checked={isAutoCompletionOn} onChange={onAutoCompletion}/>
                         </Row>
                     </Grid>
 
