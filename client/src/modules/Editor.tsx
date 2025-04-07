@@ -46,7 +46,7 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, getActiveSandbox, setCodeContent, getAutoCompletionOn, getIndentationSize
+    isMobileDevice, getActiveSandbox, getAutoCompletionOn, getIndentationSize
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
@@ -185,7 +185,7 @@ export default function Component(props: {
 
     // store code asynchronously
     const debouncedStoreCode = useRef(debounce(useCallback((data: string) => {
-        setCodeContent(activeSandboxRef.current, data);
+        localStorage.setItem(activeSandboxRef.current, data)
     }, [activeSandboxRef]), DEBOUNCE_TIME)).current;
     useEffect(() => {
         debouncedStoreCode(code);

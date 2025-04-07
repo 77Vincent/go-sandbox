@@ -42,16 +42,10 @@ export function getLanguage(): languages {
     return localStorage.getItem(LANGUAGE_KEY) as languages || DEFAULT_LANGUAGE
 }
 
-export function setCursorHead(cursor: number): void {
-    localStorage.setItem(CURSOR_HEAD_KEY, String(cursor))
-}
 export function getCursorHead(): number {
     return Number(localStorage.getItem(CURSOR_HEAD_KEY)) || DEFAULT_CURSOR_HEAD
 }
 
-export function setCodeContent(sandbox: mySandboxes, code: string): void {
-    localStorage.setItem(sandbox, code)
-}
 export function getCodeContent(sandbox: mySandboxes): string {
     return localStorage.getItem(sandbox) || HELLO_WORLD
 }

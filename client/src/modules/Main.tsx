@@ -40,8 +40,8 @@ import debounce from "debounce";
 
 // local imports
 import {KeyBindingsType, patchI} from "../types";
-import {EMACS, NONE, DEBOUNCE_TIME, VIM} from "../constants.ts";
-import {getCursorHead, getUrl, setCursorHead} from "../utils.ts";
+import {EMACS, NONE, DEBOUNCE_TIME, VIM, CURSOR_HEAD_KEY} from "../constants.ts";
+import {getCursorHead, getUrl} from "../utils.ts";
 import LSP from "../lsp/client.ts";
 
 // Compartments for dynamic config
@@ -127,7 +127,7 @@ export default function Component(props: {
 
     // manage cursor
     const onCursorChange = useRef(debounce(useCallback((v: ViewUpdate) => {
-        setCursorHead(v.state.selection.main.head);
+        localStorage.setItem(CURSOR_HEAD_KEY, String(v.state.selection.main.head))
     }, []), DEBOUNCE_TIME)).current
 
     // manage content
