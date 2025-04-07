@@ -314,12 +314,13 @@ export default function Component(props: {
             const data = await getSnippet(id);
             setCode(data);
             setPatch({value: data});
+            debouncedRun()
             setIsRunning(false)
         } catch (e) {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [setToastError]), RUN_DEBOUNCE_TIME)).current;
+    }, [debouncedRun, setToastError]), RUN_DEBOUNCE_TIME)).current;
 
     function onLint() {
         localStorage.setItem(LINT_ON_KEY, JSON.stringify(!isLintOn));
@@ -349,6 +350,7 @@ export default function Component(props: {
         const data = getCodeContent(id)
         setCode(data)
         setPatch({value: data})
+        debouncedRun()
     }
 
     function onLanguageChange(value: languages) {
