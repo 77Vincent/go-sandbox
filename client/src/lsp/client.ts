@@ -19,7 +19,7 @@ const EVENT_INITIALIZED = "initialized"
 const EVENT_COMPLETION = "textDocument/completion"
 const EVENT_DID_OPEN = "textDocument/didOpen"
 const EVENT_DID_CHANGE = "textDocument/didChange"
-const KIND_MAP: Record<number, string> = {
+export const KIND_MAP: Record<number, string> = {
     1: "Text",
     2: "Method",
     3: "Function",
@@ -115,17 +115,15 @@ export default class LSPClient {
         });
     }
 
-    // TODO: Implement a method to handle the response from the server
-    async getCompletions() {
+    async getCompletions(line: number, character: number): Promise<LSPCompletionItem[]> {
         try {
-            return await this.sendRequest(EVENT_COMPLETION, {
+            const res = await this.sendRequest(EVENT_COMPLETION, {
                 textDocument: {uri: URI},
-                // position: {line: pos.row, character: pos.column},
-                context: {triggerKind: 2}, // Triggered by typing
+                position: {line, character},
             });
+            return res.result?.items || [];
         } catch (e) {
-            console.error("Completion request error:", e);
-            return [];
+            throw new Error(`Error getting completions from LSP server: ${e}`);
         }
     }
 

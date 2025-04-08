@@ -470,6 +470,7 @@ export default function Component(props: {
                         <ClickBoard content={code}/>
 
                         <Main
+                            setToastError={setToastError}
                             isLintOn={isLintOn}
                             isAutoCompletionOn={isAutoCompletionOn}
                             value={code}

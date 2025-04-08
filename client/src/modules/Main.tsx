@@ -1,5 +1,5 @@
 // react
-import {useCallback, useEffect, useRef, useState} from "react";
+import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
@@ -22,8 +22,8 @@ import {
     searchKeymap, highlightSelectionMatches
 } from "@codemirror/search"
 import {
-    autocompletion, completionKeymap, closeBrackets,
-    closeBracketsKeymap
+    autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap,
+    CompletionContext, CompletionResult, Completion
 } from "@codemirror/autocomplete"
 
 // theme import
@@ -39,10 +39,10 @@ import Mousetrap from "mousetrap";
 import debounce from "debounce";
 
 // local imports
-import {KeyBindingsType, patchI} from "../types";
+import {KeyBindingsType, LSPCompletionItem, patchI} from "../types";
 import {EMACS, NONE, DEBOUNCE_TIME, VIM, CURSOR_HEAD_KEY, DEFAULT_INDENTATION_SIZE} from "../constants.ts";
 import {getCursorHead, getUrl} from "../utils.ts";
-import LSP from "../lsp/client.ts";
+import LSP, {KIND_MAP} from "../lsp/client.ts";
 
 // Compartments for dynamic config
 const fontSizeCompartment = new Compartment();
@@ -56,8 +56,27 @@ const lintCompartment = new Compartment();
 const setLint = (isLintOn: boolean, diagnostics: Diagnostic[]) => {
     return isLintOn ? linter(() => diagnostics) : [];
 }
-const setAutoCompletion = (isAutoCompletionOn: boolean) => {
-    return isAutoCompletionOn ? autocompletion() : [];
+const setAutoCompletion = (completions: LSPCompletionItem[]) => {
+    return (context: CompletionContext): CompletionResult | null => {
+        const word = context.matchBefore(/\w*/);
+        if (!word || (word.from === word.to && !context.explicit)) return null;
+
+        const items: Completion[] = completions.map((v) => {
+            return {
+                label: v.label,
+                type: KIND_MAP[v.kind || 1].toLowerCase(),
+                // apply: v.insertText,
+                from: word.from,
+                to: word.to,
+            }
+        });
+
+        return {
+            from: word.from,
+            options: items,
+            validFor: /^\w*$/, // keeps the list open while typing
+        }
+    }
 }
 const setTheme = (mode: ThemeMode) => {
     return mode === "dark" ? themeDark : themeLight;
@@ -82,6 +101,9 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
 }
 
 export default function Component(props: {
+    // toast
+    setToastError: (message: ReactNode) => void
+
     value: string;
     patch: patchI;
 
@@ -101,6 +123,8 @@ export default function Component(props: {
     debouncedShare: () => void;
 }) {
     const {
+        setToastError,
+        // props
         value, patch,
         fontSize, keyBindings,
         isLintOn, isAutoCompletionOn,
@@ -118,11 +142,12 @@ export default function Component(props: {
     // ref
     const editor = useRef<HTMLDivElement>(null);
     const view = useRef<EditorView | null>(null);
-    const lspClientRef = useRef<LSP | null>(null);
-    const docVersion = useRef<number>(1);
+    const lsp = useRef<LSP | null>(null);
+    const version = useRef<number>(1); // initial version
 
     // local state
     const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
+    const [completions, setCompletions] = useState<LSPCompletionItem[]>([]);
 
     // manage cursor
     const onCursorChange = useRef(debounce(useCallback((v: ViewUpdate) => {
@@ -134,14 +159,24 @@ export default function Component(props: {
         if (v.docChanged) {
             onChange(v.state.doc.toString());
             // version increment
-            docVersion.current += 1;
+            version.current += 1;
+
 
             (async function () {
                 try {
-                    if (!lspClientRef.current) return
-                    await lspClientRef.current.didChange(docVersion.current, v.state.doc.toString());
+                    if (!lsp.current) return
+                    // update file view in lsp
+                    await lsp.current.didChange(version.current, v.state.doc.toString());
+
+                    // get completions
+                    const pos = v.state.selection.main.head;
+                    const line = v.state.doc.lineAt(pos);
+                    const row = line.number - 1
+                    const col = pos - line.from;
+                    const completions = await lsp.current.getCompletions(row, col)
+                    setCompletions(completions);
                 } catch (e) {
-                    console.error("LSP didChange error:", e);
+                    setToastError((e as Error).message)
                 }
             }());
         }
@@ -228,7 +263,7 @@ export default function Component(props: {
             ...focusedKeymap, // Custom key bindings
         ]),
         lintCompartment.of(setLint(isLintOn, diagnostics)),
-        autoCompletionCompartment.of(setAutoCompletion(isAutoCompletionOn)),
+        autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []})),
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(DEFAULT_INDENTATION_SIZE)),
         keyBindingsCompartment.of(setKeyBindings(keyBindings)),
@@ -262,6 +297,7 @@ export default function Component(props: {
         });
     }, [patch]);
 
+    // must only run once, so no dependencies
     useEffect(() => {
         if (!editor.current || view.current) return;
 
@@ -273,10 +309,10 @@ export default function Component(props: {
         });
         view.current.focus();
 
-        lspClientRef.current = new LSP(getUrl("/ws"), view.current, setDiagnostics);
+        lsp.current = new LSP(getUrl("/ws"), view.current, setDiagnostics);
 
         (async function () {
-            await lspClientRef.current?.initialize(value)
+            await lsp.current?.initialize(value)
         }());
 
         // key bindings for unfocused editor
@@ -323,8 +359,12 @@ export default function Component(props: {
     }, [fontSize]);
     useEffect(() => {
         if (!view.current) return;
-        view.current.dispatch({effects: [autoCompletionCompartment.reconfigure(setAutoCompletion(isAutoCompletionOn))]})
-    }, [isAutoCompletionOn]);
+        view.current.dispatch({
+            effects: [autoCompletionCompartment.reconfigure(autocompletion({
+                override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []
+            }))]
+        })
+    }, [completions, isAutoCompletionOn]);
     useEffect(() => {
         if (!view.current) return;
         view.current.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, diagnostics))]})
