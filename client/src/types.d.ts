@@ -83,3 +83,13 @@ export interface LSPCompletionResponse {
     result?: { items: LSPCompletionItem[]; isIncomplete?: boolean };
     error?: { code: number; message: string; data?: any };
 }
+
+export interface LSPDiagnostic {
+    range: {
+        start: { line: number; character: number };
+        end: { line: number; character: number };
+    };
+    severity: number;
+    message: string;
+    source?: string;
+}

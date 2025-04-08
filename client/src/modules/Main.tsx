@@ -88,7 +88,9 @@ const setLint = (isLintOn: boolean, diagnostics: Diagnostic[]) => {
 const setAutoCompletion = (completions: LSPCompletionItem[]) => {
     return (context: CompletionContext): CompletionResult | null => {
         const word = context.matchBefore(/\w*/);
-        if (!word || (word.from === word.to && !context.explicit)) return null;
+        const prevChar = context.state.sliceDoc(context.pos - 1, context.pos);
+        // prevent unwanted popup unless explicitly triggered or after a dot
+        if (!word && prevChar !== "." && !context.explicit) return null;
 
         const items: Completion[] = completions.map((v) => {
             return {
@@ -117,7 +119,7 @@ const setAutoCompletion = (completions: LSPCompletionItem[]) => {
         });
 
         return {
-            from: word.from,
+            from: word?.from ?? context.pos,
             options: items,
             validFor: /^\w*$/, // keeps the list open while typing
         }

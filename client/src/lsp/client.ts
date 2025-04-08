@@ -1,4 +1,4 @@
-import {LSPCompletionItem, LSPCompletionResponse, pendingRequests} from "../types";
+import {LSPCompletionItem, LSPCompletionResponse, LSPDiagnostic, pendingRequests} from "../types";
 import {Diagnostic} from "@codemirror/lint";
 import {EditorView} from "@codemirror/view";
 
@@ -151,25 +151,29 @@ export default class LSPClient {
     handleMessage(data: string) {
         try {
             const message = JSON.parse(data);
-            if (message.id && this.pendingRequests.has(message.id)) {
-                const {resolve} = this.pendingRequests.get(message.id)!;
+            const {id, method, params} = message;
+
+            // handle pending requests
+            if (id && this.pendingRequests.has(id)) {
+                const {resolve} = this.pendingRequests.get(id)!;
                 resolve(message);
-                this.pendingRequests.delete(message.id);
-            } else {
-                // Handle notifications or unsolicited messages
-                if (message.method === DIAGNOSTICS_METHOD) {
-                    this.setDiagnostic(message.params.diagnostics.map((diagnostic: any) => {
-                            const {range, severity, message, source} = diagnostic;
-                            return {
-                                from: this.view.state.doc.line(range.start.line + 1).from + range.start.character,
-                                to: this.view.state.doc.line(range.end.line + 1).from + range.end.character,
-                                severity: SEVERITY_MAP[severity],
-                                message,
-                                source,
-                            }
+                this.pendingRequests.delete(id);
+                return
+            }
+
+            // Handle notifications or unsolicited messages
+            if (method === DIAGNOSTICS_METHOD) {
+                this.setDiagnostic(params.diagnostics.map((diagnostic: LSPDiagnostic) => {
+                        const {range, severity, message, source} = diagnostic;
+                        return {
+                            from: this.view.state.doc.line(range.start.line + 1).from + range.start.character,
+                            to: this.view.state.doc.line(range.end.line + 1).from + range.end.character,
+                            severity: SEVERITY_MAP[severity],
+                            message,
+                            source,
                         }
-                    ))
-                }
+                    }
+                ))
             }
         } catch (error) {
             console.error("Error parsing LSP message:", error);
