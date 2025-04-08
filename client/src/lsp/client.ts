@@ -19,7 +19,7 @@ const EVENT_INITIALIZED = "initialized"
 const EVENT_COMPLETION = "textDocument/completion"
 const EVENT_DID_OPEN = "textDocument/didOpen"
 const EVENT_DID_CHANGE = "textDocument/didChange"
-export const KIND_MAP: Record<number, string> = {
+export const LSP_KIND_LABELS: Record<number, string> = {
     1: "Text",
     2: "Method",
     3: "Function",
@@ -110,7 +110,7 @@ export default class LSPClient {
 
     async didChange(version: number, text: string): Promise<void> {
         this.sendNotification(EVENT_DID_CHANGE, {
-            textDocument: {uri: URI, version}, // Update version as needed.
+            textDocument: {uri: URI, version}, // version should be incremented
             contentChanges: [{text}],
         });
     }

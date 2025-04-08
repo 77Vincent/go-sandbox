@@ -42,7 +42,36 @@ import debounce from "debounce";
 import {KeyBindingsType, LSPCompletionItem, patchI} from "../types";
 import {EMACS, NONE, DEBOUNCE_TIME, VIM, CURSOR_HEAD_KEY, DEFAULT_INDENTATION_SIZE} from "../constants.ts";
 import {getCursorHead, getUrl} from "../utils.ts";
-import LSP, {KIND_MAP} from "../lsp/client.ts";
+import LSP, {LSP_KIND_LABELS} from "../lsp/client.ts";
+
+// map type from LSP to codemirror
+const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
+    Text: "text",
+    Method: "method",
+    Function: "function",
+    Constructor: "function",
+    Field: "property",
+    Variable: "variable",
+    Class: "class",
+    Interface: "interface",
+    Module: "namespace",
+    Property: "property",
+    Unit: "constant",
+    Value: "text",
+    Enum: "enum",
+    Keyword: "keyword",
+    Snippet: "function",
+    Color: "constant",
+    File: "variable",
+    Reference: "variable",
+    Folder: "namespace",
+    EnumMember: "enum",
+    Constant: "constant",
+    Struct: "class",
+    Event: "function",
+    Operator: "function",
+    TypeParameter: "type",
+}
 
 // Compartments for dynamic config
 const fontSizeCompartment = new Compartment();
@@ -64,10 +93,26 @@ const setAutoCompletion = (completions: LSPCompletionItem[]) => {
         const items: Completion[] = completions.map((v) => {
             return {
                 label: v.label,
-                type: KIND_MAP[v.kind || 1].toLowerCase(),
-                // apply: v.insertText,
-                from: word.from,
-                to: word.to,
+                detail: v.detail,
+                boost: parseInt(v.sortText || "0"),
+                type: LSP_TO_CODEMIRROR_TYPE[LSP_KIND_LABELS[v.kind || 1]],
+                info: v.documentation?.value,
+                apply: (view, _completion, from, to) => {
+                    const insert = v.insertText ?? v.label;
+                    // Build the base change: replace the selected text with insertText
+                    const changes = [
+                        {from, to, insert}
+                    ];
+
+                    if (v.additionalTextEdits) {
+                        for (const edit of v.additionalTextEdits) {
+                            const from = view.state.doc.line(edit.range.start.line + 1).from + edit.range.start.character;
+                            const to = view.state.doc.line(edit.range.end.line + 1).from + edit.range.end.character;
+                            changes.push({from, to, insert: edit.newText});
+                        }
+                    }
+                    view.dispatch({changes});
+                },
             }
         });
 
