@@ -5,12 +5,14 @@ client:
 # for backend
 log:
 	docker-compose logs -f
-exec:
+exec-server:
 	docker exec -it go-sandbox-server /bin/sh
+exec-gopls:
+	docker exec -it go-sandbox-gopls /bin/sh
 server:
 	docker-compose up -d
 build:
-	docker-compose build server
+	docker-compose build --progress=plain
 down:
 	docker-compose down --volumes --remove-orphans
 
