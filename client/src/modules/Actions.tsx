@@ -3,7 +3,6 @@ import {FiPlay as RunICon} from "react-icons/fi";
 import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
 import {MdKeyboardOptionKey} from "react-icons/md";
-import { BsShift } from "react-icons/bs";
 
 import {BUTTON_INACTIVE, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
@@ -53,7 +52,7 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.share[lan]}
                     <div className={"flex items-center"}>
-                        <MetaKey/><BsShift/>e
+                        <MetaKey/>s
                     </div>
                 </div>
             }>
