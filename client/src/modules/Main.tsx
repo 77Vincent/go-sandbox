@@ -164,6 +164,7 @@ export default function Component(props: {
     // toast
     setToastError: (message: ReactNode) => void
 
+    sandboxVersion: string;
     value: string;
     patch: patchI;
 
@@ -183,6 +184,7 @@ export default function Component(props: {
     debouncedShare: () => void;
 }) {
     const {
+        sandboxVersion,
         setToastError,
         // props
         value, patch,
@@ -369,7 +371,7 @@ export default function Component(props: {
         });
         view.current.focus();
 
-        lsp.current = new LSP(getUrl("/ws"), view.current, setDiagnostics);
+        lsp.current = new LSP(getUrl("/ws"), sandboxVersion, view.current, setDiagnostics);
 
         (async function () {
             await lsp.current?.initialize(version.current, value)
