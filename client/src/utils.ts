@@ -123,8 +123,8 @@ export function parseExecutionError(error: string): number[] {
 }
 
 export function mapFontSize(size: number): "xs" | "sm" | "md" {
-    if (size < 14) return "xs";
-    if (size >= 16) return "md";
+    if (size < 12) return "xs";
+    if (size >= 15) return "md";
     return "sm";
 }
 

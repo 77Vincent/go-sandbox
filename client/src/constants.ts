@@ -36,8 +36,8 @@ export const EDITOR_SIZE_MAX = 90
 export const EDITOR_SIZE_MIN = 10
 export const DEFAULT_LANGUAGE = "en";
 export const FONT_SIZE_L = 15;
-export const FONT_SIZE_M = 13.5;
-export const FONT_SIZE_S = 11.5;
+export const FONT_SIZE_M = 13;
+export const FONT_SIZE_S = 11;
 export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
 
 export const MOBILE_WIDTH = 768;
