@@ -1,25 +1,6 @@
-declare module "monaco-vim" {
-    // Tweak these signatures to be more specific if desired
-    export function initVimMode(editor: any, statusBar: HTMLElement): void;
-}
+declare global {}
 
-interface NavigatorUAData {
-    platform: string;
-    // Add any other properties you need
-    // brands?: Array<{ brand: string; version: string }>;
-    // mobile?: boolean;
-}
-
-declare global {
-    interface Window {
-        ace: any;
-    }
-    interface Navigator {
-        userAgentData?: NavigatorUAData;
-    }
-}
-
-export type KeyBindings = "" | "vim" | "emacs";
+export type KeyBindingsType = "" | "vim" | "emacs";
 
 export {};
 
@@ -35,7 +16,12 @@ export interface SSEEvent {
     data: string;
 }
 
-export type mySandboxes = "my-sandbox-1" | "my-sandbox-2" | "my-sandbox-3" | "my-sandbox-4" | "my-sandbox-5"
+export interface patchI {
+    value: string;
+    keepCursor?: boolean;
+}
+
+export type mySandboxes = "my-sandbox-1" | "my-sandbox-2" | "my-sandbox-3" | "my-sandbox-4" | "my-sandbox-5" | "my-sandbox-6" | "my-sandbox-7" | "my-sandbox-8" | "my-sandbox-9" | "my-sandbox-10"
 
 export type languages = "en" | "zh_CN" | "zh_TW" | "ja"
 
@@ -46,4 +32,64 @@ export type toastType = "info" | "error"
 export interface resultI {
     type: resultType;
     content: string;
+}
+
+export interface LSPResponse {
+    jsonrpc: string;
+    id: number;
+    result?: any;
+    error?: { code: number; message: string; data?: any };
+}
+
+export interface PendingRequestI {
+    resolve: (result: LSPResponse) => void;
+    reject: (error: LSPResponse) => void;
+}
+
+export type pendingRequests = Map<number, PendingRequestI>;
+
+export interface LSPCompletionItem {
+    label: string;
+    additionalTextEdits?: Array<{
+        range: {
+            start: { line: number; character: number };
+            end: { line: number; character: number };
+        };
+        newText: string;
+    }>
+    insertText?: string;
+    insertTextFormat?: number;
+    detail?: string;
+    kind?: number;
+    filterText?: string;
+    preselect?: boolean; // Whether this item is preselected
+    sortText?: string;
+    documentation?: {
+        kind: string;
+        value: string;
+    };
+    textEdit?: {
+        range: {
+            start: { line: number; character: number };
+            end: { line: number; character: number };
+        };
+        newText: string;
+    }
+}
+
+export interface LSPCompletionResponse {
+    jsonrpc: string;
+    id: number;
+    result?: { items: LSPCompletionItem[]; isIncomplete?: boolean };
+    error?: { code: number; message: string; data?: any };
+}
+
+export interface LSPDiagnostic {
+    range: {
+        start: { line: number; character: number };
+        end: { line: number; character: number };
+    };
+    severity: number;
+    message: string;
+    source?: string;
 }

@@ -3,6 +3,7 @@ import {ReactNode, useEffect, useState} from "react";
 import {healthCheck} from "./api/api.ts";
 import {BrowserRouter} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
+import {Flowbite} from "flowbite-react";
 
 function App() {
     const [toastError, setToastError] = useState<ReactNode>(null);
@@ -20,12 +21,14 @@ function App() {
 
     return (
         <BrowserRouter>
-            <main>
-                <MyToast type={"error"} show={!!toastError} setShowToast={setToastError}>{toastError}</MyToast>
-                <MyToast type={"info"} show={!!toastInfo} setShowToast={setToastInfo}>{toastInfo}</MyToast>
+            <Flowbite theme={{mode: "dark"}}>
+                <main>
+                    <MyToast type={"error"} show={!!toastError} setShowToast={setToastError}>{toastError}</MyToast>
+                    <MyToast type={"info"} show={!!toastInfo} setShowToast={setToastInfo}>{toastInfo}</MyToast>
 
-                <Editor setToastInfo={setToastInfo} setToastError={setToastError}/>
-            </main>
+                    <Editor setToastInfo={setToastInfo} setToastError={setToastError}/>
+                </main>
+            </Flowbite>
         </BrowserRouter>
     );
 }

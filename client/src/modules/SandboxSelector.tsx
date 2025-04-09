@@ -135,7 +135,7 @@ export default function Component(props: {
             <Dropdown.Item
                 onClick={sandboxes.length >= upperLimit ? undefined : addSandbox}
                 className={`flex justify-center ${sandboxes.length >= upperLimit ? BUTTON_INACTIVE : ""}`}>
-                <Tooltip content={`New (up to ${upperLimit})`} className={"text-xs"} placement={"bottom"}>
+                <Tooltip content={`${TRANSLATE.new[lan]} (${sandboxes.length}/${upperLimit})`} className={"text-xs"} placement={"bottom"}>
                     <AddIcon size={20}/>
                 </Tooltip>
             </Dropdown.Item>

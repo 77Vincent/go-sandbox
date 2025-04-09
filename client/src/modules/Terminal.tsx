@@ -27,7 +27,7 @@ export default function Component(props: {
 
             {
                 (!error && !info) &&
-                <div className={`${common} font-light text-neutral-400 dark:text-neutral-600`}>
+                <div className={`${common} font-light text-neutral-400 dark:text-neutral-500`}>
                     {running ? TRANSLATE.running[lan] : hint}
                 </div>
             }

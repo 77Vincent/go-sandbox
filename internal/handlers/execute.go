@@ -17,14 +17,15 @@ import (
 )
 
 const (
+	baseDir         = "./sandboxes"
 	chunkSize       = 1
 	stdoutKey       = "stdout"
 	stderrKey       = "stderr"
 	tmpDirName      = "sandbox-"
-	sandboxRunner1  = "./go1/sandbox-runner"
-	sandboxRunner2  = "./go2/sandbox-runner"
-	sandboxRunner3  = "./go3/sandbox-runner"
-	sandboxRunner4  = "./go4/sandbox-runner"
+	sandboxRunner1  = baseDir + "/go1/sandbox-runner"
+	sandboxRunner2  = baseDir + "/go2/sandbox-runner"
+	sandboxRunner3  = baseDir + "/go3/sandbox-runner"
+	sandboxRunner4  = baseDir + "/go4/sandbox-runner"
 	tmpFileName     = "main.go"
 	tmpTestFileName = "main_test.go"
 	timeoutError    = "exit status 124"
@@ -96,9 +97,9 @@ func Execute(c *gin.Context) {
 	}
 
 	// create a tmp dir
-	tmpDir, err := os.MkdirTemp(fmt.Sprintf("go%s", req.Version), tmpDirName)
+	tmpDir, err := os.MkdirTemp(fmt.Sprintf("%s/go%s", baseDir, req.Version), tmpDirName)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: fmt.Sprintf("Failed to create temp directory: %v", err)})
 		return
 	}
 	defer os.RemoveAll(tmpDir)
@@ -106,7 +107,7 @@ func Execute(c *gin.Context) {
 	// write code to a file
 	codeFile := filepath.Join(tmpDir, fileName)
 	if err = os.WriteFile(codeFile, []byte(req.Code), 0644); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: fmt.Sprintf("Failed to write code file: %v", err)})
 		return
 	}
 
@@ -115,13 +116,13 @@ func Execute(c *gin.Context) {
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: fmt.Sprintf("Failed to get stdout pipe: %v", err)})
 		return
 	}
 	defer stdout.Close()
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: fmt.Sprintf("Failed to get stderr pipe: %v", err)})
 		return
 	}
 	defer stderr.Close()
@@ -138,7 +139,7 @@ func Execute(c *gin.Context) {
 	)
 
 	if err = cmd.Start(); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: fmt.Sprintf("Failed to start command: %v", err)})
 		return
 	}
 

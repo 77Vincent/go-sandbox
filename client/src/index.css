@@ -2,16 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-.error-marker {
-    position: absolute;
-    background-color: rgba(255, 0, 0, 0.1); /* 半透明红色背景 */
+.editor-bg-dark {
+    background-color: #1e1e1e;
+}
+
+.cm-tooltip-autocomplete .cm-completionDetail {
+    color: #aaa; /* Change the color */
+    font-weight: lighter;
+    font-style: italic; /* Optional */
+    margin-left: 1rem; /* Add spacing from label */
 }
 
 .progress-bar {
     /* 定义动画：名称 progressAnimation，持续 5 秒，线性过渡，动画结束后保持最终状态 */
     animation: progressAnimation 10s linear forwards;
 }
+
 @keyframes progressAnimation {
-    from { width: 0; }
-    to { width: 100%; }
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
 }

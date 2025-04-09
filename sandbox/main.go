@@ -27,9 +27,10 @@ func main() {
 	}
 	var (
 		codeFile   = os.Args[1]
+		arr        = strings.Split(codeFile, "/")
 		fileName   = tmpFileName
 		isTestFlow = strings.Contains(codeFile, tmpTestFileName)
-		moduleDir  = strings.Split(codeFile, "/")[0]
+		moduleDir  = fmt.Sprintf("%s/%s", arr[0], arr[1])
 	)
 	if isTestFlow {
 		fileName = tmpTestFileName

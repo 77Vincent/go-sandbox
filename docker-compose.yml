@@ -1,6 +1,21 @@
 version: '3.8'
 
 services:
+  init-copier:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    platform: linux/arm64
+    container_name: go-sandbox-init
+    command: >
+      sh -c "cp -r /app/sandboxes/go1 /shared &&
+             cp -r /app/sandboxes/go2 /shared &&
+             cp -r /app/sandboxes/go3 /shared &&
+             cp -r /app/sandboxes/go4 /shared"
+    volumes:
+      - go-sandboxes:/shared
+    restart: "no"
+
   server:
     build: .
     container_name: go-sandbox-server
@@ -9,7 +24,11 @@ services:
       - "3000:3000"
     depends_on:
       - redis
+      - gopls
+      - init-copier
     restart: always
+    volumes:
+      - go-sandboxes:/app/sandboxes  # Shared volume for /app
 
   redis:
     image: redis:7
@@ -17,3 +36,19 @@ services:
     ports:
       - "6379:6379"
     restart: always
+
+  gopls:
+    build:
+      context: ./gopls
+    container_name: go-sandbox-gopls
+    ports:
+      - "4389:4389"
+    restart: always
+    depends_on:
+      - init-copier
+    volumes:
+      - go-sandboxes:/workspace  # Mount same volume at different path
+#    working_dir: /workspace/go1  # Point gopls to a specific sandbox
+
+volumes:
+  go-sandboxes:

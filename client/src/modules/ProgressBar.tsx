@@ -7,7 +7,7 @@ export default function Component(props: {
 
     return show && (
         <div className={classes}>
-            <div className={"progress-bar h-1 w-0 bg-cyan-500"}></div>
+            <div className={"progress-bar h-0.5 w-0 bg-cyan-500"}></div>
         </div>
     )
 }

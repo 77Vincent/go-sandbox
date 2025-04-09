@@ -1,32 +1,32 @@
 import {
-    AUTO_RUN_KEY,
     BUILD_ERROR_PARSING_REGEX,
-    CURSOR_COLUMN_KEY,
-    CURSOR_ROW_KEY,
-    DEFAULT_AUTO_RUN,
-    DEFAULT_CURSOR_POSITION,
     DEFAULT_EDITOR_SIZE,
     DEFAULT_KEY_BINDINGS,
     DEFAULT_LANGUAGE,
     DEFAULT_LINT_ON,
-    DEFAULT_SHOW_INVISIBLE,
     EDITOR_SIZE_KEY,
     ERROR_PARSING_REGEX,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
     KEY_BINDINGS_KEY,
     LANGUAGE_KEY,
-    LINT_ON_KEY,
+    IS_LINT_ON_KEY,
     SANDBOX_VERSION_KEY,
-    SHOW_INVISIBLE_KEY,
     DEFAULT_SANDBOX_VERSION,
     IS_VERTICAL_LAYOUT_KEY,
     DEFAULT_IS_VERTICAL_LAYOUT,
     MOBILE_WIDTH,
-    HELLO_WORLD, ACTIVE_SANDBOX_KEY, DEFAULT_ACTIVE_SANDBOX, MY_SANDBOXES, SANDBOX_NAMES_KEY
+    HELLO_WORLD,
+    ACTIVE_SANDBOX_KEY,
+    DEFAULT_ACTIVE_SANDBOX,
+    MY_SANDBOXES,
+    SANDBOX_NAMES_KEY,
+    CURSOR_HEAD_KEY,
+    DEFAULT_CURSOR_HEAD,
+    IS_AUTOCOMPLETION_ON_KEY,
+    DEFAULT_AUTOCOMPLETION_ON,
 } from "./constants.ts";
-import {KeyBindings, languages, mySandboxes} from "./types";
-import {IMarker} from "react-ace";
+import {KeyBindingsType, languages, mySandboxes} from "./types";
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
@@ -40,20 +40,16 @@ export function getLanguage(): languages {
     return localStorage.getItem(LANGUAGE_KEY) as languages || DEFAULT_LANGUAGE
 }
 
-export function getCursorRow(): number {
-    return Number(localStorage.getItem(CURSOR_ROW_KEY)) || DEFAULT_CURSOR_POSITION
-}
-
-export function getCursorColumn(): number {
-    return Number(localStorage.getItem(CURSOR_COLUMN_KEY)) || DEFAULT_CURSOR_POSITION
+export function getCursorHead(): number {
+    return Number(localStorage.getItem(CURSOR_HEAD_KEY)) || DEFAULT_CURSOR_HEAD
 }
 
 export function getCodeContent(sandbox: mySandboxes): string {
     return localStorage.getItem(sandbox) || HELLO_WORLD
 }
 
-export function getKeyBindings(): KeyBindings {
-    return localStorage.getItem(KEY_BINDINGS_KEY) as KeyBindings || DEFAULT_KEY_BINDINGS
+export function getKeyBindings(): KeyBindingsType {
+    return localStorage.getItem(KEY_BINDINGS_KEY) as KeyBindingsType || DEFAULT_KEY_BINDINGS
 }
 
 export function getEditorSize(): number {
@@ -100,16 +96,12 @@ export function getSandboxes(): mySandboxes[] {
     return sandboxes
 }
 
-export function getAutoRun(): boolean {
-    return JSON.parse(localStorage.getItem(AUTO_RUN_KEY) || DEFAULT_AUTO_RUN)
-}
-
 export function getLintOn(): boolean {
-    return JSON.parse(localStorage.getItem(LINT_ON_KEY) || DEFAULT_LINT_ON)
+    return JSON.parse(localStorage.getItem(IS_LINT_ON_KEY) || DEFAULT_LINT_ON)
 }
 
-export function getShowInvisible(): boolean {
-    return JSON.parse(localStorage.getItem(SHOW_INVISIBLE_KEY) || DEFAULT_SHOW_INVISIBLE)
+export function getAutoCompletionOn(): boolean {
+    return JSON.parse(localStorage.getItem(IS_AUTOCOMPLETION_ON_KEY) || DEFAULT_AUTOCOMPLETION_ON)
 }
 
 export function parseExecutionError(error: string): number[] {
@@ -131,25 +123,9 @@ export function parseExecutionError(error: string): number[] {
 }
 
 export function mapFontSize(size: number): "xs" | "sm" | "md" {
-    if (size < 14) return "xs";
-    if (size >= 16) return "md";
+    if (size < 12) return "xs";
+    if (size >= 15) return "md";
     return "sm";
-}
-
-export function generateMarkers(error: string): IMarker[] {
-    const errs = parseExecutionError(error)
-    const markers: IMarker[] = []
-    for (const row of errs) {
-        markers.push({
-            startRow: row - 1,
-            endRow: row - 1,
-            startCol: 0,
-            endCol: 1,
-            className: "error-marker",
-            type: "fullLine"
-        })
-    }
-    return markers
 }
 
 const apiUrl = import.meta.env.VITE_API_URL || "";
@@ -171,6 +147,6 @@ export function normalizeText(text: string = "") {
 }
 
 export function isMac(): boolean {
-    const platform = navigator.userAgentData?.platform;
+    const platform = navigator.userAgent;
     return platform?.toLowerCase().includes('mac') || navigator.platform.includes("Mac")
 }

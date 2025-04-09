@@ -1,27 +1,18 @@
 import {useCallback, useRef, useState, useEffect, ReactNode} from "react";
-import {useThemeMode} from "flowbite-react";
-import AceEditor, {IMarker} from "react-ace";
-import {Ace} from "ace-builds";
 import {Resizable, ResizeDirection} from "re-resizable";
-import Mousetrap from "mousetrap";
+import debounce from 'debounce';
 
 import {
-    AUTO_RUN_KEY,
-    CURSOR_COLUMN_KEY,
-    CURSOR_ROW_KEY,
-    CURSOR_UPDATE_DEBOUNCE_TIME,
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
     FONT_SIZE_L,
     FONT_SIZE_S,
-    LINT_ON_KEY,
-    RUN_DEBOUNCE_TIME,
+    IS_LINT_ON_KEY,
+    DEBOUNCE_TIME,
     KEY_BINDINGS_KEY,
     FONT_SIZE_M,
-    AUTO_RUN_DEBOUNCE_TIME,
     TRANSLATE,
     STATS_INFO_PREFIX,
-    SHOW_INVISIBLE_KEY,
     LANGUAGE_KEY,
     EVENT_STDOUT,
     EVENT_ERROR,
@@ -32,10 +23,10 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY,
+    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY,
 } from "../constants.ts";
+import Main from "./Main.tsx";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
-import StatusBar from "./StatusBar.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import Actions from "./Actions.tsx";
@@ -45,34 +36,20 @@ import SandboxSelector from "./SandboxSelector.tsx";
 import Info from "./Info.tsx";
 import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
 
-import "ace-builds/src-noconflict/mode-golang";
-import "ace-builds/src-noconflict/theme-dawn";
-import "ace-builds/src-noconflict/theme-nord_dark";
-import "ace-builds/src-noconflict/ext-language_tools";
-import "ace-builds/src-noconflict/keybinding-vim"
-import "ace-builds/src-noconflict/keybinding-emacs"
-import "ace-builds/src-noconflict/ext-statusbar";
-import "ace-builds/src-noconflict/ext-searchbox";
-import {debounce} from "react-ace/lib/editorOptions";
 import {
-    getAutoRun,
     getCodeContent,
-    getCursorColumn,
-    getCursorRow,
     getKeyBindings,
     getEditorSize,
     getFontSize,
     getLintOn,
-    generateMarkers,
-    getShowInvisible,
     getUrl,
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, normalizeText, getActiveSandbox, isMac
+    isMobileDevice, getActiveSandbox, getAutoCompletionOn
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
-import {KeyBindings, languages, mySandboxes, resultI} from "../types";
+import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
 import About from "./About.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
@@ -83,7 +60,7 @@ function ShareSuccessMessage(props: {
     const {url} = props
     return (
         <div>
-            <p>The link to share:</p>
+            <p className={"dark:text-gray-300"}>The link to share:</p>
             <Link target={"_blank"} to={url} className={"text-cyan-500 underline"}>{url}</Link>
         </div>
     )
@@ -104,32 +81,40 @@ function FetchErrorMessage(props: {
 
 const resizeHandlerHoverClasses = "z-10 hover:bg-cyan-500 transition-colors";
 
+// default values
+const initialValue = getCodeContent(getActiveSandbox());
+const initialIsLintOn = getLintOn()
+const initialIsAutoCompletionOn = getAutoCompletionOn()
+const initialSandboxVersion = getSandboxVersion()
+const initialActiveSandbox = getActiveSandbox();
+const initialIsVerticalLayout = getIsVerticalLayout();
+const initialLanguage = getLanguage()
+const initialFontSize = getFontSize()
+const initialEditorSize = getEditorSize()
+const initialKeyBindings = getKeyBindings()
+
 export default function Component(props: {
     setToastError: (message: ReactNode) => void
     setToastInfo: (message: ReactNode) => void
 }) {
     const {setToastError, setToastInfo} = props
-    const {mode} = useThemeMode();
-    const statusBarRef = useRef<HTMLDivElement | null>(null);
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
-    const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(getActiveSandbox());
-
-    // error state
-    const [errorRows, setErrorRows] = useState<IMarker[]>([]);
+    const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(initialActiveSandbox);
 
     // settings
-    const [fontSize, setFontSize] = useState<number>(getFontSize());
-    const [editorSize, setEditorSize] = useState<number>(getEditorSize())
-    const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(getIsVerticalLayout())
-    const [lan, setLan] = useState<languages>(getLanguage())
-    const [sandboxVersion, setSandboxVersion] = useState<string>(getSandboxVersion())
+    const [fontSize, setFontSize] = useState<number>(initialFontSize);
+    const [editorSize, setEditorSize] = useState<number>(initialEditorSize);
+    const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
+    const [lan, setLan] = useState<languages>(initialLanguage)
+    const [sandboxVersion, setSandboxVersion] = useState<string>(initialSandboxVersion)
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
-    const [code, setCode] = useState<string>(getCodeContent(activeSandbox));
+    const [code, setCode] = useState<string>(initialValue);
+    const [patch, setPatch] = useState<patchI>({value: "", keepCursor: false});
 
     // result
     const [result, setResult] = useState<resultI[]>([]);
@@ -142,23 +127,12 @@ export default function Component(props: {
     const activeSandboxRef = useRef(activeSandbox);
     const isRunningRef = useRef(isRunning);
 
-    function storeCode(code: string) {
-        setCode(code);
-        localStorage.setItem(activeSandboxRef.current, code);
-        codeRef.current = code;
-    }
-
-    // cursor status
-    const [row, setRow] = useState<number>(getCursorRow());
-    const [column, setColumn] = useState<number>(getCursorColumn());
-
     // mode status
-    const [keyBindings, setKeyBindings] = useState<KeyBindings>(getKeyBindings())
-    const [isAutoRun, setIsAutoRun] = useState<boolean>(getAutoRun())
-    const [isLintOn, setIsLintOn] = useState<boolean>(getLintOn())
-    const [isShowInvisible, setIsShowInvisible] = useState<boolean>(getShowInvisible())
+    const [keyBindings, setKeyBindings] = useState<KeyBindingsType>(initialKeyBindings);
+    const [isLintOn, setIsLintOn] = useState<boolean>(initialIsLintOn)
+    const [isAutoCompletionOn, setIsAutoCompletionOn] = useState<boolean>(initialIsAutoCompletionOn)
 
-    // fetch the snippet if the url contains the snippet id
+    // fetch the snippet if the url contains the snippet id, do only once
     useEffect(() => {
         (async () => {
             const matches = location.pathname.match(SNIPPET_REGEX)
@@ -168,7 +142,9 @@ export default function Component(props: {
                 try {
                     const data = await fetchSnippet(id)
                     if (data) {
+                        // must call together
                         setCode(data)
+                        setPatch({value: data})
                     }
                 } catch (e) {
                     setToastError(<FetchErrorMessage error={(e as Error).message}/>)
@@ -177,106 +153,16 @@ export default function Component(props: {
         })()
     }, [setToastError]);
 
-    const onEditorLoad = (editor: Ace.Editor) => {
-        // not ready to run
-        setIsRunning(true);
-
-        if (statusBarRef.current) {
-            const StatusBar = window.ace.require("ace/ext/statusbar").StatusBar;
-            new StatusBar(editor, statusBarRef.current);
-        }
-        editor.focus();
-        editor.moveCursorTo(row, column);
-
-        // read to run
-        setIsRunning(false);
-
-        const metaKey = isMac() ? "command" : "ctrl";
-        // global key bindings
-        Mousetrap.bind('esc', function () {
-            editor.focus();
-            return false
-        });
-
-        // for settings
-        Mousetrap.bind(`${metaKey}+,`, function () {
-            setShowSettings(true);
-            return false
-        });
-        editor.commands.addCommand({
-            name: "settingsShortcut",
-            bindKey: {win: "Ctrl-,", mac: "Command-,"},
-            exec: function () {
-                setShowSettings(true);
-            }
-        })
-
-        // for run
-        Mousetrap.bind(`${metaKey}+return`, function () {
-            debouncedRun()
-        });
-        editor.commands.addCommand({
-            name: "runShortcut",
-            bindKey: {win: "Ctrl-Enter,", mac: "Command-Enter"},
-            exec: function () {
-                debouncedRun()
-            }
-        })
-
-        // for format
-        Mousetrap.bind(`${metaKey}+option+l`, function () {
-            debouncedFormat()
-            return false
-        });
-        editor.commands.addCommand({
-            name: "formatShortcut",
-            bindKey: {win: "Ctrl-Alt-L,", mac: "Command-Alt-L"},
-            exec: function () {
-                debouncedFormat()
-            }
-        })
-
-        // for share
-        Mousetrap.bind(`${metaKey}+shift+e`, function () {
-            debouncedShare()
-            return false
-        });
-        editor.commands.addCommand({
-            name: "shareShortcut",
-            bindKey: {win: "Ctrl-Shift-E,", mac: "Command-Shift-E"},
-            exec: function () {
-                debouncedShare()
-            }
-        })
-    };
-
     // IMPORTANT: update the ref when the state changes
     useEffect(() => {
         codeRef.current = code
-    }, [code]);
-    useEffect(() => {
         isRunningRef.current = isRunning
-    }, [isRunning]);
-    useEffect(() => {
         sandboxVersionRef.current = sandboxVersion
-    }, [sandboxVersion]);
-    useEffect(() => {
         activeSandboxRef.current = activeSandbox
-    }, [activeSandbox]);
+    }, [code, isRunning, sandboxVersion, activeSandbox]);
 
     function onChange(newCode: string = "") {
-        const processedPrevCode = normalizeText(codeRef.current);
-        const processedNewCode = normalizeText(newCode);
-
-        storeCode(newCode);
-
-        // only run if auto run is on
-        if (isAutoRun) {
-            // only run if the code is changed meaningfully
-            if (processedPrevCode !== processedNewCode) {
-                debouncedAutoRun();
-            }
-        }
+        setCode(newCode);
     }
 
     function shouldAbort(): boolean {
@@ -293,7 +179,16 @@ export default function Component(props: {
         } catch (e) {
             setToastError((e as Error).message)
         }
-    }, [setToastInfo, setToastError]), RUN_DEBOUNCE_TIME)).current;
+    }, [setToastInfo, setToastError]), DEBOUNCE_TIME)).current;
+
+    // store code asynchronously
+    const debouncedStoreCode = useRef(debounce(useCallback((data: string) => {
+        localStorage.setItem(activeSandboxRef.current, data)
+    }, [activeSandboxRef]), DEBOUNCE_TIME)).current;
+    useEffect(() => {
+        debouncedStoreCode(code);
+    }, [debouncedStoreCode, code]);
+
 
     const debouncedFormat = useRef(debounce(useCallback(async () => {
         if (shouldAbort()) {
@@ -306,11 +201,12 @@ export default function Component(props: {
             const {stdout, error, message} = await formatCode(codeRef.current);
 
             if (stdout) {
-                storeCode(stdout)
+                // must call together
+                setCode(stdout)
+                setPatch({value: stdout, keepCursor: true})
             }
             if (error) {
                 setResult([{type: EVENT_STDERR, content: error}])
-                setErrorRows(generateMarkers(error))
             }
             if (message) {
                 setError(message)
@@ -321,7 +217,7 @@ export default function Component(props: {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [setToastError]), RUN_DEBOUNCE_TIME)).current;
+    }, [setToastError]), DEBOUNCE_TIME)).current;
 
     const runCallback = useCallback(async () => {
         if (shouldAbort()) {
@@ -345,7 +241,7 @@ export default function Component(props: {
                 setError(formatMessage)
                 setResult([{type: EVENT_STDERR, content: formatError}])
 
-                setErrorRows(generateMarkers(formatError))
+                // TODO: annotation or marker
                 setIsRunning(false)
                 return
             }
@@ -353,10 +249,11 @@ export default function Component(props: {
             // clean up
             setError("")
             setResult([])
-            setErrorRows([]);
-            storeCode(formatted)
-
-            const markers: IMarker[] = []
+            // TODO: annotation or marker
+            // must call together
+            setCode(formatted)
+            setPatch({value: formatted, keepCursor: true})
+            codeRef.current = formatted // important: update immediately
 
             const source = new SSE(getUrl("/execute"), {
                 headers: {'Content-Type': 'application/json'},
@@ -380,10 +277,8 @@ export default function Component(props: {
                     return
                 }
 
-                markers.push(...generateMarkers(data))
-                if (markers.length > 0) {
-                    setErrorRows(markers)
-                }
+                // TODO: generate annotation or marker
+                // TODO: annotation or marker
 
                 setResult(prev => prev.concat({type: EVENT_STDERR, content: data}))
             });
@@ -398,50 +293,38 @@ export default function Component(props: {
             });
         } catch (e) {
             const err = e as Error
-            setErrorRows(generateMarkers(err.message))
+            // TODO: annotation or marker
             setResult([{type: EVENT_STDERR, content: err.message}])
             setIsRunning(false)
         }
     }, []);
-    const debouncedRun = useRef(debounce(runCallback, RUN_DEBOUNCE_TIME)).current;
-    const debouncedAutoRun = useRef(debounce(runCallback, AUTO_RUN_DEBOUNCE_TIME)).current;
+    const debouncedRun = useRef(debounce(runCallback, DEBOUNCE_TIME)).current;
 
     const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
         try {
             setIsRunning(true)
-            const code = await getSnippet(id);
-            storeCode(code);
+            const data = await getSnippet(id);
+            setCode(data);
+            setPatch({value: data});
             debouncedRun()
             setIsRunning(false)
         } catch (e) {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [debouncedRun, setToastError]), RUN_DEBOUNCE_TIME)).current;
-
-    // manage debounced cursor position update
-    const debouncedOnCursorChange = debounce(function onCursorChange(value: any) {
-        const row = value.cursor.row;
-        const col = value.cursor.column;
-
-        if (statusBarRef.current) {
-            statusBarRef.current.textContent = `${row + 1}:${col + 1}`;
-        }
-
-        localStorage.setItem(CURSOR_ROW_KEY, row);
-        localStorage.setItem(CURSOR_COLUMN_KEY, col);
-
-        setRow(row);
-        setColumn(col);
-    }, CURSOR_UPDATE_DEBOUNCE_TIME);
-
+    }, [debouncedRun, setToastError]), DEBOUNCE_TIME)).current;
 
     function onLint() {
-        localStorage.setItem(LINT_ON_KEY, JSON.stringify(!isLintOn));
+        localStorage.setItem(IS_LINT_ON_KEY, JSON.stringify(!isLintOn));
         setIsLintOn(!isLintOn);
     }
 
-    function onKeyBindingsChange(value: KeyBindings) {
+    function onAutoCompletion() {
+        localStorage.setItem(IS_AUTOCOMPLETION_ON_KEY, JSON.stringify(!isAutoCompletionOn));
+        setIsAutoCompletionOn(!isAutoCompletionOn);
+    }
+
+    function onKeyBindingsChange(value: KeyBindingsType) {
         localStorage.setItem(KEY_BINDINGS_KEY, value);
         setKeyBindings(value)
     }
@@ -461,23 +344,15 @@ export default function Component(props: {
     function onActiveSandboxChange(id: mySandboxes) {
         localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
         setActiveSandbox(id)
-        setCode(getCodeContent(id))
+        const data = getCodeContent(id)
+        setCode(data)
+        setPatch({value: data})
         debouncedRun()
     }
 
     function onLanguageChange(value: languages) {
         localStorage.setItem(LANGUAGE_KEY, value);
         setLan(value)
-    }
-
-    function onAutoRun() {
-        localStorage.setItem(AUTO_RUN_KEY, JSON.stringify(!isAutoRun));
-        setIsAutoRun(!isAutoRun);
-    }
-
-    function onShowInvisible() {
-        localStorage.setItem(SHOW_INVISIBLE_KEY, JSON.stringify(!isShowInvisible));
-        setIsShowInvisible(!isShowInvisible);
     }
 
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
@@ -532,19 +407,17 @@ export default function Component(props: {
                 keyBindings={keyBindings}
                 isLintOn={isLintOn}
                 onLint={onLint}
-                isAutoRun={isAutoRun}
-                onAutoRun={onAutoRun}
-                isShowInvisible={isShowInvisible}
-                onShowInvisible={onShowInvisible}
+                isAutoCompletionOn={isAutoCompletionOn}
+                onAutoCompletion={onAutoCompletion}
             />
 
             <div
                 className="flex items-center justify-between border-b border-b-gray-300 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0.5">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
-                    <img src={"/logo.svg"} alt={"logo"} className={"h-4 max-md:hidden"}/>
+                    <img src={"/logo.svg"} alt={"logo"} className={"mr-1 h-4 max-md:hidden"}/>
 
                     <div
-                        className="text-xl font-semibold text-gray-800 dark:text-gray-200 max-md:text-sm">{TITLE}</div>
+                        className="text-xl font-light text-gray-600 dark:text-gray-300 max-md:text-sm">{TITLE}</div>
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
@@ -594,39 +467,27 @@ export default function Component(props: {
                     <Wrapper
                         className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                         <ClickBoard content={code}/>
-
-                        <AceEditor
-                            className={"flex-1"}
-                            mode="golang"
-                            width={"100%"}
-                            theme={mode === "dark" ? "nord_dark" : "dawn"}
-                            defaultValue={code}
+                        <Main
+                            sandboxVersion={sandboxVersion}
+                            setToastError={setToastError}
+                            isLintOn={isLintOn}
+                            isAutoCompletionOn={isAutoCompletionOn}
                             value={code}
-                            onCursorChange={debouncedOnCursorChange}
+                            patch={patch}
                             fontSize={fontSize}
-                            name="UNIQUE_ID_OF_DIV"
-                            keyboardHandler={keyBindings}
-                            editorProps={{$blockScrolling: true}}
-                            setOptions={{
-                                mergeUndoDeltas: true,
-                                printMargin: false,
-                                enableBasicAutocompletion: true,
-                                enableLiveAutocompletion: isLintOn,
-                                showInvisibles: isShowInvisible,
-                                enableSnippets: true,
-                            }}
+                            keyBindings={keyBindings}
                             onChange={onChange}
-                            onLoad={onEditorLoad}
-                            markers={errorRows}
+                            setShowSettings={setShowSettings}
+                            debouncedRun={debouncedRun}
+                            debouncedFormat={debouncedFormat}
+                            debouncedShare={debouncedShare}
                         />
-
-                        <StatusBar statusBarRef={statusBarRef} errors={errorRows.length}/>
                     </Wrapper>
                 </Resizable>
 
                 <Terminal
                     lan={lan}
-                    hint={isAutoRun ? TRANSLATE.hintAuto[lan] : TRANSLATE.hintManual[lan]}
+                    hint={TRANSLATE.hintManual[lan]}
                     running={isRunning}
                     fontSize={fontSize}
                     result={result}
@@ -635,6 +496,6 @@ export default function Component(props: {
                 />
             </div>
 
-            <ProgressBar show={isRunning} className={"absolute top-10 z-10"}/>
+            <ProgressBar show={isRunning} className={"absolute top-10 z-10 max-md:top-6"}/>
         </div>);
 }

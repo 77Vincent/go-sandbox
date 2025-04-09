@@ -40,5 +40,7 @@ func main() {
 	r.GET("/snippets/:id", timeout, handlers.FetchSnippet)
 	r.POST("/execute", handlers.Execute)
 
+	r.GET("/ws", handlers.LSP)
+
 	r.Run(config.ApiServerPort)
 }

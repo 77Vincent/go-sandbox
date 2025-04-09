@@ -8,7 +8,7 @@ https://www.go-sandbox.org/
 
 ### Core
 
-- Automatic Realtime Execution
+- Realtime Execution using websocket
 - Overload protection
 
 ### UI/UX

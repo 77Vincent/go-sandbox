@@ -19,7 +19,7 @@ import {
     LANGUAGES,
     TRANSLATE
 } from "../constants.ts";
-import {KeyBindings, languages} from "../types";
+import {KeyBindingsType, languages} from "../types";
 import {Divider, ToggleSwitch} from "./Common.tsx";
 
 const activeClasses = "cursor-pointer hover:opacity-50";
@@ -55,17 +55,14 @@ export default function Component(props: {
     onFontS: () => void;
     onFontM: () => void;
     // for keyBindings
-    keyBindings: KeyBindings;
-    onKeyBindingsChange: (id: KeyBindings) => void;
+    keyBindings: KeyBindingsType;
+    onKeyBindingsChange: (id: KeyBindingsType) => void;
     // for lint
     isLintOn: boolean;
     onLint: () => void;
-    // for auto run
-    isAutoRun: boolean;
-    onAutoRun: () => void;
-    // for show invisible characters
-    isShowInvisible: boolean;
-    onShowInvisible: () => void;
+    // for auto completion
+    isAutoCompletionOn: boolean;
+    onAutoCompletion: () => void;
 }) {
     const {mode} = useThemeMode()
     const {
@@ -84,17 +81,14 @@ export default function Component(props: {
         // for lint
         isLintOn, onLint,
 
-        // for auto run
-        isAutoRun, onAutoRun,
-
-        // for show invisible characters
-        isShowInvisible, onShowInvisible,
+        // for auto completion
+        isAutoCompletionOn, onAutoCompletion,
 
         // for modal
         show, setShow,
     } = props;
 
-    function onKeyBinding(id: KeyBindings) {
+    function onKeyBinding(id: KeyBindingsType) {
         return () => {
             if (id !== keyBindings) {
                 onKeyBindingsChange(id);
@@ -120,18 +114,13 @@ export default function Component(props: {
                 <Modal.Body>
                     <Grid>
                         <Row>
-                            <Label value={TRANSLATE.autoRun[lan]}/>
-                            <ToggleSwitch checked={isAutoRun} onChange={onAutoRun}/>
-                        </Row>
-
-                        <Row>
-                            <Label value={TRANSLATE.showInvisible[lan]}/>
-                            <ToggleSwitch checked={isShowInvisible} onChange={onShowInvisible}/>
-                        </Row>
-
-                        <Row>
                             <Label value={TRANSLATE.lint[lan]}/>
                             <ToggleSwitch checked={isLintOn} onChange={onLint}/>
+                        </Row>
+
+                        <Row>
+                            <Label value={TRANSLATE.autoCompletion[lan]}/>
+                            <ToggleSwitch checked={isAutoCompletionOn} onChange={onAutoCompletion}/>
                         </Row>
                     </Grid>
 
