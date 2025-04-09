@@ -17,14 +17,15 @@ import (
 )
 
 const (
+	baseDir         = "./sandboxes"
 	chunkSize       = 1
 	stdoutKey       = "stdout"
 	stderrKey       = "stderr"
 	tmpDirName      = "sandbox-"
-	sandboxRunner1  = "./sandboxes/go1/sandbox-runner"
-	sandboxRunner2  = "./sandboxes/go2/sandbox-runner"
-	sandboxRunner3  = "./sandboxes/go3/sandbox-runner"
-	sandboxRunner4  = "./sandboxes/go4/sandbox-runner"
+	sandboxRunner1  = baseDir + "/go1/sandbox-runner"
+	sandboxRunner2  = baseDir + "/go2/sandbox-runner"
+	sandboxRunner3  = baseDir + "/go3/sandbox-runner"
+	sandboxRunner4  = baseDir + "/go4/sandbox-runner"
 	tmpFileName     = "main.go"
 	tmpTestFileName = "main_test.go"
 	timeoutError    = "exit status 124"
@@ -96,7 +97,7 @@ func Execute(c *gin.Context) {
 	}
 
 	// create a tmp dir
-	tmpDir, err := os.MkdirTemp(fmt.Sprintf("./sandboxes/go%s", req.Version), tmpDirName)
+	tmpDir, err := os.MkdirTemp(fmt.Sprintf("%s/go%s", baseDir, req.Version), tmpDirName)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: fmt.Sprintf("Failed to create temp directory: %v", err)})
 		return
