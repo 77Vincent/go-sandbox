@@ -127,7 +127,7 @@ export default class LSPClient {
         }
     }
 
-    async initialize(value: string): Promise<void> {
+    async initialize(version: number, text: string): Promise<void> {
         try {
             await this.sendRequest(EVENT_INITIALIZE, {
                 rootUri: URI_BASE,
@@ -139,8 +139,8 @@ export default class LSPClient {
                 textDocument: {
                     uri: URI,
                     languageId: "go",
-                    version: 1,
-                    text: value,
+                    version,
+                    text,
                 },
             });
         } catch (error) {

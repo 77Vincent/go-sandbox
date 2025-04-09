@@ -5,7 +5,7 @@ import {ThemeMode, useThemeMode} from "flowbite-react";
 // codemirror imports
 import {lintKeymap, lintGutter, linter, Diagnostic} from "@codemirror/lint";
 import {acceptCompletion, completionStatus} from "@codemirror/autocomplete";
-import {EditorState, Compartment, EditorSelection} from "@codemirror/state"
+import {EditorState, Compartment, EditorSelection, ChangeSpec} from "@codemirror/state"
 import {
     ViewUpdate, EditorView, keymap, highlightSpecialChars, drawSelection,
     highlightActiveLine, dropCursor, rectangularSelection,
@@ -85,12 +85,10 @@ const lintCompartment = new Compartment();
 const setLint = (isLintOn: boolean, diagnostics: Diagnostic[]) => {
     return isLintOn ? linter(() => diagnostics) : [];
 }
-const setAutoCompletion = (completions: LSPCompletionItem[]) => {
+const setAutoCompletion = (completions: LSPCompletionItem[], version: number, lsp: LSP | null, format: () => void) => {
     return (context: CompletionContext): CompletionResult | null => {
-        const word = context.matchBefore(/\w*/);
-        const prevChar = context.state.sliceDoc(context.pos - 1, context.pos);
-        // prevent unwanted popup unless explicitly triggered or after a dot
-        if (!word && prevChar !== "." && !context.explicit) return null;
+        const word = context.matchBefore(/\w*/)
+        if ((!word || word.from == word.to) && !context.explicit) return null
 
         const items: Completion[] = completions.map((v) => {
             return {
@@ -100,20 +98,30 @@ const setAutoCompletion = (completions: LSPCompletionItem[]) => {
                 type: LSP_TO_CODEMIRROR_TYPE[LSP_KIND_LABELS[v.kind || 1]],
                 info: v.documentation?.value,
                 apply: (view, _completion, from, to) => {
-                    const insert = v.insertText ?? v.label;
+                    let insert = v.insertText ?? v.label;
+
+                    // method or function
+                    if (v.kind && v.kind > 1 && v.kind < 5) {
+                        insert = `${insert}()`
+                    }
+
                     // Build the base change: replace the selected text with insertText
-                    const changes = [
-                        {from, to, insert}
-                    ];
+                    const changes: ChangeSpec[] = [];
 
                     if (v.additionalTextEdits) {
                         for (const edit of v.additionalTextEdits) {
-                            const from = view.state.doc.line(edit.range.start.line + 1).from + edit.range.start.character;
-                            const to = view.state.doc.line(edit.range.end.line + 1).from + edit.range.end.character;
-                            changes.push({from, to, insert: edit.newText});
+                            const {range: {start, end}, newText} = edit;
+                            const from = view.state.doc.line(start.line + 1).from + start.character;
+                            const to = view.state.doc.line(end.line + 1).from + end.character;
+                            changes.push({from, to, insert: newText});
                         }
                     }
+                    changes.push({from, to, insert})
                     view.dispatch({changes});
+                    if (v.additionalTextEdits) {
+                        format()
+                        lsp?.initialize(version, view.state.doc.toString());
+                    }
                 },
             }
         });
@@ -129,7 +137,12 @@ const setTheme = (mode: ThemeMode) => {
     return mode === "dark" ? themeDark : themeLight;
 }
 const setFontSize = (fontSize: number) => {
-    return EditorView.theme({"&": {fontSize: `${fontSize}px`}})
+    return EditorView.theme({
+        "&": {
+            fontSize: `${fontSize}px`,
+            fontWeight: "100",
+        }
+    })
 }
 const setIndent = (indent: number) => {
     return indentUnit.of(" ".repeat(indent));
@@ -255,7 +268,7 @@ export default function Component(props: {
             }
         },
         {
-            key: `Mod-Shift-e`,
+            key: `Mod-s`,
             preventDefault: true,
             run: () => {
                 debouncedShare()
@@ -310,7 +323,7 @@ export default function Component(props: {
             ...focusedKeymap, // Custom key bindings
         ]),
         lintCompartment.of(setLint(isLintOn, diagnostics)),
-        autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []})),
+        autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions, version.current, lsp.current, debouncedFormat)] : []})),
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(DEFAULT_INDENTATION_SIZE)),
         keyBindingsCompartment.of(setKeyBindings(keyBindings)),
@@ -359,7 +372,7 @@ export default function Component(props: {
         lsp.current = new LSP(getUrl("/ws"), view.current, setDiagnostics);
 
         (async function () {
-            await lsp.current?.initialize(value)
+            await lsp.current?.initialize(version.current, value)
         }());
 
         // key bindings for unfocused editor
@@ -379,7 +392,7 @@ export default function Component(props: {
             debouncedFormat()
             return false
         });
-        Mousetrap.bind(`mod+shift+e`, function () {
+        Mousetrap.bind(`mod+s`, function () {
             debouncedShare()
             return false
         });
@@ -408,7 +421,7 @@ export default function Component(props: {
         if (!view.current) return;
         view.current.dispatch({
             effects: [autoCompletionCompartment.reconfigure(autocompletion({
-                override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []
+                override: isAutoCompletionOn ? [setAutoCompletion(completions, version.current, lsp.current, debouncedFormat)] : []
             }))]
         })
     }, [completions, isAutoCompletionOn]);
