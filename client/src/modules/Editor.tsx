@@ -60,7 +60,7 @@ function ShareSuccessMessage(props: {
     const {url} = props
     return (
         <div>
-            <p>The link to share:</p>
+            <p className={"dark:text-gray-300"}>The link to share:</p>
             <Link target={"_blank"} to={url} className={"text-cyan-500 underline"}>{url}</Link>
         </div>
     )
@@ -207,7 +207,6 @@ export default function Component(props: {
             }
             if (error) {
                 setResult([{type: EVENT_STDERR, content: error}])
-                // TODO: annotations or marker
             }
             if (message) {
                 setError(message)
@@ -468,8 +467,8 @@ export default function Component(props: {
                     <Wrapper
                         className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                         <ClickBoard content={code}/>
-
                         <Main
+                            sandboxVersion={sandboxVersion}
                             setToastError={setToastError}
                             isLintOn={isLintOn}
                             isAutoCompletionOn={isAutoCompletionOn}

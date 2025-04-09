@@ -40,7 +40,14 @@ import debounce from "debounce";
 
 // local imports
 import {KeyBindingsType, LSPCompletionItem, patchI} from "../types";
-import {EMACS, NONE, DEBOUNCE_TIME, VIM, CURSOR_HEAD_KEY, DEFAULT_INDENTATION_SIZE} from "../constants.ts";
+import {
+    EMACS,
+    NONE,
+    DEBOUNCE_TIME,
+    VIM,
+    CURSOR_HEAD_KEY,
+    DEFAULT_INDENTATION_SIZE,
+} from "../constants.ts";
 import {getCursorHead, getUrl} from "../utils.ts";
 import LSP, {LSP_KIND_LABELS} from "../lsp/client.ts";
 
@@ -85,7 +92,7 @@ const lintCompartment = new Compartment();
 const setLint = (isLintOn: boolean, diagnostics: Diagnostic[]) => {
     return isLintOn ? linter(() => diagnostics) : [];
 }
-const setAutoCompletion = (completions: LSPCompletionItem[], version: number, lsp: LSP | null, format: () => void) => {
+const setAutoCompletion = (completions: LSPCompletionItem[]) => {
     return (context: CompletionContext): CompletionResult | null => {
         const word = context.matchBefore(/\w*/)
         if ((!word || word.from == word.to) && !context.explicit) return null
@@ -118,10 +125,6 @@ const setAutoCompletion = (completions: LSPCompletionItem[], version: number, ls
                     }
                     changes.push({from, to, insert})
                     view.dispatch({changes});
-                    if (v.additionalTextEdits) {
-                        format()
-                        lsp?.initialize(version, view.state.doc.toString());
-                    }
                 },
             }
         });
@@ -325,7 +328,7 @@ export default function Component(props: {
             ...focusedKeymap, // Custom key bindings
         ]),
         lintCompartment.of(setLint(isLintOn, diagnostics)),
-        autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions, version.current, lsp.current, debouncedFormat)] : []})),
+        autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []})),
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(DEFAULT_INDENTATION_SIZE)),
         keyBindingsCompartment.of(setKeyBindings(keyBindings)),
@@ -423,7 +426,7 @@ export default function Component(props: {
         if (!view.current) return;
         view.current.dispatch({
             effects: [autoCompletionCompartment.reconfigure(autocompletion({
-                override: isAutoCompletionOn ? [setAutoCompletion(completions, version.current, lsp.current, debouncedFormat)] : []
+                override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []
             }))]
         })
     }, [completions, isAutoCompletionOn]);

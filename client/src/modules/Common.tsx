@@ -1,6 +1,7 @@
 import {ReactNode} from "react";
 import {Clipboard, Toast, Flowbite, CustomFlowbiteTheme} from "flowbite-react";
 import {
+    // HiRefresh as RefreshIcon,
     HiExclamation as ErrorIcon,
     HiInformationCircle as InfoIcon,
 } from "react-icons/hi";
@@ -52,7 +53,8 @@ export function MyToast(props: {
         : "bg-orange-100 text-orange-500 dark:bg-orange-700 dark:text-orange-200"
 
     return (
-        show && <Toast className={`absolute bottom-6 left-6 z-10 w-auto max-w-xl border border-gray-200 dark:border-gray-600`}>
+        show &&
+        <Toast className={`absolute bottom-6 left-6 z-10 w-auto max-w-xl border border-gray-200 dark:border-gray-600`}>
             <div
                 className={`mr-2 inline-flex size-8 shrink-0 items-center justify-center rounded-lg ${color}`}>
                 {
@@ -94,6 +96,17 @@ export function ToggleSwitch(props: {
     )
 }
 
+// TODO: maybe useful for future
+// export function RefreshButton(props: {
+//     onClick: () => void;
+// }) {
+//     return (
+//         <RefreshIcon
+//             onClick={props.onClick}
+//             className={"absolute right-7 top-2 z-10 h-3.5 cursor-pointer text-gray-500 opacity-70 hover:text-cyan-400"}/>
+//     )
+// }
+//
 export function ClickBoard(props: {
     content: string
 }) {
