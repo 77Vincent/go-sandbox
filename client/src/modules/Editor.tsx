@@ -225,6 +225,9 @@ export default function Component(props: {
     // local state
     const [row, setRow] = useState(1); // 1-based index
     const [col, setCol] = useState(1); // 1-based index
+    const [errorCount, setErrorCount] = useState(0);
+    const [warningCount, setWarningCount] = useState(0);
+    const [infoCount, setInfoCount] = useState(0);
     const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
     const [completions, setCompletions] = useState<LSPCompletionItem[]>([]);
 
@@ -235,6 +238,29 @@ export default function Component(props: {
         setRow(row);
         setCol(col);
     }, []), DEBOUNCE_TIME)).current
+
+    useEffect(() => {
+        // reset error/warning/info count
+        setErrorCount(0);
+        setWarningCount(0);
+        setInfoCount(0);
+
+        diagnostics.forEach((v) => {
+            switch (v.severity) {
+                case "error":
+                    setErrorCount((prev) => prev + 1);
+                    break;
+                case "warning":
+                    setWarningCount((prev) => prev + 1);
+                    break;
+                case "hint":
+                    setInfoCount((prev) => prev + 1);
+                    break;
+                default:
+                    setInfoCount((prev) => prev + 1);
+            }
+        })
+    }, [diagnostics]);
 
     // manage content
     const onViewUpdate = (v: ViewUpdate) => {
@@ -454,7 +480,7 @@ export default function Component(props: {
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div className={`relative mb-5 flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}>
             <RefreshButton lan={lan}/>
-            <StatusBar row={row} col={col} errors={diagnostics.length}/>
+            <StatusBar row={row} col={col} errors={errorCount} warnings={warningCount} info={infoCount}/>
         </div>
     )
 };
