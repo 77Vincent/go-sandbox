@@ -1,13 +1,14 @@
 import {ReactNode} from "react";
-import {Clipboard, Toast, Flowbite, CustomFlowbiteTheme} from "flowbite-react";
+import {Clipboard, Toast, Flowbite, CustomFlowbiteTheme, Tooltip} from "flowbite-react";
 import {
-    // HiRefresh as RefreshIcon,
+    HiRefresh as RefreshIcon,
     HiExclamation as ErrorIcon,
     HiInformationCircle as InfoIcon,
 } from "react-icons/hi";
-import {toastType} from "../types";
+import {languages, toastType} from "../types";
 import {isMac} from "../utils.ts";
 import {MdContentCopy as CopyIcon, MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
+import {TRANSLATE} from "../constants.ts";
 
 export function Wrapper(props: {
     children: ReactNode,
@@ -96,17 +97,28 @@ export function ToggleSwitch(props: {
     )
 }
 
-// TODO: maybe useful for future
-// export function RefreshButton(props: {
-//     onClick: () => void;
-// }) {
-//     return (
-//         <RefreshIcon
-//             onClick={props.onClick}
-//             className={"absolute right-7 top-2 z-10 h-3.5 cursor-pointer text-gray-500 opacity-70 hover:text-cyan-400"}/>
-//     )
-// }
-//
+export function RefreshButton(props: {
+    lan: languages;
+    onClick?: () => void;
+}) {
+    const {onClick, lan} = props
+    const onClockHandler = () => {
+        if (onClick) {
+            onClick()
+        }
+        location.reload()
+    }
+    return (
+        <div className={"absolute right-7 top-2 z-10"}>
+            <Tooltip className={"text-xs"} content={TRANSLATE.reload[lan]} placement={"left"}>
+                <RefreshIcon
+                    onClick={onClockHandler}
+                    className={"h-3.5 cursor-pointer text-gray-500 opacity-80 hover:text-cyan-500 dark:text-gray-400 dark:hover:text-cyan-400"}/>
+            </Tooltip>
+        </div>
+    )
+}
+
 export function ClickBoard(props: {
     content: string
 }) {
