@@ -126,6 +126,12 @@ export default function Component(props: {
                         F8
                     </SubRow>
                 </Row>
+                <Row>
+                    <Title> {TRANSLATE.suggestCompletion[lan]} </Title>
+                    <SubRow>
+                        <CtrlKey/>Space
+                    </SubRow>
+                </Row>
             </Grid>
         </Modal.Body>
     </Modal>

@@ -77,6 +77,12 @@ func main() {
 }`
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    suggestCompletion: {
+        en: "See completions",
+        zh_CN: "查看补全",
+        zh_TW: "查看補全",
+        ja: "補完を表示",
+    },
     foldAll: {
         en: "Fold All",
         zh_CN: "折叠全部",
