@@ -191,6 +191,12 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "刪除",
         ja: "削除",
     },
+    reload: {
+        en: "Reload",
+        zh_CN: "重载",
+        zh_TW: "重載",
+        ja: "リロード",
+    }
 }
 
 export const SNIPPETS: Record<string, Record<string, string>> = {

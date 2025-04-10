@@ -25,7 +25,7 @@ import {
     EDITOR_SIZE_MIN,
     EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY,
 } from "../constants.ts";
-import Main from "./Editor.tsx";
+import Editor from "./Editor.tsx";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
@@ -467,7 +467,8 @@ export default function Component(props: {
                     <Wrapper
                         className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                         <ClickBoard content={code}/>
-                        <Main
+                        <Editor
+                            lan={lan}
                             sandboxVersion={sandboxVersion}
                             setToastError={setToastError}
                             isLintOn={isLintOn}

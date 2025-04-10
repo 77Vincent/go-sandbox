@@ -3,7 +3,7 @@ import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
-import { indentationMarkers } from '@replit/codemirror-indentation-markers';
+import {indentationMarkers} from '@replit/codemirror-indentation-markers';
 import {lintKeymap, lintGutter, linter, Diagnostic} from "@codemirror/lint";
 import {acceptCompletion, completionStatus} from "@codemirror/autocomplete";
 import {EditorState, Compartment, EditorSelection, ChangeSpec} from "@codemirror/state"
@@ -40,7 +40,7 @@ import Mousetrap from "mousetrap";
 import debounce from "debounce";
 
 // local imports
-import {KeyBindingsType, LSPCompletionItem, patchI} from "../types";
+import {KeyBindingsType, languages, LSPCompletionItem, patchI} from "../types";
 import {
     EMACS,
     NONE,
@@ -51,6 +51,7 @@ import {
 } from "../constants.ts";
 import {getCursorHead, getUrl} from "../utils.ts";
 import LSP, {LSP_KIND_LABELS} from "../lsp/client.ts";
+import {RefreshButton} from "./Common.tsx";
 
 // map type from LSP to codemirror
 const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
@@ -173,6 +174,7 @@ export default function Component(props: {
     patch: patchI;
 
     // settings
+    lan: languages
     keyBindings: KeyBindingsType;
     fontSize: number;
     isLintOn: boolean;
@@ -191,6 +193,7 @@ export default function Component(props: {
         sandboxVersion,
         setToastError,
         // props
+        lan,
         value, patch,
         fontSize, keyBindings,
         isLintOn, isAutoCompletionOn,
@@ -439,6 +442,9 @@ export default function Component(props: {
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
-        <div className={`flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}/>
+        <div className={`relative flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`}>
+            <RefreshButton lan={lan}/>
+            <div className={`h-full`} ref={editor}/>
+        </div>
     )
 };
