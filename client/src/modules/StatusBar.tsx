@@ -1,8 +1,8 @@
 import {CiFaceFrown as ErrorIcon, CiFaceSmile as GoodIcon} from "react-icons/ci";
 
 const errorClasses = "text-orange-800 dark:text-orange-700";
-const goodClasses = "text-cyan-700 dark:text-cyan-500";
-const infoClasses = "text-xs text-gray-600 dark:text-gray-400";
+const goodClasses = "text-cyan-700 dark:text-cyan-400";
+const infoClasses = "text-xs text-gray-700 dark:text-gray-300";
 
 export default function Component(props: {
     row: number,
