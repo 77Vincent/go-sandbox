@@ -4,13 +4,13 @@ const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";
 const warningClasses = "text-cyan-700 dark:text-cyan-500";
 const textClasses = "text-xs text-gray-700 dark:text-gray-400";
+const commonClasses = "text-xs cursor-pointer hover:opacity-70";
 
 function chooseColor(errors: number, warnings: number, info: number) {
     if (errors > 0) return errorClasses;
     if (warnings > 0) return warningClasses;
     if (info > 0) return infoClasses;
     return infoClasses;
-
 }
 
 export default function Component(props: {
@@ -19,12 +19,9 @@ export default function Component(props: {
     errors: number,
     warnings: number,
     info: number
+    onLintClick: () => void
 }) {
-    const {row, col, errors, warnings, info} = props
-
-    function jumpToCode() {
-
-    }
+    const {row, col, errors, warnings, info, onLintClick} = props
 
     return (
         <div
@@ -44,10 +41,13 @@ export default function Component(props: {
                         {errors === 0 ? <GoodIcon/> : <ErrorIcon/>}
                     </div>
                     {!!errors &&
-                        <span onClick={jumpToCode} className={`text-xs ${errorClasses}`}>{errors} errors</span>}
+                        <span onClick={onLintClick}
+                              className={`${commonClasses} ${errorClasses}`}>{errors} errors</span>}
                     {!!warnings &&
-                        <span onClick={jumpToCode} className={`text-xs ${warningClasses}`}>{warnings} warnings</span>}
-                    {!!info && <span onClick={jumpToCode} className={`text-xs ${infoClasses}`}>{info} hints</span>}
+                        <span onClick={onLintClick}
+                              className={`${commonClasses} ${warningClasses}`}>{warnings} warnings</span>}
+                    {!!info &&
+                        <span onClick={onLintClick} className={`${commonClasses} ${infoClasses}`}>{info} hints</span>}
                 </div>
             </div>
         </div>

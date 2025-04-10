@@ -4,7 +4,7 @@ import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
 import {indentationMarkers} from '@replit/codemirror-indentation-markers';
-import {lintKeymap, lintGutter, linter, Diagnostic} from "@codemirror/lint";
+import {openLintPanel, lintKeymap, lintGutter, linter, Diagnostic} from "@codemirror/lint";
 import {acceptCompletion, completionStatus} from "@codemirror/autocomplete";
 import {EditorState, Compartment, EditorSelection, ChangeSpec} from "@codemirror/state"
 import {
@@ -490,11 +490,16 @@ export default function Component(props: {
         view.current.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, diagnostics))]})
     }, [diagnostics, isLintOn]);
 
+    function onLintClick() {
+        if (!view.current) return;
+        openLintPanel(view.current);
+    }
+
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div className={`relative mb-5 flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}>
             <RefreshButton lan={lan}/>
-            <StatusBar row={row} col={col} errors={errorCount} warnings={warningCount} info={infoCount}/>
+            <StatusBar onLintClick={onLintClick} row={row} col={col} errors={errorCount} warnings={warningCount} info={infoCount}/>
         </div>
     )
 };
