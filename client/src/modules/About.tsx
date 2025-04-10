@@ -24,17 +24,18 @@ export default function Component(props: {
         <Modal.Body>
             <div className={"flex flex-col gap-4 font-light dark:text-gray-50"}>
                 <p>
-                    Go Sandbox is a simplistic and advanced online editor
-                    featuring syntax recognition and realtime execution of your Go programs!
+                    Go Sandbox is a minimalist and advanced online editor for Go, featuring LSP-backed linting and
+                    autocompletion, and real-time execution of your code!
                 </p>
 
                 <div className={"text-lg font-semibold italic"}>Key Features</div>
                 <ul className={"list-inside list-disc indent-4"}>
                     <li>Realtime execution using websocket</li>
-                    <li>Syntax recognition</li>
+                    <li>LSP-backed linting and autocompletion</li>
                     <li>Multiple sandboxes</li>
                     <li>Share code snippet</li>
                     <li>Rich snippet library</li>
+                    <li>Rich keybinding support</li>
                 </ul>
 
                 <Divider horizontal={true}/>

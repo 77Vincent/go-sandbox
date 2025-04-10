@@ -6,17 +6,12 @@ https://www.go-sandbox.org/
 
 ## Features
 
-### Core
-
-- Realtime Execution using websocket
-- Overload protection
-
-### UI/UX
-
-- VIM and EMACS Keybindings
-- Syntax Highlighting
-- Code templating and sharing
-- Dark mode
+- Realtime execution using websocket
+- LSP-backed linting and autocompletion
+- Multiple sandboxes
+- Share code snippet
+- Rich snippet library
+- Rich keybinding support
 
 ## Development
 
