@@ -77,6 +77,48 @@ func main() {
 }`
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    foldAll: {
+        en: "Fold All",
+        zh_CN: "折叠全部",
+        zh_TW: "折疊全部",
+        ja: "すべて折りたたむ",
+    },
+    foldCode: {
+        en: "Fold Code",
+        zh_CN: "折叠代码",
+        zh_TW: "折疊代碼",
+        ja: "コードを折りたたむ",
+    },
+    unfoldAll: {
+        en: "Unfold All",
+        zh_CN: "展开全部",
+        zh_TW: "展開全部",
+        ja: "すべて展開する",
+    },
+    unfoldCode: {
+        en: "Unfold Code",
+        zh_CN: "展开代码",
+        zh_TW: "展開代碼",
+        ja: "コードを展開する",
+    },
+    nextDiagnostic: {
+        en: "Next Diagnostic",
+        zh_CN: "下一个提示",
+        zh_TW: "下一個提示",
+        ja: "次の診断",
+    },
+    openLintPanel: {
+        en: "Open Lint Panel",
+        zh_CN: "打开提示面板",
+        zh_TW: "打開提示面板",
+        ja: "リントパネルを開く",
+    },
+    search: {
+        en: "Search",
+        zh_CN: "搜索",
+        zh_TW: "搜尋",
+        ja: "検索",
+    },
     indentation: {
         en: "Indentation",
         zh_CN: "缩进",
@@ -196,6 +238,12 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_CN: "重载",
         zh_TW: "重載",
         ja: "リロード",
+    },
+    manual: {
+        en: "Manual",
+        zh_CN: "手册",
+        zh_TW: "手冊",
+        ja: "マニュアル",
     }
 }
 

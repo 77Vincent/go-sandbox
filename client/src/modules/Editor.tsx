@@ -192,6 +192,7 @@ export default function Component(props: {
     onChange: (code: string) => void;
     // setters
     setShowSettings: (v: boolean) => void;
+    setShowManual: (v: boolean) => void;
     // actions
     debouncedRun: () => void;
     debouncedFormat: () => void;
@@ -209,6 +210,7 @@ export default function Component(props: {
         onChange,
         // setters
         setShowSettings,
+        setShowManual,
         // action
         debouncedRun,
         debouncedFormat,
@@ -288,6 +290,14 @@ export default function Component(props: {
     }
 
     const focusedKeymap = [
+        {
+            key: `F12`,
+            preventDefault: true,
+            run: () => {
+                setShowManual(true);
+                return true;
+            }
+        },
         {
             key: `Mod-,`,
             preventDefault: true,
@@ -442,6 +452,10 @@ export default function Component(props: {
         });
         Mousetrap.bind(`mod+,`, function () {
             setShowSettings(true);
+            return false
+        });
+        Mousetrap.bind(`f12`, function () {
+            setShowManual(true);
             return false
         });
         Mousetrap.bind(`mod+r`, function () {

@@ -51,6 +51,7 @@ import {
 import Settings from "./Settings.tsx";
 import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
 import About from "./About.tsx";
+import Manual from "./Manual.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
 
@@ -101,6 +102,7 @@ export default function Component(props: {
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
+    const [showManual, setShowManual] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
     const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(initialActiveSandbox);
 
@@ -392,6 +394,8 @@ export default function Component(props: {
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
             <About lan={lan} show={showAbout} setShow={setShowAbout}/>
+            <Manual lan={lan} show={showManual} setShow={setShowManual}/>
+
             <Settings
                 show={showSettings}
                 setShow={setShowSettings}
@@ -438,7 +442,7 @@ export default function Component(props: {
 
                     <div className={"flex items-center"}>
                         <Info lan={lan} isMobile={isMobile} setShowAbout={setShowAbout}
-                              setShowSettings={setShowSettings}/>
+                              setShowSettings={setShowSettings} setShowManual={setShowManual}/>
                     </div>
                 </div>
             </div>
@@ -479,6 +483,7 @@ export default function Component(props: {
                             keyBindings={keyBindings}
                             onChange={onChange}
                             setShowSettings={setShowSettings}
+                            setShowManual={setShowManual}
                             debouncedRun={debouncedRun}
                             debouncedFormat={debouncedFormat}
                             debouncedShare={debouncedShare}
