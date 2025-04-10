@@ -1,27 +1,31 @@
-import {MutableRefObject} from "react";
-
 import {CiFaceFrown as ErrorIcon, CiFaceSmile as GoodIcon} from "react-icons/ci";
 
 const errorClasses = "text-orange-800 dark:text-orange-700";
-const goodClasses = "text-cyan-800 dark:text-cyan-500";
+const goodClasses = "text-cyan-700 dark:text-cyan-500";
+const infoClasses = "text-xs text-gray-600 dark:text-gray-400";
 
 export default function Component(props: {
-    statusBarRef: MutableRefObject<HTMLDivElement | null>,
+    row: number,
+    col: number,
     errors: number,
 }) {
-    const {statusBarRef, errors} = props
+    const {row, col, errors} = props
 
     return (
-
         <div
-            className={"flex justify-between gap-2 border-t border-t-gray-400 bg-gray-300 px-3 text-sm text-gray-800 dark:border-t-gray-600 dark:bg-gray-900 dark:text-white"}>
-            <div ref={statusBarRef}/>
+            className={"fixed bottom-0 left-0 z-10 flex w-full justify-between border-t border-t-gray-400 bg-gray-200 px-3 py-0.5 font-light dark:border-t-gray-600 dark:bg-gray-900 "}>
+            <div className={infoClasses}>
+                {row}:{col}
+            </div>
 
-            <div className={`flex items-center gap-1 font-light ${errors === 0 ? goodClasses : errorClasses}`}>
-                {
-                    errors === 0 ? <GoodIcon/> : <ErrorIcon/>
-                }
-                <span className={"text-xs"}>{errors} Errors</span>
+
+            <div className={"flex items-center gap-4"}>
+                <span className={infoClasses}>4 spaces</span>
+
+                <div className={`flex items-center gap-1 ${errors === 0 ? goodClasses : errorClasses}`}>
+                    {errors === 0 ? <GoodIcon className={"text-sm"}/> : <ErrorIcon className={"text-sm"}/>}
+                    <span className={"text-xs"}>{errors} errors</span>
+                </div>
             </div>
         </div>
     )

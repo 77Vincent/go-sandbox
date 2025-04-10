@@ -52,6 +52,14 @@ import {
 import {getCursorHead, getUrl} from "../utils.ts";
 import LSP, {LSP_KIND_LABELS} from "../lsp/client.ts";
 import {RefreshButton} from "./Common.tsx";
+import StatusBar from "./StatusBar.tsx";
+
+function getCursorPos(v: ViewUpdate) {
+    // return 1-based index
+    const pos = v.state.selection.main.head;
+    const line = v.state.doc.lineAt(pos);
+    return {row: line.number, col: pos - line.from + 1}
+}
 
 // map type from LSP to codemirror
 const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
@@ -215,12 +223,17 @@ export default function Component(props: {
     const version = useRef<number>(1); // initial version
 
     // local state
+    const [row, setRow] = useState(1); // 1-based index
+    const [col, setCol] = useState(1); // 1-based index
     const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
     const [completions, setCompletions] = useState<LSPCompletionItem[]>([]);
 
     // manage cursor
     const onCursorChange = useRef(debounce(useCallback((v: ViewUpdate) => {
         localStorage.setItem(CURSOR_HEAD_KEY, String(v.state.selection.main.head))
+        const {row, col} = getCursorPos(v);
+        setRow(row);
+        setCol(col);
     }, []), DEBOUNCE_TIME)).current
 
     // manage content
@@ -238,11 +251,8 @@ export default function Component(props: {
                     await lsp.current.didChange(version.current, v.state.doc.toString());
 
                     // get completions
-                    const pos = v.state.selection.main.head;
-                    const line = v.state.doc.lineAt(pos);
-                    const row = line.number - 1
-                    const col = pos - line.from;
-                    const completions = await lsp.current.getCompletions(row, col)
+                    const {row, col} = getCursorPos(v);
+                    const completions = await lsp.current.getCompletions(row - 1, col - 1) // use 0-based index
                     setCompletions(completions);
                 } catch (e) {
                     setToastError((e as Error).message)
@@ -442,9 +452,9 @@ export default function Component(props: {
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
-        <div className={`relative flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`}>
+        <div className={`relative mb-5 flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}>
             <RefreshButton lan={lan}/>
-            <div className={`h-full`} ref={editor}/>
+            <StatusBar row={row} col={col} errors={diagnostics.length}/>
         </div>
     )
 };
