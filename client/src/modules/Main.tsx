@@ -3,6 +3,7 @@ import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
+import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import {lintKeymap, lintGutter, linter, Diagnostic} from "@codemirror/lint";
 import {acceptCompletion, completionStatus} from "@codemirror/autocomplete";
 import {EditorState, Compartment, EditorSelection, ChangeSpec} from "@codemirror/state"
@@ -301,6 +302,7 @@ export default function Component(props: {
 
     const [extensions] = useState(() => [
         go(),
+        indentationMarkers(), // Show indentation markers
         lineNumbers(), // A line number gutter
         lintGutter(), // A gutter with lint icon
         foldGutter(), // A gutter with code folding markers
