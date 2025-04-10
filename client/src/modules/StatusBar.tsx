@@ -1,9 +1,17 @@
 import {CiFaceFrown as ErrorIcon, CiFaceSmile as GoodIcon} from "react-icons/ci";
 
 const errorClasses = "text-orange-800 dark:text-orange-700";
-const goodClasses = "text-cyan-700 dark:text-cyan-500";
-const warningClasses = "text-yellow-800 dark:text-yellow-700";
+const infoClasses = "text-cyan-700 dark:text-cyan-500";
+const warningClasses = "text-cyan-700 dark:text-cyan-500";
 const textClasses = "text-xs text-gray-700 dark:text-gray-400";
+
+function chooseColor(errors: number, warnings: number, info: number) {
+    if (errors > 0) return errorClasses;
+    if (warnings > 0) return warningClasses;
+    if (info > 0) return infoClasses;
+    return infoClasses;
+
+}
 
 export default function Component(props: {
     row: number,
@@ -13,6 +21,10 @@ export default function Component(props: {
     info: number
 }) {
     const {row, col, errors, warnings, info} = props
+
+    function jumpToCode() {
+
+    }
 
     return (
         <div
@@ -28,12 +40,14 @@ export default function Component(props: {
                 <span className={textClasses}>4 spaces</span>
 
                 <div className={"flex items-center gap-1"}>
-                    <div className={`${errors === 0 ? goodClasses : errorClasses}`}>
-                        {errors === 0 ? <GoodIcon className={"text-sm"}/> : <ErrorIcon className={"text-sm"}/>}
+                    <div className={`text-sm ${chooseColor(errors, warnings, info)}`}>
+                        {errors === 0 ? <GoodIcon/> : <ErrorIcon/>}
                     </div>
-                    {!!errors && <span className={`text-xs ${errorClasses}`}>{errors} errors</span>}
-                    {!!warnings && <span className={`text-xs ${warningClasses}`}>{warnings} warnings</span>}
-                    {!!info && <span className={`text-xs ${goodClasses}`}>{info} hints</span>}
+                    {!!errors &&
+                        <span onClick={jumpToCode} className={`text-xs ${errorClasses}`}>{errors} errors</span>}
+                    {!!warnings &&
+                        <span onClick={jumpToCode} className={`text-xs ${warningClasses}`}>{warnings} warnings</span>}
+                    {!!info && <span onClick={jumpToCode} className={`text-xs ${infoClasses}`}>{info} hints</span>}
                 </div>
             </div>
         </div>

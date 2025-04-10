@@ -13,7 +13,7 @@ import {
     crosshairCursor, lineNumbers, highlightActiveLineGutter
 } from "@codemirror/view"
 import {
-    indentOnInput,
+    indentOnInput, foldCode, unfoldCode,
     bracketMatching, foldGutter, foldKeymap, indentUnit,
 } from "@codemirror/language"
 import {
@@ -335,6 +335,20 @@ export default function Component(props: {
             preventDefault: true,
             run: (v: EditorView) => {
                 return indentLess(v)
+            },
+        },
+        {
+            key: "Mod--",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                return foldCode(v)
+            },
+        },
+        {
+            key: "Mod-=",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                return unfoldCode(v)
             },
         },
     ]
