@@ -1,501 +1,444 @@
-import {useCallback, useRef, useState, useEffect, ReactNode} from "react";
-import {Resizable, ResizeDirection} from "re-resizable";
-import debounce from 'debounce';
+// react
+import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
+import {ThemeMode, useThemeMode} from "flowbite-react";
 
+// codemirror imports
+import { indentationMarkers } from '@replit/codemirror-indentation-markers';
+import {lintKeymap, lintGutter, linter, Diagnostic} from "@codemirror/lint";
+import {acceptCompletion, completionStatus} from "@codemirror/autocomplete";
+import {EditorState, Compartment, EditorSelection, ChangeSpec} from "@codemirror/state"
 import {
-    EDITOR_SIZE_KEY,
-    FONT_SIZE_KEY,
-    FONT_SIZE_L,
-    FONT_SIZE_S,
-    IS_LINT_ON_KEY,
+    ViewUpdate, EditorView, keymap, highlightSpecialChars, drawSelection,
+    highlightActiveLine, dropCursor, rectangularSelection,
+    crosshairCursor, lineNumbers, highlightActiveLineGutter
+} from "@codemirror/view"
+import {
+    indentOnInput,
+    bracketMatching, foldGutter, foldKeymap, indentUnit,
+} from "@codemirror/language"
+import {
+    defaultKeymap, history, historyKeymap, indentMore, indentLess
+} from "@codemirror/commands"
+import {
+    searchKeymap, highlightSelectionMatches
+} from "@codemirror/search"
+import {
+    autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap,
+    CompletionContext, CompletionResult, Completion
+} from "@codemirror/autocomplete"
+
+// theme import
+import {vsCodeDark as themeDark} from '@fsegurai/codemirror-theme-vscode-dark'
+import {vsCodeLight as themeLight} from '@fsegurai/codemirror-theme-vscode-light'
+
+import {go} from "@codemirror/lang-go";
+import {vim} from "@replit/codemirror-vim";
+import {emacs} from "@replit/codemirror-emacs";
+
+// other imports
+import Mousetrap from "mousetrap";
+import debounce from "debounce";
+
+// local imports
+import {KeyBindingsType, LSPCompletionItem, patchI} from "../types";
+import {
+    EMACS,
+    NONE,
     DEBOUNCE_TIME,
-    KEY_BINDINGS_KEY,
-    FONT_SIZE_M,
-    TRANSLATE,
-    STATS_INFO_PREFIX,
-    LANGUAGE_KEY,
-    EVENT_STDOUT,
-    EVENT_ERROR,
-    EVENT_STDERR,
-    EVENT_CLEAR,
-    EVENT_DONE,
-    SNIPPET_REGEX,
-    SANDBOX_VERSION_KEY,
-    IS_VERTICAL_LAYOUT_KEY,
-    EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY,
+    VIM,
+    CURSOR_HEAD_KEY,
+    DEFAULT_INDENTATION_SIZE,
 } from "../constants.ts";
-import Main from "./Main.tsx";
-import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
-import ProgressBar from "./ProgressBar.tsx";
-import Terminal from "./Terminal.tsx"
-import Actions from "./Actions.tsx";
-import SnippetSelector from "./SnippetSelector.tsx";
-import VersionSelector from "./VersionSelector.tsx";
-import SandboxSelector from "./SandboxSelector.tsx";
-import Info from "./Info.tsx";
-import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
+import {getCursorHead, getUrl} from "../utils.ts";
+import LSP, {LSP_KIND_LABELS} from "../lsp/client.ts";
 
-import {
-    getCodeContent,
-    getKeyBindings,
-    getEditorSize,
-    getFontSize,
-    getLintOn,
-    getUrl,
-    getLanguage,
-    getSandboxVersion,
-    getIsVerticalLayout,
-    isMobileDevice, getActiveSandbox, getAutoCompletionOn
-} from "../utils.ts";
-import Settings from "./Settings.tsx";
-import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
-import About from "./About.tsx";
-import {SSE} from "sse.js";
-import {Link} from "react-router-dom";
-
-function ShareSuccessMessage(props: {
-    url: string,
-}): ReactNode {
-    const {url} = props
-    return (
-        <div>
-            <p className={"dark:text-gray-300"}>The link to share:</p>
-            <Link target={"_blank"} to={url} className={"text-cyan-500 underline"}>{url}</Link>
-        </div>
-    )
+// map type from LSP to codemirror
+const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
+    Text: "text",
+    Method: "method",
+    Function: "function",
+    Constructor: "function",
+    Field: "property",
+    Variable: "variable",
+    Class: "class",
+    Interface: "interface",
+    Module: "namespace",
+    Property: "property",
+    Unit: "constant",
+    Value: "text",
+    Enum: "enum",
+    Keyword: "keyword",
+    Snippet: "function",
+    Color: "constant",
+    File: "variable",
+    Reference: "variable",
+    Folder: "namespace",
+    EnumMember: "enum",
+    Constant: "constant",
+    Struct: "class",
+    Event: "function",
+    Operator: "function",
+    TypeParameter: "type",
 }
 
-function FetchErrorMessage(props: {
-    error: string
-}): ReactNode {
-    const {error} = props
+// Compartments for dynamic config
+const fontSizeCompartment = new Compartment();
+const indentCompartment = new Compartment();
+const keyBindingsCompartment = new Compartment();
+const themeCompartment = new Compartment();
+const autoCompletionCompartment = new Compartment();
+const lintCompartment = new Compartment();
 
-    return (
-        <div>
-            <p>{error}</p>
-            <p>Loading local cache instead</p>
-        </div>
-    )
+// setters of compartments
+const setLint = (isLintOn: boolean, diagnostics: Diagnostic[]) => {
+    return isLintOn ? linter(() => diagnostics) : [];
 }
+const setAutoCompletion = (completions: LSPCompletionItem[]) => {
+    return (context: CompletionContext): CompletionResult | null => {
+        const word = context.matchBefore(/\w*/)
+        if ((!word || word.from == word.to) && !context.explicit) return null
 
-const resizeHandlerHoverClasses = "z-10 hover:bg-cyan-500 transition-colors";
+        const items: Completion[] = completions.map((v) => {
+            return {
+                label: v.label,
+                detail: v.detail,
+                boost: parseInt(v.sortText || "0"),
+                type: LSP_TO_CODEMIRROR_TYPE[LSP_KIND_LABELS[v.kind || 1]],
+                info: v.documentation?.value,
+                apply: (view, _completion, from, to) => {
+                    let insert = v.insertText ?? v.label;
 
-// default values
-const initialValue = getCodeContent(getActiveSandbox());
-const initialIsLintOn = getLintOn()
-const initialIsAutoCompletionOn = getAutoCompletionOn()
-const initialSandboxVersion = getSandboxVersion()
-const initialActiveSandbox = getActiveSandbox();
-const initialIsVerticalLayout = getIsVerticalLayout();
-const initialLanguage = getLanguage()
-const initialFontSize = getFontSize()
-const initialEditorSize = getEditorSize()
-const initialKeyBindings = getKeyBindings()
+                    // method or function
+                    if (v.kind && v.kind > 1 && v.kind < 5) {
+                        insert = `${insert}()`
+                    }
+
+                    // Build the base change: replace the selected text with insertText
+                    const changes: ChangeSpec[] = [];
+
+                    if (v.additionalTextEdits) {
+                        for (const edit of v.additionalTextEdits) {
+                            const {range: {start, end}, newText} = edit;
+                            const from = view.state.doc.line(start.line + 1).from + start.character;
+                            const to = view.state.doc.line(end.line + 1).from + end.character;
+                            changes.push({from, to, insert: newText});
+                        }
+                    }
+                    changes.push({from, to, insert})
+                    view.dispatch({changes});
+                },
+            }
+        });
+
+        return {
+            from: word?.from ?? context.pos,
+            options: items,
+            validFor: /^\w*$/, // keeps the list open while typing
+        }
+    }
+}
+const setTheme = (mode: ThemeMode) => {
+    return mode === "dark" ? themeDark : themeLight;
+}
+const setFontSize = (fontSize: number) => {
+    return EditorView.theme({
+        "&": {
+            fontSize: `${fontSize}px`,
+            fontWeight: "100",
+        }
+    })
+}
+const setIndent = (indent: number) => {
+    return indentUnit.of(" ".repeat(indent));
+}
+const setKeyBindings = (keyBindings: KeyBindingsType) => {
+    switch (keyBindings) {
+        case VIM:
+            return vim();
+        case EMACS:
+            return emacs();
+        case NONE:
+            return []
+        default:
+            return [];
+    }
+}
 
 export default function Component(props: {
+    // toast
     setToastError: (message: ReactNode) => void
-    setToastInfo: (message: ReactNode) => void
-}) {
-    const {setToastError, setToastInfo} = props
 
-    const [showSettings, setShowSettings] = useState<boolean>(false);
-    const [showAbout, setShowAbout] = useState<boolean>(false);
-    const [isMobile] = useState<boolean>(isMobileDevice());
-    const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(initialActiveSandbox);
+    sandboxVersion: string;
+    value: string;
+    patch: patchI;
 
     // settings
-    const [fontSize, setFontSize] = useState<number>(initialFontSize);
-    const [editorSize, setEditorSize] = useState<number>(initialEditorSize);
-    const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
-    const [lan, setLan] = useState<languages>(initialLanguage)
-    const [sandboxVersion, setSandboxVersion] = useState<string>(initialSandboxVersion)
+    keyBindings: KeyBindingsType;
+    fontSize: number;
+    isLintOn: boolean;
+    isAutoCompletionOn: boolean;
 
-    // editor status
-    const [isRunning, setIsRunning] = useState<boolean>(false);
-    const [code, setCode] = useState<string>(initialValue);
-    const [patch, setPatch] = useState<patchI>({value: "", keepCursor: false});
+    // handler
+    onChange: (code: string) => void;
+    // setters
+    setShowSettings: (v: boolean) => void;
+    // actions
+    debouncedRun: () => void;
+    debouncedFormat: () => void;
+    debouncedShare: () => void;
+}) {
+    const {
+        sandboxVersion,
+        setToastError,
+        // props
+        value, patch,
+        fontSize, keyBindings,
+        isLintOn, isAutoCompletionOn,
+        // handlers
+        onChange,
+        // setters
+        setShowSettings,
+        // action
+        debouncedRun,
+        debouncedFormat,
+        debouncedShare,
+    } = props;
+    const {mode} = useThemeMode();
 
-    // result
-    const [result, setResult] = useState<resultI[]>([]);
-    const [error, setError] = useState<string>("")
-    const [info, setInfo] = useState<string>("")
+    // ref
+    const editor = useRef<HTMLDivElement>(null);
+    const view = useRef<EditorView | null>(null);
+    const lsp = useRef<LSP | null>(null);
+    const version = useRef<number>(1); // initial version
 
-    // reference the latest state
-    const codeRef = useRef(code);
-    const sandboxVersionRef = useRef(sandboxVersion);
-    const activeSandboxRef = useRef(activeSandbox);
-    const isRunningRef = useRef(isRunning);
+    // local state
+    const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
+    const [completions, setCompletions] = useState<LSPCompletionItem[]>([]);
 
-    // mode status
-    const [keyBindings, setKeyBindings] = useState<KeyBindingsType>(initialKeyBindings);
-    const [isLintOn, setIsLintOn] = useState<boolean>(initialIsLintOn)
-    const [isAutoCompletionOn, setIsAutoCompletionOn] = useState<boolean>(initialIsAutoCompletionOn)
+    // manage cursor
+    const onCursorChange = useRef(debounce(useCallback((v: ViewUpdate) => {
+        localStorage.setItem(CURSOR_HEAD_KEY, String(v.state.selection.main.head))
+    }, []), DEBOUNCE_TIME)).current
 
-    // fetch the snippet if the url contains the snippet id, do only once
-    useEffect(() => {
-        (async () => {
-            const matches = location.pathname.match(SNIPPET_REGEX)
-            if (matches) {
-                const raw = matches[0]
-                const id = raw.split("/")[2]
+    // manage content
+    const onViewUpdate = (v: ViewUpdate) => {
+        if (v.docChanged) {
+            onChange(v.state.doc.toString());
+            // version increment
+            version.current += 1;
+
+
+            (async function () {
                 try {
-                    const data = await fetchSnippet(id)
-                    if (data) {
-                        // must call together
-                        setCode(data)
-                        setPatch({value: data})
-                    }
+                    if (!lsp.current) return
+                    // update file view in lsp
+                    await lsp.current.didChange(version.current, v.state.doc.toString());
+
+                    // get completions
+                    const pos = v.state.selection.main.head;
+                    const line = v.state.doc.lineAt(pos);
+                    const row = line.number - 1
+                    const col = pos - line.from;
+                    const completions = await lsp.current.getCompletions(row, col)
+                    setCompletions(completions);
                 } catch (e) {
-                    setToastError(<FetchErrorMessage error={(e as Error).message}/>)
+                    setToastError((e as Error).message)
                 }
-            }
-        })()
-    }, [setToastError]);
-
-    // IMPORTANT: update the ref when the state changes
-    useEffect(() => {
-        codeRef.current = code
-        isRunningRef.current = isRunning
-        sandboxVersionRef.current = sandboxVersion
-        activeSandboxRef.current = activeSandbox
-    }, [code, isRunning, sandboxVersion, activeSandbox]);
-
-    function onChange(newCode: string = "") {
-        setCode(newCode);
+            }());
+        }
     }
 
-    function shouldAbort(): boolean {
-        // do not continue if the code is empty or running
-        return isRunningRef.current || !codeRef.current
-    }
-
-    const debouncedShare = useRef(debounce(useCallback(async () => {
-        try {
-            const id = await shareSnippet(codeRef.current);
-            const url = `${location.origin}/snippets/${id}`
-            await navigator.clipboard.writeText(url);
-            setToastInfo(<ShareSuccessMessage url={url}/>)
-        } catch (e) {
-            setToastError((e as Error).message)
-        }
-    }, [setToastInfo, setToastError]), DEBOUNCE_TIME)).current;
-
-    // store code asynchronously
-    const debouncedStoreCode = useRef(debounce(useCallback((data: string) => {
-        localStorage.setItem(activeSandboxRef.current, data)
-    }, [activeSandboxRef]), DEBOUNCE_TIME)).current;
-    useEffect(() => {
-        debouncedStoreCode(code);
-    }, [debouncedStoreCode, code]);
-
-
-    const debouncedFormat = useRef(debounce(useCallback(async () => {
-        if (shouldAbort()) {
-            return
-        }
-
-        try {
-            setIsRunning(true)
-
-            const {stdout, error, message} = await formatCode(codeRef.current);
-
-            if (stdout) {
-                // must call together
-                setCode(stdout)
-                setPatch({value: stdout, keepCursor: true})
+    const focusedKeymap = [
+        {
+            key: `Mod-,`,
+            preventDefault: true,
+            run: () => {
+                setShowSettings(true);
+                return true;
             }
-            if (error) {
-                setResult([{type: EVENT_STDERR, content: error}])
+        },
+        {
+            key: `Mod-r`,
+            preventDefault: true,
+            run: () => {
+                debouncedRun()
+                return true;
             }
-            if (message) {
-                setError(message)
+        },
+        {
+            key: `Mod-Alt-l`,
+            preventDefault: true,
+            run: () => {
+                debouncedFormat()
+                return true;
             }
-
-            setIsRunning(false)
-        } catch (e) {
-            setToastError((e as Error).message)
-            setIsRunning(false)
-        }
-    }, [setToastError]), DEBOUNCE_TIME)).current;
-
-    const runCallback = useCallback(async () => {
-        if (shouldAbort()) {
-            return
-        }
-
-        try {
-            setIsRunning(true)
-
-            const {
-                stdout: formatted,
-                error: formatError,
-                message: formatMessage
-            } = await formatCode(codeRef.current);
-
-            setInfo("")
-            setResult([])
-
-            // format failed
-            if (formatError) {
-                setError(formatMessage)
-                setResult([{type: EVENT_STDERR, content: formatError}])
-
-                // TODO: annotation or marker
-                setIsRunning(false)
-                return
+        },
+        {
+            key: `Mod-s`,
+            preventDefault: true,
+            run: () => {
+                debouncedShare()
+                return true;
             }
-
-            // clean up
-            setError("")
-            setResult([])
-            // TODO: annotation or marker
-            // must call together
-            setCode(formatted)
-            setPatch({value: formatted, keepCursor: true})
-            codeRef.current = formatted // important: update immediately
-
-            const source = new SSE(getUrl("/execute"), {
-                headers: {'Content-Type': 'application/json'},
-                payload: JSON.stringify({code: codeRef.current, version: sandboxVersionRef.current})
-            });
-
-            source.addEventListener(EVENT_STDOUT, ({data}: MessageEvent) => {
-                setResult(prev => prev.concat({type: EVENT_STDOUT, content: data}))
-            });
-
-            source.addEventListener(EVENT_ERROR, ({data}: MessageEvent) => {
-                setError(data)
-                setIsRunning(false)
-            });
-
-            source.addEventListener(EVENT_STDERR, ({data}: MessageEvent) => {
-                // special case -- stats info wrapped in the stderr
-                if (data.startsWith(STATS_INFO_PREFIX)) {
-                    const [time, mem] = data.replace(STATS_INFO_PREFIX, "").split(";")
-                    setInfo(`Time: ${time} | Memory: ${mem}kb`)
-                    return
+        },
+        {
+            key: "Tab",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                if (!completionStatus(v.state)) {
+                    return indentMore(v);
                 }
+                return acceptCompletion(v);
+            },
+        },
+        {
+            key: "Shift-Tab",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                return indentLess(v)
+            },
+        },
+    ]
 
-                // TODO: generate annotation or marker
-                // TODO: annotation or marker
+    const [extensions] = useState(() => [
+        go(),
+        indentationMarkers(), // Show indentation markers
+        lineNumbers(), // A line number gutter
+        lintGutter(), // A gutter with lint icon
+        foldGutter(), // A gutter with code folding markers
+        highlightSpecialChars(), // Replace non-printable characters with placeholders
+        history(), // The undo history
+        drawSelection(), // Replace native cursor/selection with our own
+        dropCursor(), // Show a drop cursor when dragging over the editor
+        EditorState.allowMultipleSelections.of(true), // Allow multiple cursors/selections
+        indentOnInput(), // Re-indent lines when typing specific input
+        bracketMatching(), // Highlight matching brackets near cursor
+        closeBrackets(), // Automatically close brackets
+        rectangularSelection(), // Allow alt-drag to select rectangular regions
+        crosshairCursor(), // Change the cursor to a crosshair when holding alt
+        highlightActiveLine(), // Style the current line specially
+        highlightActiveLineGutter(), // Style the gutter for current line specially
+        highlightSelectionMatches(), // Highlight text that matches the selected text
+        keymap.of([
+            ...closeBracketsKeymap, // Closed-brackets aware backspace
+            ...defaultKeymap, // A large set of basic bindings
+            ...searchKeymap, // Search-related keys
+            ...historyKeymap, // Redo/undo keys
+            ...foldKeymap, // Code folding bindings
+            ...completionKeymap, // Autocompletion keys
+            ...lintKeymap, // Keys related to the linter system
+            ...focusedKeymap, // Custom key bindings
+        ]),
+        lintCompartment.of(setLint(isLintOn, diagnostics)),
+        autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []})),
+        fontSizeCompartment.of(setFontSize(fontSize)),
+        indentCompartment.of(setIndent(DEFAULT_INDENTATION_SIZE)),
+        keyBindingsCompartment.of(setKeyBindings(keyBindings)),
+        themeCompartment.of(setTheme(mode)),
+        EditorView.updateListener.of(onCursorChange),
+        EditorView.updateListener.of(onViewUpdate),
+    ]);
 
-                setResult(prev => prev.concat({type: EVENT_STDERR, content: data}))
-            });
+    // update the view when the value changes from outside
+    useEffect(() => {
+        if (!view.current) return;
 
-            // clear the screen
-            source.addEventListener(EVENT_CLEAR, () => {
-                setResult([])
-            });
-
-            source.addEventListener(EVENT_DONE, () => {
-                setIsRunning(false)
-            });
-        } catch (e) {
-            const err = e as Error
-            // TODO: annotation or marker
-            setResult([{type: EVENT_STDERR, content: err.message}])
-            setIsRunning(false)
+        // no dispatch if the value is the same or empty
+        switch (patch.value) {
+            case view.current.state.doc.toString():
+            case "":
+                return;
         }
-    }, []);
-    const debouncedRun = useRef(debounce(runCallback, DEBOUNCE_TIME)).current;
 
-    const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
-        try {
-            setIsRunning(true)
-            const data = await getSnippet(id);
-            setCode(data);
-            setPatch({value: data});
+        // update the view
+        view.current.dispatch({
+            changes: {
+                from: 0,
+                to: view.current.state.doc.length,
+                insert: patch.value
+            },
+            selection: {
+                anchor: patch.keepCursor ? Math.min(getCursorHead(), patch.value.length) : 0,
+            },
+            scrollIntoView: true,
+        });
+    }, [patch]);
+
+    // must only run once, so no dependencies
+    useEffect(() => {
+        if (!editor.current || view.current) return;
+
+        view.current = new EditorView({
+            doc: value,
+            extensions: extensions,
+            parent: editor.current,
+            selection: EditorSelection.cursor(Math.min(getCursorHead(), value.length)),
+        });
+        view.current.focus();
+
+        lsp.current = new LSP(getUrl("/ws"), sandboxVersion, view.current, setDiagnostics);
+
+        (async function () {
+            await lsp.current?.initialize(version.current, value)
+        }());
+
+        // key bindings for unfocused editor
+        Mousetrap.bind('esc', function () {
+            view.current?.focus();
+            return false
+        });
+        Mousetrap.bind(`mod+,`, function () {
+            setShowSettings(true);
+            return false
+        });
+        Mousetrap.bind(`mod+r`, function () {
             debouncedRun()
-            setIsRunning(false)
-        } catch (e) {
-            setToastError((e as Error).message)
-            setIsRunning(false)
-        }
-    }, [debouncedRun, setToastError]), DEBOUNCE_TIME)).current;
+            return false
+        });
+        Mousetrap.bind(`mod+option+l`, function () {
+            debouncedFormat()
+            return false
+        });
+        Mousetrap.bind(`mod+s`, function () {
+            debouncedShare()
+            return false
+        });
 
-    function onLint() {
-        localStorage.setItem(IS_LINT_ON_KEY, JSON.stringify(!isLintOn));
-        setIsLintOn(!isLintOn);
-    }
+        // destroy editor on unmount
+        return () => {
+            view.current?.destroy();
+            view.current = null;
+        };
+    }, []);
 
-    function onAutoCompletion() {
-        localStorage.setItem(IS_AUTOCOMPLETION_ON_KEY, JSON.stringify(!isAutoCompletionOn));
-        setIsAutoCompletionOn(!isAutoCompletionOn);
-    }
-
-    function onKeyBindingsChange(value: KeyBindingsType) {
-        localStorage.setItem(KEY_BINDINGS_KEY, value);
-        setKeyBindings(value)
-    }
-
-    function onSandboxVersionChange(version: string) {
-        localStorage.setItem(SANDBOX_VERSION_KEY, version);
-        setSandboxVersion(version)
-        debouncedRun()
-    }
-
-    function onIsVerticalLayoutChange() {
-        const value = !isLayoutVertical
-        localStorage.setItem(IS_VERTICAL_LAYOUT_KEY, JSON.stringify(value));
-        setIsLayoutVertical(value)
-    }
-
-    function onActiveSandboxChange(id: mySandboxes) {
-        localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
-        setActiveSandbox(id)
-        const data = getCodeContent(id)
-        setCode(data)
-        setPatch({value: data})
-        debouncedRun()
-    }
-
-    function onLanguageChange(value: languages) {
-        localStorage.setItem(LANGUAGE_KEY, value);
-        setLan(value)
-    }
-
-    function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
-        // calculate the size
-        let size
-        if (isLayoutVertical) {
-            size = (refToElement.clientHeight / (window.innerHeight - 45)) * 100
-        } else {
-            size = (refToElement.clientWidth / window.innerWidth) * 100
-        }
-
-        localStorage.setItem(EDITOR_SIZE_KEY, JSON.stringify(size))
-        setEditorSize(size)
-    }
-
-    function onFontL() {
-        if (fontSize !== FONT_SIZE_L) {
-            setFontSize(FONT_SIZE_L)
-            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_L))
-        }
-    }
-
-    function onFontM() {
-        if (fontSize !== FONT_SIZE_M) {
-            setFontSize(FONT_SIZE_M)
-            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_M))
-        }
-    }
-
-    function onFontS() {
-        if (fontSize !== FONT_SIZE_S) {
-            setFontSize(FONT_SIZE_S)
-            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_S))
-        }
-    }
+    // dynamically update configuration
+    useEffect(() => {
+        if (!view.current) return;
+        view.current.dispatch({effects: [themeCompartment.reconfigure(setTheme(mode))]})
+    }, [mode]);
+    useEffect(() => {
+        if (!view.current) return;
+        view.current.dispatch({effects: [keyBindingsCompartment.reconfigure(setKeyBindings(keyBindings))]})
+    }, [keyBindings]);
+    useEffect(() => {
+        if (!view.current) return;
+        view.current.dispatch({effects: [fontSizeCompartment.reconfigure(setFontSize(fontSize))]})
+    }, [fontSize]);
+    useEffect(() => {
+        if (!view.current) return;
+        view.current.dispatch({
+            effects: [autoCompletionCompartment.reconfigure(autocompletion({
+                override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []
+            }))]
+        })
+    }, [completions, isAutoCompletionOn]);
+    useEffect(() => {
+        if (!view.current) return;
+        view.current.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, diagnostics))]})
+    }, [diagnostics, isLintOn]);
 
     return (
-        <div className="relative flex h-screen flex-col dark:bg-neutral-900">
-            <About lan={lan} show={showAbout} setShow={setShowAbout}/>
-            <Settings
-                show={showSettings}
-                setShow={setShowSettings}
-                lan={lan}
-                fontSize={fontSize}
-                onFontL={onFontL}
-                onFontM={onFontM}
-                onFontS={onFontS}
-                isVerticalLayout={isLayoutVertical}
-                setIsVerticalLayout={onIsVerticalLayoutChange}
-                onKeyBindingsChange={onKeyBindingsChange}
-                onLanguageChange={onLanguageChange}
-                keyBindings={keyBindings}
-                isLintOn={isLintOn}
-                onLint={onLint}
-                isAutoCompletionOn={isAutoCompletionOn}
-                onAutoCompletion={onAutoCompletion}
-            />
-
-            <div
-                className="flex items-center justify-between border-b border-b-gray-300 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0.5">
-                <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
-                    <img src={"/logo.svg"} alt={"logo"} className={"mr-1 h-4 max-md:hidden"}/>
-
-                    <div
-                        className="text-xl font-light text-gray-600 dark:text-gray-300 max-md:text-sm">{TITLE}</div>
-                </Link>
-
-                <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
-                    <Actions isMobile={isMobile} isRunning={isRunning} debouncedFormat={debouncedFormat}
-                             debouncedRun={debouncedRun}
-                             debouncedShare={debouncedShare} hasCode={codeRef.current.length > 0} lan={lan}/>
-
-                    {
-                        isMobile ? null : <>
-                            <Divider/>
-                            <SandboxSelector lan={lan} onSelect={onActiveSandboxChange} isRunning={isRunning}
-                                             active={activeSandbox}/>
-                            <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
-                            <VersionSelector version={sandboxVersion} isRunning={isRunning}
-                                             onSelect={onSandboxVersionChange}/>
-                        </>
-                    }
-
-                    <div className={"flex items-center"}>
-                        <Info lan={lan} isMobile={isMobile} setShowAbout={setShowAbout}
-                              setShowSettings={setShowSettings}/>
-                    </div>
-                </div>
-            </div>
-
-            <div className={`flex h-0 flex-1 ${isLayoutVertical ? "flex-col" : "flex-row"}`}>
-                <Resizable
-                    handleClasses={{
-                        right: !isLayoutVertical ? resizeHandlerHoverClasses : "",
-                        bottom: isLayoutVertical ? resizeHandlerHoverClasses : "",
-                    }}
-                    minWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MIN}%`}
-                    maxWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MAX}%`}
-                    minHeight={isLayoutVertical ? `${EDITOR_SIZE_MIN}%` : "100%"}
-                    maxHeight={isLayoutVertical ? `${EDITOR_SIZE_MAX}%` : "100%"}
-                    enable={{
-                        right: !isLayoutVertical,
-                        bottom: isLayoutVertical,
-                    }}
-                    defaultSize={{
-                        width: isLayoutVertical ? "100%" : `${editorSize}%`,
-                        height: isLayoutVertical ? `${editorSize}%` : "100%",
-                    }}
-                    grid={[10, 1]}
-                    onResizeStop={onResizeStop}
-                >
-                    <Wrapper
-                        className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
-                        <ClickBoard content={code}/>
-                        <Main
-                            sandboxVersion={sandboxVersion}
-                            setToastError={setToastError}
-                            isLintOn={isLintOn}
-                            isAutoCompletionOn={isAutoCompletionOn}
-                            value={code}
-                            patch={patch}
-                            fontSize={fontSize}
-                            keyBindings={keyBindings}
-                            onChange={onChange}
-                            setShowSettings={setShowSettings}
-                            debouncedRun={debouncedRun}
-                            debouncedFormat={debouncedFormat}
-                            debouncedShare={debouncedShare}
-                        />
-                    </Wrapper>
-                </Resizable>
-
-                <Terminal
-                    lan={lan}
-                    hint={TRANSLATE.hintManual[lan]}
-                    running={isRunning}
-                    fontSize={fontSize}
-                    result={result}
-                    info={info}
-                    error={error}
-                />
-            </div>
-
-            <ProgressBar show={isRunning} className={"absolute top-10 z-10 max-md:top-6"}/>
-        </div>);
-}
+        // eslint-disable-next-line tailwindcss/no-custom-classname
+        <div className={`flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}/>
+    )
+};

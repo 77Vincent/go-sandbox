@@ -1,4 +1,4 @@
-import Editor from "./modules/Editor";
+import Main from "./modules/Main.tsx";
 import {ReactNode, useEffect, useState} from "react";
 import {healthCheck} from "./api/api.ts";
 import {BrowserRouter} from "react-router-dom";
@@ -26,7 +26,7 @@ function App() {
                     <MyToast type={"error"} show={!!toastError} setShowToast={setToastError}>{toastError}</MyToast>
                     <MyToast type={"info"} show={!!toastInfo} setShowToast={setToastInfo}>{toastInfo}</MyToast>
 
-                    <Editor setToastInfo={setToastInfo} setToastError={setToastError}/>
+                    <Main setToastInfo={setToastInfo} setToastError={setToastError}/>
                 </main>
             </Flowbite>
         </BrowserRouter>
