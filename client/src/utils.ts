@@ -24,7 +24,7 @@ import {
     CURSOR_HEAD_KEY,
     DEFAULT_CURSOR_HEAD,
     IS_AUTOCOMPLETION_ON_KEY,
-    DEFAULT_AUTOCOMPLETION_ON,
+    DEFAULT_AUTOCOMPLETION_ON, FILE_PATH_KEY, DEFAULT_FILE_PATH,
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes} from "./types";
 
@@ -42,6 +42,10 @@ export function getLanguage(): languages {
 
 export function getCursorHead(): number {
     return Number(localStorage.getItem(CURSOR_HEAD_KEY)) || DEFAULT_CURSOR_HEAD
+}
+
+export function getFilePath(): string {
+    return localStorage.getItem(FILE_PATH_KEY) || DEFAULT_FILE_PATH
 }
 
 export function getCodeContent(sandbox: mySandboxes): string {

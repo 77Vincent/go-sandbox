@@ -12,6 +12,7 @@ export const VIM = "vim"
 export const EMACS = "emacs"
 export const NONE = ""
 
+export const FILE_PATH_KEY = "filePath"
 export const SANDBOX_NAMES_KEY = "sandboxNames";
 export const ACTIVE_SANDBOX_KEY = "activeSandbox";
 export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
@@ -24,6 +25,7 @@ export const EDITOR_SIZE_KEY = "editorSize";
 export const FONT_SIZE_KEY = "fontSize";
 export const CURSOR_HEAD_KEY = "cursorHead";
 
+export const DEFAULT_FILE_PATH = "/main.go"
 export const DEFAULT_INDENTATION_SIZE = 4;
 export const DEFAULT_CURSOR_HEAD = 0;
 export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
@@ -77,6 +79,18 @@ func main() {
 }`
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    nextCode: {
+        en: "Next Code",
+        zh_CN: "Next Code",
+        zh_TW: "Next Code",
+        ja: "Next Code",
+    },
+    prevCode: {
+        en: "Previous Code",
+        zh_CN: "Previous Code",
+        zh_TW: "Previous Code",
+        ja: "Previous Code",
+    },
     seeUsages: {
         en: "See usages",
         zh_CN: "查看用法",
