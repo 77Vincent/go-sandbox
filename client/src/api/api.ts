@@ -48,6 +48,16 @@ export async function shareSnippet(code: string): Promise<string> {
     return await res.text();
 }
 
+export async function fetchSourceCode(path: string, sandboxVersion: string): Promise<string> {
+    const res = await fetch(getUrl(`/source?path=${path}&version=${sandboxVersion}`));
+    if (res.status >= HTTP_INTERNAL_ERROR) {
+        const {error} = await res.json();
+        throw new Error(error);
+    }
+
+    return await res.text();
+}
+
 export async function formatCode(code: string): Promise<ExecuteResultI> {
     const res = await fetch(getUrl("/format"), {
         method: "POST",
