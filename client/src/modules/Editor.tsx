@@ -53,12 +53,19 @@ import {getCursorHead, getUrl} from "../utils.ts";
 import LSP, {LSP_KIND_LABELS} from "../lsp/client.ts";
 import {RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
+import {fetchSourceCode} from "../api/api.ts";
 
-function getCursorPos(v: ViewUpdate) {
+function getCursorPos(v: ViewUpdate | EditorView) {
     // return 1-based index
     const pos = v.state.selection.main.head;
     const line = v.state.doc.lineAt(pos);
     return {row: line.number, col: pos - line.from + 1}
+}
+
+function posToHead(v: ViewUpdate | EditorView, row: number, col: number) {
+    const line = v.state.doc.line(row);
+    console.log(line.from + col - 1)
+    return line.from + col - 1;
 }
 
 // map type from LSP to codemirror
@@ -291,6 +298,59 @@ export default function Component(props: {
 
     const focusedKeymap = [
         {
+            key: `Mod-b`,
+            preventDefault: true,
+            run: (v: EditorView) => {
+                (async function () {
+                    if (!lsp.current) {
+                        return
+                    }
+                    const {row: currentRow, col: currentCol} = getCursorPos(v);
+                    const definitions = await lsp.current.getDefinition(currentRow - 1, currentCol - 1);
+                    if (!definitions.length) {
+                        return
+                    }
+
+                    const path = decodeURIComponent(definitions[0].uri.replace("file://", ""));
+                    const {is_main, error, content} = await fetchSourceCode(path, sandboxVersion)
+                    const {range: {start: {line, character}}} = definitions[0];
+                    const row = line + 1; // 1-based index
+                    const col = character + 1; // 1-based index
+                    if (error) {
+                        setToastError(error);
+                        return;
+                    }
+                    if (is_main) {
+                        view.current?.dispatch({
+                            selection: {
+                                anchor: posToHead(view.current, row, col), // 1-based index
+                            },
+                            scrollIntoView: true,
+                        })
+                        return;
+                    }
+                    if (content) {
+                        // update the doc first
+                        view.current?.dispatch({
+                            changes: {
+                                from: 0,
+                                to: view.current.state.doc.length,
+                                insert: content
+                            },
+                        });
+                        // then move the cursor
+                        view.current?.dispatch({
+                            selection: {
+                                anchor: posToHead(view.current, row, col), // 1-based index
+                            },
+                            scrollIntoView: true,
+                        })
+                    }
+                }());
+                return true;
+            }
+        },
+        {
             key: `F12`,
             preventDefault: true,
             run: () => {
@@ -513,7 +573,8 @@ export default function Component(props: {
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div className={`relative mb-5 flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}>
             <RefreshButton lan={lan}/>
-            <StatusBar onLintClick={onLintClick} row={row} col={col} errors={errorCount} warnings={warningCount} info={infoCount}/>
+            <StatusBar onLintClick={onLintClick} row={row} col={col} errors={errorCount} warnings={warningCount}
+                       info={infoCount}/>
         </div>
     )
 };
