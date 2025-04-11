@@ -1,4 +1,5 @@
-declare global {}
+declare global {
+}
 
 export type KeyBindingsType = "" | "vim" | "emacs";
 
@@ -21,7 +22,17 @@ export interface patchI {
     keepCursor?: boolean;
 }
 
-export type mySandboxes = "my-sandbox-1" | "my-sandbox-2" | "my-sandbox-3" | "my-sandbox-4" | "my-sandbox-5" | "my-sandbox-6" | "my-sandbox-7" | "my-sandbox-8" | "my-sandbox-9" | "my-sandbox-10"
+export type mySandboxes =
+    "my-sandbox-1"
+    | "my-sandbox-2"
+    | "my-sandbox-3"
+    | "my-sandbox-4"
+    | "my-sandbox-5"
+    | "my-sandbox-6"
+    | "my-sandbox-7"
+    | "my-sandbox-8"
+    | "my-sandbox-9"
+    | "my-sandbox-10"
 
 export type languages = "en" | "zh_CN" | "zh_TW" | "ja"
 
@@ -40,10 +51,10 @@ export interface fetchSourceRes {
     is_main: boolean;
 }
 
-export interface LSPResponse {
+export interface LSPResponse<T> {
     jsonrpc: string;
     id: number;
-    result?: any;
+    result?: T;
     error?: { code: number; message: string; data?: any };
 }
 
@@ -91,11 +102,9 @@ export interface LSPCompletionItem {
     }
 }
 
-export interface LSPCompletionResponse {
-    jsonrpc: string;
-    id: number;
-    result?: { items: LSPCompletionItem[]; isIncomplete?: boolean };
-    error?: { code: number; message: string; data?: any };
+export interface LSPCompletionResult {
+    items: LSPCompletionItem[];
+    isIncomplete?: boolean;
 }
 
 export interface LSPDiagnostic {
