@@ -55,7 +55,7 @@ export interface LSPResponse<T> {
     jsonrpc: string;
     id: number;
     result?: T;
-    error?: { code: number; message: string; data?: any };
+    error?: { code: number; message: string; data?: unknown };
 }
 
 export interface PendingRequestI {

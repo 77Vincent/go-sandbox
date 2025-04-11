@@ -47,13 +47,15 @@ import {
     DEBOUNCE_TIME,
     VIM,
     CURSOR_HEAD_KEY,
-    DEFAULT_INDENTATION_SIZE,
+    DEFAULT_INDENTATION_SIZE, FILE_PATH_KEY, DEFAULT_FILE_PATH,
 } from "../constants.ts";
-import {getCursorHead, getUrl} from "../utils.ts";
+import {getCursorHead, getFilePath, getUrl} from "../utils.ts";
 import LSP, {LSP_KIND_LABELS} from "../lsp/client.ts";
 import {RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {fetchSourceCode} from "../api/api.ts";
+
+const initialFilePath = getFilePath()
 
 function getCursorPos(v: ViewUpdate | EditorView) {
     // return 1-based index
@@ -64,7 +66,6 @@ function getCursorPos(v: ViewUpdate | EditorView) {
 
 function posToHead(v: ViewUpdate | EditorView, row: number, col: number) {
     const line = v.state.doc.line(row);
-    console.log(line.from + col - 1)
     return line.from + col - 1;
 }
 
@@ -106,8 +107,9 @@ const autoCompletionCompartment = new Compartment();
 const lintCompartment = new Compartment();
 
 // setters of compartments
-const setLint = (isLintOn: boolean, diagnostics: Diagnostic[]) => {
-    return isLintOn ? linter(() => diagnostics) : [];
+const setLint = (isLintOn: boolean, filePath: string, diagnostics: Diagnostic[]) => {
+    // do not display diagnostics for non-user code
+    return isLintOn && filePath === DEFAULT_FILE_PATH ? linter(() => diagnostics) : [];
 }
 const setAutoCompletion = (completions: LSPCompletionItem[]) => {
     return (context: CompletionContext): CompletionResult | null => {
@@ -230,6 +232,7 @@ export default function Component(props: {
     const view = useRef<EditorView | null>(null);
     const lsp = useRef<LSP | null>(null);
     const version = useRef<number>(1); // initial version
+    const filePath = useRef<string>(initialFilePath)
 
     // local state
     const [row, setRow] = useState(1); // 1-based index
@@ -253,6 +256,11 @@ export default function Component(props: {
         setErrorCount(0);
         setWarningCount(0);
         setInfoCount(0);
+
+        // do no display diagnostic for non-user code
+        if (filePath.current !== DEFAULT_FILE_PATH) {
+            return
+        }
 
         diagnostics.forEach((v) => {
             switch (v.severity) {
@@ -345,6 +353,9 @@ export default function Component(props: {
                             },
                             scrollIntoView: true,
                         })
+                        // update file path displayed in the status bar
+                        filePath.current = path
+                        localStorage.setItem(FILE_PATH_KEY, path)
                     }
                 }());
                 return true;
@@ -452,7 +463,7 @@ export default function Component(props: {
             ...lintKeymap, // Keys related to the linter system
             ...focusedKeymap, // Custom key bindings
         ]),
-        lintCompartment.of(setLint(isLintOn, diagnostics)),
+        lintCompartment.of(setLint(isLintOn, filePath.current, diagnostics)),
         autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []})),
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(DEFAULT_INDENTATION_SIZE)),
@@ -497,9 +508,12 @@ export default function Component(props: {
             parent: editor.current,
             selection: EditorSelection.cursor(Math.min(getCursorHead(), value.length)),
         });
+        view.current.dispatch({
+            scrollIntoView: true,
+        })
         view.current.focus();
 
-        lsp.current = new LSP(getUrl("/ws"), sandboxVersion, view.current, setDiagnostics);
+        lsp.current = new LSP(getUrl("/ws"), sandboxVersion, view.current, setDiagnostics, setToastError);
 
         (async function () {
             await lsp.current?.initialize(version.current, value)
@@ -561,7 +575,7 @@ export default function Component(props: {
     }, [completions, isAutoCompletionOn]);
     useEffect(() => {
         if (!view.current) return;
-        view.current.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, diagnostics))]})
+        view.current.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, filePath.current, diagnostics))]})
     }, [diagnostics, isLintOn]);
 
     function onLintClick() {
@@ -573,7 +587,7 @@ export default function Component(props: {
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div className={`relative mb-5 flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}>
             <RefreshButton lan={lan}/>
-            <StatusBar onLintClick={onLintClick} row={row} col={col} errors={errorCount} warnings={warningCount}
+            <StatusBar filePath={filePath.current} onLintClick={onLintClick} row={row} col={col} errors={errorCount} warnings={warningCount}
                        info={infoCount}/>
         </div>
     )
