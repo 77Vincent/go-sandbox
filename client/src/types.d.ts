@@ -34,6 +34,12 @@ export interface resultI {
     content: string;
 }
 
+export interface fetchSourceRes {
+    content: string;
+    error: string;
+    is_main: boolean;
+}
+
 export interface LSPResponse {
     jsonrpc: string;
     id: number;
@@ -47,6 +53,14 @@ export interface PendingRequestI {
 }
 
 export type pendingRequests = Map<number, PendingRequestI>;
+
+export interface LSPDefinition {
+    uri: string;
+    range: {
+        start: { line: number; character: number };
+        end: { line: number; character: number };
+    };
+}
 
 export interface LSPCompletionItem {
     label: string;

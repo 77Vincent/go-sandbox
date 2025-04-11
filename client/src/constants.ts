@@ -77,6 +77,18 @@ func main() {
 }`
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    seeUsages: {
+        en: "See usages",
+        zh_CN: "查看用法",
+        zh_TW: "查看用法",
+        ja: "使用法を表示",
+    },
+    seeDefinition: {
+        en: "See definition",
+        zh_CN: "查看定义",
+        zh_TW: "查看定義",
+        ja: "定義を表示",
+    },
     suggestCompletion: {
         en: "See completions",
         zh_CN: "查看补全",

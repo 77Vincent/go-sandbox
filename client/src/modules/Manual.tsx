@@ -56,7 +56,7 @@ export default function Component(props: {
                     </SubRow>
                 </Row>
             </Grid>
-            <Divider horizontal={true} className={"my-4"}/>
+            <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
                     <Title> {TRANSLATE.foldCode[lan]} </Title>
@@ -85,7 +85,7 @@ export default function Component(props: {
                     </SubRow>
                 </Row>
             </Grid>
-            <Divider horizontal={true} className={"my-4"}/>
+            <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
                     <Title> {TRANSLATE.run[lan]} </Title>
@@ -112,7 +112,7 @@ export default function Component(props: {
                     </SubRow>
                 </Row>
             </Grid>
-            <Divider horizontal={true} className={"my-4"}/>
+            <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
                     <Title> {TRANSLATE.openLintPanel[lan]} </Title>
@@ -130,6 +130,21 @@ export default function Component(props: {
                     <Title> {TRANSLATE.suggestCompletion[lan]} </Title>
                     <SubRow>
                         <CtrlKey/>Space
+                    </SubRow>
+                </Row>
+            </Grid>
+            <Divider horizontal={true} className={"my-3"}/>
+            <Grid>
+                <Row>
+                    <Title> {TRANSLATE.seeDefinition[lan]} </Title>
+                    <SubRow>
+                        <MetaKey/>b
+                    </SubRow>
+                </Row>
+                <Row>
+                    <Title> {TRANSLATE.seeUsages[lan]} </Title>
+                    <SubRow>
+                        <MetaKey/><OptionKey/>F7
                     </SubRow>
                 </Row>
             </Grid>
