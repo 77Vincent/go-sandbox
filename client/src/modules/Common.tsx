@@ -105,7 +105,7 @@ export function RefreshButton(props: {
         location.reload()
     }
     return (
-        <div className={"absolute right-7 top-2 z-10"}>
+        <div className={"absolute right-8 top-2 z-10"}>
             <Tooltip className={"text-xs"} content={TRANSLATE.reload[lan]} placement={"left"}>
                 <RefreshIcon
                     onClick={onClockHandler}
@@ -136,7 +136,7 @@ export function ClickBoard(props: {
             <Clipboard.WithIcon
                 icon={CopyIcon}
                 valueToCopy={content}
-                className={"absolute right-0.5 top-4 z-10 opacity-90"}
+                className={"absolute right-2 top-4 z-10 opacity-90"}
             />
         </Flowbite>
     )
