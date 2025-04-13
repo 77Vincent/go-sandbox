@@ -63,7 +63,7 @@ export default function Component(props: {
                 <Row>
                     <Title> {TRANSLATE.foldCode[lan]} </Title>
                     <SubRow>
-                        <MetaKey/>-
+                        <MetaKey/>- or <MetaKey/><OptionKey/>[
                     </SubRow>
                 </Row>
                 <Row>
@@ -71,7 +71,7 @@ export default function Component(props: {
                         <Title> {TRANSLATE.unfoldCode[lan]} </Title>
                     </SubRow>
                     <SubRow>
-                        <MetaKey/>+
+                        <MetaKey/>+ or <MetaKey/><OptionKey/>]
                     </SubRow>
                 </Row>
                 <Row>
