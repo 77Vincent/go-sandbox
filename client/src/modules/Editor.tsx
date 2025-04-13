@@ -47,7 +47,7 @@ import {
     DEBOUNCE_TIME,
     VIM,
     CURSOR_HEAD_KEY,
-    DEFAULT_INDENTATION_SIZE,
+    DEFAULT_INDENTATION_SIZE, FILE_PATH_KEY,
 } from "../constants.ts";
 import {getCursorHead, getWsUrl, isUserCode} from "../utils.ts";
 import LSP, {LSP_KIND_LABELS} from "../lsp/client.ts";
@@ -354,6 +354,7 @@ export default function Component(props: {
                 })
                 // update file path displayed in the status bar
                 setFilePath(path)
+                localStorage.setItem(FILE_PATH_KEY, path);
             }
         }());
         return true;

@@ -12,7 +12,7 @@ import {
     DEFAULT_MAIN_FILE_PATH,
     DEFAULT_SANDBOX_VERSION,
     DEFAULT_TEST_FILE_PATH,
-    EDITOR_SIZE_KEY,
+    EDITOR_SIZE_KEY, FILE_PATH_KEY,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
     HELLO_WORLD,
@@ -27,6 +27,10 @@ import {
     SANDBOX_VERSION_KEY,
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes} from "./types";
+
+export function getFilePath(): string {
+    return localStorage.getItem(FILE_PATH_KEY) || DEFAULT_MAIN_FILE_PATH
+}
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M

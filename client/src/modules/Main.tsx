@@ -23,7 +23,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY,
+    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY, DEFAULT_MAIN_FILE_PATH,
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
 import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
@@ -46,7 +46,7 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, getActiveSandbox, getAutoCompletionOn
+    isMobileDevice, getActiveSandbox, getAutoCompletionOn, getFilePath
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
@@ -80,7 +80,7 @@ function FetchErrorMessage(props: {
     )
 }
 
-const resizeHandlerHoverClasses = "z-10 hover:bg-cyan-500 transition-colors";
+const resizeHandlerHoverClasses = "w-1 z-10 hover:bg-cyan-500 transition-colors";
 
 // default values
 const initialValue = getCodeContent(getActiveSandbox());
@@ -93,6 +93,7 @@ const initialLanguage = getLanguage()
 const initialFontSize = getFontSize()
 const initialEditorSize = getEditorSize()
 const initialKeyBindings = getKeyBindings()
+const initialFilePath = getFilePath()
 
 export default function Component(props: {
     setToastError: (message: ReactNode) => void
@@ -117,6 +118,7 @@ export default function Component(props: {
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(initialValue);
     const [patch, setPatch] = useState<patchI>({value: "", keepCursor: false});
+    const [filePath, setFilePath] = useState<string>(initialFilePath);
 
     // result
     const [result, setResult] = useState<resultI[]>([]);
@@ -308,6 +310,7 @@ export default function Component(props: {
             const data = await getSnippet(id);
             setCode(data);
             setPatch({value: data});
+            setFilePath(DEFAULT_MAIN_FILE_PATH)
             debouncedRun()
             setIsRunning(false)
         } catch (e) {
@@ -349,6 +352,7 @@ export default function Component(props: {
         const data = getCodeContent(id)
         setCode(data)
         setPatch({value: data})
+        setFilePath(DEFAULT_MAIN_FILE_PATH)
         debouncedRun()
     }
 
@@ -449,6 +453,14 @@ export default function Component(props: {
 
             <div className={`flex h-0 flex-1 ${isLayoutVertical ? "flex-col" : "flex-row"}`}>
                 <Resizable
+                    handleStyles={{
+                        right: {
+                            width: "5px",
+                        },
+                        bottom: {
+                            height: "5px",
+                        },
+                    }}
                     handleClasses={{
                         right: !isLayoutVertical ? resizeHandlerHoverClasses : "",
                         bottom: isLayoutVertical ? resizeHandlerHoverClasses : "",
@@ -479,7 +491,9 @@ export default function Component(props: {
                             isAutoCompletionOn={isAutoCompletionOn}
                             value={code}
                             patch={patch}
+                            filePath={filePath}
                             fontSize={fontSize}
+                            setFilePath={setFilePath}
                             keyBindings={keyBindings}
                             onChange={onChange}
                             setShowSettings={setShowSettings}

@@ -25,7 +25,8 @@ export const EDITOR_SIZE_KEY = "editorSize";
 export const FONT_SIZE_KEY = "fontSize";
 export const CURSOR_HEAD_KEY = "cursorHead";
 
-export const DEFAULT_FILE_PATH = "/main.go"
+export const DEFAULT_MAIN_FILE_PATH = "/main.go"
+export const DEFAULT_TEST_FILE_PATH = "/main_test.go"
 export const DEFAULT_INDENTATION_SIZE = 4;
 export const DEFAULT_CURSOR_HEAD = 0;
 export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
@@ -50,8 +51,6 @@ export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
 export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
-export const ERROR_PARSING_REGEX = /main\.go:(\d+)/g;
-export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;
 export const STATS_INFO_PREFIX = "STATS_INFO:"
 
 export const HTTP_INTERNAL_ERROR = 500
