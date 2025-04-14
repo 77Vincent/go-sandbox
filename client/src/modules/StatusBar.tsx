@@ -3,7 +3,7 @@ import {CiFaceFrown as ErrorIcon, CiFaceSmile as GoodIcon} from "react-icons/ci"
 const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";
 const warningClasses = "text-cyan-700 dark:text-cyan-500";
-const textClasses = "text-xs text-gray-700 dark:text-gray-400";
+const textClasses = "text-xs text-gray-700 dark:text-gray-300";
 const commonClasses = "text-xs cursor-pointer hover:opacity-70";
 
 function chooseColor(errors: number, warnings: number, info: number) {
