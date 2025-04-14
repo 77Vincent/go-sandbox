@@ -1,6 +1,6 @@
 import {Modal} from "flowbite-react";
 
-import {TRANSLATE} from "../constants.ts";
+import {MY_SANDBOXES, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
 import {MetaKey, Row, Grid, Divider} from "./Common.tsx";
 import {ReactNode} from "react";
@@ -44,6 +44,15 @@ export default function Component(props: {
         </Modal.Header>
 
         <Modal.Body className={"text-gray-300"}>
+            <ul className={"mb-6 list-inside list-disc text-base font-light"}>
+                <li>You have <u>{Object.keys(MY_SANDBOXES).length}</u> sandboxes</li>
+                <li>You can edit one <u>main.go</u> file in each sandbox</li>
+                <li>You can open the external source code by <u>goto definition</u></li>
+                <li>You can import existing code from the <u>snippet library</u></li>
+            </ul>
+
+            <Divider horizontal={true} className={"my-3"}/>
+
             <Grid>
                 <Row>
                     <Title> {TRANSLATE.settings[lan]} </Title>
