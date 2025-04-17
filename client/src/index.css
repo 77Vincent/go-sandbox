@@ -4,7 +4,8 @@
 
 /* works in Safari + Chromium (not Firefox) */
 ::-webkit-scrollbar {
-    width: 7px;
+    width: 6px;
+    height: 6px;
 }
 ::-webkit-scrollbar-thumb {
     background-color: rgba(128, 128, 128, 0.4);

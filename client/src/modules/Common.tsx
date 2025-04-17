@@ -136,7 +136,7 @@ export function ClickBoard(props: {
             <Clipboard.WithIcon
                 icon={CopyIcon}
                 valueToCopy={content}
-                className={"absolute right-2 top-4 z-10 opacity-90"}
+                className={"absolute right-1 top-4 z-10 opacity-90"}
             />
         </Flowbite>
     )
