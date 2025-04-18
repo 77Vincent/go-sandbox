@@ -39,6 +39,7 @@ func main() {
 	r.POST("/snippets", timeout, handlers.ShareSnippet)
 	r.GET("/snippets/:id", timeout, handlers.FetchSnippet)
 	r.POST("/execute", handlers.Execute)
+	r.GET("/source", handlers.FetchSource)
 
 	r.GET("/ws", handlers.LSP)
 

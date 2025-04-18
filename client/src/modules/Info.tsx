@@ -1,6 +1,6 @@
 import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
 import {ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
-import {HiOutlineInformationCircle as AboutIcon} from "react-icons/hi";
+import {HiOutlineInformationCircle as AboutIcon, HiOutlineQuestionMarkCircle as ManualIcon} from "react-icons/hi";
 import {Tooltip} from "flowbite-react";
 import {languages} from "../types";
 import {Divider, MetaKey} from "./Common.tsx";
@@ -12,13 +12,14 @@ export default function Component(props: {
     isMobile: boolean;
     setShowSettings: (show: boolean) => void;
     setShowAbout: (show: boolean) => void;
+    setShowManual: (show: boolean) => void;
 }) {
-    const {lan, isMobile, setShowSettings, setShowAbout} = props
+    const {lan, isMobile, setShowSettings, setShowAbout, setShowManual} = props
 
     return (
-        <div className={"flex items-center gap-3 max-md:gap-2"}>
+        <div className={"flex items-center gap-2.5 max-md:gap-2"}>
             <Divider/>
-            <Tooltip content={
+            <Tooltip className={"z-20 text-xs"} content={
                 <div className={"flex items-center gap-1"}>
                     {TRANSLATE.settings[lan]}
                     <div className={"flex items-center"}>
@@ -31,6 +32,21 @@ export default function Component(props: {
                     size={isMobile ? 18 : 19}
                     className={commonClasses}/>
             </Tooltip>
+
+            <Tooltip className={"z-20 text-xs"} content={
+                <div className={"flex items-center gap-1"}>
+                    {TRANSLATE.manual[lan]}
+                    <div className={"flex items-center"}>
+                        F12
+                    </div>
+                </div>
+            }>
+                <ManualIcon
+                    size={isMobile ? 22 : 23}
+                    onClick={() => setShowManual(true)}
+                    className={`${commonClasses} ml-0.5`}/>
+            </Tooltip>
+
             <AboutIcon
                 size={isMobile ? 22 : 24}
                 onClick={() => setShowAbout(true)}

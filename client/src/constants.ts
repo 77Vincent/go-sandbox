@@ -12,6 +12,7 @@ export const VIM = "vim"
 export const EMACS = "emacs"
 export const NONE = ""
 
+export const FILE_PATH_KEY = "filePath"
 export const SANDBOX_NAMES_KEY = "sandboxNames";
 export const ACTIVE_SANDBOX_KEY = "activeSandbox";
 export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
@@ -24,6 +25,8 @@ export const EDITOR_SIZE_KEY = "editorSize";
 export const FONT_SIZE_KEY = "fontSize";
 export const CURSOR_HEAD_KEY = "cursorHead";
 
+export const DEFAULT_MAIN_FILE_PATH = "/main.go"
+export const DEFAULT_TEST_FILE_PATH = "/main_test.go"
 export const DEFAULT_INDENTATION_SIZE = 4;
 export const DEFAULT_CURSOR_HEAD = 0;
 export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
@@ -48,8 +51,6 @@ export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
 export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
-export const ERROR_PARSING_REGEX = /main\.go:(\d+)/g;
-export const BUILD_ERROR_PARSING_REGEX = /^(\d+):(\d+):/g;
 export const STATS_INFO_PREFIX = "STATS_INFO:"
 
 export const HTTP_INTERNAL_ERROR = 500
@@ -77,6 +78,78 @@ func main() {
 }`
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    nextCode: {
+        en: "Next Code",
+        zh_CN: "Next Code",
+        zh_TW: "Next Code",
+        ja: "Next Code",
+    },
+    prevCode: {
+        en: "Previous Code",
+        zh_CN: "Previous Code",
+        zh_TW: "Previous Code",
+        ja: "Previous Code",
+    },
+    seeUsages: {
+        en: "See usages",
+        zh_CN: "查看用法",
+        zh_TW: "查看用法",
+        ja: "使用法を表示",
+    },
+    seeDefinition: {
+        en: "See definition",
+        zh_CN: "查看定义",
+        zh_TW: "查看定義",
+        ja: "定義を表示",
+    },
+    suggestCompletion: {
+        en: "See completions",
+        zh_CN: "查看补全",
+        zh_TW: "查看補全",
+        ja: "補完を表示",
+    },
+    foldAll: {
+        en: "Fold All",
+        zh_CN: "折叠全部",
+        zh_TW: "折疊全部",
+        ja: "すべて折りたたむ",
+    },
+    foldCode: {
+        en: "Fold Code",
+        zh_CN: "折叠代码",
+        zh_TW: "折疊代碼",
+        ja: "コードを折りたたむ",
+    },
+    unfoldAll: {
+        en: "Unfold All",
+        zh_CN: "展开全部",
+        zh_TW: "展開全部",
+        ja: "すべて展開する",
+    },
+    unfoldCode: {
+        en: "Unfold Code",
+        zh_CN: "展开代码",
+        zh_TW: "展開代碼",
+        ja: "コードを展開する",
+    },
+    nextDiagnostic: {
+        en: "Next Diagnostic",
+        zh_CN: "下一个提示",
+        zh_TW: "下一個提示",
+        ja: "次の診断",
+    },
+    openLintPanel: {
+        en: "Open Lint Panel",
+        zh_CN: "打开提示面板",
+        zh_TW: "打開提示面板",
+        ja: "リントパネルを開く",
+    },
+    search: {
+        en: "Search",
+        zh_CN: "搜索",
+        zh_TW: "搜尋",
+        ja: "検索",
+    },
     indentation: {
         en: "Indentation",
         zh_CN: "缩进",
@@ -196,6 +269,12 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_CN: "重载",
         zh_TW: "重載",
         ja: "リロード",
+    },
+    manual: {
+        en: "Manual",
+        zh_CN: "手册",
+        zh_TW: "手冊",
+        ja: "マニュアル",
     }
 }
 
@@ -266,4 +345,4 @@ export const MY_SANDBOXES: Record<mySandboxes, string> = {
     "my-sandbox-9": "Sandbox 9",
     "my-sandbox-10": "Sandbox 10",
 }
-export const BUTTON_INACTIVE = "cursor-not-allowed text-gray-300 dark:text-gray-600";
+export const BUTTON_INACTIVE = "cursor-not-allowed text-gray-300 dark:text-gray-700";

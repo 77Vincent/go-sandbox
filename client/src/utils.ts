@@ -1,32 +1,36 @@
 import {
-    BUILD_ERROR_PARSING_REGEX,
+    ACTIVE_SANDBOX_KEY,
+    CURSOR_HEAD_KEY,
+    DEFAULT_ACTIVE_SANDBOX,
+    DEFAULT_AUTOCOMPLETION_ON,
+    DEFAULT_CURSOR_HEAD,
     DEFAULT_EDITOR_SIZE,
+    DEFAULT_IS_VERTICAL_LAYOUT,
     DEFAULT_KEY_BINDINGS,
     DEFAULT_LANGUAGE,
     DEFAULT_LINT_ON,
-    EDITOR_SIZE_KEY,
-    ERROR_PARSING_REGEX,
+    DEFAULT_MAIN_FILE_PATH,
+    DEFAULT_SANDBOX_VERSION,
+    DEFAULT_TEST_FILE_PATH,
+    EDITOR_SIZE_KEY, FILE_PATH_KEY,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
+    HELLO_WORLD,
+    IS_AUTOCOMPLETION_ON_KEY,
+    IS_LINT_ON_KEY,
+    IS_VERTICAL_LAYOUT_KEY,
     KEY_BINDINGS_KEY,
     LANGUAGE_KEY,
-    IS_LINT_ON_KEY,
-    SANDBOX_VERSION_KEY,
-    DEFAULT_SANDBOX_VERSION,
-    IS_VERTICAL_LAYOUT_KEY,
-    DEFAULT_IS_VERTICAL_LAYOUT,
     MOBILE_WIDTH,
-    HELLO_WORLD,
-    ACTIVE_SANDBOX_KEY,
-    DEFAULT_ACTIVE_SANDBOX,
     MY_SANDBOXES,
     SANDBOX_NAMES_KEY,
-    CURSOR_HEAD_KEY,
-    DEFAULT_CURSOR_HEAD,
-    IS_AUTOCOMPLETION_ON_KEY,
-    DEFAULT_AUTOCOMPLETION_ON,
+    SANDBOX_VERSION_KEY,
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes} from "./types";
+
+export function getFilePath(): string {
+    return localStorage.getItem(FILE_PATH_KEY) || DEFAULT_MAIN_FILE_PATH
+}
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
@@ -104,24 +108,6 @@ export function getAutoCompletionOn(): boolean {
     return JSON.parse(localStorage.getItem(IS_AUTOCOMPLETION_ON_KEY) || DEFAULT_AUTOCOMPLETION_ON)
 }
 
-export function parseExecutionError(error: string): number[] {
-    const rows: number[] = []
-
-    let matches = error.match(ERROR_PARSING_REGEX);
-    rows.push(...(matches || []).map((match) => {
-        const arr = match.split(":");
-        return Number(arr[1])
-    }))
-
-    matches = error.match(BUILD_ERROR_PARSING_REGEX);
-    rows.push(...(matches || []).map((match) => {
-        const arr = match.split(":");
-        return Number(arr[0])
-    }))
-
-    return rows
-}
-
 export function mapFontSize(size: number): "xs" | "sm" | "md" {
     if (size < 12) return "xs";
     if (size >= 15) return "md";
@@ -138,6 +124,16 @@ export function getUrl(path: string): string {
     return `${apiUrl}${path}`;
 }
 
+export function getWsUrl(path: string): string {
+    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const host = window.location.host;
+
+    if (isDev) {
+        return `${wsProtocol}://${host}/api${path}`;
+    }
+    return `${apiUrl.replace("https", "wss")}${path}`;
+}
+
 export function normalizeText(text: string = "") {
     return text
         .split(/\r?\n/)          // split text into lines
@@ -149,4 +145,8 @@ export function normalizeText(text: string = "") {
 export function isMac(): boolean {
     const platform = navigator.userAgent;
     return platform?.toLowerCase().includes('mac') || navigator.platform.includes("Mac")
+}
+
+export function isUserCode(filePath: string): boolean {
+    return filePath === DEFAULT_MAIN_FILE_PATH || filePath === DEFAULT_TEST_FILE_PATH
 }

@@ -8,7 +8,7 @@ import {BUTTON_INACTIVE, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
 import {MetaKey} from "./Common.tsx";
 
-const COMMON_CLASSES = "text-xs font-light";
+const COMMON_CLASSES = "z-20 text-xs font-light";
 
 export default function Component(props: {
     isMobile: boolean;

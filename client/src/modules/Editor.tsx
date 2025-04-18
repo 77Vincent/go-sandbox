@@ -4,7 +4,7 @@ import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
 import {indentationMarkers} from '@replit/codemirror-indentation-markers';
-import {lintKeymap, lintGutter, linter, Diagnostic} from "@codemirror/lint";
+import {openLintPanel, lintKeymap, lintGutter, linter, Diagnostic} from "@codemirror/lint";
 import {acceptCompletion, completionStatus} from "@codemirror/autocomplete";
 import {EditorState, Compartment, EditorSelection, ChangeSpec} from "@codemirror/state"
 import {
@@ -13,7 +13,7 @@ import {
     crosshairCursor, lineNumbers, highlightActiveLineGutter
 } from "@codemirror/view"
 import {
-    indentOnInput,
+    indentOnInput, foldCode, unfoldCode,
     bracketMatching, foldGutter, foldKeymap, indentUnit,
 } from "@codemirror/language"
 import {
@@ -47,18 +47,25 @@ import {
     DEBOUNCE_TIME,
     VIM,
     CURSOR_HEAD_KEY,
-    DEFAULT_INDENTATION_SIZE,
+    DEFAULT_INDENTATION_SIZE, FILE_PATH_KEY,
 } from "../constants.ts";
-import {getCursorHead, getUrl} from "../utils.ts";
+import {getCursorHead, getWsUrl, isUserCode} from "../utils.ts";
 import LSP, {LSP_KIND_LABELS} from "../lsp/client.ts";
 import {RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
+import {fetchSourceCode} from "../api/api.ts";
 
-function getCursorPos(v: ViewUpdate) {
+
+function getCursorPos(v: ViewUpdate | EditorView) {
     // return 1-based index
     const pos = v.state.selection.main.head;
     const line = v.state.doc.lineAt(pos);
     return {row: line.number, col: pos - line.from + 1}
+}
+
+function posToHead(v: ViewUpdate | EditorView, row: number, col: number) {
+    const line = v.state.doc.line(row);
+    return line.from + col - 1;
 }
 
 // map type from LSP to codemirror
@@ -97,10 +104,12 @@ const keyBindingsCompartment = new Compartment();
 const themeCompartment = new Compartment();
 const autoCompletionCompartment = new Compartment();
 const lintCompartment = new Compartment();
+const readOnlyCompartment = new Compartment()
 
 // setters of compartments
-const setLint = (isLintOn: boolean, diagnostics: Diagnostic[]) => {
-    return isLintOn ? linter(() => diagnostics) : [];
+const setLint = (isLintOn: boolean, isUserCode: boolean, diagnostics: Diagnostic[]) => {
+    // do not display diagnostics for non-user code
+    return isLintOn && isUserCode ? linter(() => diagnostics) : [];
 }
 const setAutoCompletion = (completions: LSPCompletionItem[]) => {
     return (context: CompletionContext): CompletionResult | null => {
@@ -180,6 +189,7 @@ export default function Component(props: {
     sandboxVersion: string;
     value: string;
     patch: patchI;
+    filePath: string;
 
     // settings
     lan: languages
@@ -191,7 +201,9 @@ export default function Component(props: {
     // handler
     onChange: (code: string) => void;
     // setters
+    setFilePath: (filePath: string) => void;
     setShowSettings: (v: boolean) => void;
+    setShowManual: (v: boolean) => void;
     // actions
     debouncedRun: () => void;
     debouncedFormat: () => void;
@@ -203,12 +215,15 @@ export default function Component(props: {
         // props
         lan,
         value, patch,
+        filePath,
         fontSize, keyBindings,
         isLintOn, isAutoCompletionOn,
         // handlers
         onChange,
         // setters
+        setFilePath,
         setShowSettings,
+        setShowManual,
         // action
         debouncedRun,
         debouncedFormat,
@@ -245,6 +260,11 @@ export default function Component(props: {
         setWarningCount(0);
         setInfoCount(0);
 
+        // do no display diagnostic for non-user code
+        if (!isUserCode(filePath)) {
+            return
+        }
+
         diagnostics.forEach((v) => {
             switch (v.severity) {
                 case "error":
@@ -260,7 +280,7 @@ export default function Component(props: {
                     setInfoCount((prev) => prev + 1);
             }
         })
-    }, [diagnostics]);
+    }, [filePath, diagnostics]);
 
     // manage content
     const onViewUpdate = (v: ViewUpdate) => {
@@ -287,7 +307,73 @@ export default function Component(props: {
         }
     }
 
+    const seeDefinition = (v: EditorView): boolean => {
+        (async function () {
+            if (!lsp.current) {
+                return
+            }
+            const {row: currentRow, col: currentCol} = getCursorPos(v);
+            const definitions = await lsp.current.getDefinition(currentRow - 1, currentCol - 1);
+            if (!definitions.length) {
+                return
+            }
+
+            const path = decodeURIComponent(definitions[0].uri.replace("file://", ""));
+            const {is_main, error, content} = await fetchSourceCode(path, sandboxVersion)
+            const {range: {start: {line, character}}} = definitions[0];
+            const row = line + 1; // 1-based index
+            const col = character + 1; // 1-based index
+            if (error) {
+                setToastError(error);
+                return;
+            }
+            if (is_main) {
+                view.current?.dispatch({
+                    selection: {
+                        anchor: posToHead(view.current, row, col), // 1-based index
+                    },
+                    scrollIntoView: true,
+                })
+                return;
+            }
+            if (content) {
+                // update the doc first
+                view.current?.dispatch({
+                    changes: {
+                        from: 0,
+                        to: view.current.state.doc.length,
+                        insert: content
+                    },
+                });
+                // then move the cursor
+                view.current?.dispatch({
+                    selection: {
+                        anchor: posToHead(view.current, row, col), // 1-based index
+                    },
+                    scrollIntoView: true,
+                })
+                // update file path displayed in the status bar
+                setFilePath(path)
+                localStorage.setItem(FILE_PATH_KEY, path);
+            }
+        }());
+        return true;
+    }
+
     const focusedKeymap = [
+        {
+            key: `Mod-b`,
+            preventDefault: true,
+            run: seeDefinition,
+        },
+        {
+            key: `F12`,
+            preventDefault: true,
+            run: () => {
+                setShowManual(true);
+                return true;
+            }
+        },
         {
             key: `Mod-,`,
             preventDefault: true,
@@ -337,6 +423,20 @@ export default function Component(props: {
                 return indentLess(v)
             },
         },
+        {
+            key: "Mod--",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                return foldCode(v)
+            },
+        },
+        {
+            key: "Mod-=",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                return unfoldCode(v)
+            },
+        },
     ]
 
     const [extensions] = useState(() => [
@@ -368,7 +468,8 @@ export default function Component(props: {
             ...lintKeymap, // Keys related to the linter system
             ...focusedKeymap, // Custom key bindings
         ]),
-        lintCompartment.of(setLint(isLintOn, diagnostics)),
+        readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(filePath))),
+        lintCompartment.of(setLint(isLintOn, isUserCode(filePath), diagnostics)),
         autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []})),
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(DEFAULT_INDENTATION_SIZE)),
@@ -413,9 +514,12 @@ export default function Component(props: {
             parent: editor.current,
             selection: EditorSelection.cursor(Math.min(getCursorHead(), value.length)),
         });
+        view.current.dispatch({
+            scrollIntoView: true,
+        })
         view.current.focus();
 
-        lsp.current = new LSP(getUrl("/ws"), sandboxVersion, view.current, setDiagnostics);
+        lsp.current = new LSP(getWsUrl("/ws"), sandboxVersion, view.current, setDiagnostics, setToastError);
 
         (async function () {
             await lsp.current?.initialize(version.current, value)
@@ -428,6 +532,10 @@ export default function Component(props: {
         });
         Mousetrap.bind(`mod+,`, function () {
             setShowSettings(true);
+            return false
+        });
+        Mousetrap.bind(`f12`, function () {
+            setShowManual(true);
             return false
         });
         Mousetrap.bind(`mod+r`, function () {
@@ -473,14 +581,25 @@ export default function Component(props: {
     }, [completions, isAutoCompletionOn]);
     useEffect(() => {
         if (!view.current) return;
-        view.current.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, diagnostics))]})
-    }, [diagnostics, isLintOn]);
+        view.current.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, isUserCode(filePath), diagnostics))]})
+    }, [filePath, diagnostics, isLintOn]);
+    useEffect(() => {
+        if (!view.current) return;
+        view.current.dispatch({effects: [readOnlyCompartment.reconfigure(EditorState.readOnly.of(!isUserCode(filePath)))]})
+    }, [filePath]);
+
+    function onLintClick() {
+        if (!view.current) return;
+        openLintPanel(view.current);
+    }
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div className={`relative mb-5 flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}>
             <RefreshButton lan={lan}/>
-            <StatusBar row={row} col={col} errors={errorCount} warnings={warningCount} info={infoCount}/>
+            <StatusBar filePath={filePath} onLintClick={onLintClick} row={row} col={col} errors={errorCount}
+                       warnings={warningCount}
+                       info={infoCount}/>
         </div>
     )
 };

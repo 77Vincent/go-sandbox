@@ -1,6 +1,12 @@
-import {LSPCompletionItem, LSPCompletionResponse, LSPDiagnostic, pendingRequests} from "../types";
+import {
+    LSPCompletionItem, LSPCompletionResult,
+    LSPDefinition,
+    LSPDiagnostic, LSPResponse,
+    pendingRequests
+} from "../types";
 import {Diagnostic} from "@codemirror/lint";
 import {EditorView} from "@codemirror/view";
+import {ReactNode} from "react";
 
 const WORKSPACE = "workspace";
 const URI_BASE = `file:///${WORKSPACE}`
@@ -16,6 +22,7 @@ const SEVERITY_MAP: Record<number, string> = {
 // LSP events
 const EVENT_INITIALIZE = "initialize"
 const EVENT_INITIALIZED = "initialized"
+const EVENT_DEFINITION = "textDocument/definition"
 const EVENT_COMPLETION = "textDocument/completion"
 const EVENT_DID_OPEN = "textDocument/didOpen"
 const EVENT_DID_CHANGE = "textDocument/didChange"
@@ -54,8 +61,14 @@ export default class LSPClient {
     pendingRequests: pendingRequests;
     view: EditorView;
     setDiagnostic: (diagnostic: Diagnostic[]) => void;
+    setToastError: (message: ReactNode) => void
 
-    constructor(url: string, sandboxVersion: string, view: EditorView, setDiagnostic: (diagnostic: Diagnostic[]) => void) {
+    constructor(
+        url: string, sandboxVersion: string, view: EditorView,
+        setDiagnostic: (diagnostic: Diagnostic[]) => void,
+        setToastError: (message: ReactNode) => void
+    ) {
+        this.setToastError = setToastError
         this.sandboxVersion = sandboxVersion;
         this.ws = new WebSocket(url);
         this.requestId = 0;
@@ -98,7 +111,7 @@ export default class LSPClient {
         );
     }
 
-    sendRequest(method: string, params: object): Promise<LSPCompletionResponse> {
+    sendRequest<T = LSPCompletionItem[] | LSPDefinition[]>(method: string, params: object): Promise<LSPResponse<T>> {
         const id = ++this.requestId;
         const request = {jsonrpc: "2.0", id, method, params,};
         return new Promise((resolve, reject) => {
@@ -122,9 +135,21 @@ export default class LSPClient {
         });
     }
 
+    async getDefinition(line: number, character: number): Promise<LSPDefinition[]> {
+        try {
+            const res = await this.sendRequest<LSPDefinition[]>(EVENT_DEFINITION, {
+                textDocument: {uri: this.getUrl()},
+                position: {line, character},
+            });
+            return res.result || [];
+        } catch (e) {
+            throw new Error(`Error getting definition from LSP server: ${e}`);
+        }
+    }
+
     async getCompletions(line: number, character: number): Promise<LSPCompletionItem[]> {
         try {
-            const res = await this.sendRequest(EVENT_COMPLETION, {
+            const res = await this.sendRequest<LSPCompletionResult>(EVENT_COMPLETION, {
                 textDocument: {uri: this.getUrl()},
                 position: {line, character},
             });
@@ -158,7 +183,11 @@ export default class LSPClient {
     handleMessage(data: string) {
         try {
             const message = JSON.parse(data);
-            const {id, method, params} = message;
+            const {id, method, params, error} = message;
+            if (error) {
+                this.setToastError(error.message)
+                // do not return here, we still need to process
+            }
 
             // handle pending requests
             if (id && this.pendingRequests.has(id)) {

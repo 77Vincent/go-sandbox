@@ -1,44 +1,22 @@
 import {DarkThemeToggle, Dropdown, Label, Modal, useThemeMode} from "flowbite-react";
-import {ReactNode} from "react";
 
-import {
-    VscLayoutSidebarRight as LayoutHorizontalIcon,
-    VscLayoutPanel as LayoutVerticalIcon,
-} from "react-icons/vsc";
-import {
-    MdTextDecrease as TextSIcon,
-    MdTextIncrease as TextLIcon,
-} from "react-icons/md";
+import {VscLayoutPanel as LayoutVerticalIcon, VscLayoutSidebarRight as LayoutHorizontalIcon,} from "react-icons/vsc";
+import {MdTextDecrease as TextSIcon, MdTextIncrease as TextLIcon,} from "react-icons/md";
 import {ImTextColor as TextMIcon} from "react-icons/im"
 
 import {
     ACTIVE_COLOR,
     FONT_SIZE_L,
     FONT_SIZE_M,
-    FONT_SIZE_S, keyBindingsMap,
+    FONT_SIZE_S,
+    keyBindingsMap,
     LANGUAGES,
     TRANSLATE
 } from "../constants.ts";
 import {KeyBindingsType, languages} from "../types";
-import {Divider, ToggleSwitch} from "./Common.tsx";
+import {Divider, Grid, Row, ToggleSwitch} from "./Common.tsx";
 
 const activeClasses = "cursor-pointer hover:opacity-50";
-
-function Grid(props: {
-    children: ReactNode;
-}) {
-    return <div className={"grid grid-cols-2 gap-x-10 gap-y-4"}>
-        {props.children}
-    </div>
-}
-
-function Row(props: {
-    children: ReactNode;
-}) {
-    return <div className={"flex items-center justify-between"}>
-        {props.children}
-    </div>
-}
 
 export default function Component(props: {
     show: boolean;
