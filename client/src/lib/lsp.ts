@@ -6,7 +6,6 @@ import {
 } from "../types";
 import {Diagnostic} from "@codemirror/lint";
 import {EditorView} from "@codemirror/view";
-import {ReactNode} from "react";
 
 const WORKSPACE = "workspace";
 const URI_BASE = `file:///${WORKSPACE}`
@@ -60,20 +59,20 @@ export default class LSPClient {
     requestId: number;
     pendingRequests: pendingRequests;
     view: EditorView;
-    setDiagnostic: (diagnostic: Diagnostic[]) => void;
-    setToastError: (message: ReactNode) => void
+    handleDiagnostic: (diagnostic: Diagnostic[]) => void;
+    handleError: (error: string) => void;
 
     constructor(
         url: string, sandboxVersion: string, view: EditorView,
-        setDiagnostic: (diagnostic: Diagnostic[]) => void,
-        setToastError: (message: ReactNode) => void
+        handleDiagnostic: (diagnostic: Diagnostic[]) => void,
+        handleError: (error: string) => void,
     ) {
-        this.setToastError = setToastError
+        this.handleDiagnostic = handleDiagnostic;
+        this.handleError = handleError;
         this.sandboxVersion = sandboxVersion;
         this.ws = new WebSocket(url);
         this.requestId = 0;
         this.pendingRequests = new Map();
-        this.setDiagnostic = setDiagnostic;
         this.view = view;
 
         this.ws.onopen = () => {
@@ -185,7 +184,7 @@ export default class LSPClient {
             const message = JSON.parse(data);
             const {id, method, params, error} = message;
             if (error) {
-                this.setToastError(error.message)
+                this.handleError(error.message);
                 // do not return here, we still need to process
             }
 
@@ -199,7 +198,7 @@ export default class LSPClient {
 
             // Handle notifications or unsolicited messages
             if (method === DIAGNOSTICS_METHOD) {
-                this.setDiagnostic(params.diagnostics.map((diagnostic: LSPDiagnostic) => {
+                this.handleDiagnostic(params.diagnostics.map((diagnostic: LSPDiagnostic) => {
                         const {range, severity, message, source} = diagnostic;
                         return {
                             from: this.view.state.doc.line(range.start.line + 1).from + range.start.character,

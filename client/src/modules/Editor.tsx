@@ -50,8 +50,8 @@ import {
     DEFAULT_INDENTATION_SIZE, FILE_PATH_KEY,
 } from "../constants.ts";
 import {getCursorHead, getWsUrl, isUserCode} from "../utils.ts";
-import LSP, {LSP_KIND_LABELS} from "../lsp/client.ts";
-import {RefreshButton} from "./Common.tsx";
+import LSP, {LSP_KIND_LABELS} from "../lib/lsp.ts";
+import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {fetchSourceCode} from "../api/api.ts";
 
@@ -231,12 +231,6 @@ export default function Component(props: {
     } = props;
     const {mode} = useThemeMode();
 
-    // ref
-    const editor = useRef<HTMLDivElement>(null);
-    const view = useRef<EditorView | null>(null);
-    const lsp = useRef<LSP | null>(null);
-    const version = useRef<number>(1); // initial version
-
     // local state
     const [row, setRow] = useState(1); // 1-based index
     const [col, setCol] = useState(1); // 1-based index
@@ -245,6 +239,12 @@ export default function Component(props: {
     const [infoCount, setInfoCount] = useState(0);
     const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
     const [completions, setCompletions] = useState<LSPCompletionItem[]>([]);
+
+    // ref
+    const editor = useRef<HTMLDivElement>(null);
+    const view = useRef<EditorView | null>(null);
+    const lsp = useRef<LSP | null>(null);
+    const version = useRef<number>(1); // initial version
 
     // manage cursor
     const onCursorChange = useRef(debounce(useCallback((v: ViewUpdate) => {
@@ -359,6 +359,16 @@ export default function Component(props: {
         }());
         return true;
     }
+
+    const seeDefinitionCallback = useCallback(() => {
+        if (!view.current) return;
+        seeDefinition(view.current);
+    }, []); // cannot add any dependency, otherwise it will be called on every render
+
+    useEffect(() => {
+        seeDefinitionCallback();
+    }, [seeDefinitionCallback, filePath]);
+
 
     const focusedKeymap = [
         {
@@ -504,6 +514,14 @@ export default function Component(props: {
         });
     }, [patch]);
 
+    function handleDiagnostics(data: Diagnostic[]) {
+        setDiagnostics(data);
+    }
+
+    function handleError(message: string) {
+        setToastError(message);
+    }
+
     // must only run once, so no dependencies
     useEffect(() => {
         if (!editor.current || view.current) return;
@@ -519,7 +537,7 @@ export default function Component(props: {
         })
         view.current.focus();
 
-        lsp.current = new LSP(getWsUrl("/ws"), sandboxVersion, view.current, setDiagnostics, setToastError);
+        lsp.current = new LSP(getWsUrl("/ws"), sandboxVersion, view.current, handleDiagnostics, handleError);
 
         (async function () {
             await lsp.current?.initialize(version.current, value)
@@ -596,7 +614,11 @@ export default function Component(props: {
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div className={`relative mb-5 flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}>
-            <RefreshButton lan={lan}/>
+            <div className={"sticky right-0 top-0 z-10"}>
+                <RefreshButton lan={lan}/>
+                <ClickBoard content={value}/>
+            </div>
+
             <StatusBar filePath={filePath} onLintClick={onLintClick} row={row} col={col} errors={errorCount}
                        warnings={warningCount}
                        info={infoCount}/>
