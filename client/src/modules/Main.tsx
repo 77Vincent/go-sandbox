@@ -26,7 +26,7 @@ import {
     EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY, DEFAULT_MAIN_FILE_PATH,
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
-import {ClickBoard, Divider, Wrapper} from "./Common.tsx";
+import {Divider, Wrapper} from "./Common.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import Actions from "./Actions.tsx";
@@ -46,7 +46,7 @@ import {
     getLanguage,
     getSandboxVersion,
     getIsVerticalLayout,
-    isMobileDevice, getActiveSandbox, getAutoCompletionOn, getFilePath
+    isMobileDevice, getActiveSandbox, getAutoCompletionOn
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
@@ -93,7 +93,6 @@ const initialLanguage = getLanguage()
 const initialFontSize = getFontSize()
 const initialEditorSize = getEditorSize()
 const initialKeyBindings = getKeyBindings()
-const initialFilePath = getFilePath()
 
 export default function Component(props: {
     setToastError: (message: ReactNode) => void
@@ -118,7 +117,7 @@ export default function Component(props: {
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(initialValue);
     const [patch, setPatch] = useState<patchI>({value: "", keepCursor: false});
-    const [filePath, setFilePath] = useState<string>(initialFilePath);
+    const [filePath, setFilePath] = useState<string>(DEFAULT_MAIN_FILE_PATH);
 
     // result
     const [result, setResult] = useState<resultI[]>([]);
@@ -127,6 +126,7 @@ export default function Component(props: {
 
     // reference the latest state
     const codeRef = useRef(code);
+    const filePathRef = useRef(filePath);
     const sandboxVersionRef = useRef(sandboxVersion);
     const activeSandboxRef = useRef(activeSandbox);
     const isRunningRef = useRef(isRunning);
@@ -149,6 +149,7 @@ export default function Component(props: {
                         // must call together
                         setCode(data)
                         setPatch({value: data})
+                        debouncedRun() // run immediately after fetching
                     }
                 } catch (e) {
                     setToastError(<FetchErrorMessage error={(e as Error).message}/>)
@@ -187,11 +188,18 @@ export default function Component(props: {
 
     // store code asynchronously
     const debouncedStoreCode = useRef(debounce(useCallback((data: string) => {
-        localStorage.setItem(activeSandboxRef.current, data)
+        // only store the code if the file is not external source
+        if (filePathRef.current == DEFAULT_MAIN_FILE_PATH) {
+            localStorage.setItem(activeSandboxRef.current, data)
+        }
     }, [activeSandboxRef]), DEBOUNCE_TIME)).current;
     useEffect(() => {
         debouncedStoreCode(code);
     }, [debouncedStoreCode, code]);
+
+    useEffect(() => {
+        filePathRef.current = filePath;
+    }, [filePath]);
 
 
     const debouncedFormat = useRef(debounce(useCallback(async () => {
@@ -482,7 +490,6 @@ export default function Component(props: {
                 >
                     <Wrapper
                         className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
-                        <ClickBoard content={code}/>
                         <Editor
                             lan={lan}
                             sandboxVersion={sandboxVersion}
