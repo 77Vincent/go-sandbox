@@ -54,6 +54,7 @@ import LSP, {LSP_KIND_LABELS} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {fetchSourceCode} from "../api/api.ts";
+import {historyBack, historyField, historyForward, recordPosition} from "./codeHistory.ts";
 
 
 function getCursorPos(v: ViewUpdate | EditorView) {
@@ -308,6 +309,8 @@ export default function Component(props: {
     }
 
     const seeDefinition = (v: EditorView): boolean => {
+        recordPosition(v, filePath);
+
         (async function () {
             if (!lsp.current) {
                 return
@@ -478,6 +481,7 @@ export default function Component(props: {
             ...lintKeymap, // Keys related to the linter system
             ...focusedKeymap, // Custom key bindings
         ]),
+        historyField, // The history field
         readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(filePath))),
         lintCompartment.of(setLint(isLintOn, isUserCode(filePath), diagnostics)),
         autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []})),
@@ -617,6 +621,18 @@ export default function Component(props: {
             <div className={"sticky right-0 top-0 z-10"}>
                 <RefreshButton lan={lan}/>
                 <ClickBoard content={value}/>
+                <button
+                    onClick={() => view.current && historyBack(view.current)}
+                    disabled={!view.current}
+                >
+                    ← Back
+                </button>
+                <button
+                    onClick={() => view.current && historyForward(view.current)}
+                    disabled={!view.current}
+                >
+                    Forward
+                </button>
             </div>
 
             <StatusBar filePath={filePath} onLintClick={onLintClick} row={row} col={col} errors={errorCount}
