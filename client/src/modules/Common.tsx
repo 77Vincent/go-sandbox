@@ -1,10 +1,6 @@
 import {ReactNode} from "react";
-import {Clipboard, Toast, Flowbite, CustomFlowbiteTheme, Tooltip} from "flowbite-react";
-import {
-    HiRefresh as RefreshIcon,
-    HiExclamation as ErrorIcon,
-    HiInformationCircle as InfoIcon,
-} from "react-icons/hi";
+import {Clipboard, CustomFlowbiteTheme, Flowbite, Toast, Tooltip} from "flowbite-react";
+import {HiExclamation as ErrorIcon, HiInformationCircle as InfoIcon, HiRefresh as RefreshIcon,} from "react-icons/hi";
 import {languages, toastType} from "../types";
 import {isMac} from "../utils.ts";
 import {MdContentCopy as CopyIcon, MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
@@ -34,10 +30,10 @@ export function Divider(props: {
 }) {
     const {horizontal, className} = props
     if (horizontal) {
-        return <div className={`h-0 w-full border-b border-neutral-200 dark:border-neutral-500 ${className}`}/>
+        return <div className={`h-0 w-full border-b border-neutral-200 dark:border-gray-600 ${className}`}/>
     }
 
-    return <div className={`h-4 w-0 border-r border-neutral-200 dark:border-neutral-500 ${className}`}/>
+    return <div className={`h-4 w-0 border-r border-neutral-200 dark:border-gray-600 ${className}`}/>
 }
 
 const defaultToastType = "info"
@@ -109,7 +105,7 @@ export function RefreshButton(props: {
         location.reload()
     }
     return (
-        <div className={"absolute right-7 top-2 z-10"}>
+        <div className={"absolute right-8 top-2 z-10"}>
             <Tooltip className={"text-xs"} content={TRANSLATE.reload[lan]} placement={"left"}>
                 <RefreshIcon
                     onClick={onClockHandler}
@@ -140,8 +136,24 @@ export function ClickBoard(props: {
             <Clipboard.WithIcon
                 icon={CopyIcon}
                 valueToCopy={content}
-                className={"absolute right-0.5 top-4 z-10 opacity-90"}
+                className={"absolute right-1 top-4 z-10 opacity-90"}
             />
         </Flowbite>
     )
+}
+
+export function Grid(props: {
+    children: ReactNode;
+}) {
+    return <div className={"grid grid-cols-2 gap-x-10 gap-y-4"}>
+        {props.children}
+    </div>
+}
+
+export function Row(props: {
+    children: ReactNode;
+}) {
+    return <div className={"flex items-center justify-between"}>
+        {props.children}
+    </div>
 }

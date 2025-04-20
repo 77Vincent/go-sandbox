@@ -103,7 +103,11 @@ export default function Component(props: {
     }, [sandboxes]);
 
     return (
-        <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"} label={sandboxNames[active] || MY_SANDBOXES[active]}>
+        <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
+                  label={
+                      // fallback to the id when it is from shared sandboxes
+                      sandboxNames[active] || MY_SANDBOXES[active] || active
+                  }>
             {
                 sandboxes.map((key) => {
                     return (
@@ -135,7 +139,8 @@ export default function Component(props: {
             <Dropdown.Item
                 onClick={sandboxes.length >= upperLimit ? undefined : addSandbox}
                 className={`flex justify-center ${sandboxes.length >= upperLimit ? BUTTON_INACTIVE : ""}`}>
-                <Tooltip content={`${TRANSLATE.new[lan]} (${sandboxes.length}/${upperLimit})`} className={"text-xs"} placement={"bottom"}>
+                <Tooltip content={`${TRANSLATE.new[lan]} (${sandboxes.length}/${upperLimit})`} className={"text-xs"}
+                         placement={"bottom"}>
                     <AddIcon size={20}/>
                 </Tooltip>
             </Dropdown.Item>
