@@ -8,8 +8,6 @@ import {
     MdKeyboardControlKey as CtrlKey,
     MdKeyboardOptionKey as OptionKey,
     MdKeyboardAlt as ShiftKey,
-    MdKeyboardArrowLeft as ArrowLeftKey,
-    MdKeyboardArrowRight as ArrowRightKey,
 } from "react-icons/md";
 
 function SubRow(props: {
@@ -72,7 +70,7 @@ export default function Component(props: {
                 <Row>
                     <Title> {TRANSLATE.foldCode[lan]} </Title>
                     <SubRow>
-                        <MetaKey/>- or <MetaKey/><OptionKey/>[
+                        <MetaKey/><OptionKey/>[
                     </SubRow>
                 </Row>
                 <Row>
@@ -80,7 +78,7 @@ export default function Component(props: {
                         <Title> {TRANSLATE.unfoldCode[lan]} </Title>
                     </SubRow>
                     <SubRow>
-                        <MetaKey/>+ or <MetaKey/><OptionKey/>]
+                        <MetaKey/><OptionKey/>]
                     </SubRow>
                 </Row>
                 <Row>
@@ -161,13 +159,13 @@ export default function Component(props: {
                 <Row>
                     <Title> {TRANSLATE.prevCode[lan]} </Title>
                     <SubRow>
-                        <MetaKey/><OptionKey/><ArrowLeftKey/>
+                        <MetaKey/><OptionKey/>,
                     </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.nextCode[lan]} </Title>
                     <SubRow>
-                        <MetaKey/><OptionKey/><ArrowRightKey/>
+                        <MetaKey/><OptionKey/>.
                     </SubRow>
                 </Row>
             </Grid>

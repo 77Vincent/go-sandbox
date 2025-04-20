@@ -13,7 +13,7 @@ import {
     crosshairCursor, lineNumbers, highlightActiveLineGutter
 } from "@codemirror/view"
 import {
-    indentOnInput, foldCode, unfoldCode,
+    indentOnInput,
     bracketMatching, foldGutter, foldKeymap, indentUnit,
 } from "@codemirror/language"
 import {
@@ -375,6 +375,16 @@ export default function Component(props: {
 
     const focusedKeymap = [
         {
+            key: `Mod-Alt-,`,
+            preventDefault: true,
+            run: historyBack,
+        },
+        {
+            key: `Mod-Alt-.`,
+            preventDefault: true,
+            run: historyForward,
+        },
+        {
             key: `Mod-b`,
             preventDefault: true,
             run: seeDefinition,
@@ -434,20 +444,6 @@ export default function Component(props: {
             preventDefault: true,
             run: (v: EditorView) => {
                 return indentLess(v)
-            },
-        },
-        {
-            key: "Mod--",
-            preventDefault: true,
-            run: (v: EditorView) => {
-                return foldCode(v)
-            },
-        },
-        {
-            key: "Mod-=",
-            preventDefault: true,
-            run: (v: EditorView) => {
-                return unfoldCode(v)
             },
         },
     ]
@@ -570,6 +566,14 @@ export default function Component(props: {
         });
         Mousetrap.bind(`mod+s`, function () {
             debouncedShare()
+            return false
+        });
+        Mousetrap.bind(`mod+option+,`, function () {
+            historyBack(view.current);
+            return false
+        });
+        Mousetrap.bind(`mod+option+.`, function () {
+            historyForward(view.current);
             return false
         });
 
