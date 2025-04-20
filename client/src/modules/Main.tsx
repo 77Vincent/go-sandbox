@@ -150,6 +150,7 @@ export default function Component(props: {
                         setCode(data)
                         setPatch({value: data})
                         setFilePath(DEFAULT_MAIN_FILE_PATH)
+                        setActiveSandbox(id as mySandboxes) // force assertion
                         debouncedRun() // run immediately after fetching
                     }
                 } catch (e) {

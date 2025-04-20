@@ -1,6 +1,5 @@
 import {StateEffect, StateField, Transaction} from "@codemirror/state";
 import {EditorView} from "@codemirror/view";
-import {DEFAULT_MAIN_FILE_PATH} from "../constants.ts";
 
 export const addHistory = StateEffect.define<{
     pos: number;
@@ -120,12 +119,19 @@ export function resetHistory(view: EditorView | null) {
         return;
     }
     view.dispatch({effects: clearHistory.of(null)});
+}
+
+export function pushHistory(view: EditorView | null, code: string, filePath: string) {
+    if (!view) {
+        return;
+    }
+
     view.dispatch({
         effects: addHistory.of({
-            pos: view.state.selection.main.head,
+            pos: 0,
             scroll: view.scrollDOM.scrollTop,
-            doc: view.state.doc.toString(),
-            filePath: DEFAULT_MAIN_FILE_PATH,
+            doc: code,
+            filePath: filePath,
         }),
     });
 }

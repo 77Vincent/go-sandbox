@@ -104,7 +104,10 @@ export default function Component(props: {
 
     return (
         <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
-                  label={sandboxNames[active] || MY_SANDBOXES[active]}>
+                  label={
+                      // fallback to the id when it is from shared sandboxes
+                      sandboxNames[active] || MY_SANDBOXES[active] || active
+                  }>
             {
                 sandboxes.map((key) => {
                     return (

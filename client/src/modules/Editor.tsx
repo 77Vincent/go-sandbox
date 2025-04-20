@@ -47,14 +47,14 @@ import {
     DEBOUNCE_TIME,
     VIM,
     CURSOR_HEAD_KEY,
-    DEFAULT_INDENTATION_SIZE,
+    DEFAULT_INDENTATION_SIZE, DEFAULT_MAIN_FILE_PATH,
 } from "../constants.ts";
 import {getCursorHead, getWsUrl, isUserCode} from "../utils.ts";
 import LSP, {LSP_KIND_LABELS} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {fetchSourceCode} from "../api/api.ts";
-import {resetHistory, historyBack, historyField, historyForward, recordPosition} from "./codeHistory.ts";
+import {resetHistory, historyBack, historyField, historyForward, recordPosition, pushHistory} from "./codeHistory.ts";
 
 
 function getCursorPos(v: ViewUpdate | EditorView) {
@@ -261,6 +261,7 @@ export default function Component(props: {
     // reset the history when the active sandbox changes
     useEffect(() => {
         resetHistory(view.current);
+        pushHistory(view.current, value, DEFAULT_MAIN_FILE_PATH);
     }, [activeSandbox]);
 
     // manage cursor
