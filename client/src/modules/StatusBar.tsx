@@ -3,7 +3,8 @@ import {GrFormPrevious as PrevIcon, GrFormNext as NextIcon} from "react-icons/gr
 import {EditorView} from "@codemirror/view";
 import {historyBack, historyField, historyForward} from "./codeHistory.ts";
 import {Tooltip} from "flowbite-react";
-import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
+import {BUTTON_INACTIVE, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
+import {languages} from "../types";
 
 const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";
@@ -19,6 +20,7 @@ function chooseColor(errors: number, warnings: number, info: number) {
 }
 
 export default function Component(props: {
+    lan: languages,
     view: EditorView | null,
     row: number,
     col: number,
@@ -29,6 +31,7 @@ export default function Component(props: {
     filePath: string
 }) {
     const {
+        lan,
         view, row, col,
         errors, warnings, info,
         onLintClick,
@@ -54,13 +57,13 @@ export default function Component(props: {
         <div
             className={"fixed bottom-0 left-0 z-10 flex w-full justify-between border-t border-t-gray-400 bg-gray-200 px-3 py-0.5 dark:border-t-gray-600 dark:bg-gray-900 "}>
             <div className={"flex items-center gap-2"}>
-                <Tooltip content={"Previous place"} className={"text-xs "}>
+                <Tooltip content={TRANSLATE.prevPlace[lan]} className={"text-xs "}>
                     <PrevIcon className={!hasPrevious ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}
                               size={16}
                               onClick={onPrevious}/>
                 </Tooltip>
 
-                <Tooltip content={"Next place"} className={"text-xs "}>
+                <Tooltip content={TRANSLATE.nextPlace[lan]} className={"text-xs "}>
                     <NextIcon className={!hasNext ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}
                               size={16}
                               onClick={onNext}/>

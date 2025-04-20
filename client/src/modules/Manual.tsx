@@ -157,13 +157,13 @@ export default function Component(props: {
                     </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.prevCode[lan]} </Title>
+                    <Title> {TRANSLATE.prevPlace[lan]} </Title>
                     <SubRow>
                         <MetaKey/><OptionKey/>,
                     </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.nextCode[lan]} </Title>
+                    <Title> {TRANSLATE.nextPlace[lan]} </Title>
                     <SubRow>
                         <MetaKey/><OptionKey/>.
                     </SubRow>

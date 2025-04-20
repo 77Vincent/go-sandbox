@@ -77,17 +77,17 @@ func main() {
 }`
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
-    nextCode: {
-        en: "Next Code",
-        zh_CN: "Next Code",
-        zh_TW: "Next Code",
-        ja: "Next Code",
+    nextPlace: {
+        en: "Next Place",
+        zh_CN: "下一个位置",
+        zh_TW: "下一個位置",
+        ja: "次の場所",
     },
-    prevCode: {
-        en: "Previous Code",
-        zh_CN: "Previous Code",
-        zh_TW: "Previous Code",
-        ja: "Previous Code",
+    prevPlace: {
+        en: "Previous Place",
+        zh_CN: "上一个位置",
+        zh_TW: "上一個位置",
+        ja: "前の場所",
     },
     seeUsages: {
         en: "See usages",

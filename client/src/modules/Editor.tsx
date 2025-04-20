@@ -644,6 +644,7 @@ export default function Component(props: {
             </div>
 
             <StatusBar
+                lan={lan}
                 view={view.current}
                 row={row} col={col} filePath={filePath}
                 onLintClick={onLintClick}
