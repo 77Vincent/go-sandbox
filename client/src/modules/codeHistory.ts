@@ -1,5 +1,6 @@
 import {StateEffect, StateField, Transaction} from "@codemirror/state";
 import {EditorView} from "@codemirror/view";
+import {DEFAULT_MAIN_FILE_PATH} from "../constants.ts";
 
 export const addHistory = StateEffect.define<{
     pos: number;
@@ -10,6 +11,7 @@ export const addHistory = StateEffect.define<{
 // Effects to move back/forward
 const prevHistory = StateEffect.define<null>();
 const nextHistory = StateEffect.define<null>();
+const clearHistory = StateEffect.define<null>();
 
 // The field holds the stack and a pointer into it
 export const historyField = StateField.define<{
@@ -22,6 +24,9 @@ export const historyField = StateField.define<{
     update(value, tr: Transaction) {
         // If we're adding a new entry
         for (const e of tr.effects) {
+            if (e.is(clearHistory)) {
+                return {stack: [], index: -1};
+            }
             if (e.is(addHistory)) {
                 // drop any “forward” entries
                 const stack = value.stack.slice(0, value.index + 1);
@@ -110,7 +115,26 @@ export function historyForward(view: EditorView | null) {
     return true;
 }
 
-export function recordPosition(view: EditorView, filePath: string) {
+export function resetHistory(view: EditorView | null) {
+    if (!view) {
+        return;
+    }
+    view.dispatch({effects: clearHistory.of(null)});
+    view.dispatch({
+        effects: addHistory.of({
+            pos: view.state.selection.main.head,
+            scroll: view.scrollDOM.scrollTop,
+            doc: view.state.doc.toString(),
+            filePath: DEFAULT_MAIN_FILE_PATH,
+        }),
+    });
+}
+
+export function recordPosition(view: EditorView | null, filePath: string) {
+    if (!view) {
+        return;
+    }
+
     view.dispatch({
         effects: addHistory.of({
             pos: view.state.selection.main.head,

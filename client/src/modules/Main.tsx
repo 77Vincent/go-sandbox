@@ -149,6 +149,7 @@ export default function Component(props: {
                         // must call together
                         setCode(data)
                         setPatch({value: data})
+                        setFilePath(DEFAULT_MAIN_FILE_PATH)
                         debouncedRun() // run immediately after fetching
                     }
                 } catch (e) {
@@ -188,7 +189,7 @@ export default function Component(props: {
 
     // store code asynchronously
     const debouncedStoreCode = useRef(debounce(useCallback((data: string) => {
-        // only store the code if the file is not external source
+        // only store user-code
         if (filePathRef.current == DEFAULT_MAIN_FILE_PATH) {
             localStorage.setItem(activeSandboxRef.current, data)
         }
@@ -492,6 +493,7 @@ export default function Component(props: {
                         className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                         <Editor
                             lan={lan}
+                            activeSandbox={activeSandbox}
                             sandboxVersion={sandboxVersion}
                             setToastError={setToastError}
                             isLintOn={isLintOn}

@@ -39,8 +39,16 @@ export default function Component(props: {
         return null
     }
 
-    const hasPrevious = view?.state.field(historyField).index > 0
-    const hasNext = view?.state.field(historyField).index < view?.state.field(historyField).stack.length - 1
+    const hist = view.state.field(historyField)
+    const hasPrevious = hist.index > 0
+    const hasNext = hist.index < hist.stack.length - 1
+
+    const onPrevious = () => {
+        historyBack(view)
+    }
+    const onNext = () => {
+        historyForward(view)
+    }
 
     return (
         <div
@@ -49,13 +57,13 @@ export default function Component(props: {
                 <Tooltip content={"Previous place"} className={"text-xs "}>
                     <PrevIcon className={!hasPrevious ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}
                               size={16}
-                              onClick={() => historyBack(view)}/>
+                              onClick={onPrevious}/>
                 </Tooltip>
 
                 <Tooltip content={"Next place"} className={"text-xs "}>
                     <NextIcon className={!hasNext ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}
                               size={16}
-                              onClick={() => historyForward(view)}/>
+                              onClick={onNext}/>
                 </Tooltip>
             </div>
 
