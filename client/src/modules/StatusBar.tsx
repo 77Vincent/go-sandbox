@@ -1,4 +1,9 @@
 import {CiFaceFrown as ErrorIcon, CiFaceSmile as GoodIcon} from "react-icons/ci";
+import {GrFormPrevious as PrevIcon, GrFormNext as NextIcon} from "react-icons/gr";
+import {EditorView} from "@codemirror/view";
+import {historyBack, historyField, historyForward} from "./codeHistory.ts";
+import {Tooltip} from "flowbite-react";
+import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
 
 const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";
@@ -14,6 +19,7 @@ function chooseColor(errors: number, warnings: number, info: number) {
 }
 
 export default function Component(props: {
+    view: EditorView | null,
     row: number,
     col: number,
     errors: number,
@@ -22,14 +28,41 @@ export default function Component(props: {
     onLintClick: () => void,
     filePath: string
 }) {
-    const {row, col, errors, warnings, info, onLintClick, filePath} = props
+    const {
+        view, row, col,
+        errors, warnings, info,
+        onLintClick,
+        filePath
+    } = props
+
+    if (!view) {
+        return null
+    }
+
+    const hasPrevious = view?.state.field(historyField).index > 0
+    const hasNext = view?.state.field(historyField).index < view?.state.field(historyField).stack.length - 1
 
     return (
         <div
             className={"fixed bottom-0 left-0 z-10 flex w-full justify-between border-t border-t-gray-400 bg-gray-200 px-3 py-0.5 dark:border-t-gray-600 dark:bg-gray-900 "}>
+            <div className={"flex items-center gap-2"}>
+                <Tooltip content={"Previous place"} className={"text-xs "}>
+                    <PrevIcon className={!hasPrevious ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}
+                              size={16}
+                              onClick={() => historyBack(view)}/>
+                </Tooltip>
+
+                <Tooltip content={"Next place"} className={"text-xs "}>
+                    <NextIcon className={!hasNext ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}
+                              size={16}
+                              onClick={() => historyForward(view)}/>
+                </Tooltip>
+            </div>
+
             <div className={`flex items-center gap-1 ${textClasses}`}>
                 <img src={"/logo.svg"} alt={"logo"} className={"h-2"}/>
                 {filePath}
+
             </div>
 
 

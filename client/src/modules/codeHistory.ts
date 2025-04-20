@@ -17,7 +17,7 @@ export const historyField = StateField.define<{
     index: number;
 }>({
     create() {
-        return { stack: [], index: -1 };
+        return {stack: [], index: -1};
     },
     update(value, tr: Transaction) {
         // If we're adding a new entry
@@ -26,22 +26,31 @@ export const historyField = StateField.define<{
                 // drop any “forward” entries
                 const stack = value.stack.slice(0, value.index + 1);
                 stack.push(e.value);
-                return { stack, index: stack.length - 1 };
+                return {stack, index: stack.length - 1};
             }
             if (e.is(prevHistory) && value.index > 0) {
-                return { stack: value.stack, index: value.index - 1 };
+                return {stack: value.stack, index: value.index - 1};
             }
             if (e.is(nextHistory) && value.index < value.stack.length - 1) {
-                return { stack: value.stack, index: value.index + 1 };
+                return {stack: value.stack, index: value.index + 1};
             }
         }
         return value;
     },
 });
 
-export function historyBack(view: EditorView) {
+export function historyBack(view: EditorView | null) {
+    if (!view) {
+        return false;
+    }
+
+    // first focus the editor
+    view.focus();
+
     const hist = view.state.field(historyField);
-    if (hist.index <= 0) return false;          // nothing to go back to
+    if (hist.index <= 0) {
+        return false; // nothing to go back to
+    }
     const entry = hist.stack[hist.index - 1];
 
     // 1) swap in the old document if needed
@@ -56,19 +65,28 @@ export function historyBack(view: EditorView) {
     }
 
     // 2) move the cursor and scroll
-    view.dispatch({ effects: prevHistory.of(null) });
+    view.dispatch({effects: prevHistory.of(null)});
     view.dispatch({
-        selection: { anchor: entry.pos },
+        selection: {anchor: entry.pos},
         scrollIntoView: true,
     });
     view.scrollDOM.scrollTop = entry.scroll;
-    view.focus();
     return true;
 }
 
-export function historyForward(view: EditorView) {
+export function historyForward(view: EditorView | null) {
+    // view is null when the editor is not mounted
+    if (!view) {
+        return false;
+    }
+
+    // first focus the editor
+    view.focus();
+
     const hist = view.state.field(historyField);
-    if (hist.index >= hist.stack.length - 1) return false; // nothing to go forward to
+    if (hist.index >= hist.stack.length - 1) {
+        return false; // nothing to go forward to
+    }
     const entry = hist.stack[hist.index + 1];
 
     // 1) swap in the old document if needed
@@ -83,13 +101,12 @@ export function historyForward(view: EditorView) {
     }
 
     // 2) move the cursor and scroll
-    view.dispatch({ effects: nextHistory.of(null) });
+    view.dispatch({effects: nextHistory.of(null)});
     view.dispatch({
-        selection: { anchor: entry.pos },
+        selection: {anchor: entry.pos},
         scrollIntoView: true,
     });
     view.scrollDOM.scrollTop = entry.scroll;
-    view.focus();
     return true;
 }
 

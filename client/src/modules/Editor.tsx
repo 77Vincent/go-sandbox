@@ -635,9 +635,13 @@ export default function Component(props: {
                 </button>
             </div>
 
-            <StatusBar filePath={filePath} onLintClick={onLintClick} row={row} col={col} errors={errorCount}
-                       warnings={warningCount}
-                       info={infoCount}/>
+            <StatusBar
+                view={view.current}
+                row={row} col={col} filePath={filePath}
+                onLintClick={onLintClick}
+                errors={errorCount}
+                warnings={warningCount}
+                info={infoCount}/>
         </div>
     )
 };
