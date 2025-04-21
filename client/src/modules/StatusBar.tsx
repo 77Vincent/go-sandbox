@@ -5,6 +5,8 @@ import {historyBack, historyField, historyForward} from "./codeHistory.ts";
 import {Tooltip} from "flowbite-react";
 import {BUTTON_INACTIVE, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
+import {MetaKey} from "./Common.tsx";
+import {MdKeyboardOptionKey as OptionKey} from "react-icons/md";
 
 const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";
@@ -57,13 +59,23 @@ export default function Component(props: {
         <div
             className={"fixed bottom-0 left-0 z-10 flex w-full justify-between border-t border-t-gray-400 bg-gray-200 px-3 py-0.5 dark:border-t-gray-600 dark:bg-gray-900 "}>
             <div className={"flex items-center gap-2"}>
-                <Tooltip content={TRANSLATE.prevPlace[lan]} className={"text-xs "}>
+                <Tooltip content={<div className={"flex items-center gap-1.5"}>
+                    {TRANSLATE.prevPlace[lan]}
+                    <div className={"flex items-center"}>
+                        <MetaKey/><OptionKey/>,
+                    </div>
+                </div>} className={"text-xs "}>
                     <PrevIcon className={!hasPrevious ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}
                               size={16}
                               onClick={onPrevious}/>
                 </Tooltip>
 
-                <Tooltip content={TRANSLATE.nextPlace[lan]} className={"text-xs "}>
+                <Tooltip content={<div className={"flex items-center gap-1.5"}>
+                    {TRANSLATE.nextPlace[lan]}
+                    <div className={"flex items-center"}>
+                        <MetaKey/><OptionKey/>.
+                    </div>
+                </div>} className={"text-xs "}>
                     <NextIcon className={!hasNext ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}
                               size={16}
                               onClick={onNext}/>
