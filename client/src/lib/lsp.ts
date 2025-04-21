@@ -75,12 +75,8 @@ export default class LSPClient {
         this.pendingRequests = new Map();
         this.view = view;
 
-        this.ws.onopen = () => {
-            // Optionally send the initialize request here:
-            this.sendRequest(EVENT_INITIALIZE, {capabilities: {}})
-                .then(() => {
-                })
-                .catch((err) => console.error("Initialize error:", err));
+        this.ws.onopen = async () => {
+            await this.initialize(1, this.view.state.doc.toString());
         };
 
         this.ws.onmessage = (event) => this.handleMessage(event.data);
@@ -183,6 +179,7 @@ export default class LSPClient {
         try {
             const message = JSON.parse(data);
             const {id, method, params, error} = message;
+            console.log(id, method, params, error);
             if (error) {
                 this.handleError(error.message);
                 // do not return here, we still need to process

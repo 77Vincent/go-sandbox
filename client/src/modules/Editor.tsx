@@ -324,7 +324,7 @@ export default function Component(props: {
         } catch (e) {
             setToastError((e as Error).message)
         }
-    }, [setToastError]), DEBOUNCE_TIME * 3)).current
+    }, [setToastError]), DEBOUNCE_TIME * 2)).current
 
     const onViewUpdate = (v: ViewUpdate) => {
         if (v.docChanged) {
@@ -554,10 +554,6 @@ export default function Component(props: {
         recordPosition(view.current, filePath);
 
         lsp.current = new LSP(getWsUrl("/ws"), sandboxVersion, view.current, handleDiagnostics, handleError);
-
-        (async function () {
-            await lsp.current?.initialize(version.current, value)
-        }());
 
         // key bindings for unfocused editor
         Mousetrap.bind('esc', function () {
