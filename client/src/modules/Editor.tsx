@@ -40,7 +40,7 @@ import Mousetrap from "mousetrap";
 import debounce from "debounce";
 
 // local imports
-import {KeyBindingsType, languages, LSPCompletionItem, mySandboxes, patchI} from "../types";
+import {KeyBindingsType, languages, LSPCompletionItem, patchI} from "../types";
 import {
     EMACS,
     NONE,
@@ -192,7 +192,6 @@ export default function Component(props: {
     // toast
     setToastError: (message: ReactNode) => void
 
-    activeSandbox: mySandboxes;
     sandboxVersion: string;
     value: string;
     patch: patchI;
@@ -218,7 +217,6 @@ export default function Component(props: {
     cleanHistoryTrigger: boolean;
 }) {
     const {
-        activeSandbox,
         sandboxVersion,
         setToastError,
         // props
@@ -264,11 +262,6 @@ export default function Component(props: {
         const path = hist.stack[hist.index].filePath;
         setFilePath(path);
     }, [setFilePath, hist]);
-
-    // reset the history when the active sandbox changes
-    useEffect(() => {
-        // resetHistory(view.current, value, DEFAULT_MAIN_FILE_PATH);
-    }, [activeSandbox]);
 
     useEffect(() => {
         resetHistory(view.current, value, filePath);

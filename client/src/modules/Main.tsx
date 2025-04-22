@@ -319,14 +319,12 @@ export default function Component(props: {
 
     const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
         try {
-            setIsRunning(true)
             const data = await getSnippet(id);
             setCode(data);
             setPatch({value: data});
             setFilePath(DEFAULT_MAIN_FILE_PATH)
             setCleanHistoryTrigger(!cleanHistoryTrigger)
             debouncedRun()
-            setIsRunning(false)
         } catch (e) {
             setToastError((e as Error).message)
             setIsRunning(false)
@@ -367,6 +365,7 @@ export default function Component(props: {
         setCode(data)
         setPatch({value: data})
         setFilePath(DEFAULT_MAIN_FILE_PATH)
+        setCleanHistoryTrigger(!cleanHistoryTrigger)
         debouncedRun()
     }
 
@@ -499,7 +498,6 @@ export default function Component(props: {
                         <Editor
                             lan={lan}
                             cleanHistoryTrigger={cleanHistoryTrigger}
-                            activeSandbox={activeSandbox}
                             sandboxVersion={sandboxVersion}
                             setToastError={setToastError}
                             isLintOn={isLintOn}
