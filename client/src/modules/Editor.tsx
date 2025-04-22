@@ -50,7 +50,7 @@ import {
     DEFAULT_INDENTATION_SIZE,
 } from "../constants.ts";
 import {getCursorHead, getWsUrl, isUserCode} from "../utils.ts";
-import LSP, {LSP_KIND_LABELS} from "../lib/lsp.ts";
+import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {fetchSourceCode} from "../api/api.ts";
@@ -251,7 +251,7 @@ export default function Component(props: {
     // ref
     const editor = useRef<HTMLDivElement>(null);
     const view = useRef<EditorView | null>(null);
-    const lsp = useRef<LSP | null>(null);
+    const lsp = useRef<LSPClient | null>(null);
     const version = useRef<number>(1); // initial version
 
     const hist = view.current?.state.field(historyField);
@@ -560,7 +560,7 @@ export default function Component(props: {
         // push the initial state to the history
         recordHistory(view.current, filePath);
 
-        lsp.current = new LSP(getWsUrl("/ws"), sandboxVersion, view.current, handleDiagnostics, handleError);
+        lsp.current = new LSPClient(getWsUrl("/ws"), sandboxVersion, view.current, handleDiagnostics, handleError);
 
         // key bindings for unfocused editor
         Mousetrap.bind('esc', function () {

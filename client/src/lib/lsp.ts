@@ -53,7 +53,7 @@ export const LSP_KIND_LABELS: Record<number, string> = {
     25: "TypeParameter",
 }
 
-export default class LSPClient {
+export class LSPClient {
     sandboxVersion: string;
     ws: WebSocket;
     requestId: number;
