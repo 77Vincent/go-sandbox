@@ -1,7 +1,7 @@
 import {CiFaceFrown as ErrorIcon, CiFaceSmile as GoodIcon} from "react-icons/ci";
 import {GrFormPrevious as PrevIcon, GrFormNext as NextIcon} from "react-icons/gr";
 import {EditorView} from "@codemirror/view";
-import {historyBack, historyField, historyForward} from "./codeHistory.ts";
+import {historyBack, historyField, historyForward} from "../lib/history.ts";
 import {Tooltip} from "flowbite-react";
 import {BUTTON_INACTIVE, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";

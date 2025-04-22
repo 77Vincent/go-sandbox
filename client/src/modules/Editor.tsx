@@ -59,7 +59,7 @@ import {
     historyField,
     historyForward,
     recordHistory, resetHistory,
-} from "./codeHistory.ts";
+} from "../lib/history.ts";
 
 
 function getCursorPos(v: ViewUpdate | EditorView) {
