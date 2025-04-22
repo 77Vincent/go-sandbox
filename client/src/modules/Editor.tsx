@@ -329,16 +329,16 @@ export default function Component(props: {
         } catch (e) {
             setToastError((e as Error).message)
         }
-    }, [setToastError]), DEBOUNCE_TIME * 2)).current
+    }, [setToastError]), DEBOUNCE_TIME)).current
 
-    const onViewUpdate = (v: ViewUpdate) => {
+    const onViewUpdate = useCallback((v: ViewUpdate) => {
         if (v.docChanged) {
             onChange(v.state.doc.toString());
             debouncedLspUpdate(v);
         }
-    }
+    }, [onChange, debouncedLspUpdate]);
 
-    const seeDefinition = (v: EditorView): boolean => {
+    const seeDefinition = useCallback((v: EditorView): boolean => {
         (async function () {
             if (!lsp.current) {
                 return
@@ -391,9 +391,9 @@ export default function Component(props: {
             recordHistory(v, path);
         }());
         return true;
-    }
+    }, [filePath, sandboxVersion, setToastError]);
 
-    const focusedKeymap = [
+    const [focusedKeymap] = useState(() => [
         {
             key: `Mod-Alt-,`,
             preventDefault: true,
@@ -466,7 +466,8 @@ export default function Component(props: {
                 return indentLess(v)
             },
         },
-    ]
+
+    ]);
 
     const [extensions] = useState(() => [
         go(),
@@ -534,13 +535,12 @@ export default function Component(props: {
         });
     }, [patch]);
 
-    function handleDiagnostics(data: Diagnostic[]) {
+    const handleDiagnostics = useCallback((data: Diagnostic[]) => {
         setDiagnostics(data);
-    }
-
-    function handleError(message: string) {
+    }, []);
+    const handleError = useCallback((message: string) => {
         setToastError(message);
-    }
+    }, [setToastError]);
 
     // must only run once, so no dependencies
     useEffect(() => {
@@ -633,10 +633,10 @@ export default function Component(props: {
         view.current.dispatch({effects: [readOnlyCompartment.reconfigure(EditorState.readOnly.of(!isUserCode(filePath)))]})
     }, [filePath]);
 
-    function onLintClick() {
+    const onLintClick = useCallback(() => {
         if (!view.current) return;
         openLintPanel(view.current);
-    }
+    }, [view]);
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname

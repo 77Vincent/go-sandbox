@@ -265,8 +265,8 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
     },
     reload: {
         en: "Reload",
-        zh_CN: "重载",
-        zh_TW: "重載",
+        zh_CN: "刷新",
+        zh_TW: "刷新",
         ja: "リロード",
     },
     manual: {
