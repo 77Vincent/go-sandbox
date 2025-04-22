@@ -40,21 +40,26 @@ import Mousetrap from "mousetrap";
 import debounce from "debounce";
 
 // local imports
-import {KeyBindingsType, languages, LSPCompletionItem, mySandboxes, patchI} from "../types";
+import {KeyBindingsType, languages, LSPCompletionItem, patchI} from "../types";
 import {
     EMACS,
     NONE,
     DEBOUNCE_TIME,
     VIM,
     CURSOR_HEAD_KEY,
-    DEFAULT_INDENTATION_SIZE, DEFAULT_MAIN_FILE_PATH,
+    DEFAULT_INDENTATION_SIZE,
 } from "../constants.ts";
 import {getCursorHead, getWsUrl, isUserCode} from "../utils.ts";
-import LSP, {LSP_KIND_LABELS} from "../lib/lsp.ts";
+import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {fetchSourceCode} from "../api/api.ts";
-import {resetHistory, historyBack, historyField, historyForward, recordPosition, pushHistory} from "./codeHistory.ts";
+import {
+    historyBack,
+    historyField,
+    historyForward,
+    recordHistory, resetHistory,
+} from "../lib/history.ts";
 
 
 function getCursorPos(v: ViewUpdate | EditorView) {
@@ -187,7 +192,6 @@ export default function Component(props: {
     // toast
     setToastError: (message: ReactNode) => void
 
-    activeSandbox: mySandboxes;
     sandboxVersion: string;
     value: string;
     patch: patchI;
@@ -210,9 +214,9 @@ export default function Component(props: {
     debouncedRun: () => void;
     debouncedFormat: () => void;
     debouncedShare: () => void;
+    cleanHistoryTrigger: boolean;
 }) {
     const {
-        activeSandbox,
         sandboxVersion,
         setToastError,
         // props
@@ -227,6 +231,7 @@ export default function Component(props: {
         setFilePath,
         setShowSettings,
         setShowManual,
+        cleanHistoryTrigger,
         // action
         debouncedRun,
         debouncedFormat,
@@ -246,23 +251,21 @@ export default function Component(props: {
     // ref
     const editor = useRef<HTMLDivElement>(null);
     const view = useRef<EditorView | null>(null);
-    const lsp = useRef<LSP | null>(null);
+    const lsp = useRef<LSPClient | null>(null);
     const version = useRef<number>(1); // initial version
 
     const hist = view.current?.state.field(historyField);
     // update the file path when the history changes
     useEffect(() => {
-        if (!hist) return;
+        if (!hist || hist.stack.length === 0) return;
         // update the file path when the history changes
         const path = hist.stack[hist.index].filePath;
         setFilePath(path);
     }, [setFilePath, hist]);
 
-    // reset the history when the active sandbox changes
     useEffect(() => {
-        resetHistory(view.current);
-        pushHistory(view.current, value, DEFAULT_MAIN_FILE_PATH);
-    }, [activeSandbox]);
+        resetHistory(view.current, value, filePath);
+    }, [cleanHistoryTrigger]);
 
     // manage cursor
     const onCursorChange = useRef(debounce(useCallback((v: ViewUpdate) => {
@@ -313,8 +316,10 @@ export default function Component(props: {
 
             // do not display completion for non-user code
             const hist = v.state.field(historyField);
-            if (!isUserCode(hist.stack[hist.index].filePath)) {
-                return
+            if (hist.stack.length) {
+                if (!isUserCode(hist.stack[hist.index].filePath)) {
+                    return
+                }
             }
 
             // get completions
@@ -324,7 +329,7 @@ export default function Component(props: {
         } catch (e) {
             setToastError((e as Error).message)
         }
-    }, [setToastError]), DEBOUNCE_TIME * 3)).current
+    }, [setToastError]), DEBOUNCE_TIME * 2)).current
 
     const onViewUpdate = (v: ViewUpdate) => {
         if (v.docChanged) {
@@ -344,6 +349,9 @@ export default function Component(props: {
                 return
             }
 
+            // push the current position to the history
+            recordHistory(view.current, filePath);
+
             const path = decodeURIComponent(definitions[0].uri.replace("file://", ""));
             const {is_main, error, content} = await fetchSourceCode(path, sandboxVersion)
             const {range: {start: {line, character}}} = definitions[0];
@@ -360,7 +368,6 @@ export default function Component(props: {
                     },
                     scrollIntoView: true,
                 })
-                return;
             }
             if (content) {
                 // update the doc first
@@ -378,10 +385,10 @@ export default function Component(props: {
                     },
                     scrollIntoView: true,
                 })
-
-                // push to the history
-                recordPosition(v, path);
             }
+
+            // record the history after the change
+            recordHistory(v, path);
         }());
         return true;
     }
@@ -551,13 +558,9 @@ export default function Component(props: {
         view.current.focus();
 
         // push the initial state to the history
-        recordPosition(view.current, filePath);
+        recordHistory(view.current, filePath);
 
-        lsp.current = new LSP(getWsUrl("/ws"), sandboxVersion, view.current, handleDiagnostics, handleError);
-
-        (async function () {
-            await lsp.current?.initialize(version.current, value)
-        }());
+        lsp.current = new LSPClient(getWsUrl("/ws"), sandboxVersion, view.current, handleDiagnostics, handleError);
 
         // key bindings for unfocused editor
         Mousetrap.bind('esc', function () {

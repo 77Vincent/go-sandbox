@@ -53,7 +53,7 @@ export const LSP_KIND_LABELS: Record<number, string> = {
     25: "TypeParameter",
 }
 
-export default class LSPClient {
+export class LSPClient {
     sandboxVersion: string;
     ws: WebSocket;
     requestId: number;
@@ -75,12 +75,8 @@ export default class LSPClient {
         this.pendingRequests = new Map();
         this.view = view;
 
-        this.ws.onopen = () => {
-            // Optionally send the initialize request here:
-            this.sendRequest(EVENT_INITIALIZE, {capabilities: {}})
-                .then(() => {
-                })
-                .catch((err) => console.error("Initialize error:", err));
+        this.ws.onopen = async () => {
+            await this.initialize(1, this.view.state.doc.toString());
         };
 
         this.ws.onmessage = (event) => this.handleMessage(event.data);

@@ -1,16 +1,16 @@
 import {StateEffect, StateField, Transaction} from "@codemirror/state";
 import {EditorView} from "@codemirror/view";
 
-export const addHistory = StateEffect.define<{
+export const addHistoryEvent = StateEffect.define<{
     pos: number;
     scroll: number;
     doc: string;
     filePath: string;
 }>();
 // Effects to move back/forward
-const prevHistory = StateEffect.define<null>();
-const nextHistory = StateEffect.define<null>();
-const clearHistory = StateEffect.define<null>();
+const prevHistoryEvent = StateEffect.define<null>();
+const nextHistoryEvent = StateEffect.define<null>();
+const clearHistoryEvent = StateEffect.define<null>();
 
 // The field holds the stack and a pointer into it
 export const historyField = StateField.define<{
@@ -23,19 +23,19 @@ export const historyField = StateField.define<{
     update(value, tr: Transaction) {
         // If we're adding a new entry
         for (const e of tr.effects) {
-            if (e.is(clearHistory)) {
+            if (e.is(clearHistoryEvent)) {
                 return {stack: [], index: -1};
             }
-            if (e.is(addHistory)) {
+            if (e.is(addHistoryEvent)) {
                 // drop any “forward” entries
                 const stack = value.stack.slice(0, value.index + 1);
                 stack.push(e.value);
                 return {stack, index: stack.length - 1};
             }
-            if (e.is(prevHistory) && value.index > 0) {
+            if (e.is(prevHistoryEvent) && value.index > 0) {
                 return {stack: value.stack, index: value.index - 1};
             }
-            if (e.is(nextHistory) && value.index < value.stack.length - 1) {
+            if (e.is(nextHistoryEvent) && value.index < value.stack.length - 1) {
                 return {stack: value.stack, index: value.index + 1};
             }
         }
@@ -69,7 +69,7 @@ export function historyBack(view: EditorView | null) {
     }
 
     // 2) move the cursor and scroll
-    view.dispatch({effects: prevHistory.of(null)});
+    view.dispatch({effects: prevHistoryEvent.of(null)});
     view.dispatch({
         selection: {anchor: entry.pos},
         scrollIntoView: true,
@@ -105,7 +105,7 @@ export function historyForward(view: EditorView | null) {
     }
 
     // 2) move the cursor and scroll
-    view.dispatch({effects: nextHistory.of(null)});
+    view.dispatch({effects: nextHistoryEvent.of(null)});
     view.dispatch({
         selection: {anchor: entry.pos},
         scrollIntoView: true,
@@ -114,20 +114,17 @@ export function historyForward(view: EditorView | null) {
     return true;
 }
 
-export function resetHistory(view: EditorView | null) {
-    if (!view) {
-        return;
-    }
-    view.dispatch({effects: clearHistory.of(null)});
-}
-
-export function pushHistory(view: EditorView | null, code: string, filePath: string) {
+export function resetHistory(view: EditorView | null, code: string, filePath: string) {
     if (!view) {
         return;
     }
 
+    // clear the history first
+    view.dispatch({effects: clearHistoryEvent.of(null)});
+
+    // then push the new entry
     view.dispatch({
-        effects: addHistory.of({
+        effects: addHistoryEvent.of({
             pos: 0,
             scroll: view.scrollDOM.scrollTop,
             doc: code,
@@ -136,13 +133,14 @@ export function pushHistory(view: EditorView | null, code: string, filePath: str
     });
 }
 
-export function recordPosition(view: EditorView | null, filePath: string) {
+// record the current position in the history
+export function recordHistory(view: EditorView | null, filePath: string) {
     if (!view) {
         return;
     }
 
     view.dispatch({
-        effects: addHistory.of({
+        effects: addHistoryEvent.of({
             pos: view.state.selection.main.head,
             scroll: view.scrollDOM.scrollTop,
             doc: view.state.doc.toString(),

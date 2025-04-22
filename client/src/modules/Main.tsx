@@ -105,6 +105,7 @@ export default function Component(props: {
     const [showManual, setShowManual] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
     const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(initialActiveSandbox);
+    const [cleanHistoryTrigger, setCleanHistoryTrigger] = useState<boolean>(false);
 
     // settings
     const [fontSize, setFontSize] = useState<number>(initialFontSize);
@@ -200,7 +201,9 @@ export default function Component(props: {
     }, [debouncedStoreCode, code]);
 
     useEffect(() => {
-        filePathRef.current = filePath;
+        if (filePathRef.current !== filePath) {
+            filePathRef.current = filePath;
+        }
     }, [filePath]);
 
 
@@ -316,13 +319,12 @@ export default function Component(props: {
 
     const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
         try {
-            setIsRunning(true)
             const data = await getSnippet(id);
             setCode(data);
             setPatch({value: data});
             setFilePath(DEFAULT_MAIN_FILE_PATH)
+            setCleanHistoryTrigger(!cleanHistoryTrigger)
             debouncedRun()
-            setIsRunning(false)
         } catch (e) {
             setToastError((e as Error).message)
             setIsRunning(false)
@@ -363,6 +365,7 @@ export default function Component(props: {
         setCode(data)
         setPatch({value: data})
         setFilePath(DEFAULT_MAIN_FILE_PATH)
+        setCleanHistoryTrigger(!cleanHistoryTrigger)
         debouncedRun()
     }
 
@@ -494,7 +497,7 @@ export default function Component(props: {
                         className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                         <Editor
                             lan={lan}
-                            activeSandbox={activeSandbox}
+                            cleanHistoryTrigger={cleanHistoryTrigger}
                             sandboxVersion={sandboxVersion}
                             setToastError={setToastError}
                             isLintOn={isLintOn}
