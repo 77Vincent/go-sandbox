@@ -179,7 +179,6 @@ export default class LSPClient {
         try {
             const message = JSON.parse(data);
             const {id, method, params, error} = message;
-            console.log(id, method, params, error);
             if (error) {
                 this.handleError(error.message);
                 // do not return here, we still need to process
