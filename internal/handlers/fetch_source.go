@@ -20,6 +20,15 @@ func FetchSource(c *gin.Context) {
 		path    = c.Query("path")
 		version = c.Query("version")
 	)
+
+	if path == "" {
+		c.JSON(http.StatusBadRequest, fetchSourceRes{Error: "path is required"})
+		return
+	}
+
+	// remove "file://" prefix if present
+	path = strings.Replace(path, "file://", "", 1)
+
 	if strings.Contains(path, "/usr/local/go") {
 		path = strings.Replace(path, "/usr/local/go", "/go"+version, 1)
 	}
