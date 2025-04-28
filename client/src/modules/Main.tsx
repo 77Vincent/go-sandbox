@@ -104,7 +104,6 @@ export default function Component(props: {
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
-    const [sandboxId, setSandboxId] = useState<mySandboxes>(initialSandboxId);
     const [cleanHistoryTrigger, setCleanHistoryTrigger] = useState<boolean>(false);
 
     // settings
@@ -290,7 +289,6 @@ export default function Component(props: {
                         // must call together
                         value.current = data
                         setPatch({value: data})
-                        setSandboxId(id as mySandboxes) // force assertion
                         debouncedRun() // run immediately after fetching
                     }
                 } catch (e) {
@@ -412,7 +410,7 @@ export default function Component(props: {
                         isMobile ? null : <>
                             <Divider/>
                             <SandboxSelector lan={lan} onSelect={onSandboxIdChange} isRunning={isRunning}
-                                             active={sandboxId}/>
+                                             active={initialSandboxId}/>
                             <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
                             <VersionSelector version={initialGoVersion} isRunning={isRunning}
                                              onSelect={onGoVersionChange}/>
@@ -460,7 +458,7 @@ export default function Component(props: {
                         <Editor
                             lan={lan}
                             cleanHistoryTrigger={cleanHistoryTrigger}
-                            sandboxId={sandboxId}
+                            sandboxId={initialSandboxId}
                             goVersion={initialGoVersion}
                             setToastError={setToastError}
                             isLintOn={isLintOn}
