@@ -252,6 +252,7 @@ export default function Component(props: {
     const lsp = useRef<LSPClient | null>(null);
     const version = useRef<number>(1); // initial version
     const file = useRef<string>(getFileUri(goVersion));
+    const sandboxIdRef = useRef<mySandboxes>(sandboxId);
 
     const hist = view.current?.state.field(historyField);
     // update the file path when the history changes
@@ -268,6 +269,10 @@ export default function Component(props: {
     useEffect(() => {
         resetHistory(view.current, value, getFileUri(goVersion));
     }, [cleanHistoryTrigger]);
+
+    useEffect(() => {
+        sandboxIdRef.current = sandboxId;
+    }, [sandboxId])
 
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
@@ -336,9 +341,9 @@ export default function Component(props: {
     const debouncedStoreCode = debounce(useCallback((data: string) => {
         // only store user code
         if (isUserCode(file.current)) {
-            localStorage.setItem(sandboxId, data)
+            localStorage.setItem(sandboxIdRef.current, data)
         }
-    }, [sandboxId]), DEBOUNCE_TIME);
+    }, []), DEBOUNCE_TIME);
 
     const onViewUpdate = useCallback((v: ViewUpdate) => {
         if (v.docChanged) {
@@ -364,6 +369,7 @@ export default function Component(props: {
             recordHistory(view.current, file.current);
 
             const path = decodeURIComponent(definitions[0].uri);
+            file.current = path;
             const {is_main, error, content} = await fetchSourceCode(path, goVersion)
             const {range: {start: {line, character}}} = definitions[0];
             const row = line + 1; // 1-based index
