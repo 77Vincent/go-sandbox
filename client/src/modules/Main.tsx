@@ -115,7 +115,6 @@ export default function Component(props: {
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
-    const [code, setCode] = useState<string>(initialValue);
     const [patch, setPatch] = useState<patchI>({value: "", keepCursor: false});
 
     // result
@@ -124,7 +123,7 @@ export default function Component(props: {
     const [info, setInfo] = useState<string>("")
 
     // reference the latest state
-    const codeRef = useRef(code);
+    const value = useRef(initialValue);
     const isRunningRef = useRef(isRunning);
 
     // mode status
@@ -134,22 +133,21 @@ export default function Component(props: {
 
     // IMPORTANT: update the ref when the state changes
     useEffect(() => {
-        codeRef.current = code
         isRunningRef.current = isRunning
-    }, [code, isRunning]);
+    }, [isRunning]);
 
     function onChange(newCode: string = "") {
-        setCode(newCode);
+        value.current = newCode
     }
 
     function shouldAbort(): boolean {
         // do not continue if the code is empty or running
-        return isRunningRef.current || !codeRef.current
+        return isRunningRef.current || !value.current
     }
 
     const debouncedShare = debounce(useCallback(async () => {
         try {
-            const id = await shareSnippet(codeRef.current);
+            const id = await shareSnippet(value.current);
             const url = `${location.origin}/snippets/${id}`
             await navigator.clipboard.writeText(url);
             setToastInfo(<ShareSuccessMessage url={url}/>)
@@ -166,11 +164,11 @@ export default function Component(props: {
         try {
             setIsRunning(true)
 
-            const {stdout, error, message} = await formatCode(codeRef.current);
+            const {stdout, error, message} = await formatCode(value.current);
 
             if (stdout) {
                 // must call together
-                setCode(stdout)
+                value.current = stdout // important: update immediately
                 setPatch({value: stdout, keepCursor: true})
             }
             if (error) {
@@ -199,7 +197,7 @@ export default function Component(props: {
                 stdout: formatted,
                 error: formatError,
                 message: formatMessage
-            } = await formatCode(codeRef.current);
+            } = await formatCode(value.current);
 
             setInfo("")
             setResult([])
@@ -219,13 +217,12 @@ export default function Component(props: {
             setResult([])
             // TODO: annotation or marker
             // must call together
-            setCode(formatted)
             setPatch({value: formatted, keepCursor: true})
-            codeRef.current = formatted // important: update immediately
+            value.current = formatted // important: update immediately
 
             const source = new SSE(getUrl("/execute"), {
                 headers: {'Content-Type': 'application/json'},
-                payload: JSON.stringify({code: codeRef.current, version: initialGoVersion})
+                payload: JSON.stringify({code: value.current, version: initialGoVersion})
             });
 
             source.addEventListener(EVENT_STDOUT, ({data}: MessageEvent) => {
@@ -270,7 +267,7 @@ export default function Component(props: {
     const debouncedGetSnippet = debounce(useCallback(async (id: string) => {
         try {
             const data = await getSnippet(id);
-            setCode(data);
+            value.current = data
             setPatch({value: data});
             setCleanHistoryTrigger(!cleanHistoryTrigger)
             debouncedRun()
@@ -291,7 +288,7 @@ export default function Component(props: {
                     const data = await fetchSnippet(id)
                     if (data) {
                         // must call together
-                        setCode(data)
+                        value.current = data
                         setPatch({value: data})
                         setSandboxId(id as mySandboxes) // force assertion
                         debouncedRun() // run immediately after fetching
@@ -329,14 +326,9 @@ export default function Component(props: {
         setIsLayoutVertical(value)
     }
 
-    function onActiveSandboxChange(id: mySandboxes) {
+    function onSandboxIdChange(id: mySandboxes) {
         localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
-        setSandboxId(id)
-        const data = getCodeContent(id)
-        setCode(data)
-        setPatch({value: data})
-        setCleanHistoryTrigger(!cleanHistoryTrigger)
-        debouncedRun()
+        location.reload()
     }
 
     function onLanguageChange(value: languages) {
@@ -414,12 +406,12 @@ export default function Component(props: {
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
                     <Actions isMobile={isMobile} isRunning={isRunning} debouncedFormat={debouncedFormat}
                              debouncedRun={debouncedRun}
-                             debouncedShare={debouncedShare} hasCode={codeRef.current.length > 0} lan={lan}/>
+                             debouncedShare={debouncedShare} hasCode={value.current.length > 0} lan={lan}/>
 
                     {
                         isMobile ? null : <>
                             <Divider/>
-                            <SandboxSelector lan={lan} onSelect={onActiveSandboxChange} isRunning={isRunning}
+                            <SandboxSelector lan={lan} onSelect={onSandboxIdChange} isRunning={isRunning}
                                              active={sandboxId}/>
                             <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
                             <VersionSelector version={initialGoVersion} isRunning={isRunning}
@@ -473,7 +465,7 @@ export default function Component(props: {
                             setToastError={setToastError}
                             isLintOn={isLintOn}
                             isAutoCompletionOn={isAutoCompletionOn}
-                            value={code}
+                            value={value.current}
                             patch={patch}
                             fontSize={fontSize}
                             keyBindings={keyBindings}
