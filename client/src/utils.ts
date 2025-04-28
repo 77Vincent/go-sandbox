@@ -31,7 +31,7 @@ export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
 }
 
-export function getActiveSandbox(): mySandboxes {
+export function getSandboxId(): mySandboxes {
     return localStorage.getItem(ACTIVE_SANDBOX_KEY) as mySandboxes || DEFAULT_ACTIVE_SANDBOX
 }
 
@@ -55,7 +55,7 @@ export function getEditorSize(): number {
     return Number(localStorage.getItem(EDITOR_SIZE_KEY)) || DEFAULT_EDITOR_SIZE
 }
 
-export function getSandboxVersion(): string {
+export function getGoVersion(): string {
     return localStorage.getItem(GO_VERSION_KEY) || DEFAULT_GO_VERSION
 }
 

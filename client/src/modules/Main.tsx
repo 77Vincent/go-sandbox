@@ -44,9 +44,9 @@ import {
     getLintOn,
     getUrl,
     getLanguage,
-    getSandboxVersion,
+    getGoVersion,
     getIsVerticalLayout,
-    isMobileDevice, getActiveSandbox, getAutoCompletionOn
+    isMobileDevice, getSandboxId, getAutoCompletionOn
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
@@ -83,11 +83,11 @@ function FetchErrorMessage(props: {
 const resizeHandlerHoverClasses = "w-1 z-10 hover:bg-cyan-500 transition-colors";
 
 // default values
-const initialValue = getCodeContent(getActiveSandbox());
+const initialValue = getCodeContent(getSandboxId());
 const initialIsLintOn = getLintOn()
 const initialIsAutoCompletionOn = getAutoCompletionOn()
-const initialGoVersion = getSandboxVersion()
-const initialActiveSandbox = getActiveSandbox();
+const initialGoVersion = getGoVersion()
+const initialSandboxId = getSandboxId();
 const initialIsVerticalLayout = getIsVerticalLayout();
 const initialLanguage = getLanguage()
 const initialFontSize = getFontSize()
@@ -104,7 +104,7 @@ export default function Component(props: {
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
-    const [activeSandbox, setActiveSandbox] = useState<mySandboxes>(initialActiveSandbox);
+    const [sandboxId, setSandboxId] = useState<mySandboxes>(initialSandboxId);
     const [cleanHistoryTrigger, setCleanHistoryTrigger] = useState<boolean>(false);
 
     // settings
@@ -293,7 +293,7 @@ export default function Component(props: {
                         // must call together
                         setCode(data)
                         setPatch({value: data})
-                        setActiveSandbox(id as mySandboxes) // force assertion
+                        setSandboxId(id as mySandboxes) // force assertion
                         debouncedRun() // run immediately after fetching
                     }
                 } catch (e) {
@@ -331,7 +331,7 @@ export default function Component(props: {
 
     function onActiveSandboxChange(id: mySandboxes) {
         localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
-        setActiveSandbox(id)
+        setSandboxId(id)
         const data = getCodeContent(id)
         setCode(data)
         setPatch({value: data})
@@ -420,7 +420,7 @@ export default function Component(props: {
                         isMobile ? null : <>
                             <Divider/>
                             <SandboxSelector lan={lan} onSelect={onActiveSandboxChange} isRunning={isRunning}
-                                             active={activeSandbox}/>
+                                             active={sandboxId}/>
                             <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
                             <VersionSelector version={initialGoVersion} isRunning={isRunning}
                                              onSelect={onGoVersionChange}/>
@@ -468,7 +468,7 @@ export default function Component(props: {
                         <Editor
                             lan={lan}
                             cleanHistoryTrigger={cleanHistoryTrigger}
-                            sandboxId={activeSandbox}
+                            sandboxId={sandboxId}
                             goVersion={initialGoVersion}
                             setToastError={setToastError}
                             isLintOn={isLintOn}
