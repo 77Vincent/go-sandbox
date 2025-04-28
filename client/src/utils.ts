@@ -10,7 +10,7 @@ import {
     DEFAULT_LANGUAGE,
     DEFAULT_LINT_ON,
     DEFAULT_MAIN_FILE_PATH,
-    DEFAULT_SANDBOX_VERSION,
+    DEFAULT_GO_VERSION,
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
@@ -23,7 +23,7 @@ import {
     MOBILE_WIDTH,
     MY_SANDBOXES,
     SANDBOX_NAMES_KEY,
-    SANDBOX_VERSION_KEY, URI_BASE,
+    GO_VERSION_KEY, URI_BASE,
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes} from "./types";
 
@@ -56,7 +56,7 @@ export function getEditorSize(): number {
 }
 
 export function getSandboxVersion(): string {
-    return localStorage.getItem(SANDBOX_VERSION_KEY) || DEFAULT_SANDBOX_VERSION
+    return localStorage.getItem(GO_VERSION_KEY) || DEFAULT_GO_VERSION
 }
 
 export function isMobileDevice(): boolean {

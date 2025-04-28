@@ -20,7 +20,7 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    SANDBOX_VERSION_KEY,
+    GO_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
     EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY,
@@ -86,7 +86,7 @@ const resizeHandlerHoverClasses = "w-1 z-10 hover:bg-cyan-500 transition-colors"
 const initialValue = getCodeContent(getActiveSandbox());
 const initialIsLintOn = getLintOn()
 const initialIsAutoCompletionOn = getAutoCompletionOn()
-const initialSandboxVersion = getSandboxVersion()
+const initialGoVersion = getSandboxVersion()
 const initialActiveSandbox = getActiveSandbox();
 const initialIsVerticalLayout = getIsVerticalLayout();
 const initialLanguage = getLanguage()
@@ -112,7 +112,6 @@ export default function Component(props: {
     const [editorSize, setEditorSize] = useState<number>(initialEditorSize);
     const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
     const [lan, setLan] = useState<languages>(initialLanguage)
-    const [sandboxVersion] = useState<string>(initialSandboxVersion)
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -226,7 +225,7 @@ export default function Component(props: {
 
             const source = new SSE(getUrl("/execute"), {
                 headers: {'Content-Type': 'application/json'},
-                payload: JSON.stringify({code: codeRef.current, version: sandboxVersion})
+                payload: JSON.stringify({code: codeRef.current, version: initialGoVersion})
             });
 
             source.addEventListener(EVENT_STDOUT, ({data}: MessageEvent) => {
@@ -266,7 +265,7 @@ export default function Component(props: {
             setResult([{type: EVENT_STDERR, content: err.message}])
             setIsRunning(false)
         }
-    }, [sandboxVersion]), DEBOUNCE_TIME);
+    }, []), DEBOUNCE_TIME);
 
     const debouncedGetSnippet = debounce(useCallback(async (id: string) => {
         try {
@@ -319,8 +318,8 @@ export default function Component(props: {
         setKeyBindings(value)
     }
 
-    function onSandboxVersionChange(version: string) {
-        localStorage.setItem(SANDBOX_VERSION_KEY, version);
+    function onGoVersionChange(version: string) {
+        localStorage.setItem(GO_VERSION_KEY, version);
         location.reload()
     }
 
@@ -423,8 +422,8 @@ export default function Component(props: {
                             <SandboxSelector lan={lan} onSelect={onActiveSandboxChange} isRunning={isRunning}
                                              active={activeSandbox}/>
                             <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
-                            <VersionSelector version={sandboxVersion} isRunning={isRunning}
-                                             onSelect={onSandboxVersionChange}/>
+                            <VersionSelector version={initialGoVersion} isRunning={isRunning}
+                                             onSelect={onGoVersionChange}/>
                         </>
                     }
 
@@ -470,7 +469,7 @@ export default function Component(props: {
                             lan={lan}
                             cleanHistoryTrigger={cleanHistoryTrigger}
                             sandboxId={activeSandbox}
-                            goVersion={sandboxVersion}
+                            goVersion={initialGoVersion}
                             setToastError={setToastError}
                             isLintOn={isLintOn}
                             isAutoCompletionOn={isAutoCompletionOn}
