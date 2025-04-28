@@ -158,10 +158,10 @@ export default function Component(props: {
                     <Divider horizontal={true} className={"my-4"}/>
 
                     <Grid>
-                        <div className={"flex items-center justify-between"}>
+                        <Row>
                             <Label value={`${TRANSLATE.theme[lan]} / ${mode}`}/>
                             <DarkThemeToggle/>
-                        </div>
+                        </Row>
                     </Grid>
                 </Modal.Body>
             </Modal>

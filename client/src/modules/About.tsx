@@ -16,7 +16,7 @@ export default function Component(props: {
     return <Modal dismissible show={show} onClose={() => setShow(false)}>
         <Modal.Header>
             <div className={"flex items-center gap-2"}>
-                <img src={"/logo.svg"} alt={"logo"} className={"h-5 max-md:hidden"}/>
+                <img src={"/favicon.png"} alt={"logo"} className={"mr-1 h-6 max-md:hidden"}/>
                 {TITLE}
             </div>
         </Modal.Header>

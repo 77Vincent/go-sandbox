@@ -5,16 +5,16 @@ import {
     DEFAULT_AUTOCOMPLETION_ON,
     DEFAULT_CURSOR_HEAD,
     DEFAULT_EDITOR_SIZE,
+    DEFAULT_GO_VERSION,
     DEFAULT_IS_VERTICAL_LAYOUT,
     DEFAULT_KEY_BINDINGS,
     DEFAULT_LANGUAGE,
     DEFAULT_LINT_ON,
     DEFAULT_MAIN_FILE_PATH,
-    DEFAULT_SANDBOX_VERSION,
-    DEFAULT_TEST_FILE_PATH,
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
+    GO_VERSION_KEY,
     HELLO_WORLD,
     IS_AUTOCOMPLETION_ON_KEY,
     IS_LINT_ON_KEY,
@@ -24,15 +24,16 @@ import {
     MOBILE_WIDTH,
     MY_SANDBOXES,
     SANDBOX_NAMES_KEY,
-    SANDBOX_VERSION_KEY,
+    URI_BASE,
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes} from "./types";
+import {EditorView, ViewUpdate} from "@codemirror/view";
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
 }
 
-export function getActiveSandbox(): mySandboxes {
+export function getSandboxId(): mySandboxes {
     return localStorage.getItem(ACTIVE_SANDBOX_KEY) as mySandboxes || DEFAULT_ACTIVE_SANDBOX
 }
 
@@ -56,8 +57,8 @@ export function getEditorSize(): number {
     return Number(localStorage.getItem(EDITOR_SIZE_KEY)) || DEFAULT_EDITOR_SIZE
 }
 
-export function getSandboxVersion(): string {
-    return localStorage.getItem(SANDBOX_VERSION_KEY) || DEFAULT_SANDBOX_VERSION
+export function getGoVersion(): string {
+    return localStorage.getItem(GO_VERSION_KEY) || DEFAULT_GO_VERSION
 }
 
 export function isMobileDevice(): boolean {
@@ -130,19 +131,31 @@ export function getWsUrl(path: string): string {
     return `${apiUrl.replace("https", "wss")}${path}`;
 }
 
-export function normalizeText(text: string = "") {
-    return text
-        .split(/\r?\n/)          // split text into lines
-        .map(line => line.trim()) // remove leading/trailing whitespace on each line
-        .filter(line => line !== '') // discard empty lines
-        .join('\n');             // join them together (or you could join with "" if you don't want newlines)
-}
-
 export function isMac(): boolean {
     const platform = navigator.userAgent;
     return platform?.toLowerCase().includes('mac') || navigator.platform.includes("Mac")
 }
 
 export function isUserCode(filePath: string): boolean {
-    return filePath === DEFAULT_MAIN_FILE_PATH || filePath === DEFAULT_TEST_FILE_PATH
+    return filePath.includes(DEFAULT_MAIN_FILE_PATH)
+}
+
+export function getFileUri(sandboxVersion: string): string {
+    return `${URI_BASE}/go${sandboxVersion}${DEFAULT_MAIN_FILE_PATH}`
+}
+
+export function displayFileUri(file: string): string {
+    return file.includes(DEFAULT_MAIN_FILE_PATH) ? file.substring(21) : file.substring(24)
+}
+
+export function getCursorPos(v: ViewUpdate | EditorView) {
+    // return 1-based index
+    const pos = v.state.selection.main.head;
+    const line = v.state.doc.lineAt(pos);
+    return {row: line.number, col: pos - line.from + 1}
+}
+
+export function posToHead(v: ViewUpdate | EditorView, row: number, col: number) {
+    const line = v.state.doc.line(row);
+    return line.from + col - 1;
 }
