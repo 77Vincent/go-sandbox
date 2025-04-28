@@ -23,7 +23,7 @@ import {
     SANDBOX_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY, DEFAULT_MAIN_FILE_PATH,
+    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY,
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
 import {Divider, Wrapper} from "./Common.tsx";
@@ -112,13 +112,12 @@ export default function Component(props: {
     const [editorSize, setEditorSize] = useState<number>(initialEditorSize);
     const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
     const [lan, setLan] = useState<languages>(initialLanguage)
-    const [sandboxVersion, setSandboxVersion] = useState<string>(initialSandboxVersion)
+    const [sandboxVersion] = useState<string>(initialSandboxVersion)
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const [code, setCode] = useState<string>(initialValue);
     const [patch, setPatch] = useState<patchI>({value: "", keepCursor: false});
-    const [filePath, setFilePath] = useState<string>(DEFAULT_MAIN_FILE_PATH);
 
     // result
     const [result, setResult] = useState<resultI[]>([]);
@@ -127,9 +126,6 @@ export default function Component(props: {
 
     // reference the latest state
     const codeRef = useRef(code);
-    const filePathRef = useRef(filePath);
-    const sandboxVersionRef = useRef(sandboxVersion);
-    const activeSandboxRef = useRef(activeSandbox);
     const isRunningRef = useRef(isRunning);
 
     // mode status
@@ -137,37 +133,11 @@ export default function Component(props: {
     const [isLintOn, setIsLintOn] = useState<boolean>(initialIsLintOn)
     const [isAutoCompletionOn, setIsAutoCompletionOn] = useState<boolean>(initialIsAutoCompletionOn)
 
-    // fetch the snippet if the url contains the snippet id, do only once
-    useEffect(() => {
-        (async () => {
-            const matches = location.pathname.match(SNIPPET_REGEX)
-            if (matches) {
-                const raw = matches[0]
-                const id = raw.split("/")[2]
-                try {
-                    const data = await fetchSnippet(id)
-                    if (data) {
-                        // must call together
-                        setCode(data)
-                        setPatch({value: data})
-                        setFilePath(DEFAULT_MAIN_FILE_PATH)
-                        setActiveSandbox(id as mySandboxes) // force assertion
-                        debouncedRun() // run immediately after fetching
-                    }
-                } catch (e) {
-                    setToastError(<FetchErrorMessage error={(e as Error).message}/>)
-                }
-            }
-        })()
-    }, [setToastError]);
-
     // IMPORTANT: update the ref when the state changes
     useEffect(() => {
         codeRef.current = code
         isRunningRef.current = isRunning
-        sandboxVersionRef.current = sandboxVersion
-        activeSandboxRef.current = activeSandbox
-    }, [code, isRunning, sandboxVersion, activeSandbox]);
+    }, [code, isRunning]);
 
     function onChange(newCode: string = "") {
         setCode(newCode);
@@ -178,7 +148,7 @@ export default function Component(props: {
         return isRunningRef.current || !codeRef.current
     }
 
-    const debouncedShare = useRef(debounce(useCallback(async () => {
+    const debouncedShare = debounce(useCallback(async () => {
         try {
             const id = await shareSnippet(codeRef.current);
             const url = `${location.origin}/snippets/${id}`
@@ -187,27 +157,9 @@ export default function Component(props: {
         } catch (e) {
             setToastError((e as Error).message)
         }
-    }, [setToastInfo, setToastError]), DEBOUNCE_TIME)).current;
+    }, [setToastInfo, setToastError]), DEBOUNCE_TIME);
 
-    // store code asynchronously
-    const debouncedStoreCode = useRef(debounce(useCallback((data: string) => {
-        // only store user-code
-        if (filePathRef.current == DEFAULT_MAIN_FILE_PATH) {
-            localStorage.setItem(activeSandboxRef.current, data)
-        }
-    }, [activeSandboxRef]), DEBOUNCE_TIME)).current;
-    useEffect(() => {
-        debouncedStoreCode(code);
-    }, [debouncedStoreCode, code]);
-
-    useEffect(() => {
-        if (filePathRef.current !== filePath) {
-            filePathRef.current = filePath;
-        }
-    }, [filePath]);
-
-
-    const debouncedFormat = useRef(debounce(useCallback(async () => {
+    const debouncedFormat = debounce(useCallback(async () => {
         if (shouldAbort()) {
             return
         }
@@ -234,9 +186,9 @@ export default function Component(props: {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [setToastError]), DEBOUNCE_TIME)).current;
+    }, [setToastError]), DEBOUNCE_TIME);
 
-    const runCallback = useCallback(async () => {
+    const debouncedRun = debounce(useCallback(async () => {
         if (shouldAbort()) {
             return
         }
@@ -274,7 +226,7 @@ export default function Component(props: {
 
             const source = new SSE(getUrl("/execute"), {
                 headers: {'Content-Type': 'application/json'},
-                payload: JSON.stringify({code: codeRef.current, version: sandboxVersionRef.current})
+                payload: JSON.stringify({code: codeRef.current, version: sandboxVersion})
             });
 
             source.addEventListener(EVENT_STDOUT, ({data}: MessageEvent) => {
@@ -314,22 +266,43 @@ export default function Component(props: {
             setResult([{type: EVENT_STDERR, content: err.message}])
             setIsRunning(false)
         }
-    }, []);
-    const debouncedRun = useRef(debounce(runCallback, DEBOUNCE_TIME)).current;
+    }, [sandboxVersion]), DEBOUNCE_TIME);
 
-    const debouncedGetSnippet = useRef(debounce(useCallback(async (id: string) => {
+    const debouncedGetSnippet = debounce(useCallback(async (id: string) => {
         try {
             const data = await getSnippet(id);
             setCode(data);
             setPatch({value: data});
-            setFilePath(DEFAULT_MAIN_FILE_PATH)
             setCleanHistoryTrigger(!cleanHistoryTrigger)
             debouncedRun()
         } catch (e) {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [debouncedRun, setToastError]), DEBOUNCE_TIME)).current;
+    }, [cleanHistoryTrigger, debouncedRun, setToastError]), DEBOUNCE_TIME);
+
+    // fetch the snippet if the url contains the snippet id, do only once
+    useEffect(() => {
+        (async () => {
+            const matches = location.pathname.match(SNIPPET_REGEX)
+            if (matches) {
+                const raw = matches[0]
+                const id = raw.split("/")[2]
+                try {
+                    const data = await fetchSnippet(id)
+                    if (data) {
+                        // must call together
+                        setCode(data)
+                        setPatch({value: data})
+                        setActiveSandbox(id as mySandboxes) // force assertion
+                        debouncedRun() // run immediately after fetching
+                    }
+                } catch (e) {
+                    setToastError(<FetchErrorMessage error={(e as Error).message}/>)
+                }
+            }
+        })()
+    }, [debouncedRun, setToastError]);
 
     function onLint() {
         localStorage.setItem(IS_LINT_ON_KEY, JSON.stringify(!isLintOn));
@@ -348,8 +321,7 @@ export default function Component(props: {
 
     function onSandboxVersionChange(version: string) {
         localStorage.setItem(SANDBOX_VERSION_KEY, version);
-        setSandboxVersion(version)
-        debouncedRun()
+        location.reload()
     }
 
     function onIsVerticalLayoutChange() {
@@ -364,7 +336,6 @@ export default function Component(props: {
         const data = getCodeContent(id)
         setCode(data)
         setPatch({value: data})
-        setFilePath(DEFAULT_MAIN_FILE_PATH)
         setCleanHistoryTrigger(!cleanHistoryTrigger)
         debouncedRun()
     }
@@ -435,7 +406,7 @@ export default function Component(props: {
             <div
                 className="flex items-center justify-between border-b border-b-gray-300 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0.5">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
-                    <img src={"/logo.svg"} alt={"logo"} className={"mr-1 h-4 max-md:hidden"}/>
+                    <img src={"/favicon.png"} alt={"logo"} className={"mr-1 h-5 max-md:hidden"}/>
 
                     <div
                         className="text-xl font-light text-gray-600 dark:text-gray-300 max-md:text-sm">{TITLE}</div>
@@ -498,15 +469,14 @@ export default function Component(props: {
                         <Editor
                             lan={lan}
                             cleanHistoryTrigger={cleanHistoryTrigger}
-                            sandboxVersion={sandboxVersion}
+                            sandboxId={activeSandbox}
+                            goVersion={sandboxVersion}
                             setToastError={setToastError}
                             isLintOn={isLintOn}
                             isAutoCompletionOn={isAutoCompletionOn}
                             value={code}
                             patch={patch}
-                            filePath={filePath}
                             fontSize={fontSize}
-                            setFilePath={setFilePath}
                             keyBindings={keyBindings}
                             onChange={onChange}
                             setShowSettings={setShowSettings}
