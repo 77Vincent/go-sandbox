@@ -40,7 +40,7 @@ import Mousetrap from "mousetrap";
 import debounce from "debounce";
 
 // local imports
-import {KeyBindingsType, languages, LSPCompletionItem, patchI} from "../types";
+import {KeyBindingsType, languages, LSPCompletionItem, mySandboxes, patchI} from "../types";
 import {
     EMACS,
     NONE,
@@ -49,7 +49,7 @@ import {
     CURSOR_HEAD_KEY,
     DEFAULT_INDENTATION_SIZE,
 } from "../constants.ts";
-import {getCursorHead, getWsUrl, isUserCode} from "../utils.ts";
+import {getCursorHead, getFileUri, getWsUrl, isUserCode} from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -113,9 +113,9 @@ const lintCompartment = new Compartment();
 const readOnlyCompartment = new Compartment()
 
 // setters of compartments
-const setLint = (isLintOn: boolean, isUserCode: boolean, diagnostics: Diagnostic[]) => {
+const setLint = (on: boolean, diagnostics: Diagnostic[]) => {
     // do not display diagnostics for non-user code
-    return isLintOn && isUserCode ? linter(() => diagnostics) : [];
+    return on ? linter(() => diagnostics) : [];
 }
 const setAutoCompletion = (completions: LSPCompletionItem[]) => {
     return (context: CompletionContext): CompletionResult | null => {
@@ -192,10 +192,10 @@ export default function Component(props: {
     // toast
     setToastError: (message: ReactNode) => void
 
-    sandboxVersion: string;
+    sandboxId: mySandboxes
+    goVersion: string;
     value: string;
     patch: patchI;
-    filePath: string;
 
     // settings
     lan: languages
@@ -207,7 +207,6 @@ export default function Component(props: {
     // handler
     onChange: (code: string) => void;
     // setters
-    setFilePath: (filePath: string) => void;
     setShowSettings: (v: boolean) => void;
     setShowManual: (v: boolean) => void;
     // actions
@@ -217,18 +216,17 @@ export default function Component(props: {
     cleanHistoryTrigger: boolean;
 }) {
     const {
-        sandboxVersion,
+        sandboxId,
+        goVersion,
         setToastError,
         // props
         lan,
         value, patch,
-        filePath,
         fontSize, keyBindings,
         isLintOn, isAutoCompletionOn,
         // handlers
         onChange,
         // setters
-        setFilePath,
         setShowSettings,
         setShowManual,
         cleanHistoryTrigger,
@@ -253,27 +251,31 @@ export default function Component(props: {
     const view = useRef<EditorView | null>(null);
     const lsp = useRef<LSPClient | null>(null);
     const version = useRef<number>(1); // initial version
+    const file = useRef<string>(getFileUri(goVersion));
 
     const hist = view.current?.state.field(historyField);
     // update the file path when the history changes
     useEffect(() => {
         if (!hist || hist.stack.length === 0) return;
-        // update the file path when the history changes
         const path = hist.stack[hist.index].filePath;
-        setFilePath(path);
-    }, [setFilePath, hist]);
 
+        if (path === file.current) return;
+        // on update the file path when the history changes
+        file.current = path;
+    }, [hist]);
+
+    // should only be triggered by the trigger
     useEffect(() => {
-        resetHistory(view.current, value, filePath);
+        resetHistory(view.current, value, getFileUri(goVersion));
     }, [cleanHistoryTrigger]);
 
     // manage cursor
-    const onCursorChange = useRef(debounce(useCallback((v: ViewUpdate) => {
+    const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
         localStorage.setItem(CURSOR_HEAD_KEY, String(v.state.selection.main.head))
         const {row, col} = getCursorPos(v);
         setRow(row);
         setCol(col);
-    }, []), DEBOUNCE_TIME)).current
+    }, []), DEBOUNCE_TIME)
 
     useEffect(() => {
         // reset error/warning/info count
@@ -282,7 +284,7 @@ export default function Component(props: {
         setInfoCount(0);
 
         // do no display diagnostic for non-user code
-        if (!isUserCode(filePath)) {
+        if (!isUserCode(file.current)) {
             return
         }
 
@@ -301,10 +303,10 @@ export default function Component(props: {
                     setInfoCount((prev) => prev + 1);
             }
         })
-    }, [filePath, diagnostics]);
+    }, [diagnostics]);
 
     // manage content
-    const debouncedLspUpdate = useRef(debounce(useCallback(async (v: ViewUpdate) => {
+    const debouncedLspUpdate = debounce(useCallback(async (v: ViewUpdate) => {
         try {
             if (!lsp.current || !view.current) return
 
@@ -315,9 +317,9 @@ export default function Component(props: {
             await lsp.current.didChange(version.current, v.state.doc.toString());
 
             // do not display completion for non-user code
-            const hist = v.state.field(historyField);
-            if (hist.stack.length) {
-                if (!isUserCode(hist.stack[hist.index].filePath)) {
+            const {stack, index} = v.state.field(historyField);
+            if (stack.length) {
+                if (!isUserCode(stack[index].filePath)) {
                     return
                 }
             }
@@ -329,14 +331,23 @@ export default function Component(props: {
         } catch (e) {
             setToastError((e as Error).message)
         }
-    }, [setToastError]), DEBOUNCE_TIME)).current
+    }, [setToastError]), DEBOUNCE_TIME)
+
+    const debouncedStoreCode = debounce(useCallback((data: string) => {
+        // only store user code
+        if (isUserCode(file.current)) {
+            localStorage.setItem(sandboxId, data)
+        }
+    }, [sandboxId]), DEBOUNCE_TIME);
 
     const onViewUpdate = useCallback((v: ViewUpdate) => {
         if (v.docChanged) {
-            onChange(v.state.doc.toString());
+            const data = v.state.doc.toString();
+            onChange(data);
+            debouncedStoreCode(data);
             debouncedLspUpdate(v);
         }
-    }, [onChange, debouncedLspUpdate]);
+    }, [onChange, debouncedLspUpdate, debouncedStoreCode]);
 
     const seeDefinition = useCallback((v: EditorView): boolean => {
         (async function () {
@@ -344,16 +355,16 @@ export default function Component(props: {
                 return
             }
             const {row: currentRow, col: currentCol} = getCursorPos(v);
-            const definitions = await lsp.current.getDefinition(currentRow - 1, currentCol - 1);
+            const definitions = await lsp.current.getDefinition(currentRow - 1, currentCol - 1, file.current);
             if (!definitions.length) {
                 return
             }
 
             // push the current position to the history
-            recordHistory(view.current, filePath);
+            recordHistory(view.current, file.current);
 
-            const path = decodeURIComponent(definitions[0].uri.replace("file://", ""));
-            const {is_main, error, content} = await fetchSourceCode(path, sandboxVersion)
+            const path = decodeURIComponent(definitions[0].uri);
+            const {is_main, error, content} = await fetchSourceCode(path, goVersion)
             const {range: {start: {line, character}}} = definitions[0];
             const row = line + 1; // 1-based index
             const col = character + 1; // 1-based index
@@ -391,7 +402,7 @@ export default function Component(props: {
             recordHistory(v, path);
         }());
         return true;
-    }, [filePath, sandboxVersion, setToastError]);
+    }, [goVersion, setToastError]);
 
     const [focusedKeymap] = useState(() => [
         {
@@ -477,19 +488,19 @@ export default function Component(props: {
         foldGutter(), // A gutter with code folding markers
         highlightSpecialChars(), // Replace non-printable characters with placeholders
         history(), // The undo history
-        drawSelection(), // Replace native cursor/selection with our own
+        drawSelection(), // Replace the native cursor /selection with our own
         dropCursor(), // Show a drop cursor when dragging over the editor
         EditorState.allowMultipleSelections.of(true), // Allow multiple cursors/selections
         indentOnInput(), // Re-indent lines when typing specific input
-        bracketMatching(), // Highlight matching brackets near cursor
+        bracketMatching(), // Highlight matching brackets near the cursor
         closeBrackets(), // Automatically close brackets
         rectangularSelection(), // Allow alt-drag to select rectangular regions
         crosshairCursor(), // Change the cursor to a crosshair when holding alt
         highlightActiveLine(), // Style the current line specially
-        highlightActiveLineGutter(), // Style the gutter for current line specially
+        highlightActiveLineGutter(), // Style the gutter for the current line specially
         highlightSelectionMatches(), // Highlight text that matches the selected text
         keymap.of([
-            ...closeBracketsKeymap, // Closed-brackets aware backspace
+            ...closeBracketsKeymap, // Closed-bracket-aware backspace
             ...defaultKeymap, // A large set of basic bindings
             ...searchKeymap, // Search-related keys
             ...historyKeymap, // Redo/undo keys
@@ -499,9 +510,9 @@ export default function Component(props: {
             ...focusedKeymap, // Custom key bindings
         ]),
         historyField, // The history field
-        readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(filePath))),
-        lintCompartment.of(setLint(isLintOn, isUserCode(filePath), diagnostics)),
-        autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []})),
+        readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(file.current))),
+        lintCompartment.of(setLint(isLintOn && isUserCode(file.current), diagnostics)),
+        autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn && isUserCode(file.current) ? [setAutoCompletion(completions)] : []})),
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(DEFAULT_INDENTATION_SIZE)),
         keyBindingsCompartment.of(setKeyBindings(keyBindings)),
@@ -558,9 +569,9 @@ export default function Component(props: {
         view.current.focus();
 
         // push the initial state to the history
-        recordHistory(view.current, filePath);
+        recordHistory(view.current, getFileUri(goVersion));
 
-        lsp.current = new LSPClient(getWsUrl("/ws"), sandboxVersion, view.current, handleDiagnostics, handleError);
+        lsp.current = new LSPClient(getWsUrl("/ws"), goVersion, view.current, handleDiagnostics, handleError);
 
         // key bindings for unfocused editor
         Mousetrap.bind('esc', function () {
@@ -605,33 +616,27 @@ export default function Component(props: {
 
     // dynamically update configuration
     useEffect(() => {
-        if (!view.current) return;
-        view.current.dispatch({effects: [themeCompartment.reconfigure(setTheme(mode))]})
+        view.current?.dispatch({effects: [themeCompartment.reconfigure(setTheme(mode))]})
     }, [mode]);
     useEffect(() => {
-        if (!view.current) return;
-        view.current.dispatch({effects: [keyBindingsCompartment.reconfigure(setKeyBindings(keyBindings))]})
+        view.current?.dispatch({effects: [keyBindingsCompartment.reconfigure(setKeyBindings(keyBindings))]})
     }, [keyBindings]);
     useEffect(() => {
-        if (!view.current) return;
-        view.current.dispatch({effects: [fontSizeCompartment.reconfigure(setFontSize(fontSize))]})
+        view.current?.dispatch({effects: [fontSizeCompartment.reconfigure(setFontSize(fontSize))]})
     }, [fontSize]);
     useEffect(() => {
-        if (!view.current) return;
-        view.current.dispatch({
+        const on = isAutoCompletionOn && isUserCode(file.current);
+        view.current?.dispatch({
             effects: [autoCompletionCompartment.reconfigure(autocompletion({
-                override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []
+                override: on ? [setAutoCompletion(completions)] : []
             }))]
         })
     }, [completions, isAutoCompletionOn]);
     useEffect(() => {
-        if (!view.current) return;
-        view.current.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, isUserCode(filePath), diagnostics))]})
-    }, [filePath, diagnostics, isLintOn]);
-    useEffect(() => {
-        if (!view.current) return;
-        view.current.dispatch({effects: [readOnlyCompartment.reconfigure(EditorState.readOnly.of(!isUserCode(filePath)))]})
-    }, [filePath]);
+        const on = isLintOn && isUserCode(file.current);
+        view.current?.dispatch({effects: [lintCompartment.reconfigure(setLint(on, diagnostics))]})
+        view.current?.dispatch({effects: [readOnlyCompartment.reconfigure(EditorState.readOnly.of(!isUserCode(file.current)))]})
+    }, [diagnostics, isLintOn]);
 
     const onLintClick = useCallback(() => {
         if (!view.current) return;
@@ -649,7 +654,7 @@ export default function Component(props: {
             <StatusBar
                 lan={lan}
                 view={view.current}
-                row={row} col={col} filePath={filePath}
+                row={row} col={col} file={file.current}
                 onLintClick={onLintClick}
                 errors={errorCount}
                 warnings={warningCount}
