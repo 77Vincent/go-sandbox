@@ -3,7 +3,7 @@ import {GrFormPrevious as PrevIcon, GrFormNext as NextIcon} from "react-icons/gr
 import {EditorView} from "@codemirror/view";
 import {historyBack, historyField, historyForward} from "../lib/history.ts";
 import {Tooltip} from "flowbite-react";
-import {BUTTON_INACTIVE, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
+import {BUTTON_INACTIVE, DEFAULT_MAIN_FILE_PATH, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
 import {MetaKey} from "./Common.tsx";
 import {MdKeyboardOptionKey as OptionKey} from "react-icons/md";
@@ -30,14 +30,14 @@ export default function Component(props: {
     warnings: number,
     info: number,
     onLintClick: () => void,
-    filePath: string
+    file: string
 }) {
     const {
         lan,
         view, row, col,
         errors, warnings, info,
         onLintClick,
-        filePath
+        file
     } = props
 
     if (!view) {
@@ -84,7 +84,7 @@ export default function Component(props: {
 
             <div className={`flex items-center gap-1 ${textClasses}`}>
                 <img src={"/logo.svg"} alt={"logo"} className={"h-2"}/>
-                {filePath}
+                {file.includes(DEFAULT_MAIN_FILE_PATH) ? file.substring(21) : file.substring(24)}
 
             </div>
 
