@@ -1,15 +1,16 @@
 import {
-    LSPCompletionItem, LSPCompletionResult,
+    LSPCompletionItem,
+    LSPCompletionResult,
     LSPDefinition,
-    LSPDiagnostic, LSPResponse,
+    LSPDiagnostic,
+    LSPResponse,
     pendingRequests
 } from "../types";
 import {Diagnostic} from "@codemirror/lint";
 import {EditorView} from "@codemirror/view";
+import {URI_BASE, WORKSPACE} from "../constants.ts";
+import {getFileUri} from "../utils.ts";
 
-const WORKSPACE = "workspace";
-const URI_BASE = `file:///${WORKSPACE}`
-const MAIN_FILE = "main.go"
 const DIAGNOSTICS_METHOD = "textDocument/publishDiagnostics";
 const SEVERITY_MAP: Record<number, string> = {
     1: "error",
@@ -63,14 +64,16 @@ export class LSPClient {
     handleError: (error: string) => void;
 
     constructor(
-        url: string, sandboxVersion: string, view: EditorView,
+        backendUrl: string,
+        initialSandboxVersion: string,
+        view: EditorView,
         handleDiagnostic: (diagnostic: Diagnostic[]) => void,
         handleError: (error: string) => void,
     ) {
         this.handleDiagnostic = handleDiagnostic;
         this.handleError = handleError;
-        this.sandboxVersion = sandboxVersion;
-        this.ws = new WebSocket(url);
+        this.sandboxVersion = initialSandboxVersion;
+        this.ws = new WebSocket(backendUrl);
         this.requestId = 0;
         this.pendingRequests = new Map();
         this.view = view;
@@ -82,11 +85,6 @@ export class LSPClient {
         this.ws.onmessage = (event) => this.handleMessage(event.data);
         this.ws.onerror = (e) => console.error("LSP WebSocket error:", e);
         this.ws.onclose = (e) => console.log("LSP WebSocket closed:", e);
-    }
-
-    // get the url of the go file in the target sandbox dir
-    getUrl(): string {
-        return `${URI_BASE}/go${this.sandboxVersion}/${MAIN_FILE}`
     }
 
     sendNotification(method: string, params: object): void {
@@ -125,15 +123,15 @@ export class LSPClient {
 
     async didChange(version: number, text: string): Promise<void> {
         this.sendNotification(EVENT_DID_CHANGE, {
-            textDocument: {uri: this.getUrl(), version}, // version should be incremented
+            textDocument: {uri: getFileUri(this.sandboxVersion), version}, // version should be incremented
             contentChanges: [{text}],
         });
     }
 
-    async getDefinition(line: number, character: number): Promise<LSPDefinition[]> {
+    async getDefinition(line: number, character: number, uri: string): Promise<LSPDefinition[]> {
         try {
             const res = await this.sendRequest<LSPDefinition[]>(EVENT_DEFINITION, {
-                textDocument: {uri: this.getUrl()},
+                textDocument: {uri},
                 position: {line, character},
             });
             return res.result || [];
@@ -145,7 +143,7 @@ export class LSPClient {
     async getCompletions(line: number, character: number): Promise<LSPCompletionItem[]> {
         try {
             const res = await this.sendRequest<LSPCompletionResult>(EVENT_COMPLETION, {
-                textDocument: {uri: this.getUrl()},
+                textDocument: {uri: getFileUri(this.sandboxVersion)},
                 position: {line, character},
             });
             return res.result?.items || [];
@@ -164,7 +162,7 @@ export class LSPClient {
             this.sendNotification(EVENT_INITIALIZED, {});
             this.sendNotification(EVENT_DID_OPEN, {
                 textDocument: {
-                    uri: this.getUrl(),
+                    uri: getFileUri(this.sandboxVersion),
                     languageId: "go",
                     version,
                     text,
@@ -210,5 +208,4 @@ export class LSPClient {
             console.error("Error parsing LSP message:", error);
         }
     }
-
 }

@@ -11,7 +11,6 @@ import {
     DEFAULT_LINT_ON,
     DEFAULT_MAIN_FILE_PATH,
     DEFAULT_SANDBOX_VERSION,
-    DEFAULT_TEST_FILE_PATH,
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
@@ -24,7 +23,7 @@ import {
     MOBILE_WIDTH,
     MY_SANDBOXES,
     SANDBOX_NAMES_KEY,
-    SANDBOX_VERSION_KEY,
+    SANDBOX_VERSION_KEY, URI_BASE,
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes} from "./types";
 
@@ -130,19 +129,15 @@ export function getWsUrl(path: string): string {
     return `${apiUrl.replace("https", "wss")}${path}`;
 }
 
-export function normalizeText(text: string = "") {
-    return text
-        .split(/\r?\n/)          // split text into lines
-        .map(line => line.trim()) // remove leading/trailing whitespace on each line
-        .filter(line => line !== '') // discard empty lines
-        .join('\n');             // join them together (or you could join with "" if you don't want newlines)
-}
-
 export function isMac(): boolean {
     const platform = navigator.userAgent;
     return platform?.toLowerCase().includes('mac') || navigator.platform.includes("Mac")
 }
 
 export function isUserCode(filePath: string): boolean {
-    return filePath === DEFAULT_MAIN_FILE_PATH || filePath === DEFAULT_TEST_FILE_PATH
+    return filePath.includes(DEFAULT_MAIN_FILE_PATH)
+}
+
+export function getFileUri(sandboxVersion: string): string {
+    return `${URI_BASE}/go${sandboxVersion}${DEFAULT_MAIN_FILE_PATH}`
 }

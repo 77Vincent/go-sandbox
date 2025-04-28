@@ -345,3 +345,6 @@ export const MY_SANDBOXES: Record<mySandboxes, string> = {
     "my-sandbox-10": "Sandbox 10",
 }
 export const BUTTON_INACTIVE = "cursor-not-allowed text-gray-300 dark:text-gray-700";
+
+export const WORKSPACE = "workspace";
+export const URI_BASE = `file:///${WORKSPACE}`
