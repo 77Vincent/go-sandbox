@@ -55,7 +55,7 @@ export const LSP_KIND_LABELS: Record<number, string> = {
 }
 
 export class LSPClient {
-    sandboxVersion: string;
+    goVersion: string;
     ws: WebSocket;
     requestId: number;
     pendingRequests: pendingRequests;
@@ -72,7 +72,7 @@ export class LSPClient {
     ) {
         this.handleDiagnostic = handleDiagnostic;
         this.handleError = handleError;
-        this.sandboxVersion = initialSandboxVersion;
+        this.goVersion = initialSandboxVersion;
         this.ws = new WebSocket(backendUrl);
         this.requestId = 0;
         this.pendingRequests = new Map();
@@ -123,7 +123,7 @@ export class LSPClient {
 
     async didChange(version: number, text: string): Promise<void> {
         this.sendNotification(EVENT_DID_CHANGE, {
-            textDocument: {uri: getFileUri(this.sandboxVersion), version}, // version should be incremented
+            textDocument: {uri: getFileUri(this.goVersion), version}, // version should be incremented
             contentChanges: [{text}],
         });
     }
@@ -143,7 +143,7 @@ export class LSPClient {
     async getCompletions(line: number, character: number): Promise<LSPCompletionItem[]> {
         try {
             const res = await this.sendRequest<LSPCompletionResult>(EVENT_COMPLETION, {
-                textDocument: {uri: getFileUri(this.sandboxVersion)},
+                textDocument: {uri: getFileUri(this.goVersion)},
                 position: {line, character},
             });
             return res.result?.items || [];
@@ -162,7 +162,7 @@ export class LSPClient {
             this.sendNotification(EVENT_INITIALIZED, {});
             this.sendNotification(EVENT_DID_OPEN, {
                 textDocument: {
-                    uri: getFileUri(this.sandboxVersion),
+                    uri: getFileUri(this.goVersion),
                     languageId: "go",
                     version,
                     text,
