@@ -5,15 +5,16 @@ import {
     DEFAULT_AUTOCOMPLETION_ON,
     DEFAULT_CURSOR_HEAD,
     DEFAULT_EDITOR_SIZE,
+    DEFAULT_GO_VERSION,
     DEFAULT_IS_VERTICAL_LAYOUT,
     DEFAULT_KEY_BINDINGS,
     DEFAULT_LANGUAGE,
     DEFAULT_LINT_ON,
     DEFAULT_MAIN_FILE_PATH,
-    DEFAULT_GO_VERSION,
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
+    GO_VERSION_KEY,
     HELLO_WORLD,
     IS_AUTOCOMPLETION_ON_KEY,
     IS_LINT_ON_KEY,
@@ -23,9 +24,10 @@ import {
     MOBILE_WIDTH,
     MY_SANDBOXES,
     SANDBOX_NAMES_KEY,
-    GO_VERSION_KEY, URI_BASE,
+    URI_BASE,
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes} from "./types";
+import {EditorView, ViewUpdate} from "@codemirror/view";
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
@@ -140,4 +142,20 @@ export function isUserCode(filePath: string): boolean {
 
 export function getFileUri(sandboxVersion: string): string {
     return `${URI_BASE}/go${sandboxVersion}${DEFAULT_MAIN_FILE_PATH}`
+}
+
+export function displayFileUri(file: string): string {
+    return file.includes(DEFAULT_MAIN_FILE_PATH) ? file.substring(21) : file.substring(24)
+}
+
+export function getCursorPos(v: ViewUpdate | EditorView) {
+    // return 1-based index
+    const pos = v.state.selection.main.head;
+    const line = v.state.doc.lineAt(pos);
+    return {row: line.number, col: pos - line.from + 1}
+}
+
+export function posToHead(v: ViewUpdate | EditorView, row: number, col: number) {
+    const line = v.state.doc.line(row);
+    return line.from + col - 1;
 }

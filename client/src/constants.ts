@@ -44,10 +44,11 @@ export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
 
 export const MOBILE_WIDTH = 768;
 
-export const DEBOUNCE_TIME = 100;
+export const DEBOUNCE_TIME = 75;
 export const ACTIVE_COLOR = "cyan"
 export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
 export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
+export const ACTIVE_TEXT_CLASS = "text-cyan-500 dark:text-cyan-400"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
 export const STATS_INFO_PREFIX = "STATS_INFO:"
@@ -274,7 +275,13 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_CN: "手册",
         zh_TW: "手冊",
         ja: "マニュアル",
-    }
+    },
+    browseHistory: {
+        en: "Browse History",
+        zh_CN: "浏览记录",
+        zh_TW: "瀏覽記錄",
+        ja: "履歴を表示",
+    },
 }
 
 export const SNIPPETS: Record<string, Record<string, string>> = {

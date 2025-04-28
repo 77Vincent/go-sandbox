@@ -43,6 +43,41 @@ export const historyField = StateField.define<{
     },
 });
 
+export function historyGoto(view: EditorView | null, index: number) {
+    if (!view) {
+        return false;
+    }
+
+    // first focus the editor
+    view.focus();
+
+    const hist = view.state.field(historyField);
+    if (index < 0 || index >= hist.stack.length) {
+        return false; // nothing to go to
+    }
+    const entry = hist.stack[index];
+    hist.index = index; // update the index in the history field
+
+    // 1) swap in the old document if needed
+    if (view.state.doc.toString() !== entry.doc) {
+        view.dispatch({
+            changes: {
+                from: 0,
+                to: view.state.doc.length,
+                insert: entry.doc
+            }
+        });
+    }
+
+    // 2) move the cursor and scroll
+    view.dispatch({
+        selection: {anchor: entry.pos},
+        scrollIntoView: true,
+    });
+    view.scrollDOM.scrollTop = entry.scroll;
+    return true;
+}
+
 export function historyBack(view: EditorView | null) {
     if (!view) {
         return false;

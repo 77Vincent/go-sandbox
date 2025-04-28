@@ -4,28 +4,35 @@ import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
 import {indentationMarkers} from '@replit/codemirror-indentation-markers';
-import {openLintPanel, lintKeymap, lintGutter, linter, Diagnostic} from "@codemirror/lint";
-import {acceptCompletion, completionStatus} from "@codemirror/autocomplete";
-import {EditorState, Compartment, EditorSelection, ChangeSpec} from "@codemirror/state"
+import {Diagnostic, linter, lintGutter, lintKeymap, openLintPanel} from "@codemirror/lint";
 import {
-    ViewUpdate, EditorView, keymap, highlightSpecialChars, drawSelection,
-    highlightActiveLine, dropCursor, rectangularSelection,
-    crosshairCursor, lineNumbers, highlightActiveLineGutter
+    acceptCompletion,
+    autocompletion,
+    closeBrackets,
+    closeBracketsKeymap,
+    Completion,
+    CompletionContext,
+    completionKeymap,
+    CompletionResult,
+    completionStatus
+} from "@codemirror/autocomplete";
+import {ChangeSpec, Compartment, EditorSelection, EditorState} from "@codemirror/state"
+import {
+    crosshairCursor,
+    drawSelection,
+    dropCursor,
+    EditorView,
+    highlightActiveLine,
+    highlightActiveLineGutter,
+    highlightSpecialChars,
+    keymap,
+    lineNumbers,
+    rectangularSelection,
+    ViewUpdate
 } from "@codemirror/view"
-import {
-    indentOnInput,
-    bracketMatching, foldGutter, foldKeymap, indentUnit,
-} from "@codemirror/language"
-import {
-    defaultKeymap, history, historyKeymap, indentMore, indentLess
-} from "@codemirror/commands"
-import {
-    searchKeymap, highlightSelectionMatches
-} from "@codemirror/search"
-import {
-    autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap,
-    CompletionContext, CompletionResult, Completion
-} from "@codemirror/autocomplete"
+import {bracketMatching, foldGutter, foldKeymap, indentOnInput, indentUnit,} from "@codemirror/language"
+import {defaultKeymap, history, historyKeymap, indentLess, indentMore} from "@codemirror/commands"
+import {highlightSelectionMatches, searchKeymap} from "@codemirror/search"
 
 // theme import
 import {vsCodeDark as themeDark} from '@fsegurai/codemirror-theme-vscode-dark'
@@ -41,38 +48,13 @@ import debounce from "debounce";
 
 // local imports
 import {KeyBindingsType, languages, LSPCompletionItem, mySandboxes, patchI} from "../types";
-import {
-    EMACS,
-    NONE,
-    DEBOUNCE_TIME,
-    VIM,
-    CURSOR_HEAD_KEY,
-    DEFAULT_INDENTATION_SIZE,
-} from "../constants.ts";
-import {getCursorHead, getFileUri, getWsUrl, isUserCode} from "../utils.ts";
+import {CURSOR_HEAD_KEY, DEBOUNCE_TIME, DEFAULT_INDENTATION_SIZE, EMACS, NONE, VIM,} from "../constants.ts";
+import {getCursorHead, getCursorPos, getFileUri, getWsUrl, isUserCode, posToHead} from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {fetchSourceCode} from "../api/api.ts";
-import {
-    historyBack,
-    historyField,
-    historyForward,
-    recordHistory, resetHistory,
-} from "../lib/history.ts";
-
-
-function getCursorPos(v: ViewUpdate | EditorView) {
-    // return 1-based index
-    const pos = v.state.selection.main.head;
-    const line = v.state.doc.lineAt(pos);
-    return {row: line.number, col: pos - line.from + 1}
-}
-
-function posToHead(v: ViewUpdate | EditorView, row: number, col: number) {
-    const line = v.state.doc.line(row);
-    return line.from + col - 1;
-}
+import {historyBack, historyField, historyForward, recordHistory, resetHistory,} from "../lib/history.ts";
 
 // map type from LSP to codemirror
 const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
@@ -656,6 +638,7 @@ export default function Component(props: {
                 lan={lan}
                 view={view.current}
                 row={row} col={col} file={file.current}
+                updateFile={(v) => file.current = v}
                 onLintClick={onLintClick}
                 errors={errorCount}
                 warnings={warningCount}
