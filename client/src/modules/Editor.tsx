@@ -62,7 +62,7 @@ import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {fetchSourceCode} from "../api/api.ts";
-import {historyBack, historyField, historyForward, recordHistory, resetHistory,} from "../lib/history.ts";
+import {SessionI, Sessions} from "./Sessions.tsx";
 
 // map type from LSP to codemirror
 const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
@@ -203,7 +203,6 @@ export default function Component(props: {
     debouncedRun: () => void;
     debouncedFormat: () => void;
     debouncedShare: () => void;
-    cleanHistoryTrigger: boolean;
 }) {
     const {
         sandboxId,
@@ -219,7 +218,6 @@ export default function Component(props: {
         // setters
         setShowSettings,
         setShowManual,
-        cleanHistoryTrigger,
         // action
         debouncedRun,
         debouncedFormat,
@@ -235,6 +233,7 @@ export default function Component(props: {
     const [infoCount, setInfoCount] = useState(0);
     const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
     const [completions, setCompletions] = useState<LSPCompletionItem[]>([]);
+    const [sessions, setSessions] = useState<SessionI[]>([]);
 
     // ref
     const editor = useRef<HTMLDivElement>(null);
@@ -242,22 +241,6 @@ export default function Component(props: {
     const lsp = useRef<LSPClient | null>(null);
     const version = useRef<number>(1); // initial version
     const file = useRef<string>(getFileUri(goVersion));
-
-    const hist = view.current?.state.field(historyField);
-    // update the file path when the history changes
-    useEffect(() => {
-        if (!hist || hist.stack.length === 0) return;
-        const path = hist.stack[hist.index].filePath;
-
-        if (path === file.current) return;
-        // on update the file path when the history changes
-        file.current = path;
-    }, [hist]);
-
-    // should only be triggered by the trigger
-    useEffect(() => {
-        resetHistory(view.current, value, getFileUri(goVersion));
-    }, [cleanHistoryTrigger]);
 
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
@@ -307,11 +290,8 @@ export default function Component(props: {
             await lsp.current.didChange(version.current, v.state.doc.toString());
 
             // do not display completion for non-user code
-            const {stack, index} = v.state.field(historyField);
-            if (stack.length) {
-                if (!isUserCode(stack[index].filePath)) {
-                    return
-                }
+            if (!isUserCode(file.current)) {
+                return
             }
 
             // get completions
@@ -350,15 +330,14 @@ export default function Component(props: {
                 return
             }
 
-            // push the current position to the history
-            recordHistory(view.current, file.current);
-
             const path = decodeURIComponent(definitions[0].uri);
-            file.current = path;
+            file.current = path; // update file immediately
+
             const {is_main, error, content} = await fetchSourceCode(path, goVersion)
             const {range: {start: {line, character}}} = definitions[0];
             const row = line + 1; // 1-based index
             const col = character + 1; // 1-based index
+
             if (error) {
                 setToastError(error);
                 return;
@@ -389,23 +368,12 @@ export default function Component(props: {
                 })
             }
 
-            // record the history after the change
-            recordHistory(v, path);
+            setSessions((prev => [...prev, {id: path, cursor: posToHead(v, row, col), data: content}]));
         }());
         return true;
     }, [goVersion, setToastError]);
 
     const [focusedKeymap] = useState(() => [
-        {
-            key: `Mod-Alt-,`,
-            preventDefault: true,
-            run: historyBack,
-        },
-        {
-            key: `Mod-Alt-.`,
-            preventDefault: true,
-            run: historyForward,
-        },
         {
             key: `Mod-b`,
             preventDefault: true,
@@ -500,7 +468,6 @@ export default function Component(props: {
             ...lintKeymap, // Keys related to the linter system
             ...focusedKeymap, // Custom key bindings
         ]),
-        historyField, // The history field
         readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(file.current))),
         lintCompartment.of(setLint(isLintOn && isUserCode(file.current), diagnostics)),
         autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn && isUserCode(file.current) ? [setAutoCompletion(completions)] : []})),
@@ -559,9 +526,6 @@ export default function Component(props: {
         })
         view.current.focus();
 
-        // push the initial state to the history
-        recordHistory(view.current, getFileUri(goVersion));
-
         lsp.current = new LSPClient(getWsUrl("/ws"), goVersion, view.current, handleDiagnostics, handleError);
 
         // key bindings for unfocused editor
@@ -589,20 +553,12 @@ export default function Component(props: {
             debouncedShare()
             return false
         });
-        Mousetrap.bind(`mod+option+,`, function () {
-            historyBack(view.current);
-            return false
-        });
-        Mousetrap.bind(`mod+option+.`, function () {
-            historyForward(view.current);
-            return false
-        });
 
         const keepAlive = setInterval(() => {
             lsp.current?.keepAlive()
         }, KEEP_ALIVE_INTERVAL)
 
-        // destroy editor on unmount
+        // destroy editor when unmount
         return () => {
             clearInterval(keepAlive);
             view.current?.destroy();
@@ -641,21 +597,22 @@ export default function Component(props: {
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
-        <div className={`relative mb-5 flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}>
-            <div className={"sticky right-0 top-0 z-10"}>
-                <RefreshButton lan={lan}/>
-                <ClickBoard content={value}/>
-            </div>
+        <div className={`relative flex-1 flex-col overflow-hidden ${mode === "dark" ? "editor-bg-dark" : ""}`}>
+            <Sessions sessions={sessions} activeTab={file.current}/>
 
-            <StatusBar
-                lan={lan}
-                view={view.current}
-                row={row} col={col} file={file.current}
-                updateFile={(v) => file.current = v}
-                onLintClick={onLintClick}
-                errors={errorCount}
-                warnings={warningCount}
-                info={infoCount}/>
+            <div className={"h-full overflow-auto pb-14"} ref={editor}>
+                <div className={"sticky right-0 top-0 z-10"}>
+                    <RefreshButton lan={lan}/>
+                    <ClickBoard content={value}/>
+                </div>
+
+                <StatusBar
+                    row={row} col={col} file={file.current}
+                    onLintClick={onLintClick}
+                    errors={errorCount}
+                    warnings={warningCount}
+                    info={infoCount}/>
+            </div>
         </div>
     )
 };
