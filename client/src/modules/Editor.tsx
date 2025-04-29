@@ -48,7 +48,15 @@ import debounce from "debounce";
 
 // local imports
 import {KeyBindingsType, languages, LSPCompletionItem, mySandboxes, patchI} from "../types";
-import {CURSOR_HEAD_KEY, DEBOUNCE_TIME, DEFAULT_INDENTATION_SIZE, EMACS, NONE, VIM,} from "../constants.ts";
+import {
+    CURSOR_HEAD_KEY,
+    DEBOUNCE_TIME,
+    DEFAULT_INDENTATION_SIZE,
+    EMACS,
+    KEEP_ALIVE_INTERVAL,
+    NONE,
+    VIM,
+} from "../constants.ts";
 import {getCursorHead, getCursorPos, getFileUri, getWsUrl, isUserCode, posToHead} from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
@@ -590,8 +598,13 @@ export default function Component(props: {
             return false
         });
 
+        const keepAlive = setInterval(() => {
+            lsp.current?.keepAlive()
+        }, KEEP_ALIVE_INTERVAL)
+
         // destroy editor on unmount
         return () => {
+            clearInterval(keepAlive);
             view.current?.destroy();
             view.current = null;
         };

@@ -286,8 +286,6 @@ export default function Component(props: {
                 try {
                     const data = await fetchSnippet(id)
                     if (data) {
-                        // must call together
-                        value.current = data
                         setPatch({value: data})
                         debouncedRun() // run immediately after fetching
                     }
@@ -393,7 +391,7 @@ export default function Component(props: {
             />
 
             <div
-                className="flex items-center justify-between border-b border-b-gray-300 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0.5">
+                className="flex items-center justify-between border-b border-b-gray-400 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0.5">
                 <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
                     <img src={"/favicon.png"} alt={"logo"} className={"mr-1 h-5 max-md:hidden"}/>
 

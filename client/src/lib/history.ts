@@ -12,11 +12,20 @@ const prevHistoryEvent = StateEffect.define<null>();
 const nextHistoryEvent = StateEffect.define<null>();
 const clearHistoryEvent = StateEffect.define<null>();
 
-// The field holds the stack and a pointer into it
-export const historyField = StateField.define<{
-    stack: { pos: number; scroll: number; doc: string; filePath: string }[];
+interface HistoryEntry {
+    stack: EntryStackI[]
     index: number;
-}>({
+}
+
+interface EntryStackI {
+    pos: number;
+    scroll: number;
+    doc: string;
+    filePath: string;
+}
+
+// The field holds the stack and a pointer into it
+export const historyField = StateField.define<HistoryEntry>({
     create() {
         return {stack: [], index: -1};
     },
@@ -149,7 +158,7 @@ export function historyForward(view: EditorView | null) {
     return true;
 }
 
-export function resetHistory(view: EditorView | null, code: string, filePath: string) {
+export function resetHistory(view: EditorView | null, doc: string, filePath: string) {
     if (!view) {
         return;
     }
@@ -162,8 +171,8 @@ export function resetHistory(view: EditorView | null, code: string, filePath: st
         effects: addHistoryEvent.of({
             pos: 0,
             scroll: view.scrollDOM.scrollTop,
-            doc: code,
-            filePath: filePath,
+            doc,
+            filePath,
         }),
     });
 }
@@ -179,7 +188,7 @@ export function recordHistory(view: EditorView | null, filePath: string) {
             pos: view.state.selection.main.head,
             scroll: view.scrollDOM.scrollTop,
             doc: view.state.doc.toString(),
-            filePath: filePath,
+            filePath,
         }),
     });
 }

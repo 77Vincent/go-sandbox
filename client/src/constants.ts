@@ -44,6 +44,7 @@ export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
 
 export const MOBILE_WIDTH = 768;
 
+export const KEEP_ALIVE_INTERVAL = 5000;
 export const DEBOUNCE_TIME = 75;
 export const ACTIVE_COLOR = "cyan"
 export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
