@@ -234,7 +234,7 @@ export default function Component(props: {
             });
 
             source.addEventListener(EVENT_STDERR, ({data}: MessageEvent) => {
-                // special case -- stats info wrapped in the stderr
+                // special case -- stat info wrapped in the stderr
                 if (data.startsWith(STATS_INFO_PREFIX)) {
                     const [time, mem] = data.replace(STATS_INFO_PREFIX, "").split(";")
                     setInfo(`Time: ${time} | Memory: ${mem}kb`)
@@ -455,7 +455,6 @@ export default function Component(props: {
                         className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                         <Editor
                             lan={lan}
-                            cleanHistoryTrigger={cleanHistoryTrigger}
                             sandboxId={initialSandboxId}
                             goVersion={initialGoVersion}
                             setToastError={setToastError}

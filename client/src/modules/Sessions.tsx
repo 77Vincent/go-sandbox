@@ -1,11 +1,12 @@
 import {IoClose as CloseIcon} from "react-icons/io5";
 import {useThemeMode} from "flowbite-react";
 import {DEFAULT_MAIN_FILE_PATH} from "../constants.ts";
+import {displayFileUri} from "../utils.ts";
 
 const activeClasses = "border-b-cyan-500 font-semibold border-b-2 dark:text-white"
 const inactiveClasses = "text-gray-800 dark:text-gray-300"
 
-function Tab(props: {
+function Session(props: {
     value: string
     active: boolean
 }) {
@@ -19,27 +20,33 @@ function Tab(props: {
     )
 }
 
-export default function Component(props: {
-    tabs: string[]
+export function Sessions(props: {
+    sessions: SessionI[]
     activeTab: string
 }) {
     const {mode} = useThemeMode();
-    const {tabs, activeTab} = props
+    const {sessions, activeTab} = props
 
-    if (tabs.length === 0) {
+    if (sessions.length === 0) {
         return null
     }
 
     return (
         <div
             className={`flex items-center border-b border-gray-200 dark:border-gray-700 ${mode === "dark" ? "editor-bg-dark" : ""}`}>
-            <Tab active={DEFAULT_MAIN_FILE_PATH === activeTab} value={DEFAULT_MAIN_FILE_PATH}/>
+            <Session active={DEFAULT_MAIN_FILE_PATH === activeTab} value={DEFAULT_MAIN_FILE_PATH}/>
 
-            {tabs.map((tab) => {
-                    return <Tab active={tab === activeTab} value={`...${tab.slice(17, 999)}`} key={tab}/>
+            {sessions.map(({id}) => {
+                    return <Session active={id === activeTab} value={displayFileUri(id)} key={id}/>
                 }
             )}
         </div>
     )
 
+}
+
+export interface SessionI {
+    id: string
+    cursor: number
+    data?: string
 }
