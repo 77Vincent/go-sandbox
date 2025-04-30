@@ -57,7 +57,7 @@ export const STATS_INFO_PREFIX = "STATS_INFO:"
 export const HTTP_INTERNAL_ERROR = 500
 export const HTTP_NOT_FOUND = 404
 
-export const SANDBOX_VERSIONS: Record<string, string> = {
+export const GO_VERSION_MAP: Record<string, string> = {
     "1": "Go 1.24",
     "2": "Go 1.23",
     "4": "Go dev branch",

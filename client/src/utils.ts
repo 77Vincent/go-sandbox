@@ -14,7 +14,6 @@ import {
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
-    GO_VERSION_KEY,
     HELLO_WORLD,
     IS_AUTOCOMPLETION_ON_KEY,
     IS_LINT_ON_KEY,
@@ -58,7 +57,7 @@ export function getEditorSize(): number {
 }
 
 export function getGoVersion(): string {
-    return localStorage.getItem(GO_VERSION_KEY) || DEFAULT_GO_VERSION
+    return DEFAULT_GO_VERSION
 }
 
 export function isMobileDevice(): boolean {

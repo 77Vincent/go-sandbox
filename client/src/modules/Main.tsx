@@ -20,7 +20,7 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    // GO_VERSION_KEY,
+    GO_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
     EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY,
@@ -31,7 +31,7 @@ import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import Actions from "./Actions.tsx";
 import SnippetSelector from "./SnippetSelector.tsx";
-// import VersionSelector from "./VersionSelector.tsx";
+import VersionSelector from "./VersionSelector.tsx";
 import SandboxSelector from "./SandboxSelector.tsx";
 import Info from "./Info.tsx";
 import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
@@ -311,10 +311,10 @@ export default function Component(props: {
         setKeyBindings(value)
     }
 
-    // function onGoVersionChange(version: string) {
-    //     localStorage.setItem(GO_VERSION_KEY, version);
-    //     location.reload()
-    // }
+    function onGoVersionChange(version: string) {
+        localStorage.setItem(GO_VERSION_KEY, version);
+        location.reload()
+    }
 
     function onIsVerticalLayoutChange() {
         const value = !isLayoutVertical
@@ -409,9 +409,15 @@ export default function Component(props: {
                             <Divider/>
                             <SandboxSelector lan={lan} onSelect={onSandboxIdChange} isRunning={isRunning}
                                              active={initialSandboxId}/>
+
+                            <Divider/>
+
                             <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
-                            {/*<VersionSelector version={initialGoVersion} isRunning={isRunning}*/}
-                            {/*                 onSelect={onGoVersionChange}/>*/}
+
+                            <Divider/>
+
+                            <VersionSelector version={initialGoVersion} isRunning={isRunning}
+                                             onSelect={onGoVersionChange}/>
                         </>
                     }
 
