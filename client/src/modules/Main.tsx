@@ -294,7 +294,7 @@ export default function Component(props: {
                 }
             }
         })()
-    }, [debouncedRun, setToastError]);
+    }, []); // should not add any dependencies to avoid infinite loop
 
     function onLint() {
         localStorage.setItem(IS_LINT_ON_KEY, JSON.stringify(!isLintOn));
