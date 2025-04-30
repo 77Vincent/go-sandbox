@@ -9,13 +9,29 @@ function Session(props: {
     num: number
     id: string
     active: boolean
-    onSessionClose: (id: string) => void
+    sessions: string[]
+    onSessionClose: (index: number, newIndex: number) => void
 }) {
-    const {id, active, num, onSessionClose} = props
+    const {id, active, num, sessions, onSessionClose} = props
 
-    function handleClose(id: string) {
+    function handleClose(id: string, sessions: string[]) {
         return () => {
-            onSessionClose(id)
+            const index = sessions.findIndex((v) => v === id)
+            let newIndex = null
+            // if session no found, this should not happen
+            if (index === -1) {
+                throw new Error(`session ${id} not found`)
+            }
+
+            if (index < sessions.length - 1) {
+                // if not the last session, use the next one
+                newIndex = index + 1
+            } else {
+                // use the previous one
+                newIndex = index - 1
+            }
+
+            onSessionClose(index, newIndex)
         }
     }
 
@@ -25,7 +41,7 @@ function Session(props: {
             <span className={"max-w-32 truncate text-xs italic"}>{displayFileUri(id)}</span>
             {
                 num > 0 &&
-                <CloseIcon onClick={handleClose(id)}
+                <CloseIcon onClick={handleClose(id, sessions)}
                            className={"cursor-pointer text-sm text-gray-400 hover:opacity-50"}/>
             }
         </div>
@@ -35,7 +51,7 @@ function Session(props: {
 export function Sessions(props: {
     sessions: SessionI[]
     activeSession: string
-    onSessionClose: (id: string) => void
+    onSessionClose: (index: number, newIndex: number) => void
 }) {
     const {mode} = useThemeMode();
     const {sessions, activeSession, onSessionClose} = props
@@ -49,7 +65,7 @@ export function Sessions(props: {
         <div
             className={`flex items-center border-b border-gray-200 dark:border-gray-700 ${mode === "dark" ? "editor-bg-dark" : ""}`}>
             {sessions.map(({id}, i) => {
-                    return <Session num={i} onSessionClose={onSessionClose} active={id === activeSession} id={id}
+                    return <Session num={i} sessions={sessions.map(v => v.id)} onSessionClose={onSessionClose} active={id === activeSession} id={id}
                                     key={id}/>
                 }
             )}

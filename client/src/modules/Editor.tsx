@@ -618,31 +618,19 @@ export default function Component(props: {
         openLintPanel(view.current);
     }, [view]);
 
-    function onSessionClose(id: string) {
+    function onSessionClose(index: number, newIndex: number) {
         if (!view.current) return;
 
-        let prev = null
-        const index = sessions.current.findIndex((s) => s.id === id)
+        const newSession = sessions.current[newIndex];
 
-        // if session no found, this should not happen
-        if (index === -1) {
-            throw new Error(`session ${id} not found`)
-        }
+        // update the file
+        file.current = newSession.id;
 
-        if (index < sessions.current.length - 1) {
-            // if not the last session, use the next one
-            prev = sessions.current[index + 1]
-        } else {
-            // use the previous one
-            prev = sessions.current[index - 1]
-        }
-
-        file.current = prev.id;
         // remove the session from the list
         sessions.current.splice(index, 1);
 
-        // if it is user code, use the latest value
-        const data = isUserCode(prev.id) ? value : prev.data || "";
+        // if the new session is user code, use the latest value
+        const data = isUserCode(newSession.id) ? value : newSession?.data || "";
         view.current.dispatch({
             changes: {
                 from: 0,
@@ -650,10 +638,12 @@ export default function Component(props: {
                 insert: data,
             },
             selection: {
-                anchor: prev.cursor,
+                anchor: newSession?.cursor || 0,
             },
             scrollIntoView: true,
         })
+
+        view.current.focus(); // must focus after dispatch
     }
 
     return (
