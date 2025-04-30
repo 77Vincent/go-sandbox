@@ -8,9 +8,7 @@ services:
     platform: linux/arm64
     container_name: go-sandbox-init
     command: >
-      sh -c "cp -r /app/sandboxes/go1 /shared &&
-             cp -r /app/sandboxes/go2 /shared &&
-             cp -r /app/sandboxes/go4 /shared"
+      sh -c "cp -r /app/sandboxes/go1 /shared"
     volumes:
       - go-sandboxes:/shared
     restart: "no"
@@ -47,7 +45,6 @@ services:
       - init-copier
     volumes:
       - go-sandboxes:/workspace  # Mount same volume at different path
-#    working_dir: /workspace/go1  # Point gopls to a specific sandbox
 
 volumes:
   go-sandboxes:

@@ -17,14 +17,14 @@ import (
 )
 
 const (
-	baseDir         = "./sandboxes"
-	chunkSize       = 1
-	stdoutKey       = "stdout"
-	stderrKey       = "stderr"
-	tmpDirName      = "sandbox-"
-	sandboxRunner1  = baseDir + "/go1/sandbox-runner"
-	sandboxRunner2  = baseDir + "/go2/sandbox-runner"
-	sandboxRunner4  = baseDir + "/go4/sandbox-runner"
+	baseDir        = "./sandboxes"
+	chunkSize      = 1
+	stdoutKey      = "stdout"
+	stderrKey      = "stderr"
+	tmpDirName     = "sandbox-"
+	sandboxRunner1 = baseDir + "/go1/sandbox-runner"
+	//sandboxRunner2  = baseDir + "/go2/sandbox-runner"
+	//sandboxRunner4  = baseDir + "/go4/sandbox-runner"
 	tmpFileName     = "main.go"
 	tmpTestFileName = "main_test.go"
 	timeoutError    = "exit status 124"
@@ -84,12 +84,12 @@ func Execute(c *gin.Context) {
 	case "1":
 		sandboxVersion = sandboxRunner1
 		env = append(env, "PATH=/go1/bin:"+path)
-	case "2":
-		sandboxVersion = sandboxRunner2
-		env = append(env, "PATH=/go2/bin:"+path)
-	case "4":
-		sandboxVersion = sandboxRunner4
-		env = append(env, "PATH=/go4/bin:"+path)
+		//case "2":
+		//	sandboxVersion = sandboxRunner2
+		//	env = append(env, "PATH=/go2/bin:"+path)
+		//case "4":
+		//	sandboxVersion = sandboxRunner4
+		//	env = append(env, "PATH=/go4/bin:"+path)
 	}
 
 	// create a tmp dir
