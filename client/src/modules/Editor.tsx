@@ -668,7 +668,8 @@ export default function Component(props: {
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
-        <div className={`relative flex-1 flex-col overflow-hidden pb-14 ${mode === "dark" ? "editor-bg-dark" : ""}`}>
+        <div
+            className={`relative flex-1 flex-col overflow-hidden ${sessions.current.length > 1 ? "pb-14" : "pb-5"} ${mode === "dark" ? "editor-bg-dark" : ""}`}>
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
 
