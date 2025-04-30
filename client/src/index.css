@@ -6,6 +6,10 @@
     border-bottom-width: 3px;
 }
 
+.logo-size {
+    width: 19px;
+}
+
 html {
     -ms-overflow-style: none;
     scrollbar-width: none;

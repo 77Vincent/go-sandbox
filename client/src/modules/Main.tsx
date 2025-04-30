@@ -294,7 +294,7 @@ export default function Component(props: {
                 }
             }
         })()
-    }, [debouncedRun, setToastError]);
+    }, []); // should not add any dependencies to avoid infinite loop
 
     function onLint() {
         localStorage.setItem(IS_LINT_ON_KEY, JSON.stringify(!isLintOn));
@@ -409,7 +409,13 @@ export default function Component(props: {
                             <Divider/>
                             <SandboxSelector lan={lan} onSelect={onSandboxIdChange} isRunning={isRunning}
                                              active={initialSandboxId}/>
+
+                            <Divider/>
+
                             <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
+
+                            <Divider/>
+
                             <VersionSelector version={initialGoVersion} isRunning={isRunning}
                                              onSelect={onGoVersionChange}/>
                         </>

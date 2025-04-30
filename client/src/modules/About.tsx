@@ -1,5 +1,5 @@
 import {Button, Modal} from "flowbite-react";
-import {FaGithub} from "react-icons/fa";
+import {HiMail} from "react-icons/hi";
 
 import {TITLE} from "../constants.ts";
 import {languages} from "../types";
@@ -28,7 +28,6 @@ export default function Component(props: {
                     autocompletion, and real-time execution of your code!
                 </p>
 
-                <div className={"text-lg font-semibold italic"}>Key Features</div>
                 <ul className={"list-inside list-disc indent-4"}>
                     <li>Realtime execution using websocket</li>
                     <li>LSP-backed linting and autocompletion</li>
@@ -67,10 +66,12 @@ export default function Component(props: {
                         as={Link}
                         gradientMonochrome={"teal"}
                         className={"hover:opacity-80"}
-                        to={"https://github.com/77Vincent/go-sandbox/issues"} target={"_blank"}>
+                        to={"mailto:wentianqi77@outlook.com"}
+                        target={"_blank"}
+                >
                     <div className={"flex items-center gap-2"}>
-                        <FaGithub size={20}/>
-                        Report Issues
+                        <HiMail size={20}/>
+                        Contact me
                     </div>
                 </Button>
             </div>

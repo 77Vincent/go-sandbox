@@ -34,7 +34,9 @@ export default function Component(props: {
     }
 
     return (
-        <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"} label={buttonLabel}>
+        <Dropdown inline={true} className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
+                  label={<span className={"text-xs"}>{buttonLabel}</span>}
+        >
             {
                 Object.keys(SNIPPETS).map(key => {
                     return (

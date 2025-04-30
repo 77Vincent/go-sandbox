@@ -103,11 +103,9 @@ export default function Component(props: {
     }, [sandboxes]);
 
     return (
-        <Dropdown className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
-                  label={
-                      // fallback to the id when it is from shared sandboxes
-                      sandboxNames[active] || MY_SANDBOXES[active] || active
-                  }>
+        <Dropdown inline={true} className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
+                  label={<span className={"text-xs"}>{sandboxNames[active] || MY_SANDBOXES[active] || active}</span>}
+        >
             {
                 sandboxes.map((key) => {
                     return (

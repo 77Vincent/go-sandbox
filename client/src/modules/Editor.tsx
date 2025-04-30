@@ -57,7 +57,16 @@ import {
     NONE,
     VIM,
 } from "../constants.ts";
-import {getCursorHead, getCursorPos, getFileUri, getWsUrl, isUserCode, posToHead, viewUpdate} from "../utils.ts";
+import {
+    getCodeContent,
+    getCursorHead,
+    getCursorPos,
+    getFileUri,
+    getWsUrl,
+    isUserCode,
+    posToHead,
+    viewUpdate
+} from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -244,10 +253,16 @@ export default function Component(props: {
 
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
-        localStorage.setItem(CURSOR_HEAD_KEY, String(v.state.selection.main.head))
+        const head = v.state.selection.main.head;
+        localStorage.setItem(CURSOR_HEAD_KEY, String(head))
         const {row, col} = getCursorPos(v);
         setRow(row);
         setCol(col);
+
+        // update the main session
+        if (isUserCode(file.current)) {
+            sessions.current[0].cursor = head
+        }
     }, []), DEBOUNCE_TIME)
 
     useEffect(() => {
@@ -324,11 +339,6 @@ export default function Component(props: {
             if (!lsp.current || !view.current) {
                 return
             }
-            const {row: currentRow, col: currentCol} = getCursorPos(v);
-            const definitions = await lsp.current.getDefinition(currentRow - 1, currentCol - 1, file.current);
-            if (!definitions.length) {
-                return
-            }
 
             // update the current session before going to the definition
             const data = {
@@ -339,6 +349,15 @@ export default function Component(props: {
             const index = sessions.current.findIndex((s) => s.id === file.current)
             // update the session
             sessions.current[index] = data
+
+            // start getting the definition
+            const {row: currentRow, col: currentCol} = getCursorPos(v);
+            const definitions = await lsp.current.getDefinition(currentRow - 1, currentCol - 1, file.current);
+
+            // quit if no definition
+            if (!definitions.length) {
+                return
+            }
 
             const path = decodeURIComponent(definitions[0].uri);
             file.current = path; // update file immediately
@@ -618,7 +637,7 @@ export default function Component(props: {
         openLintPanel(view.current);
     }, [view]);
 
-    function onSessionClose(index: number, newIndex: number) {
+    const onSessionClose = useCallback((index: number, newIndex: number) => {
         if (!view.current) return;
 
         const {id, data, cursor} = sessions.current[newIndex];
@@ -630,11 +649,11 @@ export default function Component(props: {
         sessions.current.splice(index, 1);
 
         // if the new session is user code, use the latest value
-        const content = isUserCode(id) ? value : data || "";
+        const content = isUserCode(id) ? getCodeContent(sandboxId) : data || "";
         viewUpdate(view.current, content, cursor);
-    }
+    }, [sandboxId])
 
-    function onSessionClick(index: number) {
+    const onSessionClick = useCallback((index: number) => {
         if (!view.current) return;
 
         const {id, data, cursor} = sessions.current[index];
@@ -643,14 +662,16 @@ export default function Component(props: {
         file.current = id;
 
         // if the new session is user code, use the latest value
-        const content = isUserCode(id) ? value : data || "";
+        const content = isUserCode(id) ? getCodeContent(sandboxId) : data || "";
         viewUpdate(view.current, content, cursor);
-    }
+    }, [sandboxId])
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
-        <div className={`relative flex-1 flex-col overflow-hidden pb-14 ${mode === "dark" ? "editor-bg-dark" : ""}`}>
-            <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current} activeSession={file.current}/>
+        <div
+            className={`relative flex-1 flex-col overflow-hidden ${sessions.current.length > 1 ? "pb-14" : "pb-5"} ${mode === "dark" ? "editor-bg-dark" : ""}`}>
+            <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
+                      activeSession={file.current}/>
 
             <div className={"h-full overflow-auto"} ref={editor}>
                 <div className={"sticky right-0 top-0 z-10"}>
