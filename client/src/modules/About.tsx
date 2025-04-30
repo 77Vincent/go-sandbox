@@ -28,7 +28,6 @@ export default function Component(props: {
                     autocompletion, and real-time execution of your code!
                 </p>
 
-                <div className={"text-lg font-semibold italic"}>Key Features</div>
                 <ul className={"list-inside list-disc indent-4"}>
                     <li>Realtime execution using websocket</li>
                     <li>LSP-backed linting and autocompletion</li>

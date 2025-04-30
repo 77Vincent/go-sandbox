@@ -40,7 +40,7 @@ export default function Component(props: {
             </div>
         </Modal.Header>
 
-        <Modal.Body className={"text-gray-300"}>
+        <Modal.Body className={"text-gray-900 dark:text-gray-100"}>
             <Grid>
                 <Row>
                     <Title> {TRANSLATE.settings[lan]} </Title>

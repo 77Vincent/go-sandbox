@@ -33,7 +33,7 @@ export default function Component(props: {
                 </div>
             }>
                 <RunICon className={isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
-                         onClick={isEnabled ? debouncedRun : undefined} size={isMobile ? 21 : 23}/>
+                         onClick={isEnabled ? debouncedRun : undefined} size={isMobile ? 21 : 22}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={
@@ -45,7 +45,7 @@ export default function Component(props: {
                 </div>
             }>
                 <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}`}
-                            onClick={isEnabled ? debouncedFormat : undefined} size={isMobile ? 21 : 23}/>
+                            onClick={isEnabled ? debouncedFormat : undefined} size={isMobile ? 21 : 22}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={
@@ -57,7 +57,7 @@ export default function Component(props: {
                 </div>
             }>
                 <ShareIcon className={isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
-                           onClick={isEnabled ? debouncedShare : undefined} size={isMobile ? 20 : 22}/>
+                           onClick={isEnabled ? debouncedShare : undefined} size={isMobile ? 20 : 21}/>
             </Tooltip>
         </>
     );
