@@ -10,7 +10,6 @@ services:
     command: >
       sh -c "cp -r /app/sandboxes/go1 /shared &&
              cp -r /app/sandboxes/go2 /shared &&
-             cp -r /app/sandboxes/go3 /shared &&
              cp -r /app/sandboxes/go4 /shared"
     volumes:
       - go-sandboxes:/shared

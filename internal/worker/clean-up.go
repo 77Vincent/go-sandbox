@@ -10,7 +10,6 @@ import (
 var allowed = map[string]bool{
 	"go1": true,
 	"go2": true,
-	"go3": true,
 	"go4": true,
 }
 

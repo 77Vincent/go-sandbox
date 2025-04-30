@@ -24,7 +24,6 @@ const (
 	tmpDirName      = "sandbox-"
 	sandboxRunner1  = baseDir + "/go1/sandbox-runner"
 	sandboxRunner2  = baseDir + "/go2/sandbox-runner"
-	sandboxRunner3  = baseDir + "/go3/sandbox-runner"
 	sandboxRunner4  = baseDir + "/go4/sandbox-runner"
 	tmpFileName     = "main.go"
 	tmpTestFileName = "main_test.go"
@@ -88,9 +87,6 @@ func Execute(c *gin.Context) {
 	case "2":
 		sandboxVersion = sandboxRunner2
 		env = append(env, "PATH=/go2/bin:"+path)
-	case "3":
-		sandboxVersion = sandboxRunner3
-		env = append(env, "PATH=/go3/bin:"+path)
 	case "4":
 		sandboxVersion = sandboxRunner4
 		env = append(env, "PATH=/go4/bin:"+path)
