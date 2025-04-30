@@ -57,7 +57,16 @@ import {
     NONE,
     VIM,
 } from "../constants.ts";
-import {getCursorHead, getCursorPos, getFileUri, getWsUrl, isUserCode, posToHead, viewUpdate} from "../utils.ts";
+import {
+    getCodeContent,
+    getCursorHead,
+    getCursorPos,
+    getFileUri,
+    getWsUrl,
+    isUserCode,
+    posToHead,
+    viewUpdate
+} from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -244,10 +253,16 @@ export default function Component(props: {
 
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
-        localStorage.setItem(CURSOR_HEAD_KEY, String(v.state.selection.main.head))
+        const head = v.state.selection.main.head;
+        localStorage.setItem(CURSOR_HEAD_KEY, String(head))
         const {row, col} = getCursorPos(v);
         setRow(row);
         setCol(col);
+
+        // update the main session
+        if (isUserCode(file.current)) {
+            sessions.current[0].cursor = head
+        }
     }, []), DEBOUNCE_TIME)
 
     useEffect(() => {
@@ -634,9 +649,9 @@ export default function Component(props: {
         sessions.current.splice(index, 1);
 
         // if the new session is user code, use the latest value
-        const content = isUserCode(id) ? value : data || "";
+        const content = isUserCode(id) ? getCodeContent(sandboxId) : data || "";
         viewUpdate(view.current, content, cursor);
-    }, [value])
+    }, [sandboxId])
 
     const onSessionClick = useCallback((index: number) => {
         if (!view.current) return;
@@ -647,9 +662,9 @@ export default function Component(props: {
         file.current = id;
 
         // if the new session is user code, use the latest value
-        const content = isUserCode(id) ? value : data || "";
+        const content = isUserCode(id) ? getCodeContent(sandboxId) : data || "";
         viewUpdate(view.current, content, cursor);
-    }, [value])
+    }, [sandboxId])
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
