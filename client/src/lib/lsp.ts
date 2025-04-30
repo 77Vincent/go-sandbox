@@ -211,7 +211,7 @@ export class LSPClient {
                 ))
             }
         } catch (error) {
-            console.error("Error parsing LSP message:", error);
+            this.handleError(error as string);
         }
     }
 }

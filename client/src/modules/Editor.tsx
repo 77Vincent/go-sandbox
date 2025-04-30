@@ -324,11 +324,6 @@ export default function Component(props: {
             if (!lsp.current || !view.current) {
                 return
             }
-            const {row: currentRow, col: currentCol} = getCursorPos(v);
-            const definitions = await lsp.current.getDefinition(currentRow - 1, currentCol - 1, file.current);
-            if (!definitions.length) {
-                return
-            }
 
             // update the current session before going to the definition
             const data = {
@@ -339,6 +334,15 @@ export default function Component(props: {
             const index = sessions.current.findIndex((s) => s.id === file.current)
             // update the session
             sessions.current[index] = data
+
+            // start getting the definition
+            const {row: currentRow, col: currentCol} = getCursorPos(v);
+            const definitions = await lsp.current.getDefinition(currentRow - 1, currentCol - 1, file.current);
+
+            // quit if no definition
+            if (!definitions.length) {
+                return
+            }
 
             const path = decodeURIComponent(definitions[0].uri);
             file.current = path; // update file immediately
@@ -618,7 +622,7 @@ export default function Component(props: {
         openLintPanel(view.current);
     }, [view]);
 
-    function onSessionClose(index: number, newIndex: number) {
+    const onSessionClose = useCallback((index: number, newIndex: number) => {
         if (!view.current) return;
 
         const {id, data, cursor} = sessions.current[newIndex];
@@ -632,9 +636,9 @@ export default function Component(props: {
         // if the new session is user code, use the latest value
         const content = isUserCode(id) ? value : data || "";
         viewUpdate(view.current, content, cursor);
-    }
+    }, [value])
 
-    function onSessionClick(index: number) {
+    const onSessionClick = useCallback((index: number) => {
         if (!view.current) return;
 
         const {id, data, cursor} = sessions.current[index];
@@ -645,12 +649,13 @@ export default function Component(props: {
         // if the new session is user code, use the latest value
         const content = isUserCode(id) ? value : data || "";
         viewUpdate(view.current, content, cursor);
-    }
+    }, [value])
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div className={`relative flex-1 flex-col overflow-hidden pb-14 ${mode === "dark" ? "editor-bg-dark" : ""}`}>
-            <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current} activeSession={file.current}/>
+            <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
+                      activeSession={file.current}/>
 
             <div className={"h-full overflow-auto"} ref={editor}>
                 <div className={"sticky right-0 top-0 z-10"}>
