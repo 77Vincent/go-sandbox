@@ -57,7 +57,7 @@ import {
     NONE,
     VIM,
 } from "../constants.ts";
-import {getCursorHead, getCursorPos, getFileUri, getWsUrl, isUserCode, posToHead} from "../utils.ts";
+import {getCursorHead, getCursorPos, getFileUri, getWsUrl, isUserCode, posToHead, viewUpdate} from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -621,52 +621,30 @@ export default function Component(props: {
     function onSessionClose(index: number, newIndex: number) {
         if (!view.current) return;
 
-        const newSession = sessions.current[newIndex];
+        const {id, data, cursor} = sessions.current[newIndex];
 
         // update the file
-        file.current = newSession.id;
+        file.current = id;
 
         // remove the session from the list
         sessions.current.splice(index, 1);
 
         // if the new session is user code, use the latest value
-        const data = isUserCode(newSession.id) ? value : newSession?.data || "";
-        view.current.dispatch({
-            changes: {
-                from: 0,
-                to: view.current.state.doc.length,
-                insert: data,
-            },
-            selection: {
-                anchor: newSession?.cursor || 0,
-            },
-            scrollIntoView: true,
-        })
-
-        view.current.focus(); // must focus after dispatch
+        const content = isUserCode(id) ? value : data || "";
+        viewUpdate(view.current, content, cursor);
     }
 
     function onSessionClick(index: number) {
         if (!view.current) return;
 
-        const newSession = sessions.current[index];
-        file.current = newSession.id;
+        const {id, data, cursor} = sessions.current[index];
+        if (id === file.current) return; // already selected
+
+        file.current = id;
 
         // if the new session is user code, use the latest value
-        const data = isUserCode(newSession.id) ? value : newSession?.data || "";
-        view.current.dispatch({
-            changes: {
-                from: 0,
-                to: view.current.state.doc.length,
-                insert: data,
-            },
-            selection: {
-                anchor: newSession?.cursor || 0,
-            },
-            scrollIntoView: true,
-        })
-
-        view.current.focus(); // must focus after dispatch
+        const content = isUserCode(id) ? value : data || "";
+        viewUpdate(view.current, content, cursor);
     }
 
     return (
