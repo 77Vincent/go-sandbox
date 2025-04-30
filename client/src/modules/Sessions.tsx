@@ -3,7 +3,7 @@ import {useThemeMode} from "flowbite-react";
 import {displayFileUri} from "../utils.ts";
 import {MouseEventHandler} from "react";
 
-const activeClasses = "border-b-cyan-500 border-b-2 dark:text-white"
+const activeClasses = "border-b-cyan-500 border-b-3 dark:text-white"
 const inactiveClasses = "text-gray-800 dark:text-gray-300"
 
 function Session(props: {
@@ -80,7 +80,7 @@ export function Sessions(props: {
 
     return (
         <div
-            className={`flex items-center overflow-x-auto border-b border-gray-200 dark:border-gray-700 ${mode === "dark" ? "editor-bg-dark" : ""}`}>
+            className={`relative z-10 flex items-center overflow-x-auto border-b border-gray-300 shadow dark:border-gray-700 ${mode === "dark" ? "editor-bg-dark" : ""}`}>
             {sessions.map(({id}, i) => {
                     return <Session num={i}
                                     sessions={sessions.map(v => v.id)}

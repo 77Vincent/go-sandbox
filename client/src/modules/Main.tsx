@@ -392,11 +392,11 @@ export default function Component(props: {
 
             <div
                 className="flex items-center justify-between border-b border-b-gray-400 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0.5">
-                <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
+                <Link to={""} className={"flex items-center gap-2 text-gray-600 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-300 dark:hover:text-cyan-400"}>
                     <img src={"/favicon.png"} alt={"logo"} className={"mr-1 h-5 max-md:hidden"}/>
 
                     <div
-                        className="text-xl font-light text-gray-600 dark:text-gray-300 max-md:text-sm">{TITLE}</div>
+                        className="text-xl font-light max-md:text-sm">{TITLE}</div>
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.border-b-3 {
+    border-bottom-width: 3px;
+}
+
 html {
     -ms-overflow-style: none;
     scrollbar-width: none;
