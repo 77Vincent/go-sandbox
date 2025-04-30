@@ -646,10 +646,33 @@ export default function Component(props: {
         view.current.focus(); // must focus after dispatch
     }
 
+    function onSessionClick(index: number) {
+        if (!view.current) return;
+
+        const newSession = sessions.current[index];
+        file.current = newSession.id;
+
+        // if the new session is user code, use the latest value
+        const data = isUserCode(newSession.id) ? value : newSession?.data || "";
+        view.current.dispatch({
+            changes: {
+                from: 0,
+                to: view.current.state.doc.length,
+                insert: data,
+            },
+            selection: {
+                anchor: newSession?.cursor || 0,
+            },
+            scrollIntoView: true,
+        })
+
+        view.current.focus(); // must focus after dispatch
+    }
+
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div className={`relative flex-1 flex-col overflow-hidden pb-14 ${mode === "dark" ? "editor-bg-dark" : ""}`}>
-            <Sessions onSessionClose={onSessionClose} sessions={sessions.current} activeSession={file.current}/>
+            <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current} activeSession={file.current}/>
 
             <div className={"h-full overflow-auto"} ref={editor}>
                 <div className={"sticky right-0 top-0 z-10"}>
