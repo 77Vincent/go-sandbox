@@ -233,7 +233,6 @@ export default function Component(props: {
     const [infoCount, setInfoCount] = useState(0);
     const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
     const [completions, setCompletions] = useState<LSPCompletionItem[]>([]);
-    const [sessions, setSessions] = useState<SessionI[]>([]);
 
     // ref
     const editor = useRef<HTMLDivElement>(null);
@@ -241,6 +240,7 @@ export default function Component(props: {
     const lsp = useRef<LSPClient | null>(null);
     const version = useRef<number>(1); // initial version
     const file = useRef<string>(getFileUri(goVersion));
+    const sessions = useRef<SessionI[]>([]);
 
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
@@ -321,7 +321,7 @@ export default function Component(props: {
 
     const seeDefinition = useCallback((v: EditorView): boolean => {
         (async function () {
-            if (!lsp.current) {
+            if (!lsp.current || !view.current) {
                 return
             }
             const {row: currentRow, col: currentCol} = getCursorPos(v);
@@ -329,6 +329,16 @@ export default function Component(props: {
             if (!definitions.length) {
                 return
             }
+
+            // update the current session before going to the definition
+            const data = {
+                id: file.current,
+                cursor: view.current.state.selection.main.head,
+                data: view.current.state.doc.toString()
+            }
+            const index = sessions.current.findIndex((s) => s.id === file.current)
+            // update the session
+            sessions.current[index] = data
 
             const path = decodeURIComponent(definitions[0].uri);
             file.current = path; // update file immediately
@@ -366,9 +376,18 @@ export default function Component(props: {
                     },
                     scrollIntoView: true,
                 })
+
+                // update the sessions
+                const data = {id: path, cursor: posToHead(v, row, col), data: content}
+                const index = sessions.current.findIndex((s) => s.id === path)
+                if (index == -1) {
+                    sessions.current.push(data) // not in the list
+                } else {
+                    sessions.current[index] = data // update the item in the list
+                }
+                view.current.focus()
             }
 
-            setSessions((prev => [...prev, {id: path, cursor: posToHead(v, row, col), data: content}]));
         }());
         return true;
     }, [goVersion, setToastError]);
@@ -515,16 +534,20 @@ export default function Component(props: {
     useEffect(() => {
         if (!editor.current || view.current) return;
 
+        const cursorHead = Math.min(getCursorHead(), value.length)
         view.current = new EditorView({
             doc: value,
             extensions: extensions,
             parent: editor.current,
-            selection: EditorSelection.cursor(Math.min(getCursorHead(), value.length)),
+            selection: EditorSelection.cursor(cursorHead),
         });
         view.current.dispatch({
             scrollIntoView: true,
         })
         view.current.focus();
+
+        // add the default session
+        sessions.current = [{id: getFileUri(goVersion), cursor: cursorHead}]
 
         lsp.current = new LSPClient(getWsUrl("/ws"), goVersion, view.current, handleDiagnostics, handleError);
 
@@ -595,12 +618,50 @@ export default function Component(props: {
         openLintPanel(view.current);
     }, [view]);
 
+    function onSessionClose(id: string) {
+        if (!view.current) return;
+
+        let prev = null
+        const index = sessions.current.findIndex((s) => s.id === id)
+
+        // if session no found, this should not happen
+        if (index === -1) {
+            throw new Error(`session ${id} not found`)
+        }
+
+        if (index < sessions.current.length - 1) {
+            // if not the last session, use the next one
+            prev = sessions.current[index + 1]
+        } else {
+            // use the previous one
+            prev = sessions.current[index - 1]
+        }
+
+        file.current = prev.id;
+        // remove the session from the list
+        sessions.current.splice(index, 1);
+
+        // if it is user code, use the latest value
+        const data = isUserCode(prev.id) ? value : prev.data || "";
+        view.current.dispatch({
+            changes: {
+                from: 0,
+                to: view.current.state.doc.length,
+                insert: data,
+            },
+            selection: {
+                anchor: prev.cursor,
+            },
+            scrollIntoView: true,
+        })
+    }
+
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
-        <div className={`relative flex-1 flex-col overflow-hidden ${mode === "dark" ? "editor-bg-dark" : ""}`}>
-            <Sessions sessions={sessions} activeTab={file.current}/>
+        <div className={`relative flex-1 flex-col overflow-hidden pb-14 ${mode === "dark" ? "editor-bg-dark" : ""}`}>
+            <Sessions onSessionClose={onSessionClose} sessions={sessions.current} activeSession={file.current}/>
 
-            <div className={"h-full overflow-auto pb-14"} ref={editor}>
+            <div className={"h-full overflow-auto"} ref={editor}>
                 <div className={"sticky right-0 top-0 z-10"}>
                     <RefreshButton lan={lan}/>
                     <ClickBoard content={value}/>
