@@ -109,7 +109,7 @@ export function RefreshButton(props: {
             <Tooltip className={"text-xs"} content={TRANSLATE.reload[lan]} placement={"left"}>
                 <RefreshIcon
                     onClick={onClockHandler}
-                    className={"h-3.5 cursor-pointer text-gray-500 opacity-80 hover:text-cyan-500 dark:text-gray-400 dark:hover:text-cyan-400"}/>
+                    className={"h-3.5 cursor-pointer text-gray-500 opacity-90 hover:text-cyan-500 dark:text-gray-400 dark:hover:text-cyan-400"}/>
             </Tooltip>
         </div>
     )
@@ -136,7 +136,7 @@ export function ClickBoard(props: {
             <Clipboard.WithIcon
                 icon={CopyIcon}
                 valueToCopy={content}
-                className={"absolute right-1 top-4 z-10 opacity-90"}
+                className={"absolute right-1 top-4 z-10"}
             />
         </Flowbite>
     )

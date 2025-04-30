@@ -173,6 +173,12 @@ export class LSPClient {
         }
     }
 
+    keepAlive() {
+        if (this.ws.readyState === WebSocket.OPEN) {
+            this.ws.send(JSON.stringify({jsonrpc: "2.0", method: "keepAlive", params: {}}));
+        }
+    }
+
     handleMessage(data: string) {
         try {
             const message = JSON.parse(data);

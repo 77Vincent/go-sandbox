@@ -48,13 +48,21 @@ import debounce from "debounce";
 
 // local imports
 import {KeyBindingsType, languages, LSPCompletionItem, mySandboxes, patchI} from "../types";
-import {CURSOR_HEAD_KEY, DEBOUNCE_TIME, DEFAULT_INDENTATION_SIZE, EMACS, NONE, VIM,} from "../constants.ts";
-import {getCursorHead, getCursorPos, getFileUri, getWsUrl, isUserCode, posToHead} from "../utils.ts";
+import {
+    CURSOR_HEAD_KEY,
+    DEBOUNCE_TIME,
+    DEFAULT_INDENTATION_SIZE,
+    EMACS,
+    KEEP_ALIVE_INTERVAL,
+    NONE,
+    VIM,
+} from "../constants.ts";
+import {getCursorHead, getCursorPos, getFileUri, getWsUrl, isUserCode, posToHead, viewUpdate} from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {fetchSourceCode} from "../api/api.ts";
-import {historyBack, historyField, historyForward, recordHistory, resetHistory,} from "../lib/history.ts";
+import {SessionI, Sessions} from "./Sessions.tsx";
 
 // map type from LSP to codemirror
 const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
@@ -195,7 +203,6 @@ export default function Component(props: {
     debouncedRun: () => void;
     debouncedFormat: () => void;
     debouncedShare: () => void;
-    cleanHistoryTrigger: boolean;
 }) {
     const {
         sandboxId,
@@ -211,7 +218,6 @@ export default function Component(props: {
         // setters
         setShowSettings,
         setShowManual,
-        cleanHistoryTrigger,
         // action
         debouncedRun,
         debouncedFormat,
@@ -234,22 +240,7 @@ export default function Component(props: {
     const lsp = useRef<LSPClient | null>(null);
     const version = useRef<number>(1); // initial version
     const file = useRef<string>(getFileUri(goVersion));
-
-    const hist = view.current?.state.field(historyField);
-    // update the file path when the history changes
-    useEffect(() => {
-        if (!hist || hist.stack.length === 0) return;
-        const path = hist.stack[hist.index].filePath;
-
-        if (path === file.current) return;
-        // on update the file path when the history changes
-        file.current = path;
-    }, [hist]);
-
-    // should only be triggered by the trigger
-    useEffect(() => {
-        resetHistory(view.current, value, getFileUri(goVersion));
-    }, [cleanHistoryTrigger]);
+    const sessions = useRef<SessionI[]>([]);
 
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
@@ -299,11 +290,8 @@ export default function Component(props: {
             await lsp.current.didChange(version.current, v.state.doc.toString());
 
             // do not display completion for non-user code
-            const {stack, index} = v.state.field(historyField);
-            if (stack.length) {
-                if (!isUserCode(stack[index].filePath)) {
-                    return
-                }
+            if (!isUserCode(file.current)) {
+                return
             }
 
             // get completions
@@ -333,7 +321,7 @@ export default function Component(props: {
 
     const seeDefinition = useCallback((v: EditorView): boolean => {
         (async function () {
-            if (!lsp.current) {
+            if (!lsp.current || !view.current) {
                 return
             }
             const {row: currentRow, col: currentCol} = getCursorPos(v);
@@ -342,15 +330,24 @@ export default function Component(props: {
                 return
             }
 
-            // push the current position to the history
-            recordHistory(view.current, file.current);
+            // update the current session before going to the definition
+            const data = {
+                id: file.current,
+                cursor: view.current.state.selection.main.head,
+                data: view.current.state.doc.toString()
+            }
+            const index = sessions.current.findIndex((s) => s.id === file.current)
+            // update the session
+            sessions.current[index] = data
 
             const path = decodeURIComponent(definitions[0].uri);
-            file.current = path;
+            file.current = path; // update file immediately
+
             const {is_main, error, content} = await fetchSourceCode(path, goVersion)
             const {range: {start: {line, character}}} = definitions[0];
             const row = line + 1; // 1-based index
             const col = character + 1; // 1-based index
+
             if (error) {
                 setToastError(error);
                 return;
@@ -379,25 +376,23 @@ export default function Component(props: {
                     },
                     scrollIntoView: true,
                 })
+
+                // update the sessions
+                const data = {id: path, cursor: posToHead(v, row, col), data: content}
+                const index = sessions.current.findIndex((s) => s.id === path)
+                if (index == -1) {
+                    sessions.current.push(data) // not in the list
+                } else {
+                    sessions.current[index] = data // update the item in the list
+                }
+                view.current.focus()
             }
 
-            // record the history after the change
-            recordHistory(v, path);
         }());
         return true;
     }, [goVersion, setToastError]);
 
     const [focusedKeymap] = useState(() => [
-        {
-            key: `Mod-Alt-,`,
-            preventDefault: true,
-            run: historyBack,
-        },
-        {
-            key: `Mod-Alt-.`,
-            preventDefault: true,
-            run: historyForward,
-        },
         {
             key: `Mod-b`,
             preventDefault: true,
@@ -492,7 +487,6 @@ export default function Component(props: {
             ...lintKeymap, // Keys related to the linter system
             ...focusedKeymap, // Custom key bindings
         ]),
-        historyField, // The history field
         readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(file.current))),
         lintCompartment.of(setLint(isLintOn && isUserCode(file.current), diagnostics)),
         autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn && isUserCode(file.current) ? [setAutoCompletion(completions)] : []})),
@@ -540,19 +534,20 @@ export default function Component(props: {
     useEffect(() => {
         if (!editor.current || view.current) return;
 
+        const cursorHead = Math.min(getCursorHead(), value.length)
         view.current = new EditorView({
             doc: value,
             extensions: extensions,
             parent: editor.current,
-            selection: EditorSelection.cursor(Math.min(getCursorHead(), value.length)),
+            selection: EditorSelection.cursor(cursorHead),
         });
         view.current.dispatch({
             scrollIntoView: true,
         })
         view.current.focus();
 
-        // push the initial state to the history
-        recordHistory(view.current, getFileUri(goVersion));
+        // add the default session
+        sessions.current = [{id: getFileUri(goVersion), cursor: cursorHead}]
 
         lsp.current = new LSPClient(getWsUrl("/ws"), goVersion, view.current, handleDiagnostics, handleError);
 
@@ -581,17 +576,14 @@ export default function Component(props: {
             debouncedShare()
             return false
         });
-        Mousetrap.bind(`mod+option+,`, function () {
-            historyBack(view.current);
-            return false
-        });
-        Mousetrap.bind(`mod+option+.`, function () {
-            historyForward(view.current);
-            return false
-        });
 
-        // destroy editor on unmount
+        const keepAlive = setInterval(() => {
+            lsp.current?.keepAlive()
+        }, KEEP_ALIVE_INTERVAL)
+
+        // destroy editor when unmount
         return () => {
+            clearInterval(keepAlive);
             view.current?.destroy();
             view.current = null;
         };
@@ -626,23 +618,53 @@ export default function Component(props: {
         openLintPanel(view.current);
     }, [view]);
 
+    function onSessionClose(index: number, newIndex: number) {
+        if (!view.current) return;
+
+        const {id, data, cursor} = sessions.current[newIndex];
+
+        // update the file
+        file.current = id;
+
+        // remove the session from the list
+        sessions.current.splice(index, 1);
+
+        // if the new session is user code, use the latest value
+        const content = isUserCode(id) ? value : data || "";
+        viewUpdate(view.current, content, cursor);
+    }
+
+    function onSessionClick(index: number) {
+        if (!view.current) return;
+
+        const {id, data, cursor} = sessions.current[index];
+        if (id === file.current) return; // already selected
+
+        file.current = id;
+
+        // if the new session is user code, use the latest value
+        const content = isUserCode(id) ? value : data || "";
+        viewUpdate(view.current, content, cursor);
+    }
+
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
-        <div className={`relative mb-5 flex-1 overflow-auto ${mode === "dark" ? "editor-bg-dark" : ""}`} ref={editor}>
-            <div className={"sticky right-0 top-0 z-10"}>
-                <RefreshButton lan={lan}/>
-                <ClickBoard content={value}/>
-            </div>
+        <div className={`relative flex-1 flex-col overflow-hidden pb-14 ${mode === "dark" ? "editor-bg-dark" : ""}`}>
+            <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current} activeSession={file.current}/>
 
-            <StatusBar
-                lan={lan}
-                view={view.current}
-                row={row} col={col} file={file.current}
-                updateFile={(v) => file.current = v}
-                onLintClick={onLintClick}
-                errors={errorCount}
-                warnings={warningCount}
-                info={infoCount}/>
+            <div className={"h-full overflow-auto"} ref={editor}>
+                <div className={"sticky right-0 top-0 z-10"}>
+                    <RefreshButton lan={lan}/>
+                    <ClickBoard content={value}/>
+                </div>
+
+                <StatusBar
+                    row={row} col={col} file={file.current}
+                    onLintClick={onLintClick}
+                    errors={errorCount}
+                    warnings={warningCount}
+                    info={infoCount}/>
+            </div>
         </div>
     )
 };

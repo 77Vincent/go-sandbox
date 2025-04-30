@@ -155,6 +155,21 @@ export function getCursorPos(v: ViewUpdate | EditorView) {
     return {row: line.number, col: pos - line.from + 1}
 }
 
+export function viewUpdate(view: EditorView, data: string, cursor?: number) {
+    view.dispatch({
+        changes: {
+            from: 0,
+            to: view.state.doc.length,
+            insert: data,
+        },
+        selection: {
+            anchor: cursor || 0,
+        },
+        scrollIntoView: true,
+    })
+    view.focus()
+}
+
 export function posToHead(v: ViewUpdate | EditorView, row: number, col: number) {
     const line = v.state.doc.line(row);
     return line.from + col - 1;

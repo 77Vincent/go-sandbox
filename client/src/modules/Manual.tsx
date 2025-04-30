@@ -146,18 +146,6 @@ export default function Component(props: {
                         <MetaKey/><OptionKey/>F7
                     </SubRow>
                 </Row>
-                <Row>
-                    <Title> {TRANSLATE.prevPlace[lan]} </Title>
-                    <SubRow>
-                        <MetaKey/><OptionKey/>,
-                    </SubRow>
-                </Row>
-                <Row>
-                    <Title> {TRANSLATE.nextPlace[lan]} </Title>
-                    <SubRow>
-                        <MetaKey/><OptionKey/>.
-                    </SubRow>
-                </Row>
             </Grid>
         </Modal.Body>
     </Modal>

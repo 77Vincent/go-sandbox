@@ -234,7 +234,7 @@ export default function Component(props: {
             });
 
             source.addEventListener(EVENT_STDERR, ({data}: MessageEvent) => {
-                // special case -- stats info wrapped in the stderr
+                // special case -- stat info wrapped in the stderr
                 if (data.startsWith(STATS_INFO_PREFIX)) {
                     const [time, mem] = data.replace(STATS_INFO_PREFIX, "").split(";")
                     setInfo(`Time: ${time} | Memory: ${mem}kb`)
@@ -286,8 +286,6 @@ export default function Component(props: {
                 try {
                     const data = await fetchSnippet(id)
                     if (data) {
-                        // must call together
-                        value.current = data
                         setPatch({value: data})
                         debouncedRun() // run immediately after fetching
                     }
@@ -393,12 +391,12 @@ export default function Component(props: {
             />
 
             <div
-                className="flex items-center justify-between border-b border-b-gray-300 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0.5">
-                <Link to={""} className={"flex items-center gap-2 transition-opacity duration-300 hover:opacity-70"}>
+                className="flex items-center justify-between border-b border-b-gray-400 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-0.5">
+                <Link to={""} className={"flex items-center gap-2 text-gray-600 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-300 dark:hover:text-cyan-400"}>
                     <img src={"/favicon.png"} alt={"logo"} className={"mr-1 h-5 max-md:hidden"}/>
 
                     <div
-                        className="text-xl font-light text-gray-600 dark:text-gray-300 max-md:text-sm">{TITLE}</div>
+                        className="text-xl font-light max-md:text-sm">{TITLE}</div>
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
@@ -457,7 +455,6 @@ export default function Component(props: {
                         className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                         <Editor
                             lan={lan}
-                            cleanHistoryTrigger={cleanHistoryTrigger}
                             sandboxId={initialSandboxId}
                             goVersion={initialGoVersion}
                             setToastError={setToastError}
