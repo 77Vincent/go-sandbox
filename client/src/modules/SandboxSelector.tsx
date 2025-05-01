@@ -3,7 +3,7 @@ import {
     BUTTON_INACTIVE,
     DEFAULT_ACTIVE_SANDBOX,
     HELLO_WORLD,
-    ICON_BUTTON_CLASS,
+    ICON_BUTTON_CLASS, INACTIVE_TEXT_CLASS,
     MY_SANDBOXES, SANDBOX_NAMES_KEY,
     SELECTED_COLOR_CLASS, TRANSLATE
 } from "../constants.ts";
@@ -104,7 +104,7 @@ export default function Component(props: {
 
     return (
         <Dropdown inline={true} className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
-                  label={<span className={"text-xs"}>{sandboxNames[active] || MY_SANDBOXES[active] || active}</span>}
+                  label={<span className={`text-xs ${isRunning ? INACTIVE_TEXT_CLASS : ""}`}>{sandboxNames[active] || MY_SANDBOXES[active] || active}</span>}
         >
             {
                 sandboxes.map((key) => {

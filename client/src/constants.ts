@@ -49,7 +49,7 @@ export const DEBOUNCE_TIME = 75;
 export const ACTIVE_COLOR = "cyan"
 export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
 export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
-export const ACTIVE_TEXT_CLASS = "text-cyan-500 dark:text-cyan-400"
+export const INACTIVE_TEXT_CLASS = "text-gray-300 dark:text-gray-600"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
 export const STATS_INFO_PREFIX = "STATS_INFO:"
