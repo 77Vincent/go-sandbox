@@ -2,7 +2,7 @@ import {
     LSPCompletionItem,
     LSPCompletionResult,
     LSPDefinition,
-    LSPDiagnostic,
+    LSPDiagnostic, LSPHover,
     LSPResponse,
     pendingRequests
 } from "../types";
@@ -24,6 +24,7 @@ const EVENT_INITIALIZE = "initialize"
 const EVENT_INITIALIZED = "initialized"
 const EVENT_DEFINITION = "textDocument/definition"
 const EVENT_COMPLETION = "textDocument/completion"
+const EVENT_HOVER = "textDocument/hover"
 const EVENT_DID_OPEN = "textDocument/didOpen"
 const EVENT_DID_CHANGE = "textDocument/didChange"
 export const LSP_KIND_LABELS: Record<number, string> = {
@@ -104,7 +105,7 @@ export class LSPClient {
         );
     }
 
-    sendRequest<T = LSPCompletionItem[] | LSPDefinition[]>(method: string, params: object): Promise<LSPResponse<T>> {
+    sendRequest<T = LSPCompletionItem[] | LSPDefinition[] | LSPHover>(method: string, params: object): Promise<LSPResponse<T>> {
         const id = ++this.requestId;
         const request = {jsonrpc: "2.0", id, method, params,};
         return new Promise((resolve, reject) => {
@@ -126,6 +127,18 @@ export class LSPClient {
             textDocument: {uri: getFileUri(this.goVersion), version}, // version should be incremented
             contentChanges: [{text}],
         });
+    }
+
+    async hover(line: number, character: number): Promise<LSPHover | null> {
+        try {
+            const res = await this.sendRequest<LSPHover>(EVENT_HOVER, {
+                textDocument: {uri: getFileUri(this.goVersion)},
+                position: {line, character},
+            });
+            return res.result || null;
+        } catch (e) {
+            throw new Error(`Error getting hover from LSP server: ${e}`);
+        }
     }
 
     async getDefinition(line: number, character: number, uri: string): Promise<LSPDefinition[]> {

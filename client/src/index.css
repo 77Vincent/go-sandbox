@@ -10,6 +10,7 @@
     width: 19px;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
 html {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -40,6 +41,40 @@ html {
 
 .editor-bg-dark {
     background-color: #1e1e1e;
+}
+
+.editor-bg-light .cm-gutter {
+    background-color: #f4f4f4;
+}
+
+.markdown-wrapper a {
+    color: #06B6D4;
+    font-style: italic;
+    text-decoration: underline;
+}
+.markdown-wrapper h1,
+.markdown-wrapper h2,
+.markdown-wrapper h3 {
+    font-weight: bold;
+    color: #a58267;
+    margin: 0.5rem 0;
+}
+
+.markdown-wrapper pre:nth-child(1) {
+    border-radius: 0;
+    border-bottom: 1px solid #707070;
+    background-color: transparent;
+    padding: 0 0 0.5rem;
+}
+.markdown-wrapper hr {
+    display: none;
+}
+.markdown-wrapper p {
+    font-weight: 300;
+    margin: 0.5rem 0;
+}
+.dark .markdown-wrapper a {
+    color: #49e3ff;
 }
 
 .cm-tooltip-autocomplete .cm-completionDetail {

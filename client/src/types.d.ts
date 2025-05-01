@@ -102,6 +102,20 @@ export interface LSPCompletionItem {
     }
 }
 
+export interface LSPHover {
+    contents: {
+        kind: string;
+        value: string;
+    } | Array<{
+        kind: string;
+        value: string;
+    }>;
+    range?: {
+        start: { line: number; character: number };
+        end: { line: number; character: number };
+    };
+}
+
 export interface LSPCompletionResult {
     items: LSPCompletionItem[];
     isIncomplete?: boolean;

@@ -72,6 +72,7 @@ import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {fetchSourceCode} from "../api/api.ts";
 import {SessionI, Sessions} from "./Sessions.tsx";
+import {createHoverTooltip} from "../lib/hover-ext.ts";
 
 // map type from LSP to codemirror
 const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
@@ -110,6 +111,7 @@ const themeCompartment = new Compartment();
 const autoCompletionCompartment = new Compartment();
 const lintCompartment = new Compartment();
 const readOnlyCompartment = new Compartment()
+const hoverCompartment = new Compartment();
 
 // setters of compartments
 const setLint = (on: boolean, diagnostics: Diagnostic[]) => {
@@ -479,6 +481,7 @@ export default function Component(props: {
 
     const [extensions] = useState(() => [
         go(),
+        hoverCompartment.of([]), // empty hover tooltip at first because lsp is not ready
         indentationMarkers(), // Show indentation markers
         lineNumbers(), // A line number gutter
         lintGutter(), // A gutter with lint icon
@@ -569,6 +572,13 @@ export default function Component(props: {
         sessions.current = [{id: getFileUri(goVersion), cursor: cursorHead}]
 
         lsp.current = new LSPClient(getWsUrl("/ws"), goVersion, view.current, handleDiagnostics, handleError);
+
+        // asynchronously add the hover tooltip when the lsp is ready
+        view.current.dispatch({
+            effects: hoverCompartment.reconfigure([
+                createHoverTooltip(lsp.current),
+            ])
+        });
 
         // key bindings for unfocused editor
         Mousetrap.bind('esc', function () {
@@ -669,7 +679,7 @@ export default function Component(props: {
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div
-            className={`relative flex-1 flex-col overflow-hidden ${sessions.current.length > 1 ? "pb-14" : "pb-5"} ${mode === "dark" ? "editor-bg-dark" : ""}`}>
+            className={`relative flex-1 flex-col overflow-hidden ${sessions.current.length > 1 ? "pb-14" : "pb-5"} ${mode === "dark" ? "editor-bg-dark" : "editor-bg-light"}`}>
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
 
