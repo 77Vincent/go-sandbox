@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/1ce68a3a-2f79-4034-98bb-d170a6a9fa0e)# Go Sandbox - An Advanced Online Golang Editor
+# Go Sandbox - A Minimalist and Advanced Online Golang Editor
 
 https://www.go-sandbox.org/
 
