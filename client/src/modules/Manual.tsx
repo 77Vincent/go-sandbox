@@ -147,6 +147,11 @@ export default function Component(props: {
                     </SubRow>
                 </Row>
             </Grid>
+            <Grid>
+                <Row>
+                    <span className={"text-xs text-gray-400"}>Or hover & click</span>
+                </Row>
+            </Grid>
         </Modal.Body>
     </Modal>
 }

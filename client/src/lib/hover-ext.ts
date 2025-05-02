@@ -49,7 +49,7 @@ export function createHoverTooltip(lsp: LSPClient | null) {
                 above: true,
                 create() {
                     const dom = document.createElement("div");
-                    dom.className = "markdown-wrapper px-2.5 py-3 z-0 max-w-2xl max-h-96 overflow-auto shadow-sm border border-gray-300 dark:border-gray-600";
+                    dom.className = "markdown-wrapper p-3 z-0 max-w-2xl max-h-96 overflow-auto shadow border border-gray-300 dark:border-gray-600";
 
                     const markdown = Array.isArray(contents)
                         ? contents.map((v) => v.value).join("")
