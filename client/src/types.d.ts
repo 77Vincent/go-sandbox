@@ -116,17 +116,24 @@ export interface LSPHover {
     };
 }
 
+export interface LSPReferenceResult {
+    range: LSPRange;
+    uri: string;
+}
+
 export interface LSPCompletionResult {
     items: LSPCompletionItem[];
     isIncomplete?: boolean;
 }
-
+G
 export interface LSPDiagnostic {
-    range: {
-        start: { line: number; character: number };
-        end: { line: number; character: number };
-    };
+    range: LSPRange;
     severity: number;
     message: string;
     source?: string;
+}
+
+interface LSPRange {
+    start: { line: number; character: number };
+    end: { line: number; character: number };
 }

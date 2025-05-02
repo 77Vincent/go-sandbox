@@ -16,9 +16,9 @@ import {
     CompletionResult,
     completionStatus
 } from "@codemirror/autocomplete";
-import {ChangeSpec, Compartment, EditorSelection, EditorState} from "@codemirror/state"
+import {ChangeSpec, Compartment, EditorSelection, EditorState, RangeSetBuilder} from "@codemirror/state"
 import {
-    crosshairCursor,
+    crosshairCursor, Decoration,
     drawSelection,
     dropCursor,
     EditorView,
@@ -47,7 +47,7 @@ import Mousetrap from "mousetrap";
 import debounce from "debounce";
 
 // local imports
-import {KeyBindingsType, languages, LSPCompletionItem, mySandboxes, patchI} from "../types";
+import {KeyBindingsType, languages, LSPCompletionItem, LSPReferenceResult, mySandboxes, patchI} from "../types";
 import {
     CURSOR_HEAD_KEY,
     DEBOUNCE_TIME,
@@ -72,6 +72,7 @@ import StatusBar from "./StatusBar.tsx";
 import {SessionI, Sessions} from "./Sessions.tsx";
 import {createHoverTooltip} from "../lib/hover-ext.ts";
 import {createHoverLink} from "../lib/link-ext.ts";
+import {setUsageHighlights, usageHighlightField} from "../lib/usageHighlightPlugin.ts";
 
 // map type from LSP to codemirror
 const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
@@ -101,6 +102,8 @@ const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
     Operator: "function",
     TypeParameter: "type",
 }
+
+const usageHighlight = Decoration.mark({ class: "cm-usage-highlight" });
 
 // Compartments for dynamic config
 const fontSizeCompartment = new Compartment();
@@ -336,6 +339,45 @@ export default function Component(props: {
         }
     }, [onChange, debouncedLspUpdate, debouncedStoreCode]);
 
+    const clearUsages = useCallback(() => {
+        view.current?.dispatch({
+            effects: [setUsageHighlights.of(Decoration.none)]
+        });
+        return false
+    }, [])
+
+    const seeUsages = useCallback((): boolean => {
+        (async function () {
+            if (!lsp.current || !view.current) {
+                return
+            }
+
+            const res = await lsp.current.getUsages()
+            if (!res.result) {
+                return
+            }
+            const builder = new RangeSetBuilder<Decoration>();
+            for (const usage of res.result as LSPReferenceResult[]) {
+                if (usage.uri !== file.current) continue; // only decorate in current file
+
+                const startLine = usage.range.start.line + 1;
+                const startCol = usage.range.start.character;
+                const endCol = usage.range.end.character;
+
+                const line = view.current.state.doc.line(startLine);
+                const from = line.from + startCol;
+                const to = line.from + endCol;
+
+                builder.add(from, to, usageHighlight);
+            }
+            const decorations = builder.finish();
+            view.current.dispatch({
+                effects: [setUsageHighlights.of(decorations)]
+            });
+        }());
+        return true
+    }, [])
+
     const seeDefinition = useCallback((): boolean => {
         (async function () {
             if (!lsp.current || !view.current) {
@@ -359,9 +401,19 @@ export default function Component(props: {
 
     const [focusedKeymap] = useState(() => [
         {
+            key: `Escape`,
+            preventDefault: false,
+            run: clearUsages
+        },
+        {
             key: `Mod-b`,
             preventDefault: true,
             run: seeDefinition,
+        },
+        {
+            key: `Mod-Alt-F7`,
+            preventDefault: true,
+            run: seeUsages,
         },
         {
             key: `F12`,
@@ -420,12 +472,10 @@ export default function Component(props: {
                 return indentLess(v)
             },
         },
-
     ]);
 
     const [extensions] = useState(() => [
         go(),
-        hoverCompartment.of([]), // empty hover tooltip at first because lsp is not ready
         indentationMarkers(), // Show indentation markers
         lineNumbers(), // A line number gutter
         lintGutter(), // A gutter with lint icon
@@ -452,6 +502,8 @@ export default function Component(props: {
             ...lintKeymap, // Keys related to the linter system
             ...focusedKeymap, // Custom key bindings
         ]),
+        usageHighlightField,
+        hoverCompartment.of([]), // empty hover tooltip at first because lsp is not ready
         readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(file.current))),
         lintCompartment.of(setLint(isLintOn && isUserCode(file.current), diagnostics)),
         autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn && isUserCode(file.current) ? [setAutoCompletion(completions)] : []})),
@@ -530,6 +582,7 @@ export default function Component(props: {
 
         // key bindings for unfocused editor
         Mousetrap.bind('esc', function () {
+            clearUsages()
             view.current?.focus();
             return false
         });

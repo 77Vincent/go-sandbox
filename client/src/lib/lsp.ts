@@ -2,7 +2,7 @@ import {
     LSPCompletionItem,
     LSPCompletionResult,
     LSPDefinition,
-    LSPDiagnostic, LSPHover,
+    LSPDiagnostic, LSPHover, LSPReferenceResult,
     LSPResponse,
     pendingRequests
 } from "../types";
@@ -22,10 +22,13 @@ const SEVERITY_MAP: Record<number, string> = {
     4: "hint",
 }
 
+const SKIP_ERROR_NO_IDENTIFIER = "no identifier found"
+
 // LSP events
 const EVENT_INITIALIZE = "initialize"
 const EVENT_INITIALIZED = "initialized"
 const EVENT_DEFINITION = "textDocument/definition"
+const EVENT_REFERENCES = "textDocument/references"
 const EVENT_COMPLETION = "textDocument/completion"
 const EVENT_HOVER = "textDocument/hover"
 const EVENT_DID_OPEN = "textDocument/didOpen"
@@ -114,6 +117,17 @@ export class LSPClient {
         );
     }
 
+    async getUsages() {
+        const {row, col} = getCursorPos(this.view);
+        const line = row - 1; // 0-based index
+        const character = col - 1; // 0-based index
+        return await this.sendRequest(EVENT_REFERENCES, {
+            textDocument: {uri: this.file.current},
+            position: {line, character},
+            context: {includeDeclaration: false}
+        });
+    }
+
     async loadDefinition() {
         // start getting the definition
         const {row: currentRow, col: currentCol} = getCursorPos(this.view);
@@ -173,7 +187,7 @@ export class LSPClient {
         }
     }
 
-    sendRequest<T = LSPCompletionItem[] | LSPDefinition[] | LSPHover>(method: string, params: object): Promise<LSPResponse<T>> {
+    sendRequest<T = LSPCompletionItem[] | LSPReferenceResult[] | LSPDefinition[] | LSPHover>(method: string, params: object): Promise<LSPResponse<T>> {
         const id = ++this.requestId;
         const request = {jsonrpc: "2.0", id, method, params,};
         return new Promise((resolve, reject) => {
@@ -265,6 +279,11 @@ export class LSPClient {
             const message = JSON.parse(data);
             const {id, method, params, error} = message;
             if (error) {
+                // skip these errors since they are trivial
+                // this is for getting usages
+                if (error.message === SKIP_ERROR_NO_IDENTIFIER) {
+                    return;
+                }
                 this.handleError(error.message);
                 // do not return here, we still need to process
             }

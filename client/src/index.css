@@ -93,8 +93,16 @@ html {
 }
 
 /* CodeMirror */
+/* for see definition by hover and click */
 .cm-token-link {
     text-decoration: underline;
+    cursor: pointer;
+}
+
+/* for see usages */
+.cm-usage-highlight {
+    background-color: rgba(255, 255, 0, 0.2); /* light yellow */
+    border-bottom: 1px dashed orange;
     cursor: pointer;
 }
 
