@@ -125,25 +125,40 @@ export default function Component(props: {
                         F8
                     </SubRow>
                 </Row>
-                <Row>
-                    <Title> {TRANSLATE.suggestCompletion[lan]} </Title>
-                    <SubRow>
-                        <CtrlKey/>Space
-                    </SubRow>
-                </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> {TRANSLATE.seeDefinition[lan]} </Title>
+                    <Title> {TRANSLATE.definitions[lan]} </Title>
                     <SubRow>
                         <MetaKey/>b
                     </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.seeUsages[lan]} </Title>
+                    <Title> {TRANSLATE.implementations[lan]} </Title>
+                    <SubRow>
+                        <MetaKey/><OptionKey/>b
+                    </SubRow>
+                </Row>
+            </Grid>
+            <Grid>
+                <Row>
+                    <span className={"text-xs text-gray-400"}>Or hover & click</span>
+                </Row>
+            </Grid>
+
+            <Divider horizontal={true} className={"my-3"}/>
+            <Grid>
+                <Row>
+                    <Title> {TRANSLATE.usages[lan]} </Title>
                     <SubRow>
                         <MetaKey/><OptionKey/>F7
+                    </SubRow>
+                </Row>
+                <Row>
+                    <Title> {TRANSLATE.suggestCompletion[lan]} </Title>
+                    <SubRow>
+                        <CtrlKey/>Space
                     </SubRow>
                 </Row>
             </Grid>

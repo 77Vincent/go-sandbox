@@ -1,6 +1,7 @@
-import {KeyBindingsType, languages, mySandboxes} from "./types";
+import {KeyBindingsType, languages, mySandboxes, SeeingType} from "./types";
 
 export const TITLE = "Go Sandbox";
+export const LANGUAGE_GO = "go";
 
 export const EVENT_STDOUT = "stdout";
 export const EVENT_STDERR = "stderr";
@@ -25,7 +26,6 @@ export const FONT_SIZE_KEY = "fontSize";
 export const CURSOR_HEAD_KEY = "cursorHead";
 
 export const DEFAULT_MAIN_FILE_PATH = "/main.go"
-export const DEFAULT_TEST_FILE_PATH = "/main_test.go"
 export const DEFAULT_INDENTATION_SIZE = 4;
 export const DEFAULT_CURSOR_HEAD = 0;
 export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
@@ -49,7 +49,7 @@ export const DEBOUNCE_TIME = 75;
 export const ACTIVE_COLOR = "cyan"
 export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
 export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
-export const ACTIVE_TEXT_CLASS = "text-cyan-500 dark:text-cyan-400"
+export const INACTIVE_TEXT_CLASS = "text-gray-300 dark:text-gray-600"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
 export const STATS_INFO_PREFIX = "STATS_INFO:"
@@ -90,14 +90,20 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "上一個位置",
         ja: "前の場所",
     },
-    seeUsages: {
-        en: "See usages",
-        zh_CN: "查看用法",
-        zh_TW: "查看用法",
-        ja: "使用法を表示",
+    implementations: {
+        en: "See implementations",
+        zh_CN: "查看实现",
+        zh_TW: "查看實現",
+        ja: "実装を表示",
     },
-    seeDefinition: {
-        en: "Goto definition",
+    usages: {
+        en: "See usages",
+        zh_CN: "查看引用",
+        zh_TW: "查看引用",
+        ja: "参照を表示",
+    },
+    definitions: {
+        en: "See definition",
         zh_CN: "查看定义",
         zh_TW: "查看定義",
         ja: "定義を表示",
@@ -149,12 +155,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_CN: "搜索",
         zh_TW: "搜尋",
         ja: "検索",
-    },
-    indentation: {
-        en: "Indentation",
-        zh_CN: "缩进",
-        zh_TW: "縮進",
-        ja: "インデント",
     },
     theme: {
         en: "Theme",
@@ -240,12 +240,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "自動補全",
         ja: "自動補完",
     },
-    coffee: {
-        en: "Buy me a coffee",
-        zh_CN: "请我喝杯咖啡吧",
-        zh_TW: "請我喝杯咖啡吧",
-        ja: "コーヒーをおごって",
-    },
     bugReport: {
         en: "Bug Report",
         zh_CN: "报告 Bug",
@@ -275,12 +269,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_CN: "手册",
         zh_TW: "手冊",
         ja: "マニュアル",
-    },
-    browseHistory: {
-        en: "Browse History",
-        zh_CN: "浏览记录",
-        zh_TW: "瀏覽記錄",
-        ja: "履歴を表示",
     },
 }
 
@@ -355,3 +343,6 @@ export const BUTTON_INACTIVE = "cursor-not-allowed text-gray-300 dark:text-gray-
 
 export const WORKSPACE = "workspace";
 export const URI_BASE = `file:///${WORKSPACE}`
+
+export const SEEING_USAGES: SeeingType = "usages"
+export const SEEING_IMPLEMENTATIONS: SeeingType = "implementations"

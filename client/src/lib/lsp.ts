@@ -2,14 +2,17 @@ import {
     LSPCompletionItem,
     LSPCompletionResult,
     LSPDefinition,
-    LSPDiagnostic,
+    LSPDiagnostic, LSPHover, LSPReferenceResult,
     LSPResponse,
     pendingRequests
 } from "../types";
 import {Diagnostic} from "@codemirror/lint";
 import {EditorView} from "@codemirror/view";
 import {URI_BASE, WORKSPACE} from "../constants.ts";
-import {getFileUri} from "../utils.ts";
+import {getCursorPos, getFileUri, posToHead} from "../utils.ts";
+import {MutableRefObject} from "react";
+import {SessionI} from "../modules/Sessions.tsx";
+import {fetchSourceCode} from "../api/api.ts";
 
 const DIAGNOSTICS_METHOD = "textDocument/publishDiagnostics";
 const SEVERITY_MAP: Record<number, string> = {
@@ -19,11 +22,16 @@ const SEVERITY_MAP: Record<number, string> = {
     4: "hint",
 }
 
+const SKIP_ERROR_NO_IDENTIFIER = "no identifier found"
+
 // LSP events
 const EVENT_INITIALIZE = "initialize"
 const EVENT_INITIALIZED = "initialized"
+const EVENT_IMPLEMENTATION = "textDocument/implementation"
 const EVENT_DEFINITION = "textDocument/definition"
+const EVENT_REFERENCES = "textDocument/references"
 const EVENT_COMPLETION = "textDocument/completion"
+const EVENT_HOVER = "textDocument/hover"
 const EVENT_DID_OPEN = "textDocument/didOpen"
 const EVENT_DID_CHANGE = "textDocument/didChange"
 export const LSP_KIND_LABELS: Record<number, string> = {
@@ -56,6 +64,8 @@ export const LSP_KIND_LABELS: Record<number, string> = {
 
 export class LSPClient {
     goVersion: string;
+    file: MutableRefObject<string>;
+    sessions: MutableRefObject<SessionI[]>;
     ws: WebSocket;
     requestId: number;
     pendingRequests: pendingRequests;
@@ -67,9 +77,13 @@ export class LSPClient {
         backendUrl: string,
         initialSandboxVersion: string,
         view: EditorView,
+        file: MutableRefObject<string>,
+        sessions: MutableRefObject<SessionI[]>,
         handleDiagnostic: (diagnostic: Diagnostic[]) => void,
         handleError: (error: string) => void,
     ) {
+        this.file = file;
+        this.sessions = sessions;
         this.handleDiagnostic = handleDiagnostic;
         this.handleError = handleError;
         this.goVersion = initialSandboxVersion;
@@ -104,7 +118,82 @@ export class LSPClient {
         );
     }
 
-    sendRequest<T = LSPCompletionItem[] | LSPDefinition[]>(method: string, params: object): Promise<LSPResponse<T>> {
+    async getUsages(): Promise<LSPReferenceResult[]> {
+        try {
+            const {row, col} = getCursorPos(this.view);
+            const line = row - 1; // 0-based index
+            const character = col - 1; // 0-based index
+            const res = await this.sendRequest<LSPDefinition[]>(EVENT_REFERENCES, {
+                textDocument: {uri: this.file.current},
+                position: {line, character},
+                context: {includeDeclaration: false}
+            });
+            return res.result || [];
+        } catch (e) {
+            throw new Error(`Error getting usages from LSP server: ${e}`);
+        }
+    }
+
+    async loadDefinition() {
+        // start getting the definition
+        const {row: currentRow, col: currentCol} = getCursorPos(this.view);
+        const definitions = await this.getDefinition(currentRow - 1, currentCol - 1, this.file.current);
+
+        // quit if no definition
+        if (!definitions.length) {
+            return
+        }
+
+        const path = decodeURIComponent(definitions[0].uri);
+        this.file.current = path; // update file immediately
+
+        const {is_main, error, content} = await fetchSourceCode(path, this.goVersion)
+        const {range: {start: {line, character}}} = definitions[0];
+        const row = line + 1; // 1-based index
+        const col = character + 1; // 1-based index
+
+        if (error) {
+            this.handleError(error);
+            return;
+        }
+        if (is_main) {
+            this.view.dispatch({
+                selection: {
+                    anchor: posToHead(this.view, row, col), // 1-based index
+                },
+                scrollIntoView: true,
+            })
+        }
+        if (content) {
+            // update the doc first
+            this.view.dispatch({
+                changes: {
+                    from: 0,
+                    to: this.view.state.doc.length,
+                    insert: content
+                },
+            });
+            // then move the cursor
+            this.view.dispatch({
+                selection: {
+                    anchor: posToHead(this.view, row, col), // 1-based index
+                },
+                scrollIntoView: true,
+            })
+
+            // update the sessions
+            const data = {id: path, cursor: posToHead(this.view, row, col), data: content}
+            const index = this.sessions.current.findIndex((s) => s.id === path)
+            if (index == -1) {
+                this.sessions.current.push(data) // not in the list
+            } else {
+                this.sessions.current[index] = data // update the item in the list
+            }
+            this.view.focus()
+        }
+    }
+
+    sendRequest<T = LSPCompletionItem[] | LSPReferenceResult[] | LSPDefinition[] | LSPHover>(method: string, params: object): Promise<LSPResponse<T>> {
         const id = ++this.requestId;
         const request = {jsonrpc: "2.0", id, method, params,};
         return new Promise((resolve, reject) => {
@@ -126,6 +215,33 @@ export class LSPClient {
             textDocument: {uri: getFileUri(this.goVersion), version}, // version should be incremented
             contentChanges: [{text}],
         });
+    }
+
+    async hover(line: number, character: number): Promise<LSPHover | null> {
+        try {
+            const res = await this.sendRequest<LSPHover>(EVENT_HOVER, {
+                textDocument: {uri: getFileUri(this.goVersion)},
+                position: {line, character},
+            });
+            return res.result || null;
+        } catch (e) {
+            throw new Error(`Error getting hover from LSP server: ${e}`);
+        }
+    }
+
+    async getImplementations(uri: string): Promise<LSPDefinition[]> {
+        try {
+            const {row, col} = getCursorPos(this.view);
+            const line = row - 1; // 0-based index
+            const character = col - 1; // 0-based index
+            const res = await this.sendRequest<LSPDefinition[]>(EVENT_IMPLEMENTATION, {
+                textDocument: { uri },
+                position: { line, character }
+            });
+            return res.result || [];
+        } catch (e) {
+            throw new Error(`Error getting implementation from LSP server: ${e}`);
+        }
     }
 
     async getDefinition(line: number, character: number, uri: string): Promise<LSPDefinition[]> {
@@ -184,6 +300,11 @@ export class LSPClient {
             const message = JSON.parse(data);
             const {id, method, params, error} = message;
             if (error) {
+                // skip these errors since they are trivial
+                // this is for getting usages
+                if (error.message === SKIP_ERROR_NO_IDENTIFIER) {
+                    return;
+                }
                 this.handleError(error.message);
                 // do not return here, we still need to process
             }

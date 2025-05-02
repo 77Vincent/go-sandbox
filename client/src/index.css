@@ -10,6 +10,7 @@
     width: 19px;
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
 html {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -42,6 +43,76 @@ html {
     background-color: #1e1e1e;
 }
 
+.editor-bg-light .cm-gutter {
+    background-color: #f4f4f4;
+}
+
+/* markdown */
+.markdown-wrapper a {
+    color: #06B6D4;
+    font-style: italic;
+    text-decoration: underline;
+}
+.markdown-wrapper h1,
+.markdown-wrapper h2,
+.markdown-wrapper h3 {
+    font-weight: bold;
+    color: #c59571;
+    margin: 0.5rem 0;
+}
+
+.dark .markdown-wrapper pre:nth-child(1) {
+    border-bottom-color: #5e5e5e;
+}
+.markdown-wrapper pre:nth-child(1) {
+    border-radius: 0;
+    border-bottom: 1px solid #dadada;
+    background-color: transparent;
+    padding: 0 0 0.5rem;
+}
+.markdown-wrapper pre:last-child {
+    border-bottom: none;
+    padding: 0;
+}
+.markdown-wrapper hr {
+    display: none;
+}
+
+.markdown-wrapper p:last-child {
+    margin-bottom: 0;
+}
+
+.markdown-wrapper ul,
+.markdown-wrapper p {
+    font-weight: 300;
+    line-height: 1.5;
+    margin: 0.9rem 0;
+}
+.dark .markdown-wrapper a {
+    color: #49e3ff;
+}
+
+/* CodeMirror */
+/* for see definition by hover and click */
+.cm-token-link {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* for see usages */
+.cm-usage-highlight {
+    background-color: rgba(255, 255, 0, 0.2); /* light yellow */
+    border-bottom: 1px dashed orange;
+    cursor: pointer;
+}
+.inline-highlight {
+    background: orange;
+    padding: 0 3px;
+}
+
+.cm-tooltip.cm-tooltip-hover {
+    border: none;
+}
 .cm-tooltip-autocomplete .cm-completionDetail {
     color: #aaa; /* Change the color */
     font-weight: lighter;

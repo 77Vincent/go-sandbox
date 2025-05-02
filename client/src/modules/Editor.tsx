@@ -1,3 +1,5 @@
+import "highlight.js/styles/github-dark.css"; // load once
+
 // react
 import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
@@ -16,9 +18,9 @@ import {
     CompletionResult,
     completionStatus
 } from "@codemirror/autocomplete";
-import {ChangeSpec, Compartment, EditorSelection, EditorState} from "@codemirror/state"
+import {ChangeSpec, Compartment, EditorSelection, EditorState, RangeSetBuilder} from "@codemirror/state"
 import {
-    crosshairCursor,
+    crosshairCursor, Decoration,
     drawSelection,
     dropCursor,
     EditorView,
@@ -47,14 +49,22 @@ import Mousetrap from "mousetrap";
 import debounce from "debounce";
 
 // local imports
-import {KeyBindingsType, languages, LSPCompletionItem, mySandboxes, patchI} from "../types";
+import {
+    KeyBindingsType,
+    languages,
+    LSPCompletionItem,
+    LSPReferenceResult,
+    mySandboxes,
+    patchI,
+    SeeingType
+} from "../types";
 import {
     CURSOR_HEAD_KEY,
     DEBOUNCE_TIME,
     DEFAULT_INDENTATION_SIZE,
     EMACS,
     KEEP_ALIVE_INTERVAL,
-    NONE,
+    NONE, SEEING_IMPLEMENTATIONS, SEEING_USAGES,
     VIM,
 } from "../constants.ts";
 import {
@@ -64,14 +74,16 @@ import {
     getFileUri,
     getWsUrl,
     isUserCode,
-    posToHead,
     viewUpdate
 } from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
-import {fetchSourceCode} from "../api/api.ts";
 import {SessionI, Sessions} from "./Sessions.tsx";
+import {createHoverTooltip} from "../lib/hover-ext.ts";
+import {createHoverLink} from "../lib/link-ext.ts";
+import {setUsageHighlights, usageHighlightField} from "../lib/usageHighlightPlugin.ts";
+import {Usages} from "./Usages.tsx";
 
 // map type from LSP to codemirror
 const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
@@ -102,6 +114,8 @@ const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
     TypeParameter: "type",
 }
 
+const usageHighlight = Decoration.mark({class: "cm-usage-highlight"});
+
 // Compartments for dynamic config
 const fontSizeCompartment = new Compartment();
 const indentCompartment = new Compartment();
@@ -110,6 +124,7 @@ const themeCompartment = new Compartment();
 const autoCompletionCompartment = new Compartment();
 const lintCompartment = new Compartment();
 const readOnlyCompartment = new Compartment()
+const hoverCompartment = new Compartment();
 
 // setters of compartments
 const setLint = (on: boolean, diagnostics: Diagnostic[]) => {
@@ -242,6 +257,8 @@ export default function Component(props: {
     const [infoCount, setInfoCount] = useState(0);
     const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
     const [completions, setCompletions] = useState<LSPCompletionItem[]>([]);
+    const [usages, setUsages] = useState<LSPReferenceResult[]>([]);
+    const [seeing, setSeeing] = useState<SeeingType>(SEEING_USAGES);
 
     // ref
     const editor = useRef<HTMLDivElement>(null);
@@ -250,6 +267,7 @@ export default function Component(props: {
     const version = useRef<number>(1); // initial version
     const file = useRef<string>(getFileUri(goVersion));
     const sessions = useRef<SessionI[]>([]);
+    const metaKey = useRef<boolean>(false);
 
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
@@ -334,7 +352,76 @@ export default function Component(props: {
         }
     }, [onChange, debouncedLspUpdate, debouncedStoreCode]);
 
-    const seeDefinition = useCallback((v: EditorView): boolean => {
+    const clearUsages = useCallback(() => {
+        view.current?.dispatch({
+            effects: [setUsageHighlights.of(Decoration.none)]
+        });
+        return false
+    }, [])
+
+    const seeImplementations = useCallback((): boolean => {
+        (async function () {
+            if (!lsp.current || !view.current) return;
+
+            const res = await lsp.current.getImplementations(file.current);
+            if (res.length === 0) {
+                return
+            }
+            // for display the implementations popup
+            // only display for user code
+            if (isUserCode(file.current)) {
+                setUsages(res as LSPReferenceResult[]);
+                setSeeing(SEEING_IMPLEMENTATIONS)
+            }
+        })();
+        return true;
+    }, []);
+
+
+    const seeUsages = useCallback((): boolean => {
+        (async function () {
+            if (!lsp.current || !view.current) {
+                return
+            }
+
+            const res = await lsp.current.getUsages()
+            if (res.length === 0) {
+                return
+            }
+
+            // for highlighting
+            const builder = new RangeSetBuilder<Decoration>();
+            for (const {uri, range} of res as LSPReferenceResult[]) {
+                if (uri !== file.current) continue; // only decorate in the current file
+
+                const {start, end} = range
+                const startLine = start.line + 1;
+                const startCol = start.character;
+                const endCol = end.character;
+
+                const line = view.current.state.doc.line(startLine);
+                const from = line.from + startCol;
+                const to = line.from + endCol;
+
+                builder.add(from, to, usageHighlight);
+            }
+            const decorations = builder.finish();
+            view.current.dispatch({
+                effects: [setUsageHighlights.of(decorations)]
+            });
+
+            // for display the usages popup
+            // only display for user code
+            if (isUserCode(file.current)) {
+                setUsages(res as LSPReferenceResult[]);
+                setSeeing(SEEING_USAGES)
+            }
+
+        }());
+        return true
+    }, [])
+
+    const seeDefinition = useCallback((): boolean => {
         (async function () {
             if (!lsp.current || !view.current) {
                 return
@@ -350,72 +437,31 @@ export default function Component(props: {
             // update the session
             sessions.current[index] = data
 
-            // start getting the definition
-            const {row: currentRow, col: currentCol} = getCursorPos(v);
-            const definitions = await lsp.current.getDefinition(currentRow - 1, currentCol - 1, file.current);
-
-            // quit if no definition
-            if (!definitions.length) {
-                return
-            }
-
-            const path = decodeURIComponent(definitions[0].uri);
-            file.current = path; // update file immediately
-
-            const {is_main, error, content} = await fetchSourceCode(path, goVersion)
-            const {range: {start: {line, character}}} = definitions[0];
-            const row = line + 1; // 1-based index
-            const col = character + 1; // 1-based index
-
-            if (error) {
-                setToastError(error);
-                return;
-            }
-            if (is_main) {
-                v.dispatch({
-                    selection: {
-                        anchor: posToHead(v, row, col), // 1-based index
-                    },
-                    scrollIntoView: true,
-                })
-            }
-            if (content) {
-                // update the doc first
-                v.dispatch({
-                    changes: {
-                        from: 0,
-                        to: v.state.doc.length,
-                        insert: content
-                    },
-                });
-                // then move the cursor
-                v.dispatch({
-                    selection: {
-                        anchor: posToHead(v, row, col), // 1-based index
-                    },
-                    scrollIntoView: true,
-                })
-
-                // update the sessions
-                const data = {id: path, cursor: posToHead(v, row, col), data: content}
-                const index = sessions.current.findIndex((s) => s.id === path)
-                if (index == -1) {
-                    sessions.current.push(data) // not in the list
-                } else {
-                    sessions.current[index] = data // update the item in the list
-                }
-                view.current.focus()
-            }
-
+            await lsp.current.loadDefinition()
         }());
         return true;
-    }, [goVersion, setToastError]);
+    }, []);
 
     const [focusedKeymap] = useState(() => [
+        {
+            key: `Escape`,
+            preventDefault: false,
+            run: clearUsages
+        },
         {
             key: `Mod-b`,
             preventDefault: true,
             run: seeDefinition,
+        },
+        {
+            key: `Mod-Alt-b`,
+            preventDefault: true,
+            run: seeImplementations,
+        },
+        {
+            key: `Mod-Alt-F7`,
+            preventDefault: true,
+            run: seeUsages,
         },
         {
             key: `F12`,
@@ -474,7 +520,6 @@ export default function Component(props: {
                 return indentLess(v)
             },
         },
-
     ]);
 
     const [extensions] = useState(() => [
@@ -487,7 +532,6 @@ export default function Component(props: {
         history(), // The undo history
         drawSelection(), // Replace the native cursor /selection with our own
         dropCursor(), // Show a drop cursor when dragging over the editor
-        EditorState.allowMultipleSelections.of(true), // Allow multiple cursors/selections
         indentOnInput(), // Re-indent lines when typing specific input
         bracketMatching(), // Highlight matching brackets near the cursor
         closeBrackets(), // Automatically close brackets
@@ -506,6 +550,8 @@ export default function Component(props: {
             ...lintKeymap, // Keys related to the linter system
             ...focusedKeymap, // Custom key bindings
         ]),
+        usageHighlightField,
+        hoverCompartment.of([]), // empty hover tooltip at first because lsp is not ready
         readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(file.current))),
         lintCompartment.of(setLint(isLintOn && isUserCode(file.current), diagnostics)),
         autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn && isUserCode(file.current) ? [setAutoCompletion(completions)] : []})),
@@ -568,10 +614,23 @@ export default function Component(props: {
         // add the default session
         sessions.current = [{id: getFileUri(goVersion), cursor: cursorHead}]
 
-        lsp.current = new LSPClient(getWsUrl("/ws"), goVersion, view.current, handleDiagnostics, handleError);
+        lsp.current = new LSPClient(
+            getWsUrl("/ws"), goVersion, view.current,
+            file, sessions,
+            handleDiagnostics, handleError,
+        );
+
+        // asynchronously add the hover tooltip when the lsp is ready
+        view.current.dispatch({
+            effects: hoverCompartment.reconfigure([
+                createHoverTooltip(lsp.current),
+                createHoverLink(lsp.current, metaKey),
+            ])
+        });
 
         // key bindings for unfocused editor
         Mousetrap.bind('esc', function () {
+            clearUsages()
             view.current?.focus();
             return false
         });
@@ -594,6 +653,17 @@ export default function Component(props: {
         Mousetrap.bind(`mod+s`, function () {
             debouncedShare()
             return false
+        });
+
+        // listen to meta-key events
+        window.addEventListener("keydown", e => {
+            if (e.metaKey || e.ctrlKey) metaKey.current = true;
+        });
+        window.addEventListener("keyup", e => {
+            if (!e.metaKey && !e.ctrlKey) metaKey.current = false;
+        });
+        window.addEventListener("blur", () => {
+            metaKey.current = false;
         });
 
         const keepAlive = setInterval(() => {
@@ -669,9 +739,14 @@ export default function Component(props: {
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div
-            className={`relative flex-1 flex-col overflow-hidden ${sessions.current.length > 1 ? "pb-14" : "pb-5"} ${mode === "dark" ? "editor-bg-dark" : ""}`}>
+            className={`relative flex-1 flex-col overflow-hidden ${sessions.current.length > 1 ? "pb-14" : "pb-5"} ${mode === "dark" ? "editor-bg-dark" : "editor-bg-light"}`}>
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
+
+            <Usages
+                lan={lan}
+                seeing={seeing} view={view.current} rawFile={value}
+                usages={usages} setUsages={setUsages}/>
 
             <div className={"h-full overflow-auto"} ref={editor}>
                 <div className={"sticky right-0 top-0 z-10"}>

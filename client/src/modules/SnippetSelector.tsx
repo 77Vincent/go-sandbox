@@ -1,5 +1,5 @@
 import {Dropdown} from "flowbite-react";
-import {SNIPPETS} from "../constants.ts";
+import {INACTIVE_TEXT_CLASS, SNIPPETS} from "../constants.ts";
 import {MouseEventHandler} from "react";
 
 const buttonLabel = "Snippets";
@@ -35,7 +35,7 @@ export default function Component(props: {
 
     return (
         <Dropdown inline={true} className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
-                  label={<span className={"text-xs"}>{buttonLabel}</span>}
+                  label={<span className={`text-xs ${isRunning ? INACTIVE_TEXT_CLASS : ""}`}>{buttonLabel}</span>}
         >
             {
                 Object.keys(SNIPPETS).map(key => {
