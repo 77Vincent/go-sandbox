@@ -51,6 +51,8 @@ export interface fetchSourceRes {
     is_main: boolean;
 }
 
+export type SeeingType = "usages" | "implementations"
+
 export interface LSPResponse<T> {
     jsonrpc: string;
     id: number;

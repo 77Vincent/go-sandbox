@@ -1,4 +1,4 @@
-import {KeyBindingsType, languages, mySandboxes} from "./types";
+import {KeyBindingsType, languages, mySandboxes, SeeingType} from "./types";
 
 export const TITLE = "Go Sandbox";
 export const LANGUAGE_GO = "go";
@@ -337,3 +337,6 @@ export const BUTTON_INACTIVE = "cursor-not-allowed text-gray-300 dark:text-gray-
 
 export const WORKSPACE = "workspace";
 export const URI_BASE = `file:///${WORKSPACE}`
+
+export const SEEING_USAGES: SeeingType = "usages"
+export const SEEING_IMPLEMENTATIONS: SeeingType = "implementations"

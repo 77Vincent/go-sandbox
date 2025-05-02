@@ -49,14 +49,22 @@ import Mousetrap from "mousetrap";
 import debounce from "debounce";
 
 // local imports
-import {KeyBindingsType, languages, LSPCompletionItem, LSPReferenceResult, mySandboxes, patchI} from "../types";
+import {
+    KeyBindingsType,
+    languages,
+    LSPCompletionItem,
+    LSPReferenceResult,
+    mySandboxes,
+    patchI,
+    SeeingType
+} from "../types";
 import {
     CURSOR_HEAD_KEY,
     DEBOUNCE_TIME,
     DEFAULT_INDENTATION_SIZE,
     EMACS,
     KEEP_ALIVE_INTERVAL,
-    NONE,
+    NONE, SEEING_IMPLEMENTATIONS, SEEING_USAGES,
     VIM,
 } from "../constants.ts";
 import {
@@ -250,6 +258,7 @@ export default function Component(props: {
     const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
     const [completions, setCompletions] = useState<LSPCompletionItem[]>([]);
     const [usages, setUsages] = useState<LSPReferenceResult[]>([]);
+    const [seeing, setSeeing] = useState<SeeingType>(SEEING_USAGES);
 
     // ref
     const editor = useRef<HTMLDivElement>(null);
@@ -354,18 +363,15 @@ export default function Component(props: {
         (async function () {
             if (!lsp.current || !view.current) return;
 
-            const pos = view.current.state.selection.main.head;
-            const line = view.current.state.doc.lineAt(pos);
-            const row = line.number - 1;
-            const col = pos - line.from;
-
-            const implementations = await lsp.current.getImplementations(row, col, file.current);
-            if (implementations.length === 0) {
+            const res = await lsp.current.getImplementations(file.current);
+            if (res.length === 0) {
                 return
             }
-            // only display usages for user code
+            // for display the implementations popup
+            // only display for user code
             if (isUserCode(file.current)) {
-                setUsages(implementations as LSPReferenceResult[]);
+                setUsages(res as LSPReferenceResult[]);
+                setSeeing(SEEING_IMPLEMENTATIONS)
             }
         })();
         return true;
@@ -378,12 +384,14 @@ export default function Component(props: {
                 return
             }
 
-            const usages = await lsp.current.getUsages()
-            if (usages.length === 0) {
+            const res = await lsp.current.getUsages()
+            if (res.length === 0) {
                 return
             }
+
+            // for highlighting
             const builder = new RangeSetBuilder<Decoration>();
-            for (const {uri, range} of usages as LSPReferenceResult[]) {
+            for (const {uri, range} of res as LSPReferenceResult[]) {
                 if (uri !== file.current) continue; // only decorate in the current file
 
                 const {start, end} = range
@@ -397,16 +405,18 @@ export default function Component(props: {
 
                 builder.add(from, to, usageHighlight);
             }
-
-            // only display usages for user code
-            if (isUserCode(file.current)) {
-                setUsages(usages as LSPReferenceResult[]);
-            }
-
             const decorations = builder.finish();
             view.current.dispatch({
                 effects: [setUsageHighlights.of(decorations)]
             });
+
+            // for display the usages popup
+            // only display for user code
+            if (isUserCode(file.current)) {
+                setUsages(res as LSPReferenceResult[]);
+                setSeeing(SEEING_USAGES)
+            }
+
         }());
         return true
     }, [])
@@ -733,7 +743,7 @@ export default function Component(props: {
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
 
-            <Usages view={view.current} rawFile={value} lan={lan} usages={usages} setUsages={setUsages}/>
+            <Usages seeing={seeing} view={view.current} rawFile={value} usages={usages} setUsages={setUsages}/>
 
             <div className={"h-full overflow-auto"} ref={editor}>
                 <div className={"sticky right-0 top-0 z-10"}>

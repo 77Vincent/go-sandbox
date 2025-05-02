@@ -229,8 +229,11 @@ export class LSPClient {
         }
     }
 
-    async getImplementations(line: number, character: number, uri: string): Promise<LSPDefinition[]> {
+    async getImplementations(uri: string): Promise<LSPDefinition[]> {
         try {
+            const {row, col} = getCursorPos(this.view);
+            const line = row - 1; // 0-based index
+            const character = col - 1; // 0-based index
             const res = await this.sendRequest<LSPDefinition[]>(EVENT_IMPLEMENTATION, {
                 textDocument: { uri },
                 position: { line, character }
