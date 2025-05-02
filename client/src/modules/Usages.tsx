@@ -38,8 +38,8 @@ export function Usages(props: {
 
     function onClick(row: number, col: number) {
         return () => {
-            jumpToUsage(row + 1, col + 1); // LSP is 0-indexed, but CodeMirror is 1-indexed
-            setUsages([]); // in order to close the modal
+            jumpToUsage(row + 1, col); // LSP is 0-indexed, but CodeMirror is 1-indexed
+            setUsages([]); // to close the modal
         }
     }
 

@@ -350,18 +350,40 @@ export default function Component(props: {
         return false
     }, [])
 
+    const seeImplementations = useCallback((): boolean => {
+        (async function () {
+            if (!lsp.current || !view.current) return;
+
+            const pos = view.current.state.selection.main.head;
+            const line = view.current.state.doc.lineAt(pos);
+            const row = line.number - 1;
+            const col = pos - line.from;
+
+            const implementations = await lsp.current.getImplementations(row, col, file.current);
+            if (implementations.length === 0) {
+                return
+            }
+            // only display usages for user code
+            if (isUserCode(file.current)) {
+                setUsages(implementations as LSPReferenceResult[]);
+            }
+        })();
+        return true;
+    }, []);
+
+
     const seeUsages = useCallback((): boolean => {
         (async function () {
             if (!lsp.current || !view.current) {
                 return
             }
 
-            const res = await lsp.current.getUsages()
-            if (!res.result) {
+            const usages = await lsp.current.getUsages()
+            if (usages.length === 0) {
                 return
             }
             const builder = new RangeSetBuilder<Decoration>();
-            for (const {uri, range} of res.result as LSPReferenceResult[]) {
+            for (const {uri, range} of usages as LSPReferenceResult[]) {
                 if (uri !== file.current) continue; // only decorate in the current file
 
                 const {start, end} = range
@@ -378,7 +400,7 @@ export default function Component(props: {
 
             // only display usages for user code
             if (isUserCode(file.current)) {
-                setUsages(res.result as LSPReferenceResult[]);
+                setUsages(usages as LSPReferenceResult[]);
             }
 
             const decorations = builder.finish();
@@ -420,6 +442,11 @@ export default function Component(props: {
             key: `Mod-b`,
             preventDefault: true,
             run: seeDefinition,
+        },
+        {
+            key: `Mod-Alt-b`,
+            preventDefault: true,
+            run: seeImplementations,
         },
         {
             key: `Mod-Alt-F7`,

@@ -3,6 +3,8 @@ import { RangeSetBuilder } from "@codemirror/state";
 import { MutableRefObject } from "react";
 import {LSPClient} from "./lsp.ts";
 
+const highlightClass = "cm-token-link";
+
 export function createHoverLink(
     lsp: LSPClient | null,
     metaKey: MutableRefObject<boolean>,
@@ -41,7 +43,7 @@ export function createHoverLink(
 
             this.hovered = { from: word.from, to: word.to };
             const builder = new RangeSetBuilder<Decoration>();
-            const deco = Decoration.mark({ class: "cm-token-link" });
+            const deco = Decoration.mark({ class: highlightClass });
             builder.add(word.from, word.to, deco);
             this.decorations = builder.finish();
             this.view.dispatch({ effects: [] });

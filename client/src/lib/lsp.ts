@@ -27,6 +27,7 @@ const SKIP_ERROR_NO_IDENTIFIER = "no identifier found"
 // LSP events
 const EVENT_INITIALIZE = "initialize"
 const EVENT_INITIALIZED = "initialized"
+const EVENT_IMPLEMENTATION = "textDocument/implementation"
 const EVENT_DEFINITION = "textDocument/definition"
 const EVENT_REFERENCES = "textDocument/references"
 const EVENT_COMPLETION = "textDocument/completion"
@@ -117,15 +118,20 @@ export class LSPClient {
         );
     }
 
-    async getUsages() {
-        const {row, col} = getCursorPos(this.view);
-        const line = row - 1; // 0-based index
-        const character = col - 1; // 0-based index
-        return await this.sendRequest(EVENT_REFERENCES, {
-            textDocument: {uri: this.file.current},
-            position: {line, character},
-            context: {includeDeclaration: false}
-        });
+    async getUsages(): Promise<LSPReferenceResult[]> {
+        try {
+            const {row, col} = getCursorPos(this.view);
+            const line = row - 1; // 0-based index
+            const character = col - 1; // 0-based index
+            const res = await this.sendRequest<LSPDefinition[]>(EVENT_REFERENCES, {
+                textDocument: {uri: this.file.current},
+                position: {line, character},
+                context: {includeDeclaration: false}
+            });
+            return res.result || [];
+        } catch (e) {
+            throw new Error(`Error getting usages from LSP server: ${e}`);
+        }
     }
 
     async loadDefinition() {
@@ -220,6 +226,18 @@ export class LSPClient {
             return res.result || null;
         } catch (e) {
             throw new Error(`Error getting hover from LSP server: ${e}`);
+        }
+    }
+
+    async getImplementations(line: number, character: number, uri: string): Promise<LSPDefinition[]> {
+        try {
+            const res = await this.sendRequest<LSPDefinition[]>(EVENT_IMPLEMENTATION, {
+                textDocument: { uri },
+                position: { line, character }
+            });
+            return res.result || [];
+        } catch (e) {
+            throw new Error(`Error getting implementation from LSP server: ${e}`);
         }
     }
 
