@@ -141,7 +141,7 @@ export default function Component(props: {
                     </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.seeUsages[lan]} </Title>
+                    <Title> {TRANSLATE.usages[lan]} </Title>
                     <SubRow>
                         <MetaKey/><OptionKey/>F7
                     </SubRow>

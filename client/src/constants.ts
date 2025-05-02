@@ -90,7 +90,13 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "上一個位置",
         ja: "前の場所",
     },
-    seeUsages: {
+    implementations: {
+        en: "See implementations",
+        zh_CN: "查看实现",
+        zh_TW: "查看實現",
+        ja: "実装を表示",
+    },
+    usages: {
         en: "See usages",
         zh_CN: "查看引用",
         zh_TW: "查看引用",

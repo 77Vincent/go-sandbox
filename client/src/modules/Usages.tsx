@@ -2,8 +2,8 @@ import {Modal, useThemeMode} from "flowbite-react";
 import hljs from "highlight.js/lib/core";
 import go from "highlight.js/lib/languages/go";
 
-import {LSPReferenceResult, SeeingType} from "../types";
-import {ICON_BUTTON_CLASS, LANGUAGE_GO} from "../constants.ts";
+import {languages, LSPReferenceResult, SeeingType} from "../types";
+import {ICON_BUTTON_CLASS, LANGUAGE_GO, TRANSLATE} from "../constants.ts";
 import {displayFileUri, isUserCode} from "../utils.ts";
 import {EditorView} from "@codemirror/view"; // or any other style you like
 
@@ -14,6 +14,7 @@ const startMarker = "/*__START__*/";
 const endMarker = "/*__END__*/";
 
 export function Usages(props: {
+    lan: languages
     seeing: SeeingType
     usages: LSPReferenceResult[],
     setUsages: (v: LSPReferenceResult[]) => void
@@ -21,7 +22,7 @@ export function Usages(props: {
     view: EditorView | null,
 }) {
     const {mode} = useThemeMode();
-    const {view, usages, setUsages, seeing, rawFile} = props;
+    const {lan, view, usages, setUsages, seeing, rawFile} = props;
     const allLines = rawFile.split("\n");
     const displayUsages = usages.filter(v => isUserCode(v.uri)); // only show usages in user code
 
@@ -46,7 +47,7 @@ export function Usages(props: {
     return (
         <Modal dismissible show={!!usages.length} onClose={() => setUsages([])}>
             <Modal.Header>
-                {seeing}: {displayUsages.length}
+                {TRANSLATE[seeing][lan]}: {displayUsages.length}
             </Modal.Header>
             <Modal.Body>
                 <div className="flex flex-col gap-2">

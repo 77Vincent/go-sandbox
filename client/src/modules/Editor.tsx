@@ -743,7 +743,10 @@ export default function Component(props: {
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
 
-            <Usages seeing={seeing} view={view.current} rawFile={value} usages={usages} setUsages={setUsages}/>
+            <Usages
+                lan={lan}
+                seeing={seeing} view={view.current} rawFile={value}
+                usages={usages} setUsages={setUsages}/>
 
             <div className={"h-full overflow-auto"} ref={editor}>
                 <div className={"sticky right-0 top-0 z-10"}>
