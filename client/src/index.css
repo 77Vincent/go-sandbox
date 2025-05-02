@@ -47,6 +47,7 @@ html {
     background-color: #f4f4f4;
 }
 
+/* markdown */
 .markdown-wrapper a {
     color: #06B6D4;
     font-style: italic;
@@ -56,27 +57,45 @@ html {
 .markdown-wrapper h2,
 .markdown-wrapper h3 {
     font-weight: bold;
-    color: #a58267;
+    color: #c59571;
     margin: 0.5rem 0;
 }
 
+.dark .markdown-wrapper pre:nth-child(1) {
+    border-bottom-color: #5e5e5e;
+}
 .markdown-wrapper pre:nth-child(1) {
     border-radius: 0;
-    border-bottom: 1px solid #707070;
+    border-bottom: 1px solid #dadada;
     background-color: transparent;
     padding: 0 0 0.5rem;
+}
+.markdown-wrapper pre:last-child {
+    border-bottom: none;
+    padding: 0;
 }
 .markdown-wrapper hr {
     display: none;
 }
+
+.markdown-wrapper p:last-child {
+    margin-bottom: 0;
+}
+
+.markdown-wrapper ul,
 .markdown-wrapper p {
     font-weight: 300;
-    margin: 0.5rem 0;
+    line-height: 1.5;
+    margin: 0.9rem 0;
 }
 .dark .markdown-wrapper a {
     color: #49e3ff;
 }
 
+/* CodeMirror */
+.cm-tooltip.cm-tooltip-hover {
+    border: none;
+}
 .cm-tooltip-autocomplete .cm-completionDetail {
     color: #aaa; /* Change the color */
     font-weight: lighter;

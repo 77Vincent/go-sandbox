@@ -12,11 +12,11 @@ marked.use({
     renderer: {
         code(code) {
             if (code.codeBlockStyle) {
-                return `<pre class="dark:bg-gray-800 py-1 px-2 rounded">${code.text}</pre>`;
+                return `<pre class="dark:bg-gray-800 bg-gray-200 py-1 px-2 rounded">${code.text}</pre>`;
             }
             if (code.lang || isCodeBlock(code.raw)) {
                 const {value} = hljs.highlight(code.text, {language: code.lang || language});
-                return `<pre class="dark:bg-gray-800 py-1 px-2 rounded"><code>${value}</code></pre>`;
+                return `<pre class="dark:bg-gray-800 bg-gray-200 py-1 px-2 rounded"><code>${value}</code></pre>`;
             }
 
             return code.text;
@@ -49,7 +49,7 @@ export function createHoverTooltip(lsp: LSPClient | null) {
                 above: true,
                 create() {
                     const dom = document.createElement("div");
-                    dom.className = "markdown-wrapper p-2 z-0 max-w-2xl max-h-96 overflow-auto border border-0.5 border-gray-100 dark:border-gray-600";
+                    dom.className = "markdown-wrapper px-2.5 py-3 z-0 max-w-2xl max-h-96 overflow-auto shadow-sm border border-gray-300 dark:border-gray-600";
 
                     const markdown = Array.isArray(contents)
                         ? contents.map((v) => v.value).join("")
