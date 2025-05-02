@@ -73,6 +73,7 @@ import StatusBar from "./StatusBar.tsx";
 import {fetchSourceCode} from "../api/api.ts";
 import {SessionI, Sessions} from "./Sessions.tsx";
 import {createHoverTooltip} from "../lib/hover-ext.ts";
+import {createHoverLink} from "../lib/link-ext.ts";
 
 // map type from LSP to codemirror
 const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
@@ -252,6 +253,7 @@ export default function Component(props: {
     const version = useRef<number>(1); // initial version
     const file = useRef<string>(getFileUri(goVersion));
     const sessions = useRef<SessionI[]>([]);
+    const metaKey = useRef<boolean>(false);
 
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
@@ -408,7 +410,6 @@ export default function Component(props: {
                 }
                 view.current.focus()
             }
-
         }());
         return true;
     }, [goVersion, setToastError]);
@@ -490,7 +491,6 @@ export default function Component(props: {
         history(), // The undo history
         drawSelection(), // Replace the native cursor /selection with our own
         dropCursor(), // Show a drop cursor when dragging over the editor
-        EditorState.allowMultipleSelections.of(true), // Allow multiple cursors/selections
         indentOnInput(), // Re-indent lines when typing specific input
         bracketMatching(), // Highlight matching brackets near the cursor
         closeBrackets(), // Automatically close brackets
@@ -577,6 +577,7 @@ export default function Component(props: {
         view.current.dispatch({
             effects: hoverCompartment.reconfigure([
                 createHoverTooltip(lsp.current),
+                createHoverLink(lsp.current, file, sessions, metaKey),
             ])
         });
 
@@ -604,6 +605,17 @@ export default function Component(props: {
         Mousetrap.bind(`mod+s`, function () {
             debouncedShare()
             return false
+        });
+
+        // listen to meta-key events
+        window.addEventListener("keydown", e => {
+            if (e.metaKey || e.ctrlKey) metaKey.current = true;
+        });
+        window.addEventListener("keyup", e => {
+            if (!e.metaKey && !e.ctrlKey) metaKey.current = false;
+        });
+        window.addEventListener("blur", () => {
+            metaKey.current = false;
         });
 
         const keepAlive = setInterval(() => {

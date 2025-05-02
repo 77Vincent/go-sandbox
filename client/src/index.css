@@ -93,6 +93,11 @@ html {
 }
 
 /* CodeMirror */
+.cm-token-link {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .cm-tooltip.cm-tooltip-hover {
     border: none;
 }

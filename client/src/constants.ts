@@ -150,12 +150,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "搜尋",
         ja: "検索",
     },
-    indentation: {
-        en: "Indentation",
-        zh_CN: "缩进",
-        zh_TW: "縮進",
-        ja: "インデント",
-    },
     theme: {
         en: "Theme",
         zh_CN: "主题",
@@ -240,12 +234,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "自動補全",
         ja: "自動補完",
     },
-    coffee: {
-        en: "Buy me a coffee",
-        zh_CN: "请我喝杯咖啡吧",
-        zh_TW: "請我喝杯咖啡吧",
-        ja: "コーヒーをおごって",
-    },
     bugReport: {
         en: "Bug Report",
         zh_CN: "报告 Bug",
@@ -275,12 +263,6 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_CN: "手册",
         zh_TW: "手冊",
         ja: "マニュアル",
-    },
-    browseHistory: {
-        en: "Browse History",
-        zh_CN: "浏览记录",
-        zh_TW: "瀏覽記錄",
-        ja: "履歴を表示",
     },
 }
 
