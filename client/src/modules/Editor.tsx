@@ -357,12 +357,13 @@ export default function Component(props: {
                 return
             }
             const builder = new RangeSetBuilder<Decoration>();
-            for (const usage of res.result as LSPReferenceResult[]) {
-                if (usage.uri !== file.current) continue; // only decorate in current file
+            for (const { uri, range } of res.result as LSPReferenceResult[]) {
+                if (uri !== file.current) continue; // only decorate in current file
 
-                const startLine = usage.range.start.line + 1;
-                const startCol = usage.range.start.character;
-                const endCol = usage.range.end.character;
+                const {start, end} = range
+                const startLine = start.line + 1;
+                const startCol = start.character;
+                const endCol = end.character;
 
                 const line = view.current.state.doc.line(startLine);
                 const from = line.from + startCol;
