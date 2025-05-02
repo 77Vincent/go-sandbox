@@ -324,7 +324,7 @@ export default function Component(props: {
 
     function onSandboxIdChange(id: mySandboxes) {
         localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
-        location.reload()
+        window.location.href = window.location.origin // remove all paths and query string
     }
 
     function onLanguageChange(value: languages) {
