@@ -3,7 +3,7 @@ import hljs from "highlight.js/lib/core";
 import go from "highlight.js/lib/languages/go";
 
 import {languages, LSPReferenceResult, SeeingType} from "../types";
-import {ICON_BUTTON_CLASS, LANGUAGE_GO, TRANSLATE} from "../constants.ts";
+import {ICON_BUTTON_CLASS, LANGUAGE_GO, SEEING_IMPLEMENTATIONS, TRANSLATE} from "../constants.ts";
 import {displayFileUri, isUserCode} from "../utils.ts";
 import {EditorView} from "@codemirror/view"; // or any other style you like
 
@@ -46,8 +46,16 @@ export function Usages(props: {
 
     return (
         <Modal dismissible show={!!usages.length} onClose={() => setUsages([])}>
-            <Modal.Header>
-                {TRANSLATE[seeing][lan]}: {displayUsages.length}
+            <Modal.Header className={"flex items-center gap-2"}>
+                <span>
+                    {
+                        seeing === SEEING_IMPLEMENTATIONS
+                            ? `${TRANSLATE.implementations[lan]} / ${TRANSLATE.definitions[lan]}`
+                            : TRANSLATE.usages[lan]
+                    }
+                </span>
+
+                <span>: {displayUsages.length}</span>
             </Modal.Header>
             <Modal.Body>
                 <div className="flex flex-col gap-2">
@@ -85,7 +93,8 @@ export function Usages(props: {
 
                         return (
                             <div key={index}>
-                                    <span onClick={onClick(start.line, start.character)} className={`mb-0.5 flex items-center gap-1 text-sm ${ICON_BUTTON_CLASS}`}>
+                                    <span onClick={onClick(start.line, start.character)}
+                                          className={`mb-0.5 flex items-center gap-1 text-sm ${ICON_BUTTON_CLASS}`}>
                                         <span className={"font-semibold"}> {index + 1}: </span>
                                         <span className={`break-all underline`}>
                                             {displayFileUri(uri)}: {lineIndex + 1}

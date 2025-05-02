@@ -102,8 +102,8 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         zh_TW: "查看引用",
         ja: "参照を表示",
     },
-    seeDefinition: {
-        en: "Goto definition",
+    definitions: {
+        en: "See definition",
         zh_CN: "查看定义",
         zh_TW: "查看定義",
         ja: "定義を表示",

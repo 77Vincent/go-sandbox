@@ -135,7 +135,7 @@ export default function Component(props: {
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> {TRANSLATE.seeDefinition[lan]} </Title>
+                    <Title> {TRANSLATE.definitions[lan]} </Title>
                     <SubRow>
                         <MetaKey/>b
                     </SubRow>
