@@ -9,7 +9,10 @@ import {
 import {Diagnostic} from "@codemirror/lint";
 import {EditorView} from "@codemirror/view";
 import {URI_BASE, WORKSPACE} from "../constants.ts";
-import {getFileUri} from "../utils.ts";
+import {getCursorPos, getFileUri, posToHead} from "../utils.ts";
+import {MutableRefObject} from "react";
+import {SessionI} from "../modules/Sessions.tsx";
+import {fetchSourceCode} from "../api/api.ts";
 
 const DIAGNOSTICS_METHOD = "textDocument/publishDiagnostics";
 const SEVERITY_MAP: Record<number, string> = {
@@ -57,6 +60,8 @@ export const LSP_KIND_LABELS: Record<number, string> = {
 
 export class LSPClient {
     goVersion: string;
+    file: MutableRefObject<string>;
+    sessions: MutableRefObject<SessionI[]>;
     ws: WebSocket;
     requestId: number;
     pendingRequests: pendingRequests;
@@ -68,9 +73,13 @@ export class LSPClient {
         backendUrl: string,
         initialSandboxVersion: string,
         view: EditorView,
+        file: MutableRefObject<string>,
+        sessions: MutableRefObject<SessionI[]>,
         handleDiagnostic: (diagnostic: Diagnostic[]) => void,
         handleError: (error: string) => void,
     ) {
+        this.file = file;
+        this.sessions = sessions;
         this.handleDiagnostic = handleDiagnostic;
         this.handleError = handleError;
         this.goVersion = initialSandboxVersion;
@@ -103,6 +112,65 @@ export class LSPClient {
             },
             {once: true}
         );
+    }
+
+    async loadDefinition() {
+        // start getting the definition
+        const {row: currentRow, col: currentCol} = getCursorPos(this.view);
+        const definitions = await this.getDefinition(currentRow - 1, currentCol - 1, this.file.current);
+
+        // quit if no definition
+        if (!definitions.length) {
+            return
+        }
+
+        const path = decodeURIComponent(definitions[0].uri);
+        this.file.current = path; // update file immediately
+
+        const {is_main, error, content} = await fetchSourceCode(path, this.goVersion)
+        const {range: {start: {line, character}}} = definitions[0];
+        const row = line + 1; // 1-based index
+        const col = character + 1; // 1-based index
+
+        if (error) {
+            this.handleError(error);
+            return;
+        }
+        if (is_main) {
+            this.view.dispatch({
+                selection: {
+                    anchor: posToHead(this.view, row, col), // 1-based index
+                },
+                scrollIntoView: true,
+            })
+        }
+        if (content) {
+            // update the doc first
+            this.view.dispatch({
+                changes: {
+                    from: 0,
+                    to: this.view.state.doc.length,
+                    insert: content
+                },
+            });
+            // then move the cursor
+            this.view.dispatch({
+                selection: {
+                    anchor: posToHead(this.view, row, col), // 1-based index
+                },
+                scrollIntoView: true,
+            })
+
+            // update the sessions
+            const data = {id: path, cursor: posToHead(this.view, row, col), data: content}
+            const index = this.sessions.current.findIndex((s) => s.id === path)
+            if (index == -1) {
+                this.sessions.current.push(data) // not in the list
+            } else {
+                this.sessions.current[index] = data // update the item in the list
+            }
+            this.view.focus()
+        }
     }
 
     sendRequest<T = LSPCompletionItem[] | LSPDefinition[] | LSPHover>(method: string, params: object): Promise<LSPResponse<T>> {

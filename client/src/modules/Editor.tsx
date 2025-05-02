@@ -64,13 +64,11 @@ import {
     getFileUri,
     getWsUrl,
     isUserCode,
-    posToHead,
     viewUpdate
 } from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
-import {fetchSourceCode} from "../api/api.ts";
 import {SessionI, Sessions} from "./Sessions.tsx";
 import {createHoverTooltip} from "../lib/hover-ext.ts";
 import {createHoverLink} from "../lib/link-ext.ts";
@@ -338,7 +336,7 @@ export default function Component(props: {
         }
     }, [onChange, debouncedLspUpdate, debouncedStoreCode]);
 
-    const seeDefinition = useCallback((v: EditorView): boolean => {
+    const seeDefinition = useCallback((): boolean => {
         (async function () {
             if (!lsp.current || !view.current) {
                 return
@@ -354,65 +352,10 @@ export default function Component(props: {
             // update the session
             sessions.current[index] = data
 
-            // start getting the definition
-            const {row: currentRow, col: currentCol} = getCursorPos(v);
-            const definitions = await lsp.current.getDefinition(currentRow - 1, currentCol - 1, file.current);
-
-            // quit if no definition
-            if (!definitions.length) {
-                return
-            }
-
-            const path = decodeURIComponent(definitions[0].uri);
-            file.current = path; // update file immediately
-
-            const {is_main, error, content} = await fetchSourceCode(path, goVersion)
-            const {range: {start: {line, character}}} = definitions[0];
-            const row = line + 1; // 1-based index
-            const col = character + 1; // 1-based index
-
-            if (error) {
-                setToastError(error);
-                return;
-            }
-            if (is_main) {
-                v.dispatch({
-                    selection: {
-                        anchor: posToHead(v, row, col), // 1-based index
-                    },
-                    scrollIntoView: true,
-                })
-            }
-            if (content) {
-                // update the doc first
-                v.dispatch({
-                    changes: {
-                        from: 0,
-                        to: v.state.doc.length,
-                        insert: content
-                    },
-                });
-                // then move the cursor
-                v.dispatch({
-                    selection: {
-                        anchor: posToHead(v, row, col), // 1-based index
-                    },
-                    scrollIntoView: true,
-                })
-
-                // update the sessions
-                const data = {id: path, cursor: posToHead(v, row, col), data: content}
-                const index = sessions.current.findIndex((s) => s.id === path)
-                if (index == -1) {
-                    sessions.current.push(data) // not in the list
-                } else {
-                    sessions.current[index] = data // update the item in the list
-                }
-                view.current.focus()
-            }
+            await lsp.current.loadDefinition()
         }());
         return true;
-    }, [goVersion, setToastError]);
+    }, []);
 
     const [focusedKeymap] = useState(() => [
         {
@@ -571,13 +514,17 @@ export default function Component(props: {
         // add the default session
         sessions.current = [{id: getFileUri(goVersion), cursor: cursorHead}]
 
-        lsp.current = new LSPClient(getWsUrl("/ws"), goVersion, view.current, handleDiagnostics, handleError);
+        lsp.current = new LSPClient(
+            getWsUrl("/ws"), goVersion, view.current,
+            file, sessions,
+            handleDiagnostics, handleError,
+        );
 
         // asynchronously add the hover tooltip when the lsp is ready
         view.current.dispatch({
             effects: hoverCompartment.reconfigure([
                 createHoverTooltip(lsp.current),
-                createHoverLink(lsp.current, file, sessions, metaKey),
+                createHoverLink(lsp.current, metaKey),
             ])
         });
 
