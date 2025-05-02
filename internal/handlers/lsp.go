@@ -56,7 +56,8 @@ func LSP(c *gin.Context) {
 		// parse headers
 		var contentLength int
 		for {
-			line, err := reader.ReadString('\n')
+			var line string
+			line, err = reader.ReadString('\n')
 			if err != nil {
 				log.Println("Read header error:", err)
 				return
