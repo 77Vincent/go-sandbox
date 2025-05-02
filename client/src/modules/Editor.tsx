@@ -1,3 +1,5 @@
+import "highlight.js/styles/github-dark.css"; // load once
+
 // react
 import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
@@ -73,6 +75,7 @@ import {SessionI, Sessions} from "./Sessions.tsx";
 import {createHoverTooltip} from "../lib/hover-ext.ts";
 import {createHoverLink} from "../lib/link-ext.ts";
 import {setUsageHighlights, usageHighlightField} from "../lib/usageHighlightPlugin.ts";
+import {Usages} from "./Usages.tsx";
 
 // map type from LSP to codemirror
 const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
@@ -103,7 +106,7 @@ const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
     TypeParameter: "type",
 }
 
-const usageHighlight = Decoration.mark({ class: "cm-usage-highlight" });
+const usageHighlight = Decoration.mark({class: "cm-usage-highlight"});
 
 // Compartments for dynamic config
 const fontSizeCompartment = new Compartment();
@@ -246,6 +249,7 @@ export default function Component(props: {
     const [infoCount, setInfoCount] = useState(0);
     const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]);
     const [completions, setCompletions] = useState<LSPCompletionItem[]>([]);
+    const [usages, setUsages] = useState<LSPReferenceResult[]>([]);
 
     // ref
     const editor = useRef<HTMLDivElement>(null);
@@ -357,8 +361,8 @@ export default function Component(props: {
                 return
             }
             const builder = new RangeSetBuilder<Decoration>();
-            for (const { uri, range } of res.result as LSPReferenceResult[]) {
-                if (uri !== file.current) continue; // only decorate in current file
+            for (const {uri, range} of res.result as LSPReferenceResult[]) {
+                if (uri !== file.current) continue; // only decorate in the current file
 
                 const {start, end} = range
                 const startLine = start.line + 1;
@@ -371,6 +375,12 @@ export default function Component(props: {
 
                 builder.add(from, to, usageHighlight);
             }
+
+            // only display usages for user code
+            if (isUserCode(file.current)) {
+                setUsages(res.result as LSPReferenceResult[]);
+            }
+
             const decorations = builder.finish();
             view.current.dispatch({
                 effects: [setUsageHighlights.of(decorations)]
@@ -695,6 +705,8 @@ export default function Component(props: {
             className={`relative flex-1 flex-col overflow-hidden ${sessions.current.length > 1 ? "pb-14" : "pb-5"} ${mode === "dark" ? "editor-bg-dark" : "editor-bg-light"}`}>
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
+
+            <Usages view={view.current} rawFile={value} lan={lan} usages={usages} setUsages={setUsages}/>
 
             <div className={"h-full overflow-auto"} ref={editor}>
                 <div className={"sticky right-0 top-0 z-10"}>

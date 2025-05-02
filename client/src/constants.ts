@@ -1,6 +1,7 @@
 import {KeyBindingsType, languages, mySandboxes} from "./types";
 
 export const TITLE = "Go Sandbox";
+export const LANGUAGE_GO = "go";
 
 export const EVENT_STDOUT = "stdout";
 export const EVENT_STDERR = "stderr";
@@ -25,7 +26,6 @@ export const FONT_SIZE_KEY = "fontSize";
 export const CURSOR_HEAD_KEY = "cursorHead";
 
 export const DEFAULT_MAIN_FILE_PATH = "/main.go"
-export const DEFAULT_TEST_FILE_PATH = "/main_test.go"
 export const DEFAULT_INDENTATION_SIZE = 4;
 export const DEFAULT_CURSOR_HEAD = 0;
 export const DEFAULT_IS_VERTICAL_LAYOUT = "false";
@@ -92,9 +92,9 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
     },
     seeUsages: {
         en: "See usages",
-        zh_CN: "查看用法",
-        zh_TW: "查看用法",
-        ja: "使用法を表示",
+        zh_CN: "查看引用",
+        zh_TW: "查看引用",
+        ja: "参照を表示",
     },
     seeDefinition: {
         en: "Goto definition",

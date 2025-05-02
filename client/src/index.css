@@ -105,6 +105,10 @@ html {
     border-bottom: 1px dashed orange;
     cursor: pointer;
 }
+.inline-highlight {
+    background: orange;
+    padding: 0 3px;
+}
 
 .cm-tooltip.cm-tooltip-hover {
     border: none;

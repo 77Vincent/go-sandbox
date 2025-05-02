@@ -3,10 +3,9 @@ import {LSPClient} from "./lsp.ts";
 import {marked} from "marked";
 import hljs from 'highlight.js';
 import goLang from "highlight.js/lib/languages/go";
-import "highlight.js/styles/github-dark.css";
+import {LANGUAGE_GO} from "../constants.ts";
 
-const language = "go";
-hljs.registerLanguage(language, goLang);
+hljs.registerLanguage(LANGUAGE_GO, goLang);
 
 marked.use({
     renderer: {
@@ -15,7 +14,7 @@ marked.use({
                 return `<pre class="dark:bg-gray-800 bg-gray-200 py-1 px-2 rounded">${code.text}</pre>`;
             }
             if (code.lang || isCodeBlock(code.raw)) {
-                const {value} = hljs.highlight(code.text, {language: code.lang || language});
+                const {value} = hljs.highlight(code.text, {language: code.lang || LANGUAGE_GO});
                 return `<pre class="dark:bg-gray-800 bg-gray-200 py-1 px-2 rounded"><code>${value}</code></pre>`;
             }
 
