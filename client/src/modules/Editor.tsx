@@ -32,7 +32,7 @@ import {
     rectangularSelection,
     ViewUpdate
 } from "@codemirror/view"
-import {bracketMatching, foldGutter, foldKeymap, indentOnInput, indentUnit,} from "@codemirror/language"
+import {bracketMatching, foldCode, unfoldCode, foldGutter, foldKeymap, indentOnInput, indentUnit,} from "@codemirror/language"
 import {defaultKeymap, history, historyKeymap, indentLess, indentMore} from "@codemirror/commands"
 import {highlightSelectionMatches, searchKeymap} from "@codemirror/search"
 
@@ -217,6 +217,7 @@ export default function Component(props: {
     fontSize: number;
     isLintOn: boolean;
     isAutoCompletionOn: boolean;
+    isVertical: boolean;
 
     // handler
     onChange: (code: string) => void;
@@ -236,7 +237,7 @@ export default function Component(props: {
         lan,
         value, patch,
         fontSize, keyBindings,
-        isLintOn, isAutoCompletionOn,
+        isLintOn, isAutoCompletionOn, isVertical,
         // handlers
         onChange,
         // setters
@@ -444,6 +445,20 @@ export default function Component(props: {
 
     const [focusedKeymap] = useState(() => [
         {
+            key: "Mod--",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                return foldCode(v)
+            },
+        },
+        {
+            key: "Mod-=",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                return unfoldCode(v)
+            },
+        },
+        {
             key: `Escape`,
             preventDefault: false,
             run: clearUsages
@@ -460,6 +475,11 @@ export default function Component(props: {
         },
         {
             key: `Mod-Alt-F7`,
+            preventDefault: true,
+            run: seeUsages,
+        },
+        {
+            key: `Shift-F12`,
             preventDefault: true,
             run: seeUsages,
         },
@@ -665,6 +685,9 @@ export default function Component(props: {
         window.addEventListener("blur", () => {
             metaKey.current = false;
         });
+        window.addEventListener("focus", () => {
+            lsp.current?.reconnect();
+        });
 
         const keepAlive = setInterval(() => {
             lsp.current?.keepAlive()
@@ -736,10 +759,17 @@ export default function Component(props: {
         viewUpdate(view.current, content, cursor);
     }, [sandboxId])
 
+    const paddingBottom = sessions.current.length > 1
+        ? isVertical
+            ? "pb-9" : "pb-14"
+        : isVertical
+            ? "" : "pb-5";
+    const backgroundColor = mode === "dark" ? "editor-bg-dark" : "editor-bg-light";
+
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div
-            className={`relative flex-1 flex-col overflow-hidden ${sessions.current.length > 1 ? "pb-14" : "pb-5"} ${mode === "dark" ? "editor-bg-dark" : "editor-bg-light"}`}>
+            className={`relative flex-1 flex-col overflow-hidden ${paddingBottom} ${backgroundColor}`}>
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
 

@@ -7,8 +7,9 @@ import {ReactNode} from "react";
 import {
     MdKeyboardControlKey as CtrlKey,
     MdKeyboardOptionKey as OptionKey,
-    MdKeyboardAlt as ShiftKey,
 } from "react-icons/md";
+import { BsShift as ShiftKey } from "react-icons/bs";
+
 
 function SubRow(props: {
     children: ReactNode,
@@ -25,6 +26,8 @@ function Title(props: {
         {props.children}
     </div>
 }
+
+const SUB_TEXT = "text-xs text-gray-400"
 
 export default function Component(props: {
     show: boolean,
@@ -60,7 +63,8 @@ export default function Component(props: {
                 <Row>
                     <Title> {TRANSLATE.foldCode[lan]} </Title>
                     <SubRow>
-                        <MetaKey/><OptionKey/>[
+                        <span className={`mr-2 flex items-center ${SUB_TEXT}`}><MetaKey/><OptionKey/>[</span>
+                        <MetaKey/>-
                     </SubRow>
                 </Row>
                 <Row>
@@ -68,7 +72,8 @@ export default function Component(props: {
                         <Title> {TRANSLATE.unfoldCode[lan]} </Title>
                     </SubRow>
                     <SubRow>
-                        <MetaKey/><OptionKey/>]
+                        <span className={`mr-2 flex items-center ${SUB_TEXT}`}><MetaKey/><OptionKey/>]</span>
+                        <MetaKey/>+
                     </SubRow>
                 </Row>
                 <Row>
@@ -89,25 +94,25 @@ export default function Component(props: {
                 <Row>
                     <Title> {TRANSLATE.run[lan]} </Title>
                     <SubRow>
-                        <MetaKey/>r
+                        <MetaKey/>R
                     </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.format[lan]} </Title>
                     <SubRow>
-                        <MetaKey/><OptionKey/>l
+                        <MetaKey/><OptionKey/>L
                     </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.share[lan]} </Title>
                     <SubRow>
-                        <MetaKey/>s
+                        <MetaKey/>S
                     </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.search[lan]} </Title>
                     <SubRow>
-                        <MetaKey/>f
+                        <MetaKey/>F
                     </SubRow>
                 </Row>
             </Grid>
@@ -116,7 +121,7 @@ export default function Component(props: {
                 <Row>
                     <Title> {TRANSLATE.openLintPanel[lan]} </Title>
                     <SubRow>
-                        <MetaKey/><ShiftKey/>m
+                        <MetaKey/><ShiftKey/>M
                     </SubRow>
                 </Row>
                 <Row>
@@ -131,13 +136,13 @@ export default function Component(props: {
                 <Row>
                     <Title> {TRANSLATE.definitions[lan]} </Title>
                     <SubRow>
-                        <MetaKey/>b
+                        <MetaKey/>B
                     </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.implementations[lan]} </Title>
                     <SubRow>
-                        <MetaKey/><OptionKey/>b
+                        <MetaKey/><OptionKey/>B
                     </SubRow>
                 </Row>
             </Grid>
@@ -152,7 +157,10 @@ export default function Component(props: {
                 <Row>
                     <Title> {TRANSLATE.usages[lan]} </Title>
                     <SubRow>
-                        <MetaKey/><OptionKey/>F7
+                        <span className={`mr-2 flex items-center ${SUB_TEXT}`}>
+                            <MetaKey/><OptionKey/>F7
+                        </span>
+                        <ShiftKey/>F12
                     </SubRow>
                 </Row>
                 <Row>

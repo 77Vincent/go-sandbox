@@ -23,9 +23,8 @@ export default function Component(props: {
 
         <Modal.Body>
             <div className={"flex flex-col gap-4 font-light dark:text-gray-50"}>
-                <p className={"font-semibold"}>
-                    Go Sandbox is a super minimalist and advanced online editor for Go, featuring LSP-backed linting and
-                    autocompletion, and real-time execution of your code!
+                <p className={"font-semibold italic underline"}>
+                    Your online Golang Coding Environment
                 </p>
 
                 <ul className={"list-inside list-disc indent-4"}>
