@@ -4,8 +4,8 @@ import {displayFileUri} from "../utils.ts";
 const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";
 const warningClasses = "text-cyan-700 dark:text-cyan-500";
-const textClasses = "text-xs text-gray-700 dark:text-gray-300";
-const commonClasses = "text-xs cursor-pointer hover:opacity-70";
+const textClasses = "text-xs font-light text-gray-800 dark:text-gray-400";
+const commonClasses = `${textClasses} cursor-pointer hover:opacity-70`;
 
 function chooseColor(errors: number, warnings: number, info: number) {
     if (errors > 0) return errorClasses;
@@ -36,7 +36,7 @@ export default function Component(props: {
             </div>
 
 
-            <div className={"flex items-center gap-4"}>
+            <div className={"flex items-center gap-5"}>
                 <span className={textClasses}> {row}:{col} </span>
                 <span className={textClasses}>4 spaces</span>
 

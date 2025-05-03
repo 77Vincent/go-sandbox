@@ -81,7 +81,9 @@ export function historyGoto(view: EditorView | null, index: number) {
     // 2) move the cursor and scroll
     view.dispatch({
         selection: {anchor: entry.pos},
-        scrollIntoView: true,
+        effects: EditorView.scrollIntoView(entry.pos, {
+            y: "center",
+        }),
     });
     view.scrollDOM.scrollTop = entry.scroll;
     return true;
@@ -116,7 +118,9 @@ export function historyBack(view: EditorView | null) {
     view.dispatch({effects: prevHistoryEvent.of(null)});
     view.dispatch({
         selection: {anchor: entry.pos},
-        scrollIntoView: true,
+        effects: EditorView.scrollIntoView(entry.pos, {
+            y: "center",
+        }),
     });
     view.scrollDOM.scrollTop = entry.scroll;
     return true;
@@ -152,7 +156,9 @@ export function historyForward(view: EditorView | null) {
     view.dispatch({effects: nextHistoryEvent.of(null)});
     view.dispatch({
         selection: {anchor: entry.pos},
-        scrollIntoView: true,
+        effects: EditorView.scrollIntoView(entry.pos, {
+            y: "center",
+        }),
     });
     view.scrollDOM.scrollTop = entry.scroll;
     return true;
