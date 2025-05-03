@@ -92,13 +92,7 @@ export class LSPClient {
         this.pendingRequests = new Map();
         this.view = view;
 
-        this.ws.onopen = async () => {
-            await this.initialize(1, this.view.state.doc.toString());
-        };
-
-        this.ws.onmessage = (event) => this.handleMessage(event.data);
-        this.ws.onerror = (e) => console.error("LSP WebSocket error:", e);
-        this.ws.onclose = (e) => console.log("LSP WebSocket closed:", e);
+        this.start()
     }
 
     sendNotification(method: string, params: object): void {
@@ -287,6 +281,30 @@ export class LSPClient {
         } catch (error) {
             console.error("LSP Initialize error:", error)
         }
+    }
+
+    start() {
+        this.ws = new WebSocket(this.ws.url);
+        this.ws.onopen = async () => {
+            await this.initialize(1, this.view.state.doc.toString());
+        };
+        this.ws.onmessage = (event) => this.handleMessage(event.data);
+        this.ws.onerror = (e) => console.error("LSP WebSocket error:", e);
+        this.ws.onclose = (e) => console.log("LSP WebSocket closed:", e);
+    }
+
+    reset() {
+        this.requestId = 0;
+        this.pendingRequests.clear();
+    }
+
+    async reconnect() {
+        if (this.ws.readyState !== WebSocket.CLOSED) {
+            return;
+        }
+        this.reset();
+        this.ws.close();
+        this.start();
     }
 
     keepAlive() {

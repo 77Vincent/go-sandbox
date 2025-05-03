@@ -665,6 +665,9 @@ export default function Component(props: {
         window.addEventListener("blur", () => {
             metaKey.current = false;
         });
+        window.addEventListener("focus", () => {
+            lsp.current?.reconnect();
+        });
 
         const keepAlive = setInterval(() => {
             lsp.current?.keepAlive()
