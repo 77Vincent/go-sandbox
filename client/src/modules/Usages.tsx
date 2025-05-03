@@ -58,7 +58,7 @@ export function Usages(props: {
     }, [jumpToUsage, setUsages])
 
     return (
-        <Modal size={"4xl"} dismissible show={!!usages.length} onClose={() => setUsages([])}>
+        <Modal size={"5xl"} dismissible show={!!usages.length} onClose={() => setUsages([])}>
             <Modal.Header className={"flex items-center gap-2"}>
                 <span>
                     {
@@ -108,7 +108,7 @@ export function Usages(props: {
                         return (
                             <div key={index}
                                  className={`flex items-center gap-2 px-2 py-0.5 ${index === lookAt ? "bg-cyan-100 dark:bg-gray-800" : ""}`}>
-                                <pre onClick={onPreviewClick(index)}
+                                <pre onDoubleClick={onJumpClick(start.line, start.character)} onClick={onPreviewClick(index)}
                                      className={`flex-1 cursor-default overflow-auto p-0.5 text-xs leading-snug text-black dark:text-white`}>
                                         <code dangerouslySetInnerHTML={{__html: code}}/>
                                 </pre>
