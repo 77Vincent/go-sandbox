@@ -7,6 +7,7 @@ import {ReactNode} from "react";
 import {
     MdKeyboardControlKey as CtrlKey,
     MdKeyboardOptionKey as OptionKey,
+    MdKeyboardReturn as EnterKey,
 } from "react-icons/md";
 import { BsShift as ShiftKey } from "react-icons/bs";
 
@@ -94,7 +95,7 @@ export default function Component(props: {
                 <Row>
                     <Title> {TRANSLATE.run[lan]} </Title>
                     <SubRow>
-                        <MetaKey/>R
+                        <MetaKey/><EnterKey/>
                     </SubRow>
                 </Row>
                 <Row>

@@ -1,5 +1,6 @@
 import {Tooltip} from "flowbite-react";
 import {FiPlay as RunICon} from "react-icons/fi";
+import { MdKeyboardReturn as EnterKey } from "react-icons/md";
 import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
 import {MdKeyboardOptionKey} from "react-icons/md";
@@ -28,7 +29,7 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.run[lan]}
                     <div className={"flex items-center"}>
-                        <MetaKey/>R
+                        <MetaKey/><EnterKey/>
                     </div>
                 </div>
             }>

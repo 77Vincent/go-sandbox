@@ -500,7 +500,7 @@ export default function Component(props: {
             }
         },
         {
-            key: `Mod-r`,
+            key: `Mod-Enter`,
             preventDefault: true,
             run: () => {
                 debouncedRun()
@@ -561,6 +561,7 @@ export default function Component(props: {
         highlightActiveLineGutter(), // Style the gutter for the current line specially
         highlightSelectionMatches(), // Highlight text that matches the selected text
         keymap.of([
+            ...focusedKeymap, // Custom key bindings
             ...closeBracketsKeymap, // Closed-bracket-aware backspace
             ...defaultKeymap, // A large set of basic bindings
             ...searchKeymap, // Search-related keys
@@ -568,7 +569,6 @@ export default function Component(props: {
             ...foldKeymap, // Code folding bindings
             ...completionKeymap, // Autocompletion keys
             ...lintKeymap, // Keys related to the linter system
-            ...focusedKeymap, // Custom key bindings
         ]),
         usageHighlightField,
         hoverCompartment.of([]), // empty hover tooltip at first because lsp is not ready
@@ -664,7 +664,7 @@ export default function Component(props: {
             setShowManual(true);
             return false
         });
-        Mousetrap.bind(`mod+r`, function () {
+        Mousetrap.bind(`mod+enter`, function () {
             debouncedRun()
             return false
         });
