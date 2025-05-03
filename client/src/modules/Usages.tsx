@@ -6,6 +6,7 @@ import {SEEING_IMPLEMENTATIONS, TRANSLATE} from "../constants.ts";
 import {displayFileUri, isUserCode, posToHead} from "../utils.ts";
 import MiniEditor from "./MiniEditor.tsx";
 import {useCallback, useEffect, useState} from "react";
+import {Divider} from "./Common.tsx";
 
 const highlightClass = "inline-highlight";
 const startMarker = "/*__START__*/";
@@ -72,8 +73,9 @@ export function Usages(props: {
             </Modal.Header>
 
             <Modal.Body className={"relative"}>
-                <MiniEditor className={"sticky top-0 mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
-                            value={value} head={head}/>
+                <MiniEditor
+                    className={"sticky top-0 mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
+                    value={value} head={head}/>
 
                 <div className="flex flex-col">
                     {displayUsages.map(({uri, range: {start, end}}, index) => {
@@ -108,7 +110,8 @@ export function Usages(props: {
                         return (
                             <div key={index}
                                  className={`flex items-center gap-2 px-2 py-0.5 ${index === lookAt ? "bg-cyan-100 dark:bg-gray-800" : ""}`}>
-                                <pre onDoubleClick={onJumpClick(start.line, start.character)} onClick={onPreviewClick(index)}
+                                <pre onDoubleClick={onJumpClick(start.line, start.character)}
+                                     onClick={onPreviewClick(index)}
                                      className={`flex-1 cursor-default overflow-auto p-0.5 text-xs leading-snug text-black dark:text-white`}>
                                         <code dangerouslySetInnerHTML={{__html: code}}/>
                                 </pre>
@@ -125,6 +128,11 @@ export function Usages(props: {
                             </div>
                         );
                     })}
+                </div>
+
+                <Divider className={"my-2"} horizontal={true}/>
+                <div className={`text-xs italic text-gray-400 dark:text-gray-500`}>
+                    {TRANSLATE.doubleClickGotoHint[lan]}
                 </div>
             </Modal.Body>
         </Modal>

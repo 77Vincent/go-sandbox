@@ -665,7 +665,25 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         vi: "Nhảy đến",
         th: "กระโดดไปที่",
         tr: "Atla",
-    }
+    },
+    doubleClickGotoHint: {
+        en: "Double click to go to the definition",
+        zh_CN: "双击跳转到定义",
+        zh_TW: "雙擊跳轉到定義",
+        ja: "ダブルクリックして定義に移動",
+        ko: "정의로 이동하려면 두 번 클릭하세요",
+        fr: "Double-cliquez pour aller à la définition",
+        de: "Doppelklicken, um zur Definition zu gelangen",
+        es: "Haga doble clic para ir a la definición",
+        it: "Fai doppio clic per andare alla definizione",
+        ru: "Дважды щелкните, чтобы перейти к определению",
+        hi: "परिभाषा पर जाने के लिए डबल-क्लिक करें",
+        pt_BR: "Clique duas vezes para ir à definição",
+        pt_PT: "Clique duas vezes para ir à definição",
+        vi: "Nhấp đúp để đến định nghĩa",
+        th: "ดับเบิลคลิกเพื่อไปที่การกำหนด",
+        tr: "Tanıma gitmek için çift tıklayın",
+    },
 }
 
 export const SNIPPETS: Record<string, Record<string, string>> = {

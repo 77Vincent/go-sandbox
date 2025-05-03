@@ -57,6 +57,9 @@ export default function Component(props: {
     // Initialize the editor only once
     useEffect(() => {
         if (!editor.current) return;
+        if (view.current) {
+            view.current.destroy(); // Destroy the previous view if it exists
+        }
 
         view.current = new EditorView({
             doc: value,
