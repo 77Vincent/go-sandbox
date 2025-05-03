@@ -32,7 +32,7 @@ import {
     rectangularSelection,
     ViewUpdate
 } from "@codemirror/view"
-import {bracketMatching, foldGutter, foldKeymap, indentOnInput, indentUnit,} from "@codemirror/language"
+import {bracketMatching, foldCode, unfoldCode, foldGutter, foldKeymap, indentOnInput, indentUnit,} from "@codemirror/language"
 import {defaultKeymap, history, historyKeymap, indentLess, indentMore} from "@codemirror/commands"
 import {highlightSelectionMatches, searchKeymap} from "@codemirror/search"
 
@@ -445,6 +445,20 @@ export default function Component(props: {
 
     const [focusedKeymap] = useState(() => [
         {
+            key: "Mod--",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                return foldCode(v)
+            },
+        },
+        {
+            key: "Mod-=",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                return unfoldCode(v)
+            },
+        },
+        {
             key: `Escape`,
             preventDefault: false,
             run: clearUsages
@@ -461,6 +475,11 @@ export default function Component(props: {
         },
         {
             key: `Mod-Alt-F7`,
+            preventDefault: true,
+            run: seeUsages,
+        },
+        {
+            key: `Shift-F12`,
             preventDefault: true,
             run: seeUsages,
         },
