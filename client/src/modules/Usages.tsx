@@ -1,13 +1,11 @@
-import {Modal, useThemeMode} from "flowbite-react";
-import hljs from "highlight.js/lib/core";
-import go from "highlight.js/lib/languages/go";
-
-import {languages, LSPReferenceResult, SeeingType} from "../types";
-import {ICON_BUTTON_CLASS, LANGUAGE_GO, SEEING_IMPLEMENTATIONS, TRANSLATE} from "../constants.ts";
-import {displayFileUri, isUserCode} from "../utils.ts";
+import {Modal, Tooltip} from "flowbite-react";
 import {EditorView} from "@codemirror/view"; // or any other style you like
 
-hljs.registerLanguage(LANGUAGE_GO, go);
+import {languages, LSPReferenceResult, SeeingType} from "../types";
+import {SEEING_IMPLEMENTATIONS, TRANSLATE} from "../constants.ts";
+import {displayFileUri, isUserCode, posToHead} from "../utils.ts";
+import MiniEditor from "./MiniEditor.tsx";
+import {useCallback, useEffect, useState} from "react";
 
 const highlightClass = "inline-highlight";
 const startMarker = "/*__START__*/";
@@ -21,31 +19,46 @@ export function Usages(props: {
     rawFile: string,
     view: EditorView | null,
 }) {
-    const {mode} = useThemeMode();
     const {lan, view, usages, setUsages, seeing, rawFile} = props;
+    const [lookAt, setLookAt] = useState<number>(0);
+
     const allLines = rawFile.split("\n");
     const displayUsages = usages.filter(v => isUserCode(v.uri)); // only show usages in user code
+    const start = displayUsages[lookAt]?.range.start;
+    const head = start ? posToHead(view as EditorView, start.line + 1, start.character) : 0;
 
-    function jumpToUsage(row: number, col: number) {
+    useEffect(() => {
+        setLookAt(0); // reset the lookAt index when usages change
+    }, [usages]);
+
+    const jumpToUsage = useCallback((row: number, col: number) => {
         if (!view) return;
 
         const line = view.state.doc.line(row);
         const pos = line.from + col;
         view.dispatch({
             selection: {anchor: pos, head: pos},
-            effects: EditorView.scrollIntoView(pos)
+            effects: EditorView.scrollIntoView(pos, {
+                y: "center",
+            })
         });
-    }
+    }, [view])
 
-    function onClick(row: number, col: number) {
+    const onPreviewClick = useCallback((index: number) => {
+        return () => {
+            setLookAt(index);
+        }
+    }, [setLookAt])
+
+    const onJumpClick = useCallback((row: number, col: number) => {
         return () => {
             jumpToUsage(row + 1, col); // LSP is 0-indexed, but CodeMirror is 1-indexed
             setUsages([]); // to close the modal
         }
-    }
+    }, [jumpToUsage, setUsages])
 
     return (
-        <Modal dismissible show={!!usages.length} onClose={() => setUsages([])}>
+        <Modal size={"4xl"} dismissible show={!!usages.length} onClose={() => setUsages([])}>
             <Modal.Header className={"flex items-center gap-2"}>
                 <span>
                     {
@@ -57,14 +70,18 @@ export function Usages(props: {
 
                 <span>: {displayUsages.length}</span>
             </Modal.Header>
+
             <Modal.Body>
-                <div className="flex flex-col gap-2">
+                <MiniEditor className={"mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
+                            value={rawFile} head={head}/>
+
+                <div className="flex flex-col">
                     {displayUsages.map(({uri, range: {start, end}}, index) => {
                         const lineIndex = start.line;
                         const fromCol = start.character;
                         const toCol = end.character;
-                        const previewStart = Math.max(0, lineIndex - 3);
-                        const previewEnd = Math.min(allLines.length, lineIndex + 4);
+                        const previewStart = Math.max(0, lineIndex);
+                        const previewEnd = Math.min(allLines.length, lineIndex + 1);
 
                         const contextLines = allLines.slice(
                             Math.max(0, previewStart),
@@ -83,27 +100,28 @@ export function Usages(props: {
                             endMarker +
                             originalLine.slice(toCol);
 
-                        const code = annotatedLines.join("\n");
-
-                        // Syntax highlight and post-process
-                        let highlighted = hljs.highlight(code, {language: LANGUAGE_GO}).value;
-                        highlighted = highlighted
+                        let code = annotatedLines.join("\n");
+                        code = code
                             .replace(startMarker, `<mark class=${highlightClass}>`)
                             .replace(endMarker, '</mark>');
 
                         return (
-                            <div key={index}>
-                                    <span onClick={onClick(start.line, start.character)}
-                                          className={`mb-0.5 flex items-center gap-1 text-sm ${ICON_BUTTON_CLASS}`}>
-                                        <span className={"font-semibold"}> {index + 1}: </span>
-                                        <span className={`break-all underline`}>
-                                            {displayFileUri(uri)}: {lineIndex + 1}
-                                        </span>
-                                    </span>
-                                <pre
-                                    className={`overflow-auto rounded border p-2 text-xs leading-snug dark:border-gray-500 ${mode === "dark" ? "hljs" : "bg-gray-50"}`}>
-                                        <code dangerouslySetInnerHTML={{__html: highlighted}}/>
+                            <div key={index}
+                                 className={`flex items-center gap-2 px-2 py-0.5 ${index === lookAt ? "bg-cyan-100 dark:bg-gray-800" : ""}`}>
+                                <pre onClick={onPreviewClick(index)}
+                                     className={`flex-1 cursor-default overflow-auto p-0.5 text-xs leading-snug text-black dark:text-white`}>
+                                        <code dangerouslySetInnerHTML={{__html: code}}/>
                                 </pre>
+
+                                <Tooltip placement={"left"} content={`${TRANSLATE.jumpTo[lan]} line ${lineIndex + 1}`}
+                                         className={"text-xs"}>
+                                    <div onClick={onJumpClick(start.line, start.character)}
+                                         className={`cursor-pointer text-xs font-light text-gray-500 hover:opacity-60 dark:text-gray-400`}
+                                    >
+                                        {displayFileUri(uri)}:
+                                        <span className={`text-gray-700 dark:text-gray-200`}> {lineIndex + 1} </span>
+                                    </div>
+                                </Tooltip>
                             </div>
                         );
                     })}

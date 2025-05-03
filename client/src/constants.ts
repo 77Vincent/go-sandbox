@@ -648,6 +648,24 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         th: "คู่มือ",
         tr: "Kılavuz",
     },
+    jumpTo: {
+        en: "Jump to",
+        zh_CN: "跳转到",
+        zh_TW: "跳轉到",
+        ja: "ジャンプする",
+        ko: "이동하기",
+        fr: "Aller à",
+        de: "Gehe zu",
+        es: "Saltar a",
+        it: "Salta a",
+        ru: "Перейти к",
+        hi: "पर जाएं",
+        pt_BR: "Pule para",
+        pt_PT: "Pule para",
+        vi: "Nhảy đến",
+        th: "กระโดดไปที่",
+        tr: "Atla",
+    }
 }
 
 export const SNIPPETS: Record<string, Record<string, string>> = {
