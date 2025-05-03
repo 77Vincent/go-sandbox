@@ -464,6 +464,7 @@ export default function Component(props: {
                             sandboxId={initialSandboxId}
                             goVersion={initialGoVersion}
                             setToastError={setToastError}
+                            isVertical={isLayoutVertical}
                             isLintOn={isLintOn}
                             isAutoCompletionOn={isAutoCompletionOn}
                             value={value.current}

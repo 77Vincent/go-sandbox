@@ -217,6 +217,7 @@ export default function Component(props: {
     fontSize: number;
     isLintOn: boolean;
     isAutoCompletionOn: boolean;
+    isVertical: boolean;
 
     // handler
     onChange: (code: string) => void;
@@ -236,7 +237,7 @@ export default function Component(props: {
         lan,
         value, patch,
         fontSize, keyBindings,
-        isLintOn, isAutoCompletionOn,
+        isLintOn, isAutoCompletionOn, isVertical,
         // handlers
         onChange,
         // setters
@@ -739,10 +740,17 @@ export default function Component(props: {
         viewUpdate(view.current, content, cursor);
     }, [sandboxId])
 
+    const paddingBottom = sessions.current.length > 1
+        ? isVertical
+            ? "pb-9" : "pb-14"
+        : isVertical
+            ? "" : "pb-5";
+    const backgroundColor = mode === "dark" ? "editor-bg-dark" : "editor-bg-light";
+
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div
-            className={`relative flex-1 flex-col overflow-hidden ${sessions.current.length > 1 ? "pb-14" : "pb-5"} ${mode === "dark" ? "editor-bg-dark" : "editor-bg-light"}`}>
+            className={`relative flex-1 flex-col overflow-hidden ${paddingBottom} ${backgroundColor}`}>
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
 
