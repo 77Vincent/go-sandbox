@@ -10,7 +10,7 @@ import {
     FONT_SIZE_M,
     FONT_SIZE_S,
     keyBindingsMap,
-    LANGUAGES,
+    LANGUAGES, SELECTED_COLOR_CLASS,
     TRANSLATE
 } from "../constants.ts";
 import {KeyBindingsType, languages} from "../types";
@@ -142,11 +142,13 @@ export default function Component(props: {
 
                         <Row>
                             <Label htmlFor="language" value={TRANSLATE.language[lan]}/>
-                            <Dropdown color={"light"} label={LANGUAGES.filter((v) => v.value === lan)[0].label}
+                            <Dropdown className={"max-h-72 overflow-auto"} color={"light"} label={LANGUAGES.filter((v) => v.value === lan)[0].label}
                                       size={"xs"} id="keyBindings">
                                 {
-                                    LANGUAGES.map(({value, label}) => {
-                                        return <Dropdown.Item key={value} onClick={onLanguage(value)}>
+                                    LANGUAGES
+                                        .sort((a, b) => a.label.localeCompare(b.label))
+                                        .map(({value, label}) => {
+                                        return <Dropdown.Item key={value} onClick={onLanguage(value)} className={`${value === lan ? SELECTED_COLOR_CLASS : ""}`}>
                                             {label}
                                         </Dropdown.Item>
                                     })
