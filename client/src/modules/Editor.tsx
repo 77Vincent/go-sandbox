@@ -627,7 +627,9 @@ export default function Component(props: {
             selection: EditorSelection.cursor(cursorHead),
         });
         view.current.dispatch({
-            scrollIntoView: true,
+            effects: EditorView.scrollIntoView(cursorHead, {
+                y: "center",
+            }),
         })
         view.current.focus();
 
