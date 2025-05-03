@@ -28,7 +28,7 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.run[lan]}
                     <div className={"flex items-center"}>
-                        <MetaKey/>r
+                        <MetaKey/>R
                     </div>
                 </div>
             }>
@@ -40,7 +40,7 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.format[lan]}
                     <div className={"flex items-center"}>
-                        <MetaKey/><MdKeyboardOptionKey/>l
+                        <MetaKey/><MdKeyboardOptionKey/>L
                     </div>
                 </div>
             }>
@@ -52,7 +52,7 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.share[lan]}
                     <div className={"flex items-center"}>
-                        <MetaKey/>s
+                        <MetaKey/>S
                     </div>
                 </div>
             }>
