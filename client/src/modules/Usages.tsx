@@ -71,8 +71,8 @@ export function Usages(props: {
                 <span>: {displayUsages.length}</span>
             </Modal.Header>
 
-            <Modal.Body>
-                <MiniEditor className={"mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
+            <Modal.Body className={"relative"}>
+                <MiniEditor className={"sticky top-0 mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
                             value={value} head={head}/>
 
                 <div className="flex flex-col">
