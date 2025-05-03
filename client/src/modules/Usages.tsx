@@ -16,13 +16,13 @@ export function Usages(props: {
     seeing: SeeingType
     usages: LSPReferenceResult[],
     setUsages: (v: LSPReferenceResult[]) => void
-    rawFile: string,
+    value: string,
     view: EditorView | null,
 }) {
-    const {lan, view, usages, setUsages, seeing, rawFile} = props;
+    const {lan, view, usages, setUsages, seeing, value} = props;
     const [lookAt, setLookAt] = useState<number>(0);
 
-    const allLines = rawFile.split("\n");
+    const allLines = value.split("\n");
     const displayUsages = usages.filter(v => isUserCode(v.uri)); // only show usages in user code
     const start = displayUsages[lookAt]?.range.start;
     const head = start ? posToHead(view as EditorView, start.line + 1, start.character) : 0;
@@ -73,7 +73,7 @@ export function Usages(props: {
 
             <Modal.Body>
                 <MiniEditor className={"mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
-                            value={rawFile} head={head}/>
+                            value={value} head={head}/>
 
                 <div className="flex flex-col">
                     {displayUsages.map(({uri, range: {start, end}}, index) => {

@@ -777,7 +777,7 @@ export default function Component(props: {
 
             <Usages
                 lan={lan}
-                seeing={seeing} view={view.current} rawFile={value}
+                seeing={seeing} view={view.current} value={value}
                 usages={usages} setUsages={setUsages}/>
 
             <div className={"h-full overflow-auto"} ref={editor}>
