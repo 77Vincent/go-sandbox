@@ -684,6 +684,24 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         th: "ดับเบิลคลิกเพื่อไปที่การกำหนด",
         tr: "Tanıma gitmek için çift tıklayın",
     },
+    matches: {
+        en: "matches",
+        zh_CN: "匹配",
+        zh_TW: "匹配",
+        ja: "一致",
+        ko: "일치",
+        fr: "correspondances",
+        de: "Übereinstimmungen",
+        es: "coincidencias",
+        it: "corrispondenze",
+        ru: "совпадения",
+        hi: "मेल खाता है",
+        pt_BR: "correspondências",
+        pt_PT: "correspondências",
+        vi: "khớp",
+        th: "ตรงกัน",
+        tr: "eşleşmeler",
+    }
 }
 
 export const SNIPPETS: Record<string, Record<string, string>> = {

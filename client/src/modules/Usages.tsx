@@ -69,7 +69,7 @@ export function Usages(props: {
                     }
                 </span>
 
-                <span>: {displayUsages.length}</span>
+                <span className={"ml-4 text-xs font-light text-gray-500"}>{displayUsages.length} {TRANSLATE.matches[lan]}</span>
             </Modal.Header>
 
             <Modal.Body className={"relative"}>
