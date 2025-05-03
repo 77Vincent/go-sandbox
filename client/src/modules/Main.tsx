@@ -148,7 +148,10 @@ export default function Component(props: {
         try {
             const id = await shareSnippet(value.current);
             const url = `${location.origin}/snippets/${id}`
-            await navigator.clipboard.writeText(url);
+            // this is a hack for Safari!
+            setTimeout(() => {
+                navigator.clipboard.writeText(url);
+            }, 0);
             setToastInfo(<ShareSuccessMessage url={url}/>)
         } catch (e) {
             setToastError((e as Error).message)
@@ -400,9 +403,9 @@ export default function Component(props: {
                 </Link>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
-                    <Actions isMobile={isMobile} isRunning={isRunning} debouncedFormat={debouncedFormat}
-                             debouncedRun={debouncedRun}
-                             debouncedShare={debouncedShare} hasCode={value.current.length > 0} lan={lan}/>
+                    <Actions isMobile={isMobile} isRunning={isRunning} format={debouncedFormat}
+                             run={debouncedRun}
+                             share={debouncedShare} hasCode={value.current.length > 0} lan={lan}/>
 
                     {
                         isMobile ? null : <>

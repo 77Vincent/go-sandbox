@@ -1,5 +1,6 @@
 import {Tooltip} from "flowbite-react";
 import {FiPlay as RunICon} from "react-icons/fi";
+import { MdKeyboardReturn as EnterKey } from "react-icons/md";
 import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
 import {MdKeyboardOptionKey} from "react-icons/md";
@@ -12,14 +13,14 @@ const COMMON_CLASSES = "z-20 text-xs font-light";
 
 export default function Component(props: {
     isMobile: boolean;
-    debouncedRun: () => void;
-    debouncedFormat: () => void;
-    debouncedShare: () => void;
+    run: () => void;
+    format: () => void;
+    share: () => void;
     hasCode: boolean;
     isRunning: boolean;
     lan: languages;
 }) {
-    const {isMobile, debouncedRun, debouncedFormat, debouncedShare, hasCode, isRunning, lan} = props;
+    const {isMobile, run, format, share, hasCode, isRunning, lan} = props;
     const isEnabled = hasCode && !isRunning;
 
     return (
@@ -28,12 +29,12 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.run[lan]}
                     <div className={"flex items-center"}>
-                        <MetaKey/>R
+                        <MetaKey/><EnterKey/>
                     </div>
                 </div>
             }>
                 <RunICon className={isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
-                         onClick={isEnabled ? debouncedRun : undefined} size={isMobile ? 21 : 22}/>
+                         onClick={isEnabled ? run : undefined} size={isMobile ? 21 : 22}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={
@@ -45,7 +46,7 @@ export default function Component(props: {
                 </div>
             }>
                 <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}`}
-                            onClick={isEnabled ? debouncedFormat : undefined} size={isMobile ? 21 : 22}/>
+                            onClick={isEnabled ? format : undefined} size={isMobile ? 21 : 22}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={
@@ -57,7 +58,7 @@ export default function Component(props: {
                 </div>
             }>
                 <ShareIcon className={isEnabled ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
-                           onClick={isEnabled ? debouncedShare : undefined} size={isMobile ? 20 : 21}/>
+                           onClick={isEnabled ? share : undefined} size={isMobile ? 20 : 21}/>
             </Tooltip>
         </>
     );
