@@ -23,6 +23,7 @@ const SEVERITY_MAP: Record<number, string> = {
 }
 
 const SKIP_ERROR_NO_IDENTIFIER = "no identifier found"
+const SKIP_NO_METADATA_FOUND = "no package metadata for file"
 
 // LSP events
 const EVENT_INITIALIZE = "initialize"
@@ -325,6 +326,9 @@ export class LSPClient {
                 // skip these errors since they are trivial
                 // this is for getting usages
                 if (error.message === SKIP_ERROR_NO_IDENTIFIER) {
+                    return;
+                }
+                if (error.message.includes(SKIP_NO_METADATA_FOUND)) {
                     return;
                 }
                 this.handleError(error.message);
