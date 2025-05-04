@@ -379,6 +379,8 @@ export default function Component(props: {
                 setShow={setShowSettings}
                 lan={lan}
                 fontSize={fontSize}
+                goVersion={initialGoVersion}
+                onGoVersionChange={onGoVersionChange}
                 onFontL={onFontL}
                 onFontM={onFontM}
                 onFontS={onFontS}
