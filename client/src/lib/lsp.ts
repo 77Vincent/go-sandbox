@@ -175,9 +175,7 @@ export class LSPClient {
                 selection: {
                     anchor: posToHead(this.view, row, col), // 1-based index
                 },
-                effects: EditorView.scrollIntoView(posToHead(this.view, row, col), {
-                    y: "center",
-                }),
+                scrollIntoView: true,
             })
 
             // update the sessions
