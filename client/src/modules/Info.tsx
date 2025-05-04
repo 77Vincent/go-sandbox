@@ -31,7 +31,7 @@ export default function Component(props: {
             }>
                 <SettingsIcon
                     onClick={() => setShowSettings(true)}
-                    size={isMobile ? 18 : 19}
+                    size={isMobile ? 17 : 18}
                     className={commonClasses}/>
             </Tooltip>
 
@@ -44,13 +44,13 @@ export default function Component(props: {
                 </div>
             }>
                 <ManualIcon
-                    size={isMobile ? 22 : 23}
+                    size={isMobile ? 21 : 22}
                     onClick={() => setShowManual(true)}
                     className={`${commonClasses} ml-0.5 max-md:ml-0.5`}/>
             </Tooltip>
 
             <AboutIcon
-                size={isMobile ? 22 : 24}
+                size={isMobile ? 21 : 23}
                 onClick={() => setShowAbout(true)}
                 className={commonClasses}/>
         </div>
