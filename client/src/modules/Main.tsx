@@ -11,7 +11,6 @@ import {
     DEBOUNCE_TIME,
     KEY_BINDINGS_KEY,
     FONT_SIZE_M,
-    TRANSLATE,
     STATS_INFO_PREFIX,
     LANGUAGE_KEY,
     EVENT_STDOUT,
@@ -54,6 +53,7 @@ import About from "./About.tsx";
 import Manual from "./Manual.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
+import {TRANSLATE} from "../lib/i18n.ts";
 
 function ShareSuccessMessage(props: {
     url: string,

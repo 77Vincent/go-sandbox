@@ -5,7 +5,7 @@ import {
     HELLO_WORLD,
     ICON_BUTTON_CLASS, INACTIVE_TEXT_CLASS,
     MY_SANDBOXES, SANDBOX_NAMES_KEY,
-    SELECTED_COLOR_CLASS, TRANSLATE
+    SELECTED_COLOR_CLASS
 } from "../constants.ts";
 
 import {MdOutlineAdd as AddIcon, MdOutlineEdit as EditButton} from "react-icons/md";
@@ -14,6 +14,7 @@ import {IoMdRemoveCircleOutline as RemoveIcon} from "react-icons/io";
 import {Dropdown, Tooltip} from "flowbite-react";
 import {MouseEventHandler, useEffect, useRef, useState} from "react";
 import {getSandboxes, getSandboxesNames} from "../utils.ts";
+import {TRANSLATE} from "../lib/i18n.ts";
 
 const MY_SANDBOX_PREFIX = "my-sandbox-";
 

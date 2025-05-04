@@ -1,7 +1,8 @@
 import {ClickBoard, Wrapper} from "./Common.tsx";
 import {mapFontSize} from "../utils.ts";
 import {languages, resultI} from "../types";
-import {EVENT_STDERR, TRANSLATE} from "../constants.ts";
+import {EVENT_STDERR} from "../constants.ts";
+import {TRANSLATE} from "../lib/i18n.ts";
 
 const common = "border-b dark:border-neutral-700 border-neutral-300 pb-1.5 mb-1"
 const errorColor = "text-red-700 dark:text-red-500"

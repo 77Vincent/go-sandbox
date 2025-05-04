@@ -1,6 +1,5 @@
 import {Modal} from "flowbite-react";
 
-import {TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
 import {MetaKey, Row, Grid, Divider} from "./Common.tsx";
 import {ReactNode} from "react";
@@ -10,6 +9,7 @@ import {
     MdKeyboardReturn as EnterKey,
 } from "react-icons/md";
 import {BsShift as ShiftKey} from "react-icons/bs";
+import {TRANSLATE} from "../lib/i18n.ts";
 
 
 function SubRow(props: {

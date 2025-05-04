@@ -2,11 +2,12 @@ import {Modal, Tooltip} from "flowbite-react";
 import {EditorView} from "@codemirror/view"; // or any other style you like
 
 import {languages, LSPReferenceResult, SeeingType} from "../types";
-import {SEEING_IMPLEMENTATIONS, TRANSLATE} from "../constants.ts";
+import {SEEING_IMPLEMENTATIONS} from "../constants.ts";
 import {displayFileUri, isUserCode, posToHead} from "../utils.ts";
 import MiniEditor from "./MiniEditor.tsx";
 import {useCallback, useEffect, useState} from "react";
 import {Divider} from "./Common.tsx";
+import {TRANSLATE} from "../lib/i18n.ts";
 
 const highlightClass = "inline-highlight";
 const startMarker = "/*__START__*/";

@@ -10,11 +10,11 @@ import {
     FONT_SIZE_M,
     FONT_SIZE_S, GO_VERSION_MAP, INACTIVE_TEXT_CLASS,
     keyBindingsMap,
-    LANGUAGES, SELECTED_COLOR_CLASS,
-    TRANSLATE
+    LANGUAGES, SELECTED_COLOR_CLASS
 } from "../constants.ts";
 import {KeyBindingsType, languages} from "../types";
 import {Divider, Grid, Row, ToggleSwitch} from "./Common.tsx";
+import {TRANSLATE} from "../lib/i18n.ts";
 
 const activeClasses = "cursor-pointer hover:opacity-50";
 

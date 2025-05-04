@@ -1,10 +1,11 @@
 import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
-import {ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
+import {ICON_BUTTON_CLASS} from "../constants.ts";
 import {HiOutlineInformationCircle as AboutIcon, HiOutlineQuestionMarkCircle as ManualIcon} from "react-icons/hi";
 
 import {Tooltip} from "flowbite-react";
 import {languages} from "../types";
 import {Divider, MetaKey} from "./Common.tsx";
+import {TRANSLATE} from "../lib/i18n.ts";
 
 const commonClasses = `${ICON_BUTTON_CLASS} max-md:mx-0 max-md:text-lg`
 

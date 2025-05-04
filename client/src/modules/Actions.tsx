@@ -5,9 +5,10 @@ import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
 import {MdKeyboardOptionKey} from "react-icons/md";
 
-import {BUTTON_INACTIVE, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
+import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
 import {languages} from "../types";
 import {MetaKey} from "./Common.tsx";
+import {TRANSLATE} from "../lib/i18n.ts";
 
 const COMMON_CLASSES = "z-20 text-xs font-light";
 
