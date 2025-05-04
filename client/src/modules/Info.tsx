@@ -1,6 +1,7 @@
 import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
 import {ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
 import {HiOutlineInformationCircle as AboutIcon, HiOutlineQuestionMarkCircle as ManualIcon} from "react-icons/hi";
+
 import {Tooltip} from "flowbite-react";
 import {languages} from "../types";
 import {Divider, MetaKey} from "./Common.tsx";
@@ -44,7 +45,7 @@ export default function Component(props: {
                 <ManualIcon
                     size={isMobile ? 22 : 23}
                     onClick={() => setShowManual(true)}
-                    className={`${commonClasses} ml-0.5`}/>
+                    className={`${commonClasses} ml-0.5 max-md:ml-0.5`}/>
             </Tooltip>
 
             <AboutIcon
