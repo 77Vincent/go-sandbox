@@ -8,7 +8,7 @@ import {
     ACTIVE_COLOR,
     FONT_SIZE_L,
     FONT_SIZE_M,
-    FONT_SIZE_S,
+    FONT_SIZE_S, GO_VERSION_MAP, INACTIVE_TEXT_CLASS,
     keyBindingsMap,
     LANGUAGES, SELECTED_COLOR_CLASS,
     TRANSLATE
@@ -27,6 +27,9 @@ export default function Component(props: {
     // for layout
     isVerticalLayout: boolean;
     setIsVerticalLayout: () => void;
+    // for go version
+    goVersion: string;
+    onGoVersionChange: (id: string) => void;
     // for editor fontSize
     fontSize: number;
     onFontL: () => void;
@@ -49,6 +52,9 @@ export default function Component(props: {
 
         // for language
         lan, onLanguageChange,
+
+        // for go version
+        goVersion, onGoVersionChange,
 
         // for layout
         isVerticalLayout, setIsVerticalLayout,
@@ -82,9 +88,17 @@ export default function Component(props: {
         }
     }
 
+    function onGoVersion(id: string) {
+        return () => {
+            if (id !== goVersion) {
+                onGoVersionChange(id);
+            }
+        }
+    }
+
     return (
         <>
-            <Modal dismissible show={show} onClose={() => setShow(false)}>
+            <Modal size={"3xl"} dismissible show={show} onClose={() => setShow(false)}>
                 <Modal.Header>
                     {TRANSLATE.settings[lan]}
                 </Modal.Header>
@@ -142,16 +156,18 @@ export default function Component(props: {
 
                         <Row>
                             <Label htmlFor="language" value={TRANSLATE.language[lan]}/>
-                            <Dropdown className={"max-h-72 overflow-auto"} color={"light"} label={LANGUAGES.filter((v) => v.value === lan)[0].label}
+                            <Dropdown className={"max-h-72 overflow-auto"} color={"light"}
+                                      label={LANGUAGES.filter((v) => v.value === lan)[0].label}
                                       size={"xs"} id="keyBindings">
                                 {
                                     LANGUAGES
                                         .sort((a, b) => a.label.localeCompare(b.label))
                                         .map(({value, label}) => {
-                                        return <Dropdown.Item key={value} onClick={onLanguage(value)} className={`${value === lan ? SELECTED_COLOR_CLASS : ""}`}>
-                                            {label}
-                                        </Dropdown.Item>
-                                    })
+                                            return <Dropdown.Item key={value} onClick={onLanguage(value)}
+                                                                  className={`${value === lan ? SELECTED_COLOR_CLASS : ""}`}>
+                                                {label}
+                                            </Dropdown.Item>
+                                        })
                                 }
                             </Dropdown>
                         </Row>
@@ -160,6 +176,24 @@ export default function Component(props: {
                     <Divider horizontal={true} className={"my-4"}/>
 
                     <Grid>
+                        <Row>
+                            <Label htmlFor="language" value={TRANSLATE.goVersion[lan]}/>
+                            <span className={`text-xs ${INACTIVE_TEXT_CLASS}`}> {TRANSLATE.comingSoon[lan]} </span>
+                            <Dropdown disabled={true} color={"light"} size={"xs"}
+                                      label={<span className={"text-xs"}> {GO_VERSION_MAP[goVersion]} </span>}
+                            >
+                                {
+                                    Object.keys(GO_VERSION_MAP).map((id) => (
+                                        <Dropdown.Item className={goVersion === id ? SELECTED_COLOR_CLASS : ""}
+                                                       key={id}
+                                                       onClick={onGoVersion(id)}>
+                                            {GO_VERSION_MAP[id]}
+                                        </Dropdown.Item>
+                                    ))
+                                }
+                            </Dropdown>
+                        </Row>
+
                         <Row>
                             <Label value={`${TRANSLATE.theme[lan]} / ${mode}`}/>
                             <DarkThemeToggle/>

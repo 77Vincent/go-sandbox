@@ -679,10 +679,10 @@ export default function Component(props: {
 
         // listen to meta-key events
         window.addEventListener("keydown", e => {
-            if (e.metaKey || e.ctrlKey) metaKey.current = true;
+            if (e.metaKey) metaKey.current = true;
         });
         window.addEventListener("keyup", e => {
-            if (!e.metaKey && !e.ctrlKey) metaKey.current = false;
+            if (!e.metaKey) metaKey.current = false;
         });
         window.addEventListener("blur", () => {
             metaKey.current = false;

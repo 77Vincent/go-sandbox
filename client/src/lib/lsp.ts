@@ -139,7 +139,6 @@ export class LSPClient {
         }
 
         const path = decodeURIComponent(definitions[0].uri);
-        this.file.current = path; // update file immediately
 
         const {is_main, error, content} = await fetchSourceCode(path, this.goVersion)
         const {range: {start: {line, character}}} = definitions[0];
@@ -151,6 +150,7 @@ export class LSPClient {
             return;
         }
         if (is_main) {
+            this.file.current = path; // update file immediately
             this.view.dispatch({
                 selection: {
                     anchor: posToHead(this.view, row, col), // 1-based index
@@ -161,7 +161,7 @@ export class LSPClient {
             })
         }
         if (content) {
-            // update the doc first
+            this.file.current = path; // update file immediately
             this.view.dispatch({
                 changes: {
                     from: 0,
@@ -233,8 +233,8 @@ export class LSPClient {
             const line = row - 1; // 0-based index
             const character = col - 1; // 0-based index
             const res = await this.sendRequest<LSPDefinition[]>(EVENT_IMPLEMENTATION, {
-                textDocument: { uri },
-                position: { line, character }
+                textDocument: {uri},
+                position: {line, character}
             });
             return res.result || [];
         } catch (e) {

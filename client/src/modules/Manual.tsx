@@ -9,13 +9,13 @@ import {
     MdKeyboardOptionKey as OptionKey,
     MdKeyboardReturn as EnterKey,
 } from "react-icons/md";
-import { BsShift as ShiftKey } from "react-icons/bs";
+import {BsShift as ShiftKey} from "react-icons/bs";
 
 
 function SubRow(props: {
     children: ReactNode,
 }) {
-    return <div className={"flex items-center gap-0.5"}>
+    return <div className={"flex items-center gap-0.5 max-md:text-xs"}>
         {props.children}
     </div>
 }
@@ -23,7 +23,7 @@ function SubRow(props: {
 function Title(props: {
     children: ReactNode,
 }) {
-    return <div className={"text-sm"}>
+    return <div className={"text-sm max-md:text-xs"}>
         {props.children}
     </div>
 }
