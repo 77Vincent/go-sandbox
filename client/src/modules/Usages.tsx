@@ -2,7 +2,7 @@ import {Modal, Tooltip} from "flowbite-react";
 import {EditorView} from "@codemirror/view"; // or any other style you like
 
 import {languages, LSPReferenceResult, SeeingType} from "../types";
-import {arrowDownEvent, arrowUpEvent, keyDownEvent, SEEING_IMPLEMENTATIONS} from "../constants.ts";
+import {arrowDownEvent, arrowUpEvent, DEFAULT_LANGUAGE, keyDownEvent, SEEING_IMPLEMENTATIONS} from "../constants.ts";
 import {displayFileUri, isUserCode, posToHead} from "../utils.ts";
 import MiniEditor from "./MiniEditor.tsx";
 import {useCallback, useEffect, useState} from "react";
@@ -21,7 +21,7 @@ export function Usages(props: {
     value: string,
     view: EditorView | null,
 }) {
-    const {lan, view, usages, setUsages, seeing, value} = props;
+    const {lan = DEFAULT_LANGUAGE, view, usages, setUsages, seeing, value} = props;
     const [lookAt, setLookAt] = useState<number>(0);
 
     const allLines = value.split("\n");

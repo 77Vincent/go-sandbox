@@ -1,5 +1,5 @@
 import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
-import {ICON_BUTTON_CLASS} from "../constants.ts";
+import {DEFAULT_LANGUAGE, ICON_BUTTON_CLASS} from "../constants.ts";
 import {HiOutlineInformationCircle as AboutIcon, HiOutlineQuestionMarkCircle as ManualIcon} from "react-icons/hi";
 
 import {Tooltip} from "flowbite-react";
@@ -16,7 +16,7 @@ export default function Component(props: {
     setShowAbout: (show: boolean) => void;
     setShowManual: (show: boolean) => void;
 }) {
-    const {lan, isMobile, setShowSettings, setShowAbout, setShowManual} = props
+    const {lan = DEFAULT_LANGUAGE, isMobile, setShowSettings, setShowAbout, setShowManual} = props
 
     return (
         <div className={"flex items-center gap-2.5 max-md:gap-2"}>

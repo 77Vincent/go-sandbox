@@ -10,6 +10,7 @@ import {
 } from "react-icons/md";
 import {BsShift as ShiftKey} from "react-icons/bs";
 import {TRANSLATE} from "../lib/i18n.ts";
+import {DEFAULT_LANGUAGE} from "../constants.ts";
 
 
 function SubRow(props: {
@@ -35,7 +36,7 @@ export default function Component(props: {
     lan: languages,
     setShow: (show: boolean) => void,
 }) {
-    const {lan, show, setShow} = props
+    const {lan = DEFAULT_LANGUAGE, show, setShow} = props
 
     return <Modal dismissible show={show} onClose={() => setShow(false)}>
         <Modal.Header>

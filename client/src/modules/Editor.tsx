@@ -62,7 +62,7 @@ import {
     blurEvent,
     CURSOR_HEAD_KEY,
     DEBOUNCE_TIME,
-    DEFAULT_INDENTATION_SIZE,
+    DEFAULT_INDENTATION_SIZE, DEFAULT_LANGUAGE,
     EMACS, focusEvent,
     KEEP_ALIVE_INTERVAL, keyDownEvent, keyUpEvent,
     NONE, SEEING_IMPLEMENTATIONS, SEEING_USAGES,
@@ -235,7 +235,7 @@ export default function Component(props: {
         goVersion,
         setToastError,
         // props
-        lan,
+        lan = DEFAULT_LANGUAGE,
         value, patch,
         fontSize, keyBindings,
         isLintOn, isAutoCompletionOn, isVertical,
