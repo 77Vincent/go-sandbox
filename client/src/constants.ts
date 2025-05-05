@@ -63,6 +63,14 @@ export const GO_VERSION_MAP: Record<string, string> = {
     "4": "Go dev branch",
 }
 
+export const keyDownEvent = "keydown"
+export const keyUpEvent = "keyup"
+export const blurEvent = "blur"
+export const focusEvent = "focus"
+
+export const arrowUpEvent = "ArrowUp"
+export const arrowDownEvent = "ArrowDown"
+
 export const HELLO_WORLD = `package main
 
 import "fmt"

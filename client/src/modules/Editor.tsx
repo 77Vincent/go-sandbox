@@ -59,11 +59,12 @@ import {
     SeeingType
 } from "../types";
 import {
+    blurEvent,
     CURSOR_HEAD_KEY,
     DEBOUNCE_TIME,
     DEFAULT_INDENTATION_SIZE,
-    EMACS,
-    KEEP_ALIVE_INTERVAL,
+    EMACS, focusEvent,
+    KEEP_ALIVE_INTERVAL, keyDownEvent, keyUpEvent,
     NONE, SEEING_IMPLEMENTATIONS, SEEING_USAGES,
     VIM,
 } from "../constants.ts";
@@ -678,16 +679,16 @@ export default function Component(props: {
         });
 
         // listen to meta-key events
-        window.addEventListener("keydown", e => {
+        window.addEventListener(keyDownEvent, e => {
             if (e.metaKey) metaKey.current = true;
         });
-        window.addEventListener("keyup", e => {
+        window.addEventListener(keyUpEvent, e => {
             if (!e.metaKey) metaKey.current = false;
         });
-        window.addEventListener("blur", () => {
+        window.addEventListener(blurEvent, () => {
             metaKey.current = false;
         });
-        window.addEventListener("focus", () => {
+        window.addEventListener(focusEvent, () => {
             lsp.current?.reconnect();
         });
 

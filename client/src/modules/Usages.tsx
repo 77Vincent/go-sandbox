@@ -2,7 +2,7 @@ import {Modal, Tooltip} from "flowbite-react";
 import {EditorView} from "@codemirror/view"; // or any other style you like
 
 import {languages, LSPReferenceResult, SeeingType} from "../types";
-import {SEEING_IMPLEMENTATIONS} from "../constants.ts";
+import {arrowDownEvent, arrowUpEvent, keyDownEvent, SEEING_IMPLEMENTATIONS} from "../constants.ts";
 import {displayFileUri, isUserCode, posToHead} from "../utils.ts";
 import MiniEditor from "./MiniEditor.tsx";
 import {useCallback, useEffect, useState} from "react";
@@ -61,7 +61,7 @@ export function Usages(props: {
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "ArrowDown") {
+            if (e.key === arrowDownEvent) {
                 setLookAt(prev => {
                     if (prev + 1 >= displayUsages.length) {
                         return prev;
@@ -69,7 +69,7 @@ export function Usages(props: {
                     return prev + 1;
                 })
             }
-            if (e.key === "ArrowUp") {
+            if (e.key === arrowUpEvent) {
                 setLookAt(prev => {
                     if (prev - 1 < 0) {
                         return prev;
@@ -79,9 +79,9 @@ export function Usages(props: {
             }
         }
 
-        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener(keyDownEvent, handleKeyDown);
         return () => {
-            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener(keyDownEvent, handleKeyDown);
         }
     }, [displayUsages]);
 
@@ -96,7 +96,8 @@ export function Usages(props: {
                     }
                 </span>
 
-                <span className={"ml-4 text-xs font-light text-gray-500"}>{displayUsages.length} {TRANSLATE.matches[lan]}</span>
+                <span
+                    className={"ml-4 text-xs font-light text-gray-500"}>{displayUsages.length} {TRANSLATE.matches[lan]}</span>
             </Modal.Header>
 
             <Modal.Body className={"relative"}>
