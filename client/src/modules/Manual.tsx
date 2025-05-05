@@ -1,6 +1,5 @@
 import {Modal} from "flowbite-react";
 
-import {TRANSLATE} from "../constants.ts";
 import {languages} from "../types";
 import {MetaKey, Row, Grid, Divider} from "./Common.tsx";
 import {ReactNode} from "react";
@@ -10,6 +9,8 @@ import {
     MdKeyboardReturn as EnterKey,
 } from "react-icons/md";
 import {BsShift as ShiftKey} from "react-icons/bs";
+import {TRANSLATE} from "../lib/i18n.ts";
+import {DEFAULT_LANGUAGE} from "../constants.ts";
 
 
 function SubRow(props: {
@@ -35,7 +36,7 @@ export default function Component(props: {
     lan: languages,
     setShow: (show: boolean) => void,
 }) {
-    const {lan, show, setShow} = props
+    const {lan = DEFAULT_LANGUAGE, show, setShow} = props
 
     return <Modal dismissible show={show} onClose={() => setShow(false)}>
         <Modal.Header>
@@ -101,7 +102,8 @@ export default function Component(props: {
                 <Row>
                     <Title> {TRANSLATE.format[lan]} </Title>
                     <SubRow>
-                        <MetaKey/><OptionKey/>L
+                        <span className={`mr-2 flex items-center ${SUB_TEXT}`}><MetaKey/><OptionKey/>L</span>
+                        <ShiftKey/><OptionKey/>F
                     </SubRow>
                 </Row>
                 <Row>

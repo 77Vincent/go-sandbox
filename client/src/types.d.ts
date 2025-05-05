@@ -34,7 +34,7 @@ export type mySandboxes =
     | "my-sandbox-9"
     | "my-sandbox-10"
 
-export type languages = "en" | "zh_CN" | "zh_TW" | "ja" | "ko" | "fr" | "de" | "es" | "it" | "ru" | "hi" | "pt_BR" | "pt_PT" | "vi" | "th" | "tr"
+export type languages = "en" | "zh_CN" | "zh_TW" | "ja" | "ko" | "fr" | "de" | "es" | "it" | "ru" | "hi" | "pt_BR" | "pt_PT" | "vi" | "th" | "tr" | "id" | "uk" | "pl"  | "nl" | "he" | "ar"
 
 export type resultType = "stdout" | "stderr"
 

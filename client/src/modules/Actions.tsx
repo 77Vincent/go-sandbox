@@ -3,11 +3,13 @@ import {FiPlay as RunICon} from "react-icons/fi";
 import { MdKeyboardReturn as EnterKey } from "react-icons/md";
 import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
-import {MdKeyboardOptionKey} from "react-icons/md";
+import {MdKeyboardOptionKey as AltKey} from "react-icons/md";
+import {BsShift as ShiftKey} from "react-icons/bs";
 
-import {BUTTON_INACTIVE, ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
+import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
 import {languages} from "../types";
 import {MetaKey} from "./Common.tsx";
+import {TRANSLATE} from "../lib/i18n.ts";
 
 const COMMON_CLASSES = "z-20 text-xs font-light";
 
@@ -41,7 +43,7 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.format[lan]}
                     <div className={"flex items-center"}>
-                        <MetaKey/><MdKeyboardOptionKey/>L
+                        <MetaKey/><AltKey/>L<span>&#160;</span><span>&#160;</span>or<span>&#160;</span><span>&#160;</span><ShiftKey/><AltKey/>F
                     </div>
                 </div>
             }>

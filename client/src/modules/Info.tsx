@@ -1,10 +1,11 @@
 import {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
-import {ICON_BUTTON_CLASS, TRANSLATE} from "../constants.ts";
+import {DEFAULT_LANGUAGE, ICON_BUTTON_CLASS} from "../constants.ts";
 import {HiOutlineInformationCircle as AboutIcon, HiOutlineQuestionMarkCircle as ManualIcon} from "react-icons/hi";
 
 import {Tooltip} from "flowbite-react";
 import {languages} from "../types";
 import {Divider, MetaKey} from "./Common.tsx";
+import {TRANSLATE} from "../lib/i18n.ts";
 
 const commonClasses = `${ICON_BUTTON_CLASS} max-md:mx-0 max-md:text-lg`
 
@@ -15,7 +16,7 @@ export default function Component(props: {
     setShowAbout: (show: boolean) => void;
     setShowManual: (show: boolean) => void;
 }) {
-    const {lan, isMobile, setShowSettings, setShowAbout, setShowManual} = props
+    const {lan = DEFAULT_LANGUAGE, isMobile, setShowSettings, setShowAbout, setShowManual} = props
 
     return (
         <div className={"flex items-center gap-2.5 max-md:gap-2"}>
@@ -30,7 +31,7 @@ export default function Component(props: {
             }>
                 <SettingsIcon
                     onClick={() => setShowSettings(true)}
-                    size={isMobile ? 18 : 19}
+                    size={isMobile ? 16 : 17}
                     className={commonClasses}/>
             </Tooltip>
 
@@ -43,13 +44,13 @@ export default function Component(props: {
                 </div>
             }>
                 <ManualIcon
-                    size={isMobile ? 22 : 23}
+                    size={isMobile ? 21 : 22}
                     onClick={() => setShowManual(true)}
                     className={`${commonClasses} ml-0.5 max-md:ml-0.5`}/>
             </Tooltip>
 
             <AboutIcon
-                size={isMobile ? 22 : 24}
+                size={isMobile ? 21 : 23}
                 onClick={() => setShowAbout(true)}
                 className={commonClasses}/>
         </div>

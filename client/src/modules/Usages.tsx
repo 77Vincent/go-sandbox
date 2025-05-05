@@ -2,11 +2,12 @@ import {Modal, Tooltip} from "flowbite-react";
 import {EditorView} from "@codemirror/view"; // or any other style you like
 
 import {languages, LSPReferenceResult, SeeingType} from "../types";
-import {SEEING_IMPLEMENTATIONS, TRANSLATE} from "../constants.ts";
+import {arrowDownEvent, arrowUpEvent, DEFAULT_LANGUAGE, keyDownEvent, SEEING_IMPLEMENTATIONS} from "../constants.ts";
 import {displayFileUri, isUserCode, posToHead} from "../utils.ts";
 import MiniEditor from "./MiniEditor.tsx";
 import {useCallback, useEffect, useState} from "react";
 import {Divider} from "./Common.tsx";
+import {TRANSLATE} from "../lib/i18n.ts";
 
 const highlightClass = "inline-highlight";
 const startMarker = "/*__START__*/";
@@ -20,7 +21,7 @@ export function Usages(props: {
     value: string,
     view: EditorView | null,
 }) {
-    const {lan, view, usages, setUsages, seeing, value} = props;
+    const {lan = DEFAULT_LANGUAGE, view, usages, setUsages, seeing, value} = props;
     const [lookAt, setLookAt] = useState<number>(0);
 
     const allLines = value.split("\n");
@@ -58,6 +59,32 @@ export function Usages(props: {
         }
     }, [jumpToUsage, setUsages])
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === arrowDownEvent) {
+                setLookAt(prev => {
+                    if (prev + 1 >= displayUsages.length) {
+                        return prev;
+                    }
+                    return prev + 1;
+                })
+            }
+            if (e.key === arrowUpEvent) {
+                setLookAt(prev => {
+                    if (prev - 1 < 0) {
+                        return prev;
+                    }
+                    return prev - 1;
+                })
+            }
+        }
+
+        window.addEventListener(keyDownEvent, handleKeyDown);
+        return () => {
+            window.removeEventListener(keyDownEvent, handleKeyDown);
+        }
+    }, [displayUsages]);
+
     return (
         <Modal size={"5xl"} dismissible show={!!usages.length} onClose={() => setUsages([])}>
             <Modal.Header className={"flex items-center gap-2"}>
@@ -69,7 +96,8 @@ export function Usages(props: {
                     }
                 </span>
 
-                <span className={"ml-4 text-xs font-light text-gray-500"}>{displayUsages.length} {TRANSLATE.matches[lan]}</span>
+                <span
+                    className={"ml-4 text-xs font-light text-gray-500"}>{displayUsages.length} {TRANSLATE.matches[lan]}</span>
             </Modal.Header>
 
             <Modal.Body className={"relative"}>

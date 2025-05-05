@@ -4,7 +4,8 @@ import {HiExclamation as ErrorIcon, HiInformationCircle as InfoIcon, HiRefresh a
 import {languages, toastType} from "../types";
 import {isMac} from "../utils.ts";
 import {MdContentCopy as CopyIcon, MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
-import {TRANSLATE} from "../constants.ts";
+
+import {TRANSLATE} from "../lib/i18n.ts";
 
 export function Wrapper(props: {
     children: ReactNode,
