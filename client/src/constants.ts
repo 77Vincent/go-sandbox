@@ -1,4 +1,4 @@
-import {KeyBindingsType, languages, mySandboxes, SeeingType} from "./types";
+import {KeyBindingsType, mySandboxes, SeeingType} from "./types";
 
 export const TITLE = "Go Sandbox";
 export const LANGUAGE_GO = "go";
@@ -63,30 +63,6 @@ export const GO_VERSION_MAP: Record<string, string> = {
     "4": "Go dev branch",
 }
 
-export const LANGUAGES: { value: languages, label: string }[] = [
-    {value: "en", label: "English"},
-    {value: "zh_CN", label: "简体中文"},
-    {value: "zh_TW", label: "繁體中文"},
-    {value: "ja", label: "日本語"},
-    {value: "ko", label: "한국어"},
-    {value: "fr", label: "Français"},
-    {value: "de", label: "Deutsch"},
-    {value: "es", label: "Español"},
-    {value: "it", label: "Italiano"},
-    {value: "ru", label: "Русский"},
-    {value: "hi", label: "हिन्दी"},
-    {value: "pt_BR", label: "Português (Brasil)"},
-    {value: "pt_PT", label: "Português (Portugal)"},
-    {value: "vi", label: "Tiếng Việt"},
-    {value: "th", label: "ภาษาไทย"},
-    {value: "tr", label: "Türkçe"},
-    {value: "id", label: "Bahasa Indonesia"},
-    {value: "uk", label: "Українська"},
-    {value: "pl", label: "Polski"},
-    {value: "nl", label: "Nederlands"},
-    {value: "he", label: "עברית"},
-    {value: "ar", label: "العربية"},
-]
 export const HELLO_WORLD = `package main
 
 import "fmt"
