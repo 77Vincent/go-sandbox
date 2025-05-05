@@ -142,7 +142,8 @@ export default function Component(props: {
 
     // drawer related
     const [openedDrawer, setOpenedDrawer] = useState<selectableDrawers>(initialOpenedDrawer);
-    const [outline, setOutline] = useState<LSPDocumentSymbol[]>([])
+    const [documentSymbols, setDocumentSymbols] = useState<LSPDocumentSymbol[]>([])
+    const [selectedSymbol, setSelectedSymbol] = useState<LSPDocumentSymbol | null>(null)
 
     // reference the latest state
     const value = useRef(initialValue);
@@ -489,7 +490,8 @@ export default function Component(props: {
                     defaultSize={{width: `${drawerSize}px`, height: "100%"}}
                     onResizeStop={onDrawerResizeStop}
                 >
-                    <Drawer lan={lan} title={openedDrawer} outline={outline} setOpenedDrawer={setOpenedDrawer}/>
+                    <Drawer lan={lan} title={openedDrawer} documentSymbols={documentSymbols}
+                            setOpenedDrawer={setOpenedDrawer} setSelectedSymbol={setSelectedSymbol}/>
                 </Resizable>
 
                 <Resizable
@@ -525,7 +527,8 @@ export default function Component(props: {
                         <Editor
                             lan={lan}
                             openedDrawer={openedDrawer}
-                            setOutline={setOutline}
+                            setDocumentSymbols={setDocumentSymbols}
+                            selectedSymbol={selectedSymbol}
                             sandboxId={initialSandboxId}
                             goVersion={initialGoVersion}
                             setToastError={setToastError}

@@ -87,7 +87,16 @@ import {
     SEEING_USAGES,
     VIM,
 } from "../constants.ts";
-import {getCodeContent, getCursorHead, getCursorPos, getFileUri, getWsUrl, isUserCode, viewUpdate} from "../utils.ts";
+import {
+    getCodeContent,
+    getCursorHead,
+    getCursorPos,
+    getFileUri,
+    getWsUrl,
+    isUserCode,
+    posToHead,
+    viewUpdate
+} from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -196,7 +205,8 @@ export default function Component(props: {
 
     // drawers
     openedDrawer: selectableDrawers;
-    setOutline: (v: LSPDocumentSymbol[]) => void;
+    setDocumentSymbols: (v: LSPDocumentSymbol[]) => void;
+    selectedSymbol: LSPDocumentSymbol | null;
 
     // settings
     lan: languages
@@ -222,7 +232,8 @@ export default function Component(props: {
         setToastError,
         // drawers
         openedDrawer,
-        setOutline,
+        setDocumentSymbols,
+        selectedSymbol,
         // props
         lan = DEFAULT_LANGUAGE,
         value, patch,
@@ -279,8 +290,8 @@ export default function Component(props: {
         if (!lsp.current) return;
         const res = await lsp.current.getDocumentSymbol();
         if (!res) return;
-        setOutline(res);
-    }, [setOutline]), DEBOUNCE_TIME_LONG);
+        setDocumentSymbols(res);
+    }, [setDocumentSymbols]), DEBOUNCE_TIME_LONG);
 
     useEffect(() => {
         if (!lsp.current || !lspReady) return;
@@ -295,6 +306,23 @@ export default function Component(props: {
 
         }
     }, [lspReady, debouncedGetDocumentSymbol, openedDrawer]);
+
+    useEffect(() => {
+        if (!lsp.current || !view.current || !lspReady) return;
+
+        // highlight the selected symbol
+        if (selectedSymbol) {
+            const {location: {range: {start}}} = selectedSymbol;
+            const head = posToHead(view.current, start.line + 1, start.character + 1);
+
+            view.current?.dispatch({
+                selection: EditorSelection.cursor(head),
+                effects: EditorView.scrollIntoView(head, {
+                    y: "center",
+                }),
+            })
+        }
+    }, [lspReady, selectedSymbol]);
 
     useEffect(() => {
         // reset error/warning/info count
