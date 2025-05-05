@@ -3,7 +3,7 @@ import {IoClose as CloseIcon} from "react-icons/io5";
 import {languages, LSPDocumentSymbol, selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS_2,
-    DEFAULT_LANGUAGE,
+    DEFAULT_LANGUAGE, DRAWER_DOCUMENT_SYMBOLS,
     NO_OPENED_DRAWER,
     OPENED_DRAWER_KEY
 } from "../constants.ts";
@@ -12,8 +12,12 @@ import {TRANSLATE} from "../lib/i18n.ts";
 
 const symbolStyle = (kind: number): string => {
     switch (kind) {
+        case 5: // class
+            return "text-red-700 dark:text-red-400";
         case 6: // method
             return "text-orange-700 dark:text-orange-400";
+        case 11: // interface
+            return "text-purple-700 dark:text-purple-400";
         case 12: // function
             return "text-yellow-600 dark:text-yellow-200";
         case 13: // variable
@@ -28,13 +32,13 @@ const symbolStyle = (kind: number): string => {
 }
 
 export default function Component(props: {
-    title: string,
+    type: selectableDrawers,
     lan: languages,
     documentSymbols: LSPDocumentSymbol[],
     setOpenedDrawer: (id: selectableDrawers) => void
     setSelectedSymbol: (symbol: LSPDocumentSymbol) => void
 }) {
-    const {title, lan = DEFAULT_LANGUAGE, documentSymbols, setOpenedDrawer, setSelectedSymbol} = props;
+    const {type, lan = DEFAULT_LANGUAGE, documentSymbols, setOpenedDrawer, setSelectedSymbol} = props;
 
     const closeDrawer = () => {
         setOpenedDrawer(NO_OPENED_DRAWER);
@@ -57,14 +61,14 @@ export default function Component(props: {
                 className={"sticky top-0  border-b border-b-gray-200 bg-white py-2 shadow dark:border-b-gray-700 dark:bg-neutral-900"}>
                 <div
                     className={"flex items-center justify-between px-2 text-xs font-semibold text-gray-900 dark:text-gray-100"}>
-                    {title && TRANSLATE[title][lan]}
+                    {type && TRANSLATE[type][lan]}
                     <CloseIcon size={14} className={ACTIVE_ICON_BUTTON_CLASS_2} onClick={closeDrawer}/>
                 </div>
             </div>
 
             <div className={"flex flex-1 flex-col overflow-x-auto bg-neutral-50 px-2 dark:bg-neutral-900"}>
                 {
-                    documentSymbols.map(({name, kind}, index) => {
+                    type === DRAWER_DOCUMENT_SYMBOLS && documentSymbols.map(({name, kind}, index) => {
                         return (
                             <div key={name} onClick={onClick(index)}
                                  className={"flex cursor-pointer items-center justify-between gap-2 px-0.5 py-1 hover:bg-gray-200 dark:hover:bg-gray-700"}

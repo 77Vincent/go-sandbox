@@ -10,7 +10,7 @@ import {
     ACTIVE_ICON_BUTTON_CLASS,
     DEFAULT_LANGUAGE,
     DRAWER_CODE_ACTIONS,
-    DRAWER_OUTLINE,
+    DRAWER_DOCUMENT_SYMBOLS,
     ICON_BUTTON_CLASS
 } from "../constants.ts";
 
@@ -36,8 +36,8 @@ export default function Component(props: {
 
     return (
         <div className="z-20 flex items-center gap-4 max-md:gap-2">
-            <Tooltip className={"text-xs"} content={TRANSLATE.outline[lan]}>
-                <OutlineIcon onClick={onClick(DRAWER_OUTLINE)} size={18} className={`${openedDrawer === DRAWER_OUTLINE ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}/>
+            <Tooltip className={"text-xs"} content={TRANSLATE.documentSymbols[lan]}>
+                <OutlineIcon onClick={onClick(DRAWER_DOCUMENT_SYMBOLS)} size={18} className={`${openedDrawer === DRAWER_DOCUMENT_SYMBOLS ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}/>
             </Tooltip>
 
             <Tooltip className={"text-xs"} content={TRANSLATE.suggestedActions[lan]}>

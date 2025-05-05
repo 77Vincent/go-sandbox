@@ -13,7 +13,7 @@ export const VIM = "vim"
 export const EMACS = "emacs"
 export const NONE = ""
 
-export const DRAWER_OUTLINE: selectableDrawers = "outline"
+export const DRAWER_DOCUMENT_SYMBOLS: selectableDrawers = "documentSymbols"
 export const DRAWER_CODE_ACTIONS: selectableDrawers = "codeActions"
 
 export const SANDBOX_NAMES_KEY = "sandboxNames";

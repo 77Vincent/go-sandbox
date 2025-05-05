@@ -25,7 +25,7 @@ export const TRANSLATE: Record<string, Record<languages, string>> = {
         he: "פעולות מוצעות",
         ar: "الإجراءات المقترحة",
     },
-    outline: {
+    documentSymbols: {
         en: "Outline",
         zh_CN: "大纲",
         zh_TW: "大綱",

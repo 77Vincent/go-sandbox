@@ -40,7 +40,7 @@ export type resultType = "stdout" | "stderr"
 
 export type toastType = "info" | "error"
 
-export type selectableDrawers = "outline" | "codeActions" | ""
+export type selectableDrawers = "documentSymbols" | "codeActions" | ""
 
 export interface resultI {
     type: resultType;

@@ -490,7 +490,7 @@ export default function Component(props: {
                     defaultSize={{width: `${drawerSize}px`, height: "100%"}}
                     onResizeStop={onDrawerResizeStop}
                 >
-                    <Drawer lan={lan} title={openedDrawer} documentSymbols={documentSymbols}
+                    <Drawer lan={lan} type={openedDrawer} documentSymbols={documentSymbols}
                             setOpenedDrawer={setOpenedDrawer} setSelectedSymbol={setSelectedSymbol}/>
                 </Resizable>
 

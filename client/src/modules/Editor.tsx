@@ -75,7 +75,7 @@ import {
     DEBOUNCE_TIME,
     DEFAULT_INDENTATION_SIZE,
     DEFAULT_LANGUAGE,
-    DRAWER_OUTLINE,
+    DRAWER_DOCUMENT_SYMBOLS,
     EMACS,
     focusEvent,
     KEEP_ALIVE_INTERVAL,
@@ -300,7 +300,7 @@ export default function Component(props: {
             case "":
                 // do nothing
                 break
-            case DRAWER_OUTLINE:
+            case DRAWER_DOCUMENT_SYMBOLS:
                 debouncedGetDocumentSymbol();
                 break
 
