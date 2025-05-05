@@ -52,7 +52,7 @@ export function MyToast(props: {
 
     return (
         show &&
-        <Toast className={`absolute bottom-6 left-6 z-10 w-auto max-w-xl border border-gray-200 dark:border-gray-600`}>
+        <Toast className={`absolute bottom-6 left-6 z-20 w-auto max-w-xl border border-gray-200 dark:border-gray-600`}>
             <div
                 className={`mr-2 inline-flex size-8 shrink-0 items-center justify-center rounded-lg ${color}`}>
                 {

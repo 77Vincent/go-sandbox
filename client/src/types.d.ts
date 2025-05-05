@@ -40,6 +40,8 @@ export type resultType = "stdout" | "stderr"
 
 export type toastType = "info" | "error"
 
+export type selectableDrawers = "outline" | "codeActions" | ""
+
 export interface resultI {
     type: resultType;
     content: string;
@@ -69,19 +71,22 @@ export type pendingRequests = Map<number, PendingRequestI>;
 
 export interface LSPDefinition {
     uri: string;
-    range: {
-        start: { line: number; character: number };
-        end: { line: number; character: number };
-    };
+    range: LSPRange;
+}
+
+export interface LSPDocumentSymbol {
+    name: string;
+    kind: number;
+    location: {
+        uri: string;
+        range: LSPRange;
+    }
 }
 
 export interface LSPCompletionItem {
     label: string;
     additionalTextEdits?: Array<{
-        range: {
-            start: { line: number; character: number };
-            end: { line: number; character: number };
-        };
+        range: LSPRange;
         newText: string;
     }>
     insertText?: string;
@@ -96,10 +101,7 @@ export interface LSPCompletionItem {
         value: string;
     };
     textEdit?: {
-        range: {
-            start: { line: number; character: number };
-            end: { line: number; character: number };
-        };
+        range: LSPRange;
         newText: string;
     }
 }
@@ -112,10 +114,7 @@ export interface LSPHover {
         kind: string;
         value: string;
     }>;
-    range?: {
-        start: { line: number; character: number };
-        end: { line: number; character: number };
-    };
+    range?: LSPRange;
 }
 
 export interface LSPReferenceResult {

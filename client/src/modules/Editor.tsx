@@ -1,5 +1,4 @@
 import "highlight.js/styles/github-dark.css"; // load once
-
 // react
 import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
@@ -20,7 +19,8 @@ import {
 } from "@codemirror/autocomplete";
 import {ChangeSpec, Compartment, EditorSelection, EditorState, RangeSetBuilder} from "@codemirror/state"
 import {
-    crosshairCursor, Decoration,
+    crosshairCursor,
+    Decoration,
     drawSelection,
     dropCursor,
     EditorView,
@@ -32,7 +32,15 @@ import {
     rectangularSelection,
     ViewUpdate
 } from "@codemirror/view"
-import {bracketMatching, foldCode, unfoldCode, foldGutter, foldKeymap, indentOnInput, indentUnit,} from "@codemirror/language"
+import {
+    bracketMatching,
+    foldCode,
+    foldGutter,
+    foldKeymap,
+    indentOnInput,
+    indentUnit,
+    unfoldCode,
+} from "@codemirror/language"
 import {defaultKeymap, history, historyKeymap, indentLess, indentMore} from "@codemirror/commands"
 import {highlightSelectionMatches, searchKeymap} from "@codemirror/search"
 
@@ -53,30 +61,33 @@ import {
     KeyBindingsType,
     languages,
     LSPCompletionItem,
+    LSPDocumentSymbol,
     LSPReferenceResult,
     mySandboxes,
     patchI,
-    SeeingType
+    SeeingType,
+    selectableDrawers
 } from "../types";
 import {
     blurEvent,
     CURSOR_HEAD_KEY,
+    DEBOUNCE_TIME_LONG,
     DEBOUNCE_TIME,
-    DEFAULT_INDENTATION_SIZE, DEFAULT_LANGUAGE,
-    EMACS, focusEvent,
-    KEEP_ALIVE_INTERVAL, keyDownEvent, keyUpEvent,
-    NONE, SEEING_IMPLEMENTATIONS, SEEING_USAGES,
+    DEFAULT_INDENTATION_SIZE,
+    DEFAULT_LANGUAGE,
+    DRAWER_OUTLINE,
+    EMACS,
+    focusEvent,
+    KEEP_ALIVE_INTERVAL,
+    keyDownEvent,
+    keyUpEvent,
+    LSP_TO_CODEMIRROR_TYPE,
+    NONE,
+    SEEING_IMPLEMENTATIONS,
+    SEEING_USAGES,
     VIM,
 } from "../constants.ts";
-import {
-    getCodeContent,
-    getCursorHead,
-    getCursorPos,
-    getFileUri,
-    getWsUrl,
-    isUserCode,
-    viewUpdate
-} from "../utils.ts";
+import {getCodeContent, getCursorHead, getCursorPos, getFileUri, getWsUrl, isUserCode, viewUpdate} from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -85,35 +96,6 @@ import {createHoverTooltip} from "../lib/hover-ext.ts";
 import {createHoverLink} from "../lib/link-ext.ts";
 import {setUsageHighlights, usageHighlightField} from "../lib/usageHighlightPlugin.ts";
 import {Usages} from "./Usages.tsx";
-
-// map type from LSP to codemirror
-const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
-    Text: "text",
-    Method: "method",
-    Function: "function",
-    Constructor: "function",
-    Field: "property",
-    Variable: "variable",
-    Class: "class",
-    Interface: "interface",
-    Module: "namespace",
-    Property: "property",
-    Unit: "constant",
-    Value: "text",
-    Enum: "enum",
-    Keyword: "keyword",
-    Snippet: "function",
-    Color: "constant",
-    File: "variable",
-    Reference: "variable",
-    Folder: "namespace",
-    EnumMember: "enum",
-    Constant: "constant",
-    Struct: "class",
-    Event: "function",
-    Operator: "function",
-    TypeParameter: "type",
-}
 
 const usageHighlight = Decoration.mark({class: "cm-usage-highlight"});
 
@@ -212,6 +194,10 @@ export default function Component(props: {
     value: string;
     patch: patchI;
 
+    // drawers
+    openedDrawer: selectableDrawers;
+    setOutline: (v: LSPDocumentSymbol[]) => void;
+
     // settings
     lan: languages
     keyBindings: KeyBindingsType;
@@ -234,6 +220,9 @@ export default function Component(props: {
         sandboxId,
         goVersion,
         setToastError,
+        // drawers
+        openedDrawer,
+        setOutline,
         // props
         lan = DEFAULT_LANGUAGE,
         value, patch,
@@ -252,6 +241,7 @@ export default function Component(props: {
     const {mode} = useThemeMode();
 
     // local state
+    const [lspReady, setLspReady] = useState<boolean>(false);
     const [row, setRow] = useState(1); // 1-based index
     const [col, setCol] = useState(1); // 1-based index
     const [errorCount, setErrorCount] = useState(0);
@@ -284,6 +274,27 @@ export default function Component(props: {
             sessions.current[0].cursor = head
         }
     }, []), DEBOUNCE_TIME)
+
+    const debouncedGetDocumentSymbol = debounce(useCallback(async () => {
+        if (!lsp.current) return;
+        const res = await lsp.current.getDocumentSymbol();
+        if (!res) return;
+        setOutline(res);
+    }, [setOutline]), DEBOUNCE_TIME_LONG);
+
+    useEffect(() => {
+        if (!lsp.current || !lspReady) return;
+
+        switch (openedDrawer) {
+            case "":
+                // do nothing
+                break
+            case DRAWER_OUTLINE:
+                debouncedGetDocumentSymbol();
+                break
+
+        }
+    }, [lspReady, debouncedGetDocumentSymbol, openedDrawer]);
 
     useEffect(() => {
         // reset error/warning/info count
@@ -351,8 +362,9 @@ export default function Component(props: {
             onChange(data);
             debouncedStoreCode(data);
             debouncedLspUpdate(v);
+            debouncedGetDocumentSymbol();
         }
-    }, [onChange, debouncedLspUpdate, debouncedStoreCode]);
+    }, [onChange, debouncedLspUpdate, debouncedStoreCode, debouncedGetDocumentSymbol]);
 
     const clearUsages = useCallback(() => {
         view.current?.dispatch({
@@ -650,7 +662,7 @@ export default function Component(props: {
         lsp.current = new LSPClient(
             getWsUrl("/ws"), goVersion, view.current,
             file, sessions,
-            handleDiagnostics, handleError,
+            handleDiagnostics, handleError, setLspReady,
         );
 
         // asynchronously add the hover tooltip when the lsp is ready

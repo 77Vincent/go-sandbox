@@ -22,7 +22,13 @@ import {
     GO_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
-    EDITOR_SIZE_MAX, TITLE, ACTIVE_SANDBOX_KEY, IS_AUTOCOMPLETION_ON_KEY,
+    EDITOR_SIZE_MAX,
+    TITLE,
+    ACTIVE_SANDBOX_KEY,
+    IS_AUTOCOMPLETION_ON_KEY,
+    DRAWER_SIZE_KEY,
+    RESIZABLE_HANDLER_WIDTH,
+    DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER, OPENED_DRAWER_KEY,
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
 import {Divider, Wrapper} from "./Common.tsx";
@@ -32,6 +38,8 @@ import Actions from "./Actions.tsx";
 import SnippetSelector from "./SnippetSelector.tsx";
 import VersionSelector from "./VersionSelector.tsx";
 import SandboxSelector from "./SandboxSelector.tsx";
+import Features from "./Features.tsx";
+import Drawer from "./Drawer.tsx";
 import Info from "./Info.tsx";
 import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
 
@@ -45,10 +53,18 @@ import {
     getLanguage,
     getGoVersion,
     getIsVerticalLayout,
-    isMobileDevice, getSandboxId, getAutoCompletionOn
+    isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
-import {KeyBindingsType, languages, mySandboxes, patchI, resultI} from "../types";
+import {
+    KeyBindingsType,
+    languages,
+    LSPDocumentSymbol,
+    mySandboxes,
+    patchI,
+    resultI,
+    selectableDrawers
+} from "../types";
 import About from "./About.tsx";
 import Manual from "./Manual.tsx";
 import {SSE} from "sse.js";
@@ -92,6 +108,8 @@ const initialIsVerticalLayout = getIsVerticalLayout();
 const initialLanguage = getLanguage()
 const initialFontSize = getFontSize()
 const initialEditorSize = getEditorSize()
+const initialDrawerSize = getDrawerSize()
+const initialOpenedDrawer = getOpenedDrawer();
 const initialKeyBindings = getKeyBindings()
 
 export default function Component(props: {
@@ -109,6 +127,7 @@ export default function Component(props: {
     // settings
     const [fontSize, setFontSize] = useState<number>(initialFontSize);
     const [editorSize, setEditorSize] = useState<number>(initialEditorSize);
+    const [drawerSize, setDrawerSize] = useState<number>(initialDrawerSize);
     const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
     const [lan, setLan] = useState<languages>(initialLanguage)
 
@@ -120,6 +139,10 @@ export default function Component(props: {
     const [result, setResult] = useState<resultI[]>([]);
     const [error, setError] = useState<string>("")
     const [info, setInfo] = useState<string>("")
+
+    // drawer related
+    const [openedDrawer, setOpenedDrawer] = useState<selectableDrawers>(initialOpenedDrawer);
+    const [outline, setOutline] = useState<LSPDocumentSymbol[]>([])
 
     // reference the latest state
     const value = useRef(initialValue);
@@ -348,6 +371,18 @@ export default function Component(props: {
         setEditorSize(size)
     }
 
+    function onOpenedDrawer(id: selectableDrawers) {
+        setOpenedDrawer(id)
+        localStorage.setItem(OPENED_DRAWER_KEY, id)
+    }
+
+    function onDrawerResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
+        // calculate the size
+        const size = refToElement.clientWidth
+        localStorage.setItem(DRAWER_SIZE_KEY, JSON.stringify(size))
+        setDrawerSize(size)
+    }
+
     function onFontL() {
         if (fontSize !== FONT_SIZE_L) {
             setFontSize(FONT_SIZE_L)
@@ -397,12 +432,18 @@ export default function Component(props: {
 
             <div
                 className="flex items-center justify-between border-b border-b-gray-400 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-1">
-                <Link to={""} className={"flex items-center gap-2 text-gray-600 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-300 dark:hover:text-cyan-400"}>
-                    <img src={"/favicon-512x512.png"} alt={"logo"} className={"mr-1 h-5 max-md:hidden"}/>
+                <div className="flex items-baseline gap-4 max-md:gap-2">
+                    <Link to={""}
+                          className={"flex items-center gap-2 text-gray-600 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-300 dark:hover:text-cyan-400"}>
+                        <img src={"/favicon-512x512.png"} alt={"logo"} className={"mr-1 h-5 max-md:hidden"}/>
 
-                    <div
-                        className="text-xl font-light max-md:text-sm">{TITLE}</div>
-                </Link>
+                        <div
+                            className="text-xl font-light max-md:text-sm">{TITLE}</div>
+                    </Link>
+
+                    <Divider/>
+                    <Features lan={lan} openedDrawer={openedDrawer} setOpenedDrawer={onOpenedDrawer}/>
+                </div>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
                     <Actions isMobile={isMobile} isRunning={isRunning} format={debouncedFormat}
@@ -433,14 +474,31 @@ export default function Component(props: {
                 </div>
             </div>
 
-            <div className={`flex h-0 flex-1 ${isLayoutVertical ? "flex-col" : "flex-row"}`}>
+            <div className={`flex h-0 flex-1 overflow-auto ${isLayoutVertical ? "flex-col" : "flex-row"}`}>
+                <Resizable
+                    className={`${openedDrawer === NO_OPENED_DRAWER ? "hidden" : ""}`}
+                    handleStyles={{
+                        right: {width: `${RESIZABLE_HANDLER_WIDTH}px`},
+                    }}
+                    handleClasses={{
+                        right: !isLayoutVertical ? resizeHandlerHoverClasses : "",
+                    }}
+                    minWidth={`${DRAWER_SIZE_MIN}px`}
+                    maxWidth={`${DRAWER_SIZE_MAX}px`}
+                    enable={{right: true}}
+                    defaultSize={{width: `${drawerSize}px`, height: "100%"}}
+                    onResizeStop={onDrawerResizeStop}
+                >
+                    <Drawer lan={lan} title={openedDrawer} outline={outline} setOpenedDrawer={setOpenedDrawer}/>
+                </Resizable>
+
                 <Resizable
                     handleStyles={{
                         right: {
-                            width: "5px",
+                            width: `${RESIZABLE_HANDLER_WIDTH}px`,
                         },
                         bottom: {
-                            height: "5px",
+                            height: `${RESIZABLE_HANDLER_WIDTH}px`,
                         },
                     }}
                     handleClasses={{
@@ -466,6 +524,8 @@ export default function Component(props: {
                         className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                         <Editor
                             lan={lan}
+                            openedDrawer={openedDrawer}
+                            setOutline={setOutline}
                             sandboxId={initialSandboxId}
                             goVersion={initialGoVersion}
                             setToastError={setToastError}

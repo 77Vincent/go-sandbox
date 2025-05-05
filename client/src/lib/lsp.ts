@@ -2,7 +2,7 @@ import {
     LSPCompletionItem,
     LSPCompletionResult,
     LSPDefinition,
-    LSPDiagnostic, LSPHover, LSPReferenceResult,
+    LSPDiagnostic, LSPDocumentSymbol, LSPHover, LSPReferenceResult,
     LSPResponse,
     pendingRequests
 } from "../types";
@@ -28,10 +28,14 @@ const SKIP_NO_METADATA_FOUND = "no package metadata for file"
 // LSP events
 const EVENT_INITIALIZE = "initialize"
 const EVENT_INITIALIZED = "initialized"
+
 const EVENT_IMPLEMENTATION = "textDocument/implementation"
 const EVENT_DEFINITION = "textDocument/definition"
 const EVENT_REFERENCES = "textDocument/references"
 const EVENT_COMPLETION = "textDocument/completion"
+const EVENT_DOCUMENT_SYMBOL = "textDocument/documentSymbol"
+const EVENT_CODE_ACTION = "textDocument/codeAction"
+
 const EVENT_HOVER = "textDocument/hover"
 const EVENT_DID_OPEN = "textDocument/didOpen"
 const EVENT_DID_CHANGE = "textDocument/didChange"
@@ -65,6 +69,7 @@ export const LSP_KIND_LABELS: Record<number, string> = {
 
 export class LSPClient {
     goVersion: string;
+    setReady: (ready: boolean) => void;
     file: MutableRefObject<string>;
     sessions: MutableRefObject<SessionI[]>;
     ws: WebSocket;
@@ -82,16 +87,20 @@ export class LSPClient {
         sessions: MutableRefObject<SessionI[]>,
         handleDiagnostic: (diagnostic: Diagnostic[]) => void,
         handleError: (error: string) => void,
+        setReady: (ready: boolean) => void
     ) {
+        this.ws = new WebSocket(backendUrl);
+
         this.file = file;
         this.sessions = sessions;
-        this.handleDiagnostic = handleDiagnostic;
-        this.handleError = handleError;
         this.goVersion = initialSandboxVersion;
-        this.ws = new WebSocket(backendUrl);
         this.requestId = 0;
         this.pendingRequests = new Map();
         this.view = view;
+
+        this.handleDiagnostic = handleDiagnostic;
+        this.handleError = handleError;
+        this.setReady = setReady;
 
         this.start()
     }
@@ -241,6 +250,33 @@ export class LSPClient {
         }
     }
 
+    async getDocumentSymbol(): Promise<LSPDocumentSymbol[]> {
+        try {
+            const res = await this.sendRequest<LSPDocumentSymbol[]>(EVENT_DOCUMENT_SYMBOL, {
+                textDocument: {uri: getFileUri(this.goVersion)},
+            });
+            return res.result || [];
+        } catch (e) {
+            throw new Error(`Error getting document symbol from LSP server: ${e}`);
+        }
+    }
+
+    async getCodeAction(line: number, character: number): Promise<LSPCompletionItem[]> {
+        try {
+            const res = await this.sendRequest<LSPCompletionItem[]>(EVENT_CODE_ACTION, {
+                textDocument: {uri: getFileUri(this.goVersion)},
+                range: {
+                    start: {line, character},
+                    end: {line, character},
+                },
+                context: {diagnostics: []}
+            });
+            return res.result || [];
+        } catch (e) {
+            throw new Error(`Error getting code action from LSP server: ${e}`);
+        }
+    }
+
     async getDefinition(line: number, character: number, uri: string): Promise<LSPDefinition[]> {
         try {
             const res = await this.sendRequest<LSPDefinition[]>(EVENT_DEFINITION, {
@@ -281,6 +317,7 @@ export class LSPClient {
                     text,
                 },
             });
+            this.setReady(true);
         } catch (error) {
             console.error("LSP Initialize error:", error)
         }

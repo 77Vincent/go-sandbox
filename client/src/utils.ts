@@ -3,14 +3,14 @@ import {
     CURSOR_HEAD_KEY,
     DEFAULT_ACTIVE_SANDBOX,
     DEFAULT_AUTOCOMPLETION_ON,
-    DEFAULT_CURSOR_HEAD,
+    DEFAULT_CURSOR_HEAD, DEFAULT_DRAWER_SIZE,
     DEFAULT_EDITOR_SIZE,
     DEFAULT_GO_VERSION,
     DEFAULT_IS_VERTICAL_LAYOUT,
     DEFAULT_KEY_BINDINGS,
     DEFAULT_LANGUAGE,
     DEFAULT_LINT_ON,
-    DEFAULT_MAIN_FILE_PATH,
+    DEFAULT_MAIN_FILE_PATH, NO_OPENED_DRAWER, DRAWER_SIZE_KEY,
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
     FONT_SIZE_M,
@@ -21,11 +21,11 @@ import {
     KEY_BINDINGS_KEY,
     LANGUAGE_KEY,
     MOBILE_WIDTH,
-    MY_SANDBOXES,
+    MY_SANDBOXES, OPENED_DRAWER_KEY,
     SANDBOX_NAMES_KEY,
     URI_BASE,
 } from "./constants.ts";
-import {KeyBindingsType, languages, mySandboxes} from "./types";
+import {KeyBindingsType, languages, mySandboxes, selectableDrawers} from "./types";
 import {EditorView, ViewUpdate} from "@codemirror/view";
 
 export function getFontSize(): number {
@@ -54,6 +54,14 @@ export function getKeyBindings(): KeyBindingsType {
 
 export function getEditorSize(): number {
     return Number(localStorage.getItem(EDITOR_SIZE_KEY)) || DEFAULT_EDITOR_SIZE
+}
+
+export function getDrawerSize(): number {
+    return Number(localStorage.getItem(DRAWER_SIZE_KEY)) || DEFAULT_DRAWER_SIZE
+}
+
+export function getOpenedDrawer(): selectableDrawers {
+    return localStorage.getItem(OPENED_DRAWER_KEY) as selectableDrawers || NO_OPENED_DRAWER
 }
 
 export function getGoVersion(): string {

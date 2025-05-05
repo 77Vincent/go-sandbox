@@ -2,6 +2,7 @@ import {IoClose as CloseIcon} from "react-icons/io5";
 import {useThemeMode} from "flowbite-react";
 import {displayFileUri} from "../utils.ts";
 import {MouseEventHandler} from "react";
+import {ACTIVE_ICON_BUTTON_CLASS_2} from "../constants.ts";
 
 const activeClasses = "border-b-cyan-500 border-b-3 dark:text-white"
 const inactiveClasses = "text-gray-800 dark:text-gray-300"
@@ -53,12 +54,12 @@ function Session(props: {
     return (
         <div
             onClick={handleClick(id)}
-            className={`flex h-8 cursor-default items-center gap-1 p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 ${active ? activeClasses : inactiveClasses}`}>
+            className={`flex h-8 cursor-default items-center gap-1 border-r border-r-gray-100 px-2 py-1.5 hover:bg-gray-100 dark:border-r-gray-800 dark:hover:bg-gray-700 ${active ? activeClasses : inactiveClasses}`}>
             <span className={"max-w-32 truncate text-xs italic tracking-wide"}>{displayFileUri(id)}</span>
             {
                 num > 0 &&
-                <CloseIcon onClick={handleClose(id, sessions)}
-                           className={"cursor-pointer text-sm text-gray-400 hover:opacity-50"}/>
+                <CloseIcon size={14} onClick={handleClose(id, sessions)}
+                           className={ACTIVE_ICON_BUTTON_CLASS_2}/>
             }
         </div>
     )
