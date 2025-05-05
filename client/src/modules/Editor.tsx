@@ -305,7 +305,7 @@ export default function Component(props: {
                 break
 
         }
-    }, [lspReady, debouncedGetDocumentSymbol, openedDrawer]);
+    }, [lspReady, openedDrawer]);
 
     useEffect(() => {
         if (!lsp.current || !view.current || !lspReady) return;
@@ -819,17 +819,12 @@ export default function Component(props: {
         viewUpdate(view.current, content, cursor);
     }, [sandboxId])
 
-    const paddingBottom = sessions.current.length > 1
-        ? isVertical
-            ? "pb-9" : "pb-14"
-        : isVertical
-            ? "" : "pb-5";
     const backgroundColor = mode === "dark" ? "editor-bg-dark" : "editor-bg-light";
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div
-            className={`relative flex-1 flex-col overflow-hidden ${paddingBottom} ${backgroundColor}`}>
+            className={`relative flex-1 flex-col overflow-hidden ${isVertical ? "pb-9" : "pb-14"} ${backgroundColor}`}>
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
 

@@ -74,11 +74,6 @@ export function Sessions(props: {
     const {mode} = useThemeMode();
     const {sessions, activeSession, onSessionClose, onSessionClick} = props
 
-    // omit the default main file
-    if (sessions.length === 1) {
-        return null
-    }
-
     return (
         <div
             className={`relative z-10 flex items-center overflow-x-auto border-b border-gray-300 shadow dark:border-gray-700 ${mode === "dark" ? "editor-bg-dark" : ""}`}>

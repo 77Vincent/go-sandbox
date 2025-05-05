@@ -4,12 +4,28 @@ import {languages, LSPDocumentSymbol, selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS_2,
     DEFAULT_LANGUAGE,
-    LSP_TO_CODEMIRROR_TYPE,
     NO_OPENED_DRAWER,
     OPENED_DRAWER_KEY
 } from "../constants.ts";
-import {LSP_KIND_LABELS} from "../lib/lsp.ts";
+import {SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
+
+const symbolStyle = (kind: number): string => {
+    switch (kind) {
+        case 6: // method
+            return "text-orange-700 dark:text-orange-400";
+        case 12: // function
+            return "text-yellow-600 dark:text-yellow-200";
+        case 13: // variable
+            return "text-green-700 dark:text-green-400 italic";
+        case 14: // constant
+            return "text-blue-700 dark:text-blue-400 italic";
+        case 23: // struct
+            return "text-teal-700 dark:text-teal-300 underline";
+        default:
+            return "text-gray-500 dark:text-gray-400";
+    }
+}
 
 export default function Component(props: {
     title: string,
@@ -51,14 +67,14 @@ export default function Component(props: {
                     documentSymbols.map(({name, kind}, index) => {
                         return (
                             <div key={name} onClick={onClick(index)}
-                                 className={"flex cursor-pointer items-center justify-between gap-2 px-0.5 py-1 font-light hover:bg-gray-200 dark:hover:bg-gray-700"}
+                                 className={"flex cursor-pointer items-center justify-between gap-2 px-0.5 py-1 hover:bg-gray-200 dark:hover:bg-gray-700"}
                             >
-                                <div className={"truncate text-xs text-gray-800 dark:text-gray-200"}>
+                                <div className={`flex items-center gap-1 truncate text-xs ${symbolStyle(kind)}`}>
                                     {name}
                                 </div>
 
-                                <div className={"text-xs text-gray-400 dark:text-gray-500"}>
-                                    {LSP_TO_CODEMIRROR_TYPE[LSP_KIND_LABELS[kind]] ?? kind}
+                                <div className={"text-xs font-light text-gray-400 dark:text-gray-500"}>
+                                    {SYMBOL_KIND_MAP[kind] ?? kind}
                                 </div>
                             </div>
                         );
