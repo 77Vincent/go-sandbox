@@ -35,7 +35,7 @@ export default function Component(props: {
 
     return (
         <div
-            className={"relative z-10 h-full overflow-y-auto border-r border-r-gray-200 shadow-sm dark:border-gray-700"}>
+            className={"relative z-10 flex h-full flex-col overflow-y-auto border-r border-r-gray-200 dark:border-gray-700"}>
 
             <div
                 className={"sticky top-0  border-b border-b-gray-200 bg-white py-2 shadow dark:border-b-gray-700 dark:bg-neutral-900"}>
@@ -46,18 +46,18 @@ export default function Component(props: {
                 </div>
             </div>
 
-            <div className={"flex flex-col overflow-x-auto px-2"}>
+            <div className={"flex flex-1 flex-col overflow-x-auto bg-neutral-50 px-2 dark:bg-neutral-900"}>
                 {
                     documentSymbols.map(({name, kind}, index) => {
                         return (
                             <div key={name} onClick={onClick(index)}
-                                 className={"flex cursor-pointer items-center justify-between gap-2 px-0.5 py-1 font-light hover:bg-gray-100 dark:hover:bg-gray-700"}
+                                 className={"flex cursor-pointer items-center justify-between gap-2 px-0.5 py-1 font-light hover:bg-gray-200 dark:hover:bg-gray-700"}
                             >
-                                <div className={"truncate text-xs text-gray-700 dark:text-gray-200"}>
+                                <div className={"truncate text-xs text-gray-800 dark:text-gray-200"}>
                                     {name}
                                 </div>
 
-                                <div className={"text-xs text-gray-500 dark:text-gray-500"}>
+                                <div className={"text-xs text-gray-400 dark:text-gray-500"}>
                                     {LSP_TO_CODEMIRROR_TYPE[LSP_KIND_LABELS[kind]] ?? kind}
                                 </div>
                             </div>

@@ -315,12 +315,13 @@ export default function Component(props: {
             const {location: {range: {start}}} = selectedSymbol;
             const head = posToHead(view.current, start.line + 1, start.character + 1);
 
-            view.current?.dispatch({
+            view.current.dispatch({
                 selection: EditorSelection.cursor(head),
                 effects: EditorView.scrollIntoView(head, {
                     y: "center",
                 }),
             })
+            view.current.focus();
         }
     }, [lspReady, selectedSymbol]);
 
