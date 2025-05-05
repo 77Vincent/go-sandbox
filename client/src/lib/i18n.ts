@@ -1,7 +1,7 @@
 import {languages} from "../types";
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
-    suggestedActions: {
+    codeActions: {
         en: "Suggested Actions",
         zh_CN: "建议的操作",
         zh_TW: "建議的操作",

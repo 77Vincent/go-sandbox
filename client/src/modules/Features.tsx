@@ -22,14 +22,10 @@ export default function Component(props: {
     const {lan = DEFAULT_LANGUAGE, openedDrawer, setOpenedDrawer} = props;
     const onClick = (id: selectableDrawers) => {
         return () => {
-            if (openedDrawer !== "") {
-                // close the drawer
-                setOpenedDrawer("");
-                return
-            }
-
             if (id !== openedDrawer) {
                 setOpenedDrawer(id);
+            } else {
+                setOpenedDrawer("");
             }
         };
     }
@@ -37,11 +33,16 @@ export default function Component(props: {
     return (
         <div className="z-20 flex items-center gap-4 max-md:gap-2">
             <Tooltip className={"text-xs"} content={TRANSLATE.documentSymbols[lan]}>
-                <OutlineIcon onClick={onClick(DRAWER_DOCUMENT_SYMBOLS)} size={18} className={`${openedDrawer === DRAWER_DOCUMENT_SYMBOLS ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}/>
+                <OutlineIcon
+                    onClick={onClick(DRAWER_DOCUMENT_SYMBOLS)} size={18}
+                    className={`${openedDrawer === DRAWER_DOCUMENT_SYMBOLS ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}
+                />
             </Tooltip>
 
-            <Tooltip className={"text-xs"} content={TRANSLATE.suggestedActions[lan]}>
-                <CodeActionIcon onClick={onClick(DRAWER_CODE_ACTIONS)} size={18} className={ICON_BUTTON_CLASS}/>
+            <Tooltip className={"text-xs"} content={TRANSLATE.codeActions[lan]}>
+                <CodeActionIcon onClick={onClick(DRAWER_CODE_ACTIONS)} size={18}
+                                className={`${openedDrawer === DRAWER_CODE_ACTIONS ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}
+                />
             </Tooltip>
 
             <Divider/>
