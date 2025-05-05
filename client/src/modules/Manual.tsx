@@ -101,7 +101,8 @@ export default function Component(props: {
                 <Row>
                     <Title> {TRANSLATE.format[lan]} </Title>
                     <SubRow>
-                        <MetaKey/><OptionKey/>L
+                        <span className={`mr-2 flex items-center ${SUB_TEXT}`}><MetaKey/><OptionKey/>L</span>
+                        <ShiftKey/><OptionKey/>F
                     </SubRow>
                 </Row>
                 <Row>

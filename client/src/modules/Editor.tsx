@@ -509,7 +509,17 @@ export default function Component(props: {
             }
         },
         {
+            // for intellij
             key: `Mod-Alt-l`,
+            preventDefault: true,
+            run: () => {
+                debouncedFormat()
+                return true;
+            }
+        },
+        {
+            // for vscode
+            key: `Shift-Alt-f`,
             preventDefault: true,
             run: () => {
                 debouncedFormat()
@@ -669,7 +679,13 @@ export default function Component(props: {
             debouncedRun()
             return false
         });
+        // for intellij
         Mousetrap.bind(`mod+option+l`, function () {
+            debouncedFormat()
+            return false
+        });
+        // for vscode
+        Mousetrap.bind(`shift+option+f`, function () {
             debouncedFormat()
             return false
         });
