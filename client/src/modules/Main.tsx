@@ -122,7 +122,6 @@ export default function Component(props: {
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
-    const [cleanHistoryTrigger, setCleanHistoryTrigger] = useState<boolean>(false);
 
     // settings
     const [fontSize, setFontSize] = useState<number>(initialFontSize);
@@ -295,13 +294,12 @@ export default function Component(props: {
             const data = await getSnippet(id);
             value.current = data
             setPatch({value: data});
-            setCleanHistoryTrigger(!cleanHistoryTrigger)
             debouncedRun()
         } catch (e) {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [cleanHistoryTrigger, debouncedRun, setToastError]), DEBOUNCE_TIME);
+    }, [debouncedRun, setToastError]), DEBOUNCE_TIME);
 
     // fetch the snippet if the url contains the snippet id, do only once
     useEffect(() => {
