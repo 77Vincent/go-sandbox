@@ -605,6 +605,9 @@ export default function Component(props: {
                 return;
         }
 
+        // reset the file back to the main file
+        file.current = getFileUri(goVersion);
+
         // update the view
         view.current.dispatch({
             changes: {

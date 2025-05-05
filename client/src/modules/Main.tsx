@@ -104,7 +104,6 @@ export default function Component(props: {
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
     const [isMobile] = useState<boolean>(isMobileDevice());
-    const [cleanHistoryTrigger, setCleanHistoryTrigger] = useState<boolean>(false);
 
     // settings
     const [fontSize, setFontSize] = useState<number>(initialFontSize);
@@ -271,13 +270,12 @@ export default function Component(props: {
             const data = await getSnippet(id);
             value.current = data
             setPatch({value: data});
-            setCleanHistoryTrigger(!cleanHistoryTrigger)
             debouncedRun()
         } catch (e) {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [cleanHistoryTrigger, debouncedRun, setToastError]), DEBOUNCE_TIME);
+    }, [debouncedRun, setToastError]), DEBOUNCE_TIME);
 
     // fetch the snippet if the url contains the snippet id, do only once
     useEffect(() => {
@@ -397,7 +395,8 @@ export default function Component(props: {
 
             <div
                 className="flex items-center justify-between border-b border-b-gray-400 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-1">
-                <Link to={""} className={"flex items-center gap-2 text-gray-600 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-300 dark:hover:text-cyan-400"}>
+                <Link to={""}
+                      className={"flex items-center gap-2 text-gray-600 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-300 dark:hover:text-cyan-400"}>
                     <img src={"/favicon-512x512.png"} alt={"logo"} className={"mr-1 h-5 max-md:hidden"}/>
 
                     <div
