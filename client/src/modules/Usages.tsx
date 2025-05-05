@@ -59,6 +59,32 @@ export function Usages(props: {
         }
     }, [jumpToUsage, setUsages])
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "ArrowDown") {
+                setLookAt(prev => {
+                    if (prev + 1 >= displayUsages.length) {
+                        return prev;
+                    }
+                    return prev + 1;
+                })
+            }
+            if (e.key === "ArrowUp") {
+                setLookAt(prev => {
+                    if (prev - 1 < 0) {
+                        return prev;
+                    }
+                    return prev - 1;
+                })
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        }
+    }, [displayUsages]);
+
     return (
         <Modal size={"5xl"} dismissible show={!!usages.length} onClose={() => setUsages([])}>
             <Modal.Header className={"flex items-center gap-2"}>

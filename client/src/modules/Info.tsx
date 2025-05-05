@@ -31,7 +31,7 @@ export default function Component(props: {
             }>
                 <SettingsIcon
                     onClick={() => setShowSettings(true)}
-                    size={isMobile ? 17 : 18}
+                    size={isMobile ? 16 : 17}
                     className={commonClasses}/>
             </Tooltip>
 
