@@ -493,6 +493,7 @@ export default function Component(props: {
                     <Drawer lan={lan} type={openedDrawer} documentSymbols={documentSymbols}
                             setOpenedDrawer={setOpenedDrawer}
                             setSelectedSymbol={setSelectedSymbol}
+                            lines={value.current.split("\n").length}
                     />
                 </Resizable>
 

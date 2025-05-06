@@ -1,6 +1,30 @@
 import {languages} from "../types";
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    stats: {
+        en: "Stats",
+        zh_CN: "统计",
+        zh_TW: "統計",
+        ja: "統計",
+        ko: "통계",
+        fr: "Statistiques",
+        de: "Statistiken",
+        es: "Estadísticas",
+        it: "Statistiche",
+        ru: "Статистика",
+        hi: "आंकड़े",
+        pt_BR: "Estatísticas",
+        pt_PT: "Estatísticas",
+        vi: "Thống kê",
+        th: "สถิติ",
+        tr: "İstatistikler",
+        id: "Statistik",
+        uk: "Статистика",
+        pl: "Statystyki",
+        nl: "Statistieken",
+        he: "סטטיסטיקות",
+        ar: "إحصائيات",
+    },
     documentSymbols: {
         en: "Outline",
         zh_CN: "大纲",

@@ -85,7 +85,7 @@ import {
     NONE,
     SEEING_IMPLEMENTATIONS,
     SEEING_USAGES,
-    VIM,
+    VIM, DRAWER_STATS,
 } from "../constants.ts";
 import {
     getCodeContent,
@@ -306,6 +306,7 @@ export default function Component(props: {
             case "":
                 // do nothing
                 break
+            case DRAWER_STATS:
             case DRAWER_DOCUMENT_SYMBOLS:
                 debouncedGetDocumentSymbol();
                 break

@@ -1,5 +1,6 @@
 import {VscSymbolStructure as OutlineIcon} from "react-icons/vsc";
 import {IoSchoolOutline as LearnIcon} from "react-icons/io5";
+import { IoMdStats as StatsIcon } from "react-icons/io";
 
 import {Divider} from "./Common.tsx";
 import {Tooltip} from "flowbite-react";
@@ -8,7 +9,7 @@ import {languages, selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS,
     DEFAULT_LANGUAGE,
-    DRAWER_DOCUMENT_SYMBOLS,
+    DRAWER_DOCUMENT_SYMBOLS, DRAWER_STATS,
     ICON_BUTTON_CLASS
 } from "../constants.ts";
 
@@ -34,6 +35,13 @@ export default function Component(props: {
                 <OutlineIcon
                     onClick={onClick(DRAWER_DOCUMENT_SYMBOLS)} size={18}
                     className={`${openedDrawer === DRAWER_DOCUMENT_SYMBOLS ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}
+                />
+            </Tooltip>
+
+            <Tooltip className={"text-xs"} content={TRANSLATE.documentSymbols[lan]}>
+                <StatsIcon
+                    onClick={onClick(DRAWER_STATS)} size={18}
+                    className={`${openedDrawer === DRAWER_STATS ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}
                 />
             </Tooltip>
 

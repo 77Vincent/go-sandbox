@@ -62,7 +62,7 @@ export type resultType = "stdout" | "stderr"
 
 export type toastType = "info" | "error"
 
-export type selectableDrawers = "documentSymbols" | ""
+export type selectableDrawers = "documentSymbols" | "stats" | ""
 
 export interface resultI {
     type: resultType;

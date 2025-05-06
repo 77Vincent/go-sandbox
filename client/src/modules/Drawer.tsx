@@ -3,7 +3,7 @@ import {IoClose as CloseIcon} from "react-icons/io5";
 import {languages, LSPDocumentSymbol, selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS_2,
-    DEFAULT_LANGUAGE, DRAWER_DOCUMENT_SYMBOLS,
+    DEFAULT_LANGUAGE, DRAWER_DOCUMENT_SYMBOLS, DRAWER_STATS, INACTIVE_TEXT_CLASS,
     NO_OPENED_DRAWER,
     OPENED_DRAWER_KEY
 } from "../constants.ts";
@@ -31,7 +31,56 @@ const symbolStyle = (kind: number): string => {
     }
 }
 
-const LINE_STYLE = "flex cursor-pointer items-center justify-between gap-2 px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700"
+const LINE_STYLE = "flex cursor-pointer items-center justify-between gap-2 px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs"
+
+interface statsInfo {
+    functions: number,
+    methods: number,
+    classes: number,
+    interfaces: number,
+    variables: number,
+    constants: number,
+    structs: number,
+}
+
+function count(arr: LSPDocumentSymbol[]): statsInfo {
+    const output: statsInfo = {
+        functions: 0,
+        classes: 0,
+        interfaces: 0,
+        variables: 0,
+        constants: 0,
+        structs: 0,
+        methods: 0,
+    }
+    for (let i = 0; i < arr.length; i++) {
+        const {kind} = arr[i];
+        switch (kind) {
+            case 5: // class
+                output.classes++;
+                break;
+            case 6: // method
+                output.methods++;
+                break;
+            case 11: // interface
+                output.interfaces++;
+                break;
+            case 12: // function
+                output.functions++;
+                break;
+            case 13: // variable
+                output.variables++;
+                break;
+            case 14: // constant
+                output.constants++;
+                break;
+            case 23: // struct
+                output.structs++;
+                break;
+        }
+    }
+    return output;
+}
 
 export default function Component(props: {
     type: selectableDrawers,
@@ -39,6 +88,7 @@ export default function Component(props: {
     documentSymbols: LSPDocumentSymbol[],
     setOpenedDrawer: (id: selectableDrawers) => void
     setSelectedSymbol: (symbol: LSPDocumentSymbol) => void
+    lines: number
 }) {
     const {
         type,
@@ -46,6 +96,7 @@ export default function Component(props: {
         documentSymbols,
         setOpenedDrawer,
         setSelectedSymbol,
+        lines,
     } = props;
 
     const closeDrawer = () => {
@@ -85,16 +136,41 @@ export default function Component(props: {
                             <div key={name} onClick={onClick(type, index)}
                                  className={LINE_STYLE}
                             >
-                                <div className={`flex items-center gap-1 truncate text-xs ${symbolStyle(kind)}`}>
-                                    {name}
+                                <div className={`flex items-center gap-1 truncate ${symbolStyle(kind)}`}>
+                                    {name}{kind}
                                 </div>
 
-                                <div className={"text-xs font-light text-gray-400 dark:text-gray-500"}>
+                                <div className={"font-light text-gray-400 dark:text-gray-500"}>
                                     {SYMBOL_KIND_MAP[kind] ?? kind}
                                 </div>
                             </div>
                         );
                     })
+                }
+                {
+                    type === DRAWER_STATS && (
+                        <>
+                            <div className={LINE_STYLE}>
+                                <div className={"text-gray-600 dark:text-gray-300"}>Lines</div>
+                                <div className={"text-black dark:text-white"}>{lines}</div>
+                            </div>
+
+                            {
+                                Object.entries(count(documentSymbols)).map(([key, value]) => {
+                                    return (
+                                        <div key={key} className={LINE_STYLE}>
+                                            <div className={"text-gray-600 dark:text-gray-300"}>
+                                                {key}
+                                            </div>
+
+                                            <div
+                                                className={`${value ? "text-black dark:text-white" : INACTIVE_TEXT_CLASS}`}>{value}</div>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </>
+                    )
                 }
             </div>
         </div>
