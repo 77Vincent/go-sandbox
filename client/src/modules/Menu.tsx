@@ -18,18 +18,36 @@ import {BsShift as ShiftKey} from "react-icons/bs";
 function CopyItem(props: {
     view: EditorView;
     lan: languages;
+    cut?: boolean;
 }) {
-    const {view, lan} = props;
+    const {view, lan, cut} = props;
+    const onClick = useCallback((text: string) => {
+        navigator.clipboard.writeText(text);
+
+        if (cut) {
+            view.dispatch({
+                changes: {from: view.state.selection.main.from, to: view.state.selection.main.to, insert: ""}
+            });
+        }
+    }, [cut, view]);
+
     return (
         view.state.selection.ranges.map((range, index) => {
             const {from, to} = range;
             const text = view.state.sliceDoc(from, to);
             if (text.length > 0) {
                 return (
-                    <Item key={index} onClick={() => navigator.clipboard.writeText(text)}>
+                    <Item key={index} onClick={() => onClick(text)}>
                         <Row>
-                            <Typography variant={"body2"}>{TRANSLATE.copy[lan]}</Typography>
-                            <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/>C </Typography>
+                            <Typography variant={"body2"}>{
+                                cut ? TRANSLATE.cut[lan] : TRANSLATE.copy[lan]
+                            }</Typography>
+                            {
+                                cut ? <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/>X
+                                    </Typography>
+                                    : <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/>C
+                                    </Typography>
+                            }
                         </Row>
                     </Item>
                 )
@@ -131,9 +149,13 @@ export default function Component(props: {
     return (
         <Menu theme={mode} id={EDITOR_MENU_ID} className={"text-sm font-light dark:border dark:border-gray-700"}>
             <GotoItem view={view} lan={lan} seeDefinition={seeDefinition} seeImplementation={seeImplementation}/>
+
+            <CopyItem view={view} lan={lan} cut={true}/>
             <CopyItem view={view} lan={lan}/>
             <PasteItem view={view} lan={lan}/>
+
             <Separator/>
+
             <Item onClick={onRun}>
                 <Row>
                     <Typography variant={"body2"}>{TRANSLATE.run[lan]}</Typography>

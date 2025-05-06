@@ -1,6 +1,30 @@
 import {languages} from "../types";
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    cut: {
+        en: "Cut",
+        zh_CN: "剪切",
+        zh_TW: "剪下",
+        ja: "カット",
+        ko: "잘라내기",
+        fr: "Couper",
+        de: "Ausschneiden",
+        es: "Cortar",
+        it: "Taglia",
+        ru: "Вырезать",
+        hi: "काटें",
+        pt_BR: "Recortar",
+        pt_PT: "Recortar",
+        vi: "Cắt",
+        th: "ตัด",
+        tr: "Kes",
+        id: "Potong",
+        uk: "Вирізати",
+        pl: "Wytnij",
+        nl: "Knippen",
+        he: "גזור",
+        ar: "قص",
+    },
     copy: {
         en: "Copy",
         zh_CN: "复制",
