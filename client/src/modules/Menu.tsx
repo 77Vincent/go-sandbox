@@ -3,7 +3,18 @@ import 'react-contexify/ReactContexify.css';
 import {EDITOR_MENU_ID} from "../constants.ts";
 import {EditorView} from "@codemirror/view";
 import {useThemeMode} from "flowbite-react";
-import {EnterKey, FormatIcon, MetaKey, OptionKey, Row, RunICon, ShareIcon, Typography} from "./Common.tsx";
+import {
+    CopyIcon,
+    CutIcon,
+    EnterKey,
+    FormatIcon,
+    MetaKey,
+    OptionKey, PasteIcon,
+    Row,
+    RunICon,
+    ShareIcon,
+    Typography
+} from "./Common.tsx";
 
 import {useCallback} from "react";
 import {BsShift as ShiftKey} from "react-icons/bs";
@@ -35,9 +46,16 @@ function CopyItem(props: {
                 return (
                     <Item key={index} onClick={() => onClick(text)}>
                         <Row>
-                            <Typography variant={"body2"}>{
-                                cut ? TRANSLATE.cut[lan] : TRANSLATE.copy[lan]
-                            }</Typography>
+                            {
+
+                                cut
+                                    ? <Typography variant={"body2"} className={"flex items-center gap-1.5"}>
+                                        <CutIcon/>{TRANSLATE.cut[lan]}
+                                    </Typography>
+                                    : <Typography variant={"body2"} className={"flex items-center gap-1.5"}>
+                                        <CopyIcon/>{TRANSLATE.copy[lan]}
+                                    </Typography>
+                            }
                             {
                                 cut ? <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/>X
                                     </Typography>
@@ -65,7 +83,9 @@ function PasteItem(props: {
                 });
             })}>
                 <Row>
-                    <Typography variant={"body2"}>{TRANSLATE.paste[lan]}</Typography>
+                    <Typography variant={"body2"} className={"flex items-center gap-1.5"}>
+                        <PasteIcon/>{TRANSLATE.paste[lan]}
+                    </Typography>
                     <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/>V </Typography>
                 </Row>
             </Item>
