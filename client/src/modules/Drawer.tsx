@@ -122,9 +122,9 @@ export default function Component(props: {
                             }
 
                             <Divider horizontal={true} className={"my-1"}/>
-                            <div className={LINE_STYLE}>
-                                <div className={"text-gray-800 dark:text-gray-300"}>Lines</div>
-                                <div className={"text-black dark:text-white"}>{lines}</div>
+                            <div className={`${LINE_STYLE} font-semibold text-black dark:text-white`}>
+                                <div>Lines</div>
+                                <div>{lines}</div>
                             </div>
                         </>
                     )

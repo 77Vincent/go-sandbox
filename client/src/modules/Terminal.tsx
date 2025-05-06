@@ -21,7 +21,7 @@ export default function Component(props: {
 
     return (
         <Wrapper
-            className={`overflow-hidden flex flex-col p-1.5 pb-0 bg-neutral-200 dark:bg-neutral-800 text-${mapFontSize(fontSize)}`}>
+            className={`overflow-hidden flex flex-col p-1.5 pb-5 bg-neutral-200 dark:bg-neutral-800 text-${mapFontSize(fontSize)}`}>
             <ClickBoard content={
                 result.map(item => item.content).join("\n")
             }/>

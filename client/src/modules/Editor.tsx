@@ -849,24 +849,25 @@ export default function Component(props: {
     }
 
     return (
-        // eslint-disable-next-line tailwindcss/no-custom-classname
-        <div
-            className={`relative flex-1 flex-col overflow-hidden ${isVertical ? "pb-9" : "pb-14"} ${backgroundColor}`}>
+        <>
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
+            <div
+                className={`relative flex-1 flex-col overflow-hidden ${isVertical ? "" : "pb-5"} ${backgroundColor}`}>
 
-            <MyMenu lan={lan} view={view.current} seeDefinition={seeDefinition} seeImplementation={seeImplementations}
-                    run={debouncedRun} format={debouncedFormat} share={debouncedShare}/>
+                <MyMenu lan={lan} view={view.current} seeDefinition={seeDefinition} seeImplementation={seeImplementations}
+                        run={debouncedRun} format={debouncedFormat} share={debouncedShare}/>
 
-            <Usages
-                lan={lan}
-                seeing={seeing} view={view.current} value={value}
-                usages={usages} setUsages={setUsages}/>
+                <Usages
+                    lan={lan}
+                    seeing={seeing} view={view.current} value={value}
+                    usages={usages} setUsages={setUsages}/>
 
-            <div className={"h-full overflow-auto"} ref={editor} onContextMenu={handleContextMenu}>
-                <div className={"sticky right-0 top-0 z-10"}>
-                    <RefreshButton lan={lan}/>
-                    <ClickBoard content={value}/>
+                <div className={"h-full overflow-auto"} ref={editor} onContextMenu={handleContextMenu}>
+                    <div className={"sticky right-0 top-0 z-10"}>
+                        <RefreshButton lan={lan}/>
+                        <ClickBoard content={value}/>
+                    </div>
                 </div>
 
                 <StatusBar
@@ -876,6 +877,6 @@ export default function Component(props: {
                     warnings={warningCount}
                     info={infoCount}/>
             </div>
-        </div>
+        </>
     )
 };
