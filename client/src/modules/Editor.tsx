@@ -1,7 +1,10 @@
-import "highlight.js/styles/github-dark.css"; // load once
+// react-contexify
+import {useContextMenu} from 'react-contexify';
+import 'react-contexify/ReactContexify.css';
 
+import "highlight.js/styles/github-dark.css"; // load once
 // react
-import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
+import {MouseEvent, ReactNode, useCallback, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
@@ -20,7 +23,8 @@ import {
 } from "@codemirror/autocomplete";
 import {ChangeSpec, Compartment, EditorSelection, EditorState, RangeSetBuilder} from "@codemirror/state"
 import {
-    crosshairCursor, Decoration,
+    crosshairCursor,
+    Decoration,
     drawSelection,
     dropCursor,
     EditorView,
@@ -32,7 +36,15 @@ import {
     rectangularSelection,
     ViewUpdate
 } from "@codemirror/view"
-import {bracketMatching, foldCode, unfoldCode, foldGutter, foldKeymap, indentOnInput, indentUnit,} from "@codemirror/language"
+import {
+    bracketMatching,
+    foldCode,
+    foldGutter,
+    foldKeymap,
+    indentOnInput,
+    indentUnit,
+    unfoldCode,
+} from "@codemirror/language"
 import {defaultKeymap, history, historyKeymap, indentLess, indentMore} from "@codemirror/commands"
 import {highlightSelectionMatches, searchKeymap} from "@codemirror/search"
 
@@ -53,20 +65,31 @@ import {
     KeyBindingsType,
     languages,
     LSPCompletionItem,
+    LSPDocumentSymbol,
     LSPReferenceResult,
     mySandboxes,
     patchI,
-    SeeingType
+    SeeingType,
+    selectableDrawers
 } from "../types";
 import {
     blurEvent,
     CURSOR_HEAD_KEY,
+    DEBOUNCE_TIME_LONG,
     DEBOUNCE_TIME,
-    DEFAULT_INDENTATION_SIZE, DEFAULT_LANGUAGE,
-    EMACS, focusEvent,
-    KEEP_ALIVE_INTERVAL, keyDownEvent, keyUpEvent,
-    NONE, SEEING_IMPLEMENTATIONS, SEEING_USAGES,
-    VIM,
+    DEFAULT_INDENTATION_SIZE,
+    DEFAULT_LANGUAGE,
+    DRAWER_DOCUMENT_SYMBOLS,
+    EMACS,
+    focusEvent,
+    KEEP_ALIVE_INTERVAL,
+    keyDownEvent,
+    keyUpEvent,
+    LSP_TO_CODEMIRROR_TYPE,
+    NONE,
+    SEEING_IMPLEMENTATIONS,
+    SEEING_USAGES,
+    VIM, DRAWER_STATS, EDITOR_MENU_ID,
 } from "../constants.ts";
 import {
     getCodeContent,
@@ -75,9 +98,11 @@ import {
     getFileUri,
     getWsUrl,
     isUserCode,
+    posToHead,
     viewUpdate
 } from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
+import MyMenu from "./Menu.tsx";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {SessionI, Sessions} from "./Sessions.tsx";
@@ -85,35 +110,6 @@ import {createHoverTooltip} from "../lib/hover-ext.ts";
 import {createHoverLink} from "../lib/link-ext.ts";
 import {setUsageHighlights, usageHighlightField} from "../lib/usageHighlightPlugin.ts";
 import {Usages} from "./Usages.tsx";
-
-// map type from LSP to codemirror
-const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
-    Text: "text",
-    Method: "method",
-    Function: "function",
-    Constructor: "function",
-    Field: "property",
-    Variable: "variable",
-    Class: "class",
-    Interface: "interface",
-    Module: "namespace",
-    Property: "property",
-    Unit: "constant",
-    Value: "text",
-    Enum: "enum",
-    Keyword: "keyword",
-    Snippet: "function",
-    Color: "constant",
-    File: "variable",
-    Reference: "variable",
-    Folder: "namespace",
-    EnumMember: "enum",
-    Constant: "constant",
-    Struct: "class",
-    Event: "function",
-    Operator: "function",
-    TypeParameter: "type",
-}
 
 const usageHighlight = Decoration.mark({class: "cm-usage-highlight"});
 
@@ -212,6 +208,13 @@ export default function Component(props: {
     value: string;
     patch: patchI;
 
+    // drawers
+    openedDrawer: selectableDrawers;
+
+    // document symbols
+    setDocumentSymbols: (v: LSPDocumentSymbol[]) => void;
+    selectedSymbol: LSPDocumentSymbol | null;
+
     // settings
     lan: languages
     keyBindings: KeyBindingsType;
@@ -234,6 +237,13 @@ export default function Component(props: {
         sandboxId,
         goVersion,
         setToastError,
+        // drawers
+        openedDrawer,
+
+        // document symbols
+        setDocumentSymbols,
+        selectedSymbol,
+
         // props
         lan = DEFAULT_LANGUAGE,
         value, patch,
@@ -252,6 +262,7 @@ export default function Component(props: {
     const {mode} = useThemeMode();
 
     // local state
+    const [lspReady, setLspReady] = useState<boolean>(false);
     const [row, setRow] = useState(1); // 1-based index
     const [col, setCol] = useState(1); // 1-based index
     const [errorCount, setErrorCount] = useState(0);
@@ -279,11 +290,54 @@ export default function Component(props: {
         setRow(row);
         setCol(col);
 
+
         // update the main session
         if (isUserCode(file.current)) {
             sessions.current[0].cursor = head
         }
     }, []), DEBOUNCE_TIME)
+
+    const debouncedGetDocumentSymbol = debounce(useCallback(async () => {
+        if (!lsp.current) return;
+        const res = await lsp.current.getDocumentSymbol();
+        if (!res) return;
+        setDocumentSymbols(res);
+    }, [setDocumentSymbols]), DEBOUNCE_TIME_LONG);
+
+    useEffect(() => {
+        if (!lsp.current || !lspReady) return;
+
+        switch (openedDrawer) {
+            case "":
+                // do nothing
+                break
+            case DRAWER_STATS:
+            case DRAWER_DOCUMENT_SYMBOLS:
+                debouncedGetDocumentSymbol();
+                break
+
+        }
+    }, [lspReady, openedDrawer]); // no more dependencies here!!
+
+    useEffect(() => {
+        if (!lsp.current || !view.current || !lspReady) return;
+
+        if (!selectedSymbol) {
+            return
+        }
+
+        // jump to the symbol
+        const {location: {range: {start}}} = selectedSymbol;
+        const head = posToHead(view.current, start.line + 1, start.character + 1);
+
+        view.current.dispatch({
+            selection: EditorSelection.cursor(head),
+            effects: EditorView.scrollIntoView(head, {
+                y: "center",
+            }),
+        })
+        view.current.focus();
+    }, [lspReady, selectedSymbol]);
 
     useEffect(() => {
         // reset error/warning/info count
@@ -351,8 +405,9 @@ export default function Component(props: {
             onChange(data);
             debouncedStoreCode(data);
             debouncedLspUpdate(v);
+            debouncedGetDocumentSymbol();
         }
-    }, [onChange, debouncedLspUpdate, debouncedStoreCode]);
+    }, [onChange, debouncedLspUpdate, debouncedStoreCode, debouncedGetDocumentSymbol]);
 
     const clearUsages = useCallback(() => {
         view.current?.dispatch({
@@ -620,7 +675,7 @@ export default function Component(props: {
             },
             scrollIntoView: true,
         });
-    }, [patch]);
+    }, [goVersion, patch]);
 
     const handleDiagnostics = useCallback((data: Diagnostic[]) => {
         setDiagnostics(data);
@@ -653,7 +708,7 @@ export default function Component(props: {
         lsp.current = new LSPClient(
             getWsUrl("/ws"), goVersion, view.current,
             file, sessions,
-            handleDiagnostics, handleError,
+            handleDiagnostics, handleError, setLspReady,
         );
 
         // asynchronously add the hover tooltip when the lsp is ready
@@ -781,26 +836,34 @@ export default function Component(props: {
         viewUpdate(view.current, content, cursor);
     }, [sandboxId])
 
-    const paddingBottom = sessions.current.length > 1
-        ? isVertical
-            ? "pb-9" : "pb-14"
-        : isVertical
-            ? "" : "pb-5";
     const backgroundColor = mode === "dark" ? "editor-bg-dark" : "editor-bg-light";
+
+    // context menu
+    const {show} = useContextMenu({id: EDITOR_MENU_ID});
+
+    function handleContextMenu(event: MouseEvent) {
+        show({
+            event,
+            props: {key: 'value'}
+        })
+    }
 
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div
-            className={`relative flex-1 flex-col overflow-hidden ${paddingBottom} ${backgroundColor}`}>
+            className={`relative flex-1 flex-col overflow-hidden ${isVertical ? "pb-9" : "pb-14"} ${backgroundColor}`}>
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
+
+            <MyMenu lan={lan} view={view.current} seeDefinition={seeDefinition} seeImplementation={seeImplementations}
+                    run={debouncedRun} format={debouncedFormat} share={debouncedShare}/>
 
             <Usages
                 lan={lan}
                 seeing={seeing} view={view.current} value={value}
                 usages={usages} setUsages={setUsages}/>
 
-            <div className={"h-full overflow-auto"} ref={editor}>
+            <div className={"h-full overflow-auto"} ref={editor} onContextMenu={handleContextMenu}>
                 <div className={"sticky right-0 top-0 z-10"}>
                     <RefreshButton lan={lan}/>
                     <ClickBoard content={value}/>

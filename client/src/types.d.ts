@@ -34,11 +34,35 @@ export type mySandboxes =
     | "my-sandbox-9"
     | "my-sandbox-10"
 
-export type languages = "en" | "zh_CN" | "zh_TW" | "ja" | "ko" | "fr" | "de" | "es" | "it" | "ru" | "hi" | "pt_BR" | "pt_PT" | "vi" | "th" | "tr" | "id" | "uk" | "pl"  | "nl" | "he" | "ar"
+export type languages =
+    "en"
+    | "zh_CN"
+    | "zh_TW"
+    | "ja"
+    | "ko"
+    | "fr"
+    | "de"
+    | "es"
+    | "it"
+    | "ru"
+    | "hi"
+    | "pt_BR"
+    | "pt_PT"
+    | "vi"
+    | "th"
+    | "tr"
+    | "id"
+    | "uk"
+    | "pl"
+    | "nl"
+    | "he"
+    | "ar"
 
 export type resultType = "stdout" | "stderr"
 
 export type toastType = "info" | "error"
+
+export type selectableDrawers = "documentSymbols" | "stats" | ""
 
 export interface resultI {
     type: resultType;
@@ -69,19 +93,22 @@ export type pendingRequests = Map<number, PendingRequestI>;
 
 export interface LSPDefinition {
     uri: string;
-    range: {
-        start: { line: number; character: number };
-        end: { line: number; character: number };
-    };
+    range: LSPRange;
+}
+
+export interface LSPDocumentSymbol {
+    name: string;
+    kind: number;
+    location: {
+        uri: string;
+        range: LSPRange;
+    }
 }
 
 export interface LSPCompletionItem {
     label: string;
     additionalTextEdits?: Array<{
-        range: {
-            start: { line: number; character: number };
-            end: { line: number; character: number };
-        };
+        range: LSPRange;
         newText: string;
     }>
     insertText?: string;
@@ -96,10 +123,7 @@ export interface LSPCompletionItem {
         value: string;
     };
     textEdit?: {
-        range: {
-            start: { line: number; character: number };
-            end: { line: number; character: number };
-        };
+        range: LSPRange;
         newText: string;
     }
 }
@@ -112,10 +136,7 @@ export interface LSPHover {
         kind: string;
         value: string;
     }>;
-    range?: {
-        start: { line: number; character: number };
-        end: { line: number; character: number };
-    };
+    range?: LSPRange;
 }
 
 export interface LSPReferenceResult {
@@ -138,4 +159,33 @@ export interface LSPDiagnostic {
 interface LSPRange {
     start: { line: number; character: number };
     end: { line: number; character: number };
+}
+
+export interface statsInfo {
+    file: number,
+    module: number,
+    namespace: number,
+    package: number,
+    class: number,
+    method: number,
+    property: number,
+    field: number,
+    constructor: number,
+    enum: number,
+    interface: number,
+    function: number,
+    variable: number,
+    constant: number,
+    string: number,
+    number: number,
+    boolean: number,
+    array: number,
+    object: number,
+    key: number,
+    null: number,
+    enumMember: number,
+    struct: number,
+    event: number,
+    operator: number,
+    typeParameter: number,
 }

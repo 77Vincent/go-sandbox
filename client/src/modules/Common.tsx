@@ -1,6 +1,21 @@
 import {ReactNode} from "react";
 import {Clipboard, CustomFlowbiteTheme, Flowbite, Toast, Tooltip} from "flowbite-react";
+
 import {HiExclamation as ErrorIcon, HiInformationCircle as InfoIcon, HiRefresh as RefreshIcon,} from "react-icons/hi";
+
+export { BiCut as CutIcon } from "react-icons/bi";
+export {
+    MdOutlineContentPaste as PasteIcon,
+    MdContentCopy as CopyIcon,
+    MdKeyboardControlKey as CtrlKey,
+    MdKeyboardOptionKey as OptionKey,
+    MdKeyboardReturn as EnterKey,
+} from "react-icons/md";
+export {BsShift as ShiftKey} from "react-icons/bs";
+export {FiPlay as RunICon} from "react-icons/fi";
+export {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
+export {RiShareBoxLine as ShareIcon} from "react-icons/ri";
+
 import {languages, toastType} from "../types";
 import {isMac} from "../utils.ts";
 import {MdContentCopy as CopyIcon, MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
@@ -52,7 +67,7 @@ export function MyToast(props: {
 
     return (
         show &&
-        <Toast className={`absolute bottom-6 left-6 z-10 w-auto max-w-xl border border-gray-200 dark:border-gray-600`}>
+        <Toast className={`absolute bottom-6 left-6 z-20 w-auto max-w-xl border border-gray-200 dark:border-gray-600`}>
             <div
                 className={`mr-2 inline-flex size-8 shrink-0 items-center justify-center rounded-lg ${color}`}>
                 {
@@ -154,7 +169,33 @@ export function Grid(props: {
 export function Row(props: {
     children: ReactNode;
 }) {
-    return <div className={"flex items-center justify-between"}>
+    return <div className={"flex w-full items-center justify-between"}>
         {props.children}
+    </div>
+}
+
+export function Typography(props: {
+    children: ReactNode;
+    className?: string;
+    variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body1" | "body2" | "subtitle" | "caption" | "body";
+}) {
+    const {children, variant = "p", className} = props
+    let classes = ""
+    switch (variant) {
+        case "body1":
+            classes = "text-base font-normal text-gray-800 dark:text-gray-300"
+            break
+        case "body2":
+            classes = "text-sm font-normal text-gray-700 dark:text-gray-300"
+            break
+        case "caption":
+            classes = "font-light text-gray-500 dark:text-gray-400"
+            break
+        default:
+            classes = "text-sm font-light text-gray-800 dark:text-gray-300"
+            break
+    }
+    return <div className={`${classes} ${className}`}>
+        {children}
     </div>
 }

@@ -2,9 +2,13 @@ import {
     LSPCompletionItem,
     LSPCompletionResult,
     LSPDefinition,
-    LSPDiagnostic, LSPHover, LSPReferenceResult,
+    LSPDiagnostic,
+    LSPDocumentSymbol,
+    LSPHover,
+    LSPReferenceResult,
     LSPResponse,
-    pendingRequests
+    pendingRequests,
+    statsInfo
 } from "../types";
 import {Diagnostic} from "@codemirror/lint";
 import {EditorView} from "@codemirror/view";
@@ -28,13 +32,45 @@ const SKIP_NO_METADATA_FOUND = "no package metadata for file"
 // LSP events
 const EVENT_INITIALIZE = "initialize"
 const EVENT_INITIALIZED = "initialized"
+
 const EVENT_IMPLEMENTATION = "textDocument/implementation"
 const EVENT_DEFINITION = "textDocument/definition"
 const EVENT_REFERENCES = "textDocument/references"
 const EVENT_COMPLETION = "textDocument/completion"
+const EVENT_DOCUMENT_SYMBOL = "textDocument/documentSymbol"
+
 const EVENT_HOVER = "textDocument/hover"
 const EVENT_DID_OPEN = "textDocument/didOpen"
 const EVENT_DID_CHANGE = "textDocument/didChange"
+
+export const SYMBOL_KIND_MAP: Record<number, string> = {
+    1: "File",
+    2: "Module",
+    3: "Namespace",
+    4: "Package",
+    5: "Class",
+    6: "Method",
+    7: "Property",
+    8: "Field",
+    9: "Constructor",
+    10: "Enum",
+    11: "Interface",
+    12: "Function",
+    13: "Variable",
+    14: "Constant",
+    15: "String",
+    16: "Number",
+    17: "Boolean",
+    18: "Array",
+    19: "Object",
+    20: "Key",
+    21: "Null",
+    22: "EnumMember",
+    23: "Struct",
+    24: "Event",
+    25: "Operator",
+    26: "TypeParameter"
+};
 export const LSP_KIND_LABELS: Record<number, string> = {
     1: "Text",
     2: "Method",
@@ -65,6 +101,7 @@ export const LSP_KIND_LABELS: Record<number, string> = {
 
 export class LSPClient {
     goVersion: string;
+    setReady: (ready: boolean) => void;
     file: MutableRefObject<string>;
     sessions: MutableRefObject<SessionI[]>;
     ws: WebSocket;
@@ -82,16 +119,20 @@ export class LSPClient {
         sessions: MutableRefObject<SessionI[]>,
         handleDiagnostic: (diagnostic: Diagnostic[]) => void,
         handleError: (error: string) => void,
+        setReady: (ready: boolean) => void
     ) {
+        this.ws = new WebSocket(backendUrl);
+
         this.file = file;
         this.sessions = sessions;
-        this.handleDiagnostic = handleDiagnostic;
-        this.handleError = handleError;
         this.goVersion = initialSandboxVersion;
-        this.ws = new WebSocket(backendUrl);
         this.requestId = 0;
         this.pendingRequests = new Map();
         this.view = view;
+
+        this.handleDiagnostic = handleDiagnostic;
+        this.handleError = handleError;
+        this.setReady = setReady;
 
         this.start()
     }
@@ -241,6 +282,17 @@ export class LSPClient {
         }
     }
 
+    async getDocumentSymbol(): Promise<LSPDocumentSymbol[]> {
+        try {
+            const res = await this.sendRequest<LSPDocumentSymbol[]>(EVENT_DOCUMENT_SYMBOL, {
+                textDocument: {uri: getFileUri(this.goVersion)},
+            });
+            return res.result || [];
+        } catch (e) {
+            throw new Error(`Error getting document symbol from LSP server: ${e}`);
+        }
+    }
+
     async getDefinition(line: number, character: number, uri: string): Promise<LSPDefinition[]> {
         try {
             const res = await this.sendRequest<LSPDefinition[]>(EVENT_DEFINITION, {
@@ -281,6 +333,7 @@ export class LSPClient {
                     text,
                 },
             });
+            this.setReady(true);
         } catch (error) {
             console.error("LSP Initialize error:", error)
         }
@@ -359,4 +412,119 @@ export class LSPClient {
             this.handleError(error as string);
         }
     }
+}
+
+export function countSymbols(arr: LSPDocumentSymbol[]): statsInfo {
+    const output: statsInfo = {
+        file: 0,
+        module: 0,
+        namespace: 0,
+        package: 0,
+        class: 0,
+        method: 0,
+        property: 0,
+        field: 0,
+        constructor: 0,
+        enum: 0,
+        interface: 0,
+        function: 0,
+        variable: 0,
+        constant: 0,
+        string: 0,
+        number: 0,
+        boolean: 0,
+        array: 0,
+        object: 0,
+        key: 0,
+        null: 0,
+        enumMember: 0,
+        struct: 0,
+        event: 0,
+        operator: 0,
+        typeParameter: 0
+    }
+    for (let i = 0; i < arr.length; i++) {
+        const {kind} = arr[i];
+        switch (kind) {
+            case 1: // file
+                output.file++;
+                break;
+            case 2: // module
+                output.module++;
+                break;
+            case 3: // namespace
+                output.namespace++;
+                break;
+            case 4: // package
+                output.package++;
+                break;
+            case 5: // class
+                output.class++;
+                break;
+            case 6: // method
+                output.method++;
+                break;
+            case 7: // property
+                output.property++;
+                break;
+            case 8: // field
+                output.field++;
+                break;
+            case 9: // constructor
+                output.constructor++;
+                break;
+            case 10: // enum
+                output.enum++;
+                break;
+            case 11: // interface
+                output.interface++;
+                break;
+            case 12: // function
+                output.function++;
+                break;
+            case 13: // variable
+                output.variable++;
+                break;
+            case 14: // constant
+                output.constant++;
+                break;
+            case 15: // string
+                output.string++;
+                break;
+            case 16: // number
+                output.number++;
+                break;
+            case 17: // boolean
+                output.boolean++;
+                break;
+            case 18: // array
+                output.array++;
+                break;
+            case 19: // object
+                output.object++;
+                break;
+            case 20: // key
+                output.key++;
+                break;
+            case 21: // null
+                output.null++;
+                break;
+            case 22: // enumMember
+                output.enumMember++;
+                break;
+            case 23: // struct
+                output.struct++;
+                break;
+            case 24: // event
+                output.event++;
+                break;
+            case 25: // operator
+                output.operator++;
+                break;
+            case 26: // typeParameter
+                output.typeParameter++;
+                break;
+        }
+    }
+    return output;
 }

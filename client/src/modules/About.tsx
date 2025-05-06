@@ -23,13 +23,13 @@ export default function Component(props: {
 
         <Modal.Body>
             <div className={"flex flex-col gap-4 font-light dark:text-gray-50"}>
-                <p className={"font-semibold italic underline"}>
-                    Your lightweight online Golang Coding Environment
+                <p className={"font-semibold italic"}>
+                    I need a more powerful online Go editor, so I made this. Hope it is useful for you too.
                 </p>
 
                 <ul className={"list-inside list-disc indent-4"}>
                     <li>Realtime execution using websocket</li>
-                    <li>LSP-backed linting and autocompletion</li>
+                    <li>LSP-backed tools</li>
                     <li>Multiple sandboxes</li>
                     <li>Share code snippet</li>
                     <li>Rich snippet library</li>
