@@ -160,3 +160,32 @@ interface LSPRange {
     start: { line: number; character: number };
     end: { line: number; character: number };
 }
+
+export interface statsInfo {
+    file: number,
+    module: number,
+    namespace: number,
+    package: number,
+    class: number,
+    method: number,
+    property: number,
+    field: number,
+    constructor: number,
+    enum: number,
+    interface: number,
+    function: number,
+    variable: number,
+    constant: number,
+    string: number,
+    number: number,
+    boolean: number,
+    array: number,
+    object: number,
+    key: number,
+    null: number,
+    enumMember: number,
+    struct: number,
+    event: number,
+    operator: number,
+    typeParameter: number,
+}
