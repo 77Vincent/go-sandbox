@@ -34,7 +34,29 @@ export type mySandboxes =
     | "my-sandbox-9"
     | "my-sandbox-10"
 
-export type languages = "en" | "zh_CN" | "zh_TW" | "ja" | "ko" | "fr" | "de" | "es" | "it" | "ru" | "hi" | "pt_BR" | "pt_PT" | "vi" | "th" | "tr" | "id" | "uk" | "pl"  | "nl" | "he" | "ar"
+export type languages =
+    "en"
+    | "zh_CN"
+    | "zh_TW"
+    | "ja"
+    | "ko"
+    | "fr"
+    | "de"
+    | "es"
+    | "it"
+    | "ru"
+    | "hi"
+    | "pt_BR"
+    | "pt_PT"
+    | "vi"
+    | "th"
+    | "tr"
+    | "id"
+    | "uk"
+    | "pl"
+    | "nl"
+    | "he"
+    | "ar"
 
 export type resultType = "stdout" | "stderr"
 
@@ -72,6 +94,25 @@ export type pendingRequests = Map<number, PendingRequestI>;
 export interface LSPDefinition {
     uri: string;
     range: LSPRange;
+}
+
+export interface LSPCodeAction {
+    title: string;
+    kind: string;
+    command: {
+        title: string;
+        command: string;
+        arguments: string | Array<codeActionArgument>;
+    }
+}
+
+interface codeActionArgument {
+    Fix: string;
+    Location: {
+        uri: string;
+        range: LSPRange;
+    };
+    ResolveEdits: boolean;
 }
 
 export interface LSPDocumentSymbol {

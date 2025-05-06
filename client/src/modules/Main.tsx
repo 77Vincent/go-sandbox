@@ -58,7 +58,7 @@ import {
 import Settings from "./Settings.tsx";
 import {
     KeyBindingsType,
-    languages,
+    languages, LSPCodeAction,
     LSPDocumentSymbol,
     mySandboxes,
     patchI,
@@ -143,6 +143,8 @@ export default function Component(props: {
     const [openedDrawer, setOpenedDrawer] = useState<selectableDrawers>(initialOpenedDrawer);
     const [documentSymbols, setDocumentSymbols] = useState<LSPDocumentSymbol[]>([])
     const [selectedSymbol, setSelectedSymbol] = useState<LSPDocumentSymbol | null>(null)
+    const [codeActions, setCodeActions] = useState<LSPCodeAction[]>([])
+    const [selectedCodeAction, setSelectedCodeAction] = useState<LSPCodeAction | null>(null)
 
     // reference the latest state
     const value = useRef(initialValue);
@@ -489,7 +491,10 @@ export default function Component(props: {
                     onResizeStop={onDrawerResizeStop}
                 >
                     <Drawer lan={lan} type={openedDrawer} documentSymbols={documentSymbols}
-                            setOpenedDrawer={setOpenedDrawer} setSelectedSymbol={setSelectedSymbol}/>
+                            setOpenedDrawer={setOpenedDrawer} codeActions={codeActions}
+                            setSelectedSymbol={setSelectedSymbol}
+                            setSelectedCodeAction={setSelectedCodeAction}
+                    />
                 </Resizable>
 
                 <Resizable
@@ -527,6 +532,8 @@ export default function Component(props: {
                             openedDrawer={openedDrawer}
                             setDocumentSymbols={setDocumentSymbols}
                             selectedSymbol={selectedSymbol}
+                            setCodeActions={setCodeActions}
+                            selectedCodeAction={selectedCodeAction}
                             sandboxId={initialSandboxId}
                             goVersion={initialGoVersion}
                             setToastError={setToastError}

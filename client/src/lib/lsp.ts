@@ -1,4 +1,5 @@
 import {
+    LSPCodeAction,
     LSPCompletionItem,
     LSPCompletionResult,
     LSPDefinition,
@@ -290,9 +291,9 @@ export class LSPClient {
         }
     }
 
-    async getCodeAction(line: number, character: number): Promise<LSPCompletionItem[]> {
+    async getCodeAction(line: number, character: number): Promise<LSPCodeAction[]> {
         try {
-            const res = await this.sendRequest<LSPCompletionItem[]>(EVENT_CODE_ACTION, {
+            const res = await this.sendRequest<LSPCodeAction[]>(EVENT_CODE_ACTION, {
                 textDocument: {uri: getFileUri(this.goVersion)},
                 range: {
                     start: {line, character},
