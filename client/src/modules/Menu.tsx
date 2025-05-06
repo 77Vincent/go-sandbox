@@ -3,14 +3,9 @@ import 'react-contexify/ReactContexify.css';
 import {EDITOR_MENU_ID} from "../constants.ts";
 import {EditorView} from "@codemirror/view";
 import {useThemeMode} from "flowbite-react";
-import {FormatIcon, MetaKey, Row, RunICon, ShareIcon, Typography} from "./Common.tsx";
+import {EnterKey, FormatIcon, MetaKey, OptionKey, Row, RunICon, ShareIcon, Typography} from "./Common.tsx";
 
 import {useCallback} from "react";
-import {
-    MdKeyboardOptionKey as AltKey,
-    MdKeyboardOptionKey as OptionKey,
-    MdKeyboardReturn as EnterKey,
-} from "react-icons/md";
 import {BsShift as ShiftKey} from "react-icons/bs";
 
 import {TRANSLATE} from "../lib/i18n.ts";
@@ -171,7 +166,7 @@ export default function Component(props: {
                         <FormatIcon/>{TRANSLATE.format[lan]}
                     </Typography>
                     <Typography variant={"caption"} className={"flex items-center"}>
-                        <MetaKey/><AltKey/>L<span>&#160;</span><span>&#160;</span>or<span>&#160;</span><span>&#160;</span><ShiftKey/><AltKey/>F
+                        <MetaKey/><OptionKey/>L<span>&#160;</span><span>&#160;</span>or<span>&#160;</span><span>&#160;</span><ShiftKey/><OptionKey/>F
                     </Typography>
                 </Row>
             </Item>

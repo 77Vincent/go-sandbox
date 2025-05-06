@@ -2,7 +2,7 @@ import {Tooltip} from "flowbite-react";
 
 import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
 import {languages} from "../types";
-import {AltKey, EnterKey, FormatIcon, MetaKey, RunICon, ShareIcon, ShiftKey} from "./Common.tsx";
+import {OptionKey, EnterKey, FormatIcon, MetaKey, RunICon, ShareIcon, ShiftKey} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
 
 const COMMON_CLASSES = "z-20 text-xs font-light";
@@ -37,7 +37,7 @@ export default function Component(props: {
                 <div className={"flex items-center gap-1.5"}>
                     {TRANSLATE.format[lan]}
                     <div className={"flex items-center"}>
-                        <MetaKey/><AltKey/>L<span>&#160;</span><span>&#160;</span>or<span>&#160;</span><span>&#160;</span><ShiftKey/><AltKey/>F
+                        <MetaKey/><OptionKey/>L<span>&#160;</span><span>&#160;</span>or<span>&#160;</span><span>&#160;</span><ShiftKey/><OptionKey/>F
                     </div>
                 </div>
             }>
