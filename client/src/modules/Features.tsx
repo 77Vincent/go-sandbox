@@ -1,6 +1,6 @@
 import {VscSymbolStructure as OutlineIcon} from "react-icons/vsc";
 import {IoSchoolOutline as LearnIcon} from "react-icons/io5";
-import { IoMdStats as StatsIcon } from "react-icons/io";
+import {IoMdStats as StatsIcon} from "react-icons/io";
 
 import {Divider} from "./Common.tsx";
 import {Tooltip} from "flowbite-react";
@@ -47,7 +47,11 @@ export default function Component(props: {
 
             <Divider/>
 
-            <LearnIcon size={18} className={ICON_BUTTON_CLASS}/>
+            <Tooltip className={"text-xs"} content={TRANSLATE.study[lan]}>
+                <LearnIcon size={18} className={ICON_BUTTON_CLASS} onClick={() => {
+                    window.open("https://go.dev/tour/welcome/1", "_blank");
+                }}/>
+            </Tooltip>
         </div>
     );
 }

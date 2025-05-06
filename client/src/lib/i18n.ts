@@ -1,6 +1,30 @@
 import {languages} from "../types";
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    study: {
+        en: "Study",
+        zh_CN: "学习",
+        zh_TW: "學習",
+        ja: "学ぶ",
+        ko: "학습하다",
+        fr: "Étudier",
+        de: "Studieren",
+        es: "Estudiar",
+        it: "Studiare",
+        ru: "Учить",
+        hi: "अध्ययन करें",
+        pt_BR: "Estudar",
+        pt_PT: "Estudar",
+        vi: "Học tập",
+        th: "ศึกษา",
+        tr: "Öğrenmek",
+        id: "Belajar",
+        uk: "Вивчати",
+        pl: "Uczyć się",
+        nl: "Studeren",
+        he: "ללמוד",
+        ar: "دراسة",
+    },
     cut: {
         en: "Cut",
         zh_CN: "剪切",

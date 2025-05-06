@@ -92,7 +92,7 @@ export default function Component(props: {
                                  className={LINE_STYLE}
                             >
                                 <div className={`flex items-center gap-1 truncate ${symbolStyle(kind)}`}>
-                                    {name}{kind}
+                                    {name}
                                 </div>
 
                                 <div className={"font-light text-gray-400 dark:text-gray-500"}>
@@ -110,12 +110,12 @@ export default function Component(props: {
                                     return (
                                         <div key={key} className={LINE_STYLE}>
                                             <div
-                                                className={`${value ? "text-black dark:text-white" : INACTIVE_TEXT_CLASS} italic`}>
+                                                className={`${value ? "font-semibold text-black dark:text-white" : INACTIVE_TEXT_CLASS} italic`}>
                                                 {key}
                                             </div>
 
                                             <div
-                                                className={`${value ? "text-black dark:text-white" : INACTIVE_TEXT_CLASS}`}>{value}</div>
+                                                className={`${value ? "font-semibold text-black dark:text-white" : INACTIVE_TEXT_CLASS}`}>{value}</div>
                                         </div>
                                     )
                                 })
