@@ -475,14 +475,14 @@ export default function Component(props: {
                 </div>
             </div>
 
-            <div className={`flex h-0 flex-1 overflow-auto ${isLayoutVertical ? "flex-col" : "flex-row"}`}>
+            <div className={"flex h-0 flex-1"}>
                 <Resizable
                     className={`${openedDrawer === NO_OPENED_DRAWER ? "hidden" : ""}`}
                     handleStyles={{
                         right: {width: `${RESIZABLE_HANDLER_WIDTH}px`},
                     }}
                     handleClasses={{
-                        right: !isLayoutVertical ? resizeHandlerHoverClasses : "",
+                        right: resizeHandlerHoverClasses,
                     }}
                     minWidth={`${DRAWER_SIZE_MIN}px`}
                     maxWidth={`${DRAWER_SIZE_MAX}px`}
@@ -497,70 +497,72 @@ export default function Component(props: {
                     />
                 </Resizable>
 
-                <Resizable
-                    handleStyles={{
-                        right: {
-                            width: `${RESIZABLE_HANDLER_WIDTH}px`,
-                        },
-                        bottom: {
-                            height: `${RESIZABLE_HANDLER_WIDTH}px`,
-                        },
-                    }}
-                    handleClasses={{
-                        right: !isLayoutVertical ? resizeHandlerHoverClasses : "",
-                        bottom: isLayoutVertical ? resizeHandlerHoverClasses : "",
-                    }}
-                    minWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MIN}%`}
-                    maxWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MAX}%`}
-                    minHeight={isLayoutVertical ? `${EDITOR_SIZE_MIN}%` : "100%"}
-                    maxHeight={isLayoutVertical ? `${EDITOR_SIZE_MAX}%` : "100%"}
-                    enable={{
-                        right: !isLayoutVertical,
-                        bottom: isLayoutVertical,
-                    }}
-                    defaultSize={{
-                        width: isLayoutVertical ? "100%" : `${editorSize}%`,
-                        height: isLayoutVertical ? `${editorSize}%` : "100%",
-                    }}
-                    grid={[10, 1]}
-                    onResizeStop={onResizeStop}
-                >
-                    <Wrapper
-                        className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
-                        <Editor
-                            lan={lan}
-                            openedDrawer={openedDrawer}
-                            setDocumentSymbols={setDocumentSymbols}
-                            selectedSymbol={selectedSymbol}
-                            sandboxId={initialSandboxId}
-                            goVersion={initialGoVersion}
-                            setToastError={setToastError}
-                            isVertical={isLayoutVertical}
-                            isLintOn={isLintOn}
-                            isAutoCompletionOn={isAutoCompletionOn}
-                            value={value.current}
-                            patch={patch}
-                            fontSize={fontSize}
-                            keyBindings={keyBindings}
-                            onChange={onChange}
-                            setShowSettings={setShowSettings}
-                            setShowManual={setShowManual}
-                            debouncedRun={debouncedRun}
-                            debouncedFormat={debouncedFormat}
-                            debouncedShare={debouncedShare}
-                        />
-                    </Wrapper>
-                </Resizable>
+                <div className={`flex w-full overflow-auto ${isLayoutVertical ? "flex-col" : "flex-row"}`}>
+                    <Resizable
+                        handleStyles={{
+                            right: {
+                                width: `${RESIZABLE_HANDLER_WIDTH}px`,
+                            },
+                            bottom: {
+                                height: `${RESIZABLE_HANDLER_WIDTH}px`,
+                            },
+                        }}
+                        handleClasses={{
+                            right: !isLayoutVertical ? resizeHandlerHoverClasses : "",
+                            bottom: isLayoutVertical ? resizeHandlerHoverClasses : "",
+                        }}
+                        minWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MIN}%`}
+                        maxWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MAX}%`}
+                        minHeight={isLayoutVertical ? `${EDITOR_SIZE_MIN}%` : "100%"}
+                        maxHeight={isLayoutVertical ? `${EDITOR_SIZE_MAX}%` : "100%"}
+                        enable={{
+                            right: !isLayoutVertical,
+                            bottom: isLayoutVertical,
+                        }}
+                        defaultSize={{
+                            width: isLayoutVertical ? "100%" : `${editorSize}%`,
+                            height: isLayoutVertical ? `${editorSize}%` : "100%",
+                        }}
+                        grid={[10, 1]}
+                        onResizeStop={onResizeStop}
+                    >
+                        <Wrapper
+                            className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
+                            <Editor
+                                lan={lan}
+                                openedDrawer={openedDrawer}
+                                setDocumentSymbols={setDocumentSymbols}
+                                selectedSymbol={selectedSymbol}
+                                sandboxId={initialSandboxId}
+                                goVersion={initialGoVersion}
+                                setToastError={setToastError}
+                                isVertical={isLayoutVertical}
+                                isLintOn={isLintOn}
+                                isAutoCompletionOn={isAutoCompletionOn}
+                                value={value.current}
+                                patch={patch}
+                                fontSize={fontSize}
+                                keyBindings={keyBindings}
+                                onChange={onChange}
+                                setShowSettings={setShowSettings}
+                                setShowManual={setShowManual}
+                                debouncedRun={debouncedRun}
+                                debouncedFormat={debouncedFormat}
+                                debouncedShare={debouncedShare}
+                            />
+                        </Wrapper>
+                    </Resizable>
 
-                <Terminal
-                    lan={lan}
-                    hint={TRANSLATE.hintManual[lan]}
-                    running={isRunning}
-                    fontSize={fontSize}
-                    result={result}
-                    info={info}
-                    error={error}
-                />
+                    <Terminal
+                        lan={lan}
+                        hint={TRANSLATE.hintManual[lan]}
+                        running={isRunning}
+                        fontSize={fontSize}
+                        result={result}
+                        info={info}
+                        error={error}
+                    />
+                </div>
             </div>
 
             <ProgressBar show={isRunning} className={"absolute top-10 z-10 max-md:top-6"}/>
