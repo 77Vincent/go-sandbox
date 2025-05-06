@@ -162,13 +162,19 @@ export function Row(props: {
 export function Typography(props: {
     children: ReactNode;
     className?: string;
-    variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "subtitle" | "caption" | "body";
+    variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body1" | "body2" | "subtitle" | "caption" | "body";
 }) {
     const {children, variant = "p", className} = props
     let classes = ""
     switch (variant) {
+        case "body1":
+            classes = "text-base font-normal text-gray-800 dark:text-gray-300"
+            break
+        case "body2":
+            classes = "text-sm font-normal text-gray-700 dark:text-gray-300"
+            break
         case "caption":
-            classes = "font-light text-gray-600 dark:text-gray-400"
+            classes = "font-light text-gray-500 dark:text-gray-400"
             break
         default:
             classes = "text-sm font-light text-gray-800 dark:text-gray-300"
