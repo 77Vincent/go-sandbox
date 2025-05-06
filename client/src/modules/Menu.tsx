@@ -17,8 +17,9 @@ import {BsShift as ShiftKey} from "react-icons/bs";
 
 function CopyItem(props: {
     view: EditorView;
+    lan: languages;
 }) {
-    const {view} = props;
+    const {view, lan} = props;
     return (
         view.state.selection.ranges.map((range, index) => {
             const {from, to} = range;
@@ -27,7 +28,7 @@ function CopyItem(props: {
                 return (
                     <Item key={index} onClick={() => navigator.clipboard.writeText(text)}>
                         <Row>
-                            <Typography variant={"body2"}> Copy </Typography>
+                            <Typography variant={"body2"}>{TRANSLATE.copy[lan]}</Typography>
                             <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/>C </Typography>
                         </Row>
                     </Item>
@@ -39,8 +40,9 @@ function CopyItem(props: {
 
 function PasteItem(props: {
     view: EditorView;
+    lan: languages;
 }) {
-    const {view} = props;
+    const {view, lan} = props;
     return (
         navigator.clipboard && (
             <Item onClick={() => navigator.clipboard.readText().then(text => {
@@ -49,7 +51,7 @@ function PasteItem(props: {
                 });
             })}>
                 <Row>
-                    <Typography variant={"body2"}> Paste </Typography>
+                    <Typography variant={"body2"}>{TRANSLATE.paste[lan]}</Typography>
                     <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/>V </Typography>
                 </Row>
             </Item>
@@ -59,10 +61,11 @@ function PasteItem(props: {
 
 function GotoItem(props: {
     view: EditorView;
+    lan: languages;
     seeDefinition: () => boolean;
     seeImplementation: () => boolean;
 }) {
-    const {view, seeDefinition, seeImplementation} = props;
+    const {view, lan, seeDefinition, seeImplementation} = props;
     const onSeeDefinition = useCallback(() => {
         seeDefinition();
         view.focus();
@@ -77,13 +80,13 @@ function GotoItem(props: {
             <>
                 <Item onClick={onSeeDefinition}>
                     <Row>
-                        <Typography variant={"body2"}> Go to Definition </Typography>
+                        <Typography variant={"body2"}>{TRANSLATE.definitions[lan]}</Typography>
                         <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/>B </Typography>
                     </Row>
                 </Item>
                 <Item onClick={onSeeImplementation}>
                     <Row>
-                        <Typography variant={"body2"}> Go to Implementation </Typography>
+                        <Typography variant={"body2"}>{TRANSLATE.implementations[lan]}</Typography>
                         <Typography variant={"caption"} className={"flex items-center"}>
                             <MetaKey/><OptionKey/>B
                         </Typography>
@@ -127,9 +130,9 @@ export default function Component(props: {
 
     return (
         <Menu theme={mode} id={EDITOR_MENU_ID} className={"text-sm font-light dark:border dark:border-gray-700"}>
-            <GotoItem view={view} seeDefinition={seeDefinition} seeImplementation={seeImplementation}/>
-            <CopyItem view={view}/>
-            <PasteItem view={view}/>
+            <GotoItem view={view} lan={lan} seeDefinition={seeDefinition} seeImplementation={seeImplementation}/>
+            <CopyItem view={view} lan={lan}/>
+            <PasteItem view={view} lan={lan}/>
             <Separator/>
             <Item onClick={onRun}>
                 <Row>
