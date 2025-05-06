@@ -1,5 +1,9 @@
 import {KeyBindingsType, mySandboxes, SeeingType, selectableDrawers} from "./types";
 
+export {FiPlay as RunICon} from "react-icons/fi";
+export {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
+export {RiShareBoxLine as ShareIcon} from "react-icons/ri";
+
 export const TITLE = "Go Sandbox";
 export const LANGUAGE_GO = "go";
 

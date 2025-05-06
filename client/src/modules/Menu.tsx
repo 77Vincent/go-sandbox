@@ -1,6 +1,6 @@
 import {Menu, Item, Separator} from 'react-contexify';
 import 'react-contexify/ReactContexify.css';
-import {EDITOR_MENU_ID} from "../constants.ts";
+import {EDITOR_MENU_ID, FormatIcon, RunICon, ShareIcon} from "../constants.ts";
 import {EditorView} from "@codemirror/view";
 import {useThemeMode} from "flowbite-react";
 import {MetaKey, Row, Typography} from "./Common.tsx";
@@ -11,9 +11,10 @@ import {
     MdKeyboardOptionKey as OptionKey,
     MdKeyboardReturn as EnterKey,
 } from "react-icons/md";
+import {BsShift as ShiftKey} from "react-icons/bs";
+
 import {TRANSLATE} from "../lib/i18n.ts";
 import {languages} from "../types";
-import {BsShift as ShiftKey} from "react-icons/bs";
 
 function CopyItem(props: {
     view: EditorView;
@@ -158,13 +159,17 @@ export default function Component(props: {
 
             <Item onClick={onRun}>
                 <Row>
-                    <Typography variant={"body2"}>{TRANSLATE.run[lan]}</Typography>
+                    <Typography variant={"body2"} className={"flex items-center gap-1.5"}>
+                        <RunICon/>{TRANSLATE.run[lan]}
+                    </Typography>
                     <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/><EnterKey/> </Typography>
                 </Row>
             </Item>
             <Item onClick={onFormat}>
                 <Row>
-                    <Typography variant={"body2"}>{TRANSLATE.format[lan]}</Typography>
+                    <Typography variant={"body2"} className={"flex items-center gap-1.5"}>
+                        <FormatIcon/>{TRANSLATE.format[lan]}
+                    </Typography>
                     <Typography variant={"caption"} className={"flex items-center"}>
                         <MetaKey/><AltKey/>L<span>&#160;</span><span>&#160;</span>or<span>&#160;</span><span>&#160;</span><ShiftKey/><AltKey/>F
                     </Typography>
@@ -172,7 +177,9 @@ export default function Component(props: {
             </Item>
             <Item onClick={onShare}>
                 <Row>
-                    <Typography variant={"body2"}>{TRANSLATE.share[lan]}</Typography>
+                    <Typography variant={"body2"} className={"flex items-center gap-1.5"}>
+                        <ShareIcon/>{TRANSLATE.share[lan]}
+                    </Typography>
                     <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/>S </Typography>
                 </Row>
             </Item>

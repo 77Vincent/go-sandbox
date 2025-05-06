@@ -1,12 +1,9 @@
 import {Tooltip} from "flowbite-react";
-import {FiPlay as RunICon} from "react-icons/fi";
 import { MdKeyboardReturn as EnterKey } from "react-icons/md";
-import {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
-import {RiShareBoxLine as ShareIcon} from "react-icons/ri";
 import {MdKeyboardOptionKey as AltKey} from "react-icons/md";
 import {BsShift as ShiftKey} from "react-icons/bs";
 
-import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
+import {BUTTON_INACTIVE, FormatIcon, ICON_BUTTON_CLASS, RunICon, ShareIcon} from "../constants.ts";
 import {languages} from "../types";
 import {MetaKey} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
