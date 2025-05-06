@@ -47,7 +47,7 @@ export const EDITOR_SIZE_MAX = 90
 export const EDITOR_SIZE_MIN = 10
 
 export const DEFAULT_DRAWER_SIZE = 240;
-export const DRAWER_SIZE_MAX =360
+export const DRAWER_SIZE_MAX = 360
 export const DRAWER_SIZE_MIN = 180
 
 export const DEFAULT_LANGUAGE = "en";
@@ -166,6 +166,7 @@ export const MY_SANDBOXES: Record<mySandboxes, string> = {
     "my-sandbox-8": "Sandbox 8",
     "my-sandbox-9": "Sandbox 9",
     "my-sandbox-10": "Sandbox 10",
+    "sandbox-tmp": "Temporary",
 }
 
 export const WORKSPACE = "workspace";
