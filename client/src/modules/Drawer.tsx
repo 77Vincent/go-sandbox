@@ -84,7 +84,7 @@ export default function Component(props: {
                 </div>
             </div>
 
-            <div className={"flex flex-1 flex-col overflow-x-auto bg-neutral-50 dark:bg-neutral-900 pb-6"}>
+            <div className={"flex flex-1 flex-col overflow-x-auto bg-neutral-50 pb-6 dark:bg-neutral-900"}>
                 {
                     type === DRAWER_DOCUMENT_SYMBOLS && documentSymbols.map(({name, kind}, index) => {
                         return (

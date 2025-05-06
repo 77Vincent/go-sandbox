@@ -38,7 +38,7 @@ export default function Component(props: {
                 />
             </Tooltip>
 
-            <Tooltip className={"text-xs"} content={TRANSLATE.documentSymbols[lan]}>
+            <Tooltip className={"text-xs"} content={TRANSLATE.stats[lan]}>
                 <StatsIcon
                     onClick={onClick(DRAWER_STATS)} size={18}
                     className={`${openedDrawer === DRAWER_STATS ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}
