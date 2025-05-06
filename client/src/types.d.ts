@@ -62,7 +62,7 @@ export type resultType = "stdout" | "stderr"
 
 export type toastType = "info" | "error"
 
-export type selectableDrawers = "documentSymbols" | "codeActions" | ""
+export type selectableDrawers = "documentSymbols" | ""
 
 export interface resultI {
     type: resultType;
@@ -94,25 +94,6 @@ export type pendingRequests = Map<number, PendingRequestI>;
 export interface LSPDefinition {
     uri: string;
     range: LSPRange;
-}
-
-export interface LSPCodeAction {
-    title: string;
-    kind: string;
-    command: {
-        title: string;
-        command: string;
-        arguments: string | Array<codeActionArgument>;
-    }
-}
-
-interface codeActionArgument {
-    Fix: string;
-    Location: {
-        uri: string;
-        range: LSPRange;
-    };
-    ResolveEdits: boolean;
 }
 
 export interface LSPDocumentSymbol {

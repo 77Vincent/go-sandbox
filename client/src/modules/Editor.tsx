@@ -59,7 +59,7 @@ import debounce from "debounce";
 // local imports
 import {
     KeyBindingsType,
-    languages, LSPCodeAction,
+    languages,
     LSPCompletionItem,
     LSPDocumentSymbol,
     LSPReferenceResult,
@@ -210,10 +210,6 @@ export default function Component(props: {
     setDocumentSymbols: (v: LSPDocumentSymbol[]) => void;
     selectedSymbol: LSPDocumentSymbol | null;
 
-    // code actions
-    setCodeActions: (v: LSPCodeAction[]) => void;
-    selectedCodeAction: LSPCodeAction | null;
-
     // settings
     lan: languages
     keyBindings: KeyBindingsType;
@@ -242,10 +238,6 @@ export default function Component(props: {
         // document symbols
         setDocumentSymbols,
         selectedSymbol,
-
-        // code actions
-        setCodeActions,
-        selectedCodeAction,
 
         // props
         lan = DEFAULT_LANGUAGE,
@@ -285,15 +277,6 @@ export default function Component(props: {
     const sessions = useRef<SessionI[]>([]);
     const metaKey = useRef<boolean>(false);
 
-    const debouncedGetCodeActions = debounce(useCallback(async (row: number, col: number) => {
-        if (!lsp.current || !view.current) return;
-        try {
-            return await lsp.current.getCodeAction(row - 1, col - 1)
-        } catch (e) {
-            setToastError((e as Error).message)
-        }
-    }, [setToastError]), DEBOUNCE_TIME_LONG);
-
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
         const head = v.state.selection.main.head;
@@ -307,13 +290,7 @@ export default function Component(props: {
         if (isUserCode(file.current)) {
             sessions.current[0].cursor = head
         }
-
-        (async function () {
-            const res = await debouncedGetCodeActions(row, col);
-            if (!res) return;
-            setCodeActions(res);
-        })();
-    }, [debouncedGetCodeActions, setCodeActions]), DEBOUNCE_TIME)
+    }, []), DEBOUNCE_TIME)
 
     const debouncedGetDocumentSymbol = debounce(useCallback(async () => {
         if (!lsp.current) return;
@@ -355,29 +332,6 @@ export default function Component(props: {
         })
         view.current.focus();
     }, [lspReady, selectedSymbol]);
-
-    useEffect(() => {
-        if (!lsp.current || !view.current || !lspReady) return;
-
-        if (!selectedCodeAction) {
-            return;
-        }
-
-        // jump to the cursor
-        const {command: {arguments: args}} = selectedCodeAction;
-        if (Array.isArray(args) && args.length === 1) {
-            const {Location: {range: {start}}} = args[0];
-            const head = posToHead(view.current, start.line + 1, start.character + 1);
-
-            view.current.dispatch({
-                selection: EditorSelection.cursor(head),
-                effects: EditorView.scrollIntoView(head, {
-                    y: "center",
-                }),
-            })
-            view.current.focus();
-        }
-    }, [lspReady, selectedCodeAction]);
 
     useEffect(() => {
         // reset error/warning/info count

@@ -1,30 +1,6 @@
 import {languages} from "../types";
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
-    codeActions: {
-        en: "Suggested Actions",
-        zh_CN: "建议的操作",
-        zh_TW: "建議的操作",
-        ja: "提案されたアクション",
-        ko: "제안된 작업",
-        fr: "Actions suggérées",
-        de: "Vorgeschlagene Aktionen",
-        es: "Acciones sugeridas",
-        it: "Azioni suggerite",
-        ru: "Предложенные действия",
-        hi: "अनुशंसित क्रियाएँ",
-        pt_BR: "Ações sugeridas",
-        pt_PT: "Ações sugeridas",
-        vi: "Hành động được đề xuất",
-        th: "การดำเนินการที่แนะนำ",
-        tr: "Önerilen Eylemler",
-        id: "Tindakan yang Disarankan",
-        uk: "Запропоновані дії",
-        pl: "Zalecane działania",
-        nl: "Voorgestelde acties",
-        he: "פעולות מוצעות",
-        ar: "الإجراءات المقترحة",
-    },
     documentSymbols: {
         en: "Outline",
         zh_CN: "大纲",

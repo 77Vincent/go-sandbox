@@ -1,5 +1,4 @@
 import {
-    LSPCodeAction,
     LSPCompletionItem,
     LSPCompletionResult,
     LSPDefinition,
@@ -35,7 +34,6 @@ const EVENT_DEFINITION = "textDocument/definition"
 const EVENT_REFERENCES = "textDocument/references"
 const EVENT_COMPLETION = "textDocument/completion"
 const EVENT_DOCUMENT_SYMBOL = "textDocument/documentSymbol"
-const EVENT_CODE_ACTION = "textDocument/codeAction"
 
 const EVENT_HOVER = "textDocument/hover"
 const EVENT_DID_OPEN = "textDocument/didOpen"
@@ -288,22 +286,6 @@ export class LSPClient {
             return res.result || [];
         } catch (e) {
             throw new Error(`Error getting document symbol from LSP server: ${e}`);
-        }
-    }
-
-    async getCodeAction(line: number, character: number): Promise<LSPCodeAction[]> {
-        try {
-            const res = await this.sendRequest<LSPCodeAction[]>(EVENT_CODE_ACTION, {
-                textDocument: {uri: getFileUri(this.goVersion)},
-                range: {
-                    start: {line, character},
-                    end: {line, character},
-                },
-                context: {diagnostics: []}
-            });
-            return res.result || [];
-        } catch (e) {
-            throw new Error(`Error getting code action from LSP server: ${e}`);
         }
     }
 
