@@ -55,6 +55,7 @@ export const FONT_SIZE_L = 15;
 export const FONT_SIZE_M = 13;
 export const FONT_SIZE_S = 11;
 export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
+export const SANDBOX_TMP = "sandbox-tmp";
 
 export const MOBILE_WIDTH = 768;
 
