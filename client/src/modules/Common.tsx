@@ -1,6 +1,11 @@
 import {ReactNode} from "react";
 import {Clipboard, CustomFlowbiteTheme, Flowbite, Toast, Tooltip} from "flowbite-react";
 import {HiExclamation as ErrorIcon, HiInformationCircle as InfoIcon, HiRefresh as RefreshIcon,} from "react-icons/hi";
+
+export {FiPlay as RunICon} from "react-icons/fi";
+export {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
+export {RiShareBoxLine as ShareIcon} from "react-icons/ri";
+
 import {languages, toastType} from "../types";
 import {isMac} from "../utils.ts";
 import {MdContentCopy as CopyIcon, MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";

@@ -1,9 +1,9 @@
 import {Menu, Item, Separator} from 'react-contexify';
 import 'react-contexify/ReactContexify.css';
-import {EDITOR_MENU_ID, FormatIcon, RunICon, ShareIcon} from "../constants.ts";
+import {EDITOR_MENU_ID} from "../constants.ts";
 import {EditorView} from "@codemirror/view";
 import {useThemeMode} from "flowbite-react";
-import {MetaKey, Row, Typography} from "./Common.tsx";
+import {FormatIcon, MetaKey, Row, RunICon, ShareIcon, Typography} from "./Common.tsx";
 
 import {useCallback} from "react";
 import {

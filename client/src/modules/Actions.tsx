@@ -3,9 +3,9 @@ import { MdKeyboardReturn as EnterKey } from "react-icons/md";
 import {MdKeyboardOptionKey as AltKey} from "react-icons/md";
 import {BsShift as ShiftKey} from "react-icons/bs";
 
-import {BUTTON_INACTIVE, FormatIcon, ICON_BUTTON_CLASS, RunICon, ShareIcon} from "../constants.ts";
+import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
 import {languages} from "../types";
-import {MetaKey} from "./Common.tsx";
+import {FormatIcon, MetaKey, RunICon, ShareIcon} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
 
 const COMMON_CLASSES = "z-20 text-xs font-light";
