@@ -7,8 +7,13 @@ import {MetaKey, Row, Typography} from "./Common.tsx";
 
 import {useCallback} from "react";
 import {
+    MdKeyboardOptionKey as AltKey,
     MdKeyboardOptionKey as OptionKey,
+    MdKeyboardReturn as EnterKey,
 } from "react-icons/md";
+import {TRANSLATE} from "../lib/i18n.ts";
+import {languages} from "../types";
+import {BsShift as ShiftKey} from "react-icons/bs";
 
 function CopyItem(props: {
     view: EditorView;
@@ -91,12 +96,30 @@ function GotoItem(props: {
 }
 
 export default function Component(props: {
+    lan: languages;
     view: EditorView | null;
     seeDefinition: () => boolean;
     seeImplementation: () => boolean;
+    run: () => void;
+    format: () => void;
+    share: () => void;
 }) {
     const {mode} = useThemeMode()
-    const {view, seeDefinition, seeImplementation} = props;
+    const {lan, view, seeDefinition, seeImplementation, run, format, share} = props;
+
+    const onRun = useCallback(() => {
+        run();
+        view?.focus();
+    }, [run, view]);
+    const onFormat = useCallback(() => {
+        format();
+        view?.focus();
+    }, [format, view]);
+    const onShare = useCallback(() => {
+        share();
+        view?.focus();
+    }, [share, view]);
+
 
     if (!view) {
         return null;
@@ -107,6 +130,27 @@ export default function Component(props: {
             <GotoItem view={view} seeDefinition={seeDefinition} seeImplementation={seeImplementation}/>
             <CopyItem view={view}/>
             <PasteItem view={view}/>
+            <Separator/>
+            <Item onClick={onRun}>
+                <Row>
+                    <Typography variant={"body2"}>{TRANSLATE.run[lan]}</Typography>
+                    <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/><EnterKey/> </Typography>
+                </Row>
+            </Item>
+            <Item onClick={onFormat}>
+                <Row>
+                    <Typography variant={"body2"}>{TRANSLATE.format[lan]}</Typography>
+                    <Typography variant={"caption"} className={"flex items-center"}>
+                        <MetaKey/><AltKey/>L<span>&#160;</span><span>&#160;</span>or<span>&#160;</span><span>&#160;</span><ShiftKey/><AltKey/>F
+                    </Typography>
+                </Row>
+            </Item>
+            <Item onClick={onShare}>
+                <Row>
+                    <Typography variant={"body2"}>{TRANSLATE.share[lan]}</Typography>
+                    <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/>S </Typography>
+                </Row>
+            </Item>
         </Menu>
     )
 }

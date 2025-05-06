@@ -840,6 +840,7 @@ export default function Component(props: {
 
     // context menu
     const {show} = useContextMenu({id: EDITOR_MENU_ID});
+
     function handleContextMenu(event: MouseEvent) {
         show({
             event,
@@ -854,7 +855,8 @@ export default function Component(props: {
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
 
-            <MyMenu view={view.current} seeDefinition={seeDefinition} seeImplementation={seeImplementations}/>
+            <MyMenu lan={lan} view={view.current} seeDefinition={seeDefinition} seeImplementation={seeImplementations}
+                    run={debouncedRun} format={debouncedFormat} share={debouncedShare}/>
 
             <Usages
                 lan={lan}
