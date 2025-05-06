@@ -1,14 +1,8 @@
 import {Modal} from "flowbite-react";
 
 import {languages} from "../types";
-import {MetaKey, Row, Grid, Divider} from "./Common.tsx";
+import {MetaKey, Row, Grid, Divider, ShiftKey, OptionKey, CtrlKey, EnterKey} from "./Common.tsx";
 import {ReactNode} from "react";
-import {
-    MdKeyboardControlKey as CtrlKey,
-    MdKeyboardOptionKey as OptionKey,
-    MdKeyboardReturn as EnterKey,
-} from "react-icons/md";
-import {BsShift as ShiftKey} from "react-icons/bs";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {DEFAULT_LANGUAGE} from "../constants.ts";
 
