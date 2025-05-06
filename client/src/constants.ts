@@ -200,3 +200,5 @@ export const LSP_TO_CODEMIRROR_TYPE: Record<string, string> = {
     Operator: "function",
     TypeParameter: "type",
 }
+
+export const EDITOR_MENU_ID = "editor-menu";

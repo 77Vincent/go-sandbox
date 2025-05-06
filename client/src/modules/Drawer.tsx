@@ -110,12 +110,12 @@ export default function Component(props: {
                                     return (
                                         <div key={key} className={LINE_STYLE}>
                                             <div
-                                                className={`${value ? "text-gray-800 dark:text-gray-300" : INACTIVE_TEXT_CLASS}`}>
+                                                className={`${value ? "text-gray-800 dark:text-gray-300" : INACTIVE_TEXT_CLASS} italic`}>
                                                 {key}
                                             </div>
 
                                             <div
-                                                className={`${value ? "text-black dark:text-white" : INACTIVE_TEXT_CLASS} font-semibold`}>{value}</div>
+                                                className={`${value ? "text-black dark:text-white" : INACTIVE_TEXT_CLASS}`}>{value}</div>
                                         </div>
                                     )
                                 })

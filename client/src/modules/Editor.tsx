@@ -1,6 +1,10 @@
+// react-contexify
+import {useContextMenu} from 'react-contexify';
+import 'react-contexify/ReactContexify.css';
+
 import "highlight.js/styles/github-dark.css"; // load once
 // react
-import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
+import {MouseEvent, ReactNode, useCallback, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
@@ -85,7 +89,7 @@ import {
     NONE,
     SEEING_IMPLEMENTATIONS,
     SEEING_USAGES,
-    VIM, DRAWER_STATS,
+    VIM, DRAWER_STATS, EDITOR_MENU_ID,
 } from "../constants.ts";
 import {
     getCodeContent,
@@ -98,6 +102,7 @@ import {
     viewUpdate
 } from "../utils.ts";
 import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
+import MyMenu from "./Menu.tsx";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
 import {SessionI, Sessions} from "./Sessions.tsx";
@@ -833,6 +838,15 @@ export default function Component(props: {
 
     const backgroundColor = mode === "dark" ? "editor-bg-dark" : "editor-bg-light";
 
+    // context menu
+    const {show} = useContextMenu({id: EDITOR_MENU_ID});
+    function handleContextMenu(event: MouseEvent) {
+        show({
+            event,
+            props: {key: 'value'}
+        })
+    }
+
     return (
         // eslint-disable-next-line tailwindcss/no-custom-classname
         <div
@@ -840,12 +854,14 @@ export default function Component(props: {
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
 
+            <MyMenu view={view.current} seeDefinition={seeDefinition} seeImplementation={seeImplementations}/>
+
             <Usages
                 lan={lan}
                 seeing={seeing} view={view.current} value={value}
                 usages={usages} setUsages={setUsages}/>
 
-            <div className={"h-full overflow-auto"} ref={editor}>
+            <div className={"h-full overflow-auto"} ref={editor} onContextMenu={handleContextMenu}>
                 <div className={"sticky right-0 top-0 z-10"}>
                     <RefreshButton lan={lan}/>
                     <ClickBoard content={value}/>
