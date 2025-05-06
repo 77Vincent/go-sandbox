@@ -365,7 +365,7 @@ export default function Component(props: {
         if (isLayoutVertical) {
             size = (refToElement.clientHeight / (window.innerHeight - 45)) * 100
         } else {
-            size = (refToElement.clientWidth / window.innerWidth) * 100
+            size = (refToElement.clientWidth / (window.innerWidth - drawerSize)) * 100
         }
 
         localStorage.setItem(EDITOR_SIZE_KEY, JSON.stringify(size))
