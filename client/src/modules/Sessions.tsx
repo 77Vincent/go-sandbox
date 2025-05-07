@@ -1,8 +1,8 @@
-import {IoClose as CloseIcon} from "react-icons/io5";
 import {useThemeMode} from "flowbite-react";
 import {displayFileUri} from "../utils.ts";
 import {MouseEventHandler} from "react";
 import {ACTIVE_ICON_BUTTON_CLASS_2} from "../constants.ts";
+import {CloseIcon} from "./Icons.tsx";
 
 const activeClasses = "border-b-cyan-500 border-b-2 dark:text-white"
 const inactiveClasses = "text-gray-800 dark:text-gray-300"

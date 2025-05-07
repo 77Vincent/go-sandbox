@@ -9,11 +9,21 @@ import {
 } from "./Common.tsx";
 
 import {useCallback} from "react";
-import {BsShift as ShiftKey} from "react-icons/bs";
 
 import {TRANSLATE} from "../lib/i18n.ts";
 import {languages} from "../types";
-import {CopyIcon, CutIcon, EnterKey, FormatIcon, MetaKey, OptionKey, PasteIcon, RunICon, ShareIcon} from "./Icons.tsx";
+import {
+    CopyIcon,
+    CutIcon,
+    EnterKey,
+    FormatIcon,
+    MetaKey,
+    OptionKey,
+    PasteIcon,
+    RunICon,
+    ShareIcon,
+    ShiftKey
+} from "./Icons.tsx";
 
 function CopyItem(props: {
     view: EditorView;
