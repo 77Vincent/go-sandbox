@@ -3,7 +3,7 @@ import {Clipboard, CustomFlowbiteTheme, Flowbite, Toast, Tooltip} from "flowbite
 
 import {HiExclamation as ErrorIcon, HiInformationCircle as InfoIcon, HiRefresh as RefreshIcon,} from "react-icons/hi";
 
-export { BiCut as CutIcon } from "react-icons/bi";
+export { BiCut as CutIcon, BiSearch as SearchIcon } from "react-icons/bi";
 export {
     MdOutlineContentPaste as PasteIcon,
     MdContentCopy as CopyIcon,
