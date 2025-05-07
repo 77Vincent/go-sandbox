@@ -1,6 +1,8 @@
 import {displayFileUri} from "../utils.ts";
-import {BadIcon, GoodIcon} from "./Icons.tsx";
-import {Row, Typography} from "./Common.tsx";
+import {BadIcon, GoodIcon, NextIcon, PrevIcon} from "./Icons.tsx";
+import {IconButton, Row, Typography} from "./Common.tsx";
+import {SessionI} from "./Sessions.tsx";
+import {useEffect, useState} from "react";
 
 const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";
@@ -20,24 +22,46 @@ export default function Component(props: {
     errors: number, warnings: number, info: number,
     onLintClick: () => void,
     file: string
+    sessions: SessionI[]
+    prevSession: () => void
+    nextSession: () => void
 }) {
     const {
         row, col,
         errors, warnings, info,
         onLintClick,
-        file,
+        file, sessions,
+        prevSession,
+        nextSession,
     } = props
+
+    const [disablePrev, setDisablePrev] = useState(false)
+    const [disableNext, setDisableNext] = useState(false)
+
+    useEffect(() => {
+        const index = sessions.findIndex((s) => s.id === file)
+        setDisablePrev(index === 0 || sessions.length < 2)
+        setDisableNext(index === sessions.length - 1 || sessions.length < 2)
+    }, [file, sessions])
 
     return (
         <div
             className={"fixed bottom-0 left-0 z-20 flex w-full justify-between border-t border-t-gray-400 bg-gray-200 px-3 py-0.5 dark:border-t-gray-600 dark:bg-gray-900 "}>
-                <Row className={"gap-1"}>
-                    <img src={"/logo.svg"} alt={"logo"} className={"h-2"}/>
-                    <Typography variant={"caption"} className={"text-xs italic tracking-wide"}> {displayFileUri(file)} </Typography>
+            <Row className={"gap-3"}>
+                <Row className={"gap-2.5"}>
+                    <IconButton onClick={prevSession} disabled={disablePrev} icon={<PrevIcon size={11}/>}/>
+                    <IconButton onClick={nextSession} disabled={disableNext} icon={<NextIcon size={11}/>}/>
                 </Row>
+
+                <Row className={"gap-1"}>
+                    <Typography variant={"caption"}
+                                className={"text-xs italic tracking-wide"}> {displayFileUri(file)} </Typography>
+                </Row>
+            </Row>
 
 
             <div className={"flex items-center gap-5"}>
+                <img src={"/logo.svg"} alt={"logo"} className={"h-2"}/>
                 <span className={textClasses}> {row}:{col} </span>
                 <span className={textClasses}>4 spaces</span>
 

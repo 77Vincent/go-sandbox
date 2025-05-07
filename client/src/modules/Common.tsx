@@ -4,6 +4,7 @@ import {languages, toastType} from "../types";
 
 import {TRANSLATE} from "../lib/i18n.ts";
 import {ErrorIcon, InfoIcon, RefreshIcon, CopyIcon} from "./Icons.tsx";
+import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
 
 export function Wrapper(props: {
     children: ReactNode,
@@ -179,4 +180,24 @@ export function Typography(props: {
     return <div className={`${classes} ${className}`}>
         {children}
     </div>
+}
+
+export function IconButton(props: {
+    icon: ReactNode
+    disabled?: boolean
+    onClick?: () => void
+}) {
+    const {icon, disabled, onClick} = props
+
+    const handleClick = () => {
+        if (onClick) {
+            onClick()
+        }
+    }
+
+    return (
+        <div onClick={handleClick} className={disabled ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}>
+            {icon}
+        </div>
+    )
 }
