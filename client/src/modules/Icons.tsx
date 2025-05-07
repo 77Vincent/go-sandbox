@@ -8,6 +8,10 @@ export {
     IoMdStats as StatsIcon,
 } from "react-icons/io";
 
+export {GoUnfold as UnfoldAllIcon, GoFold as FoldAllIcon} from "react-icons/go";
+
+export { GrPrevious as PrevIcon, GrNext as NextIcon } from "react-icons/gr";
+
 export {
     IoClose as CloseIcon,
     IoSchoolOutline as LearnIcon,
@@ -50,6 +54,8 @@ export {
     MdOutlineEdit as EditIcon,
     MdTextDecrease as TextSIcon,
     MdTextIncrease as TextLIcon,
+    MdUnfoldLess as  FoldIcon,
+    MdUnfoldMore as UnfoldIcon,
 } from "react-icons/md";
 
 export {BsShift as ShiftKey} from "react-icons/bs";

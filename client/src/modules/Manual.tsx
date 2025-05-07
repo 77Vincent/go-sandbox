@@ -10,15 +10,15 @@ import {ReactNode} from "react";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {DEFAULT_LANGUAGE} from "../constants.ts";
 import {
-    CtrlKey, EnterKey,
+    CtrlKey, EnterKey, FoldAllIcon, FoldIcon,
     FormatIcon,
     ManualIcon,
-    MetaKey, OptionKey,
+    MetaKey, NextIcon, OptionKey, PrevIcon,
     RunICon,
     SearchIcon,
     SettingsIcon,
     ShareIcon,
-    ShiftKey
+    ShiftKey, UnfoldAllIcon, UnfoldIcon
 } from "./Icons.tsx";
 
 function SubRow(props: {
@@ -67,19 +67,19 @@ export default function Component(props: {
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> {TRANSLATE.foldCode[lan]} </Title>
+                    <Title> <FoldIcon color={"gray"}/>{TRANSLATE.foldCode[lan]} </Title>
                     <SubRow> <MetaKey/>- </SubRow>
                 </Row>
                 <Row>
-                    <SubRow> <Title> {TRANSLATE.unfoldCode[lan]} </Title> </SubRow>
+                    <Title> <UnfoldIcon color={"gray"}/>{TRANSLATE.unfoldCode[lan]} </Title>
                     <SubRow> <MetaKey/>+ </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.foldAll[lan]} </Title>
+                    <Title> <FoldAllIcon color={"gray"}/>{TRANSLATE.foldAll[lan]} </Title>
                     <SubRow> <CtrlKey/><OptionKey/>[ </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.unfoldAll[lan]} </Title>
+                    <Title> <UnfoldAllIcon color={"gray"}/>{TRANSLATE.unfoldAll[lan]} </Title>
                     <SubRow> <CtrlKey/><OptionKey/>] </SubRow>
                 </Row>
             </Grid>
@@ -108,23 +108,23 @@ export default function Component(props: {
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
+                    <Title> <PrevIcon color={"gray"}/>{TRANSLATE.prevFile[lan]} </Title>
+                    <SubRow> <MetaKey/><OptionKey/>[ </SubRow>
+                </Row>
+                <Row>
+                    <Title> <NextIcon color={"gray"}/>{TRANSLATE.nextFile[lan]} </Title>
+                    <SubRow> <MetaKey/><OptionKey/>] </SubRow>
+                </Row>
+            </Grid>
+            <Divider horizontal={true} className={"my-3"}/>
+            <Grid>
+                <Row>
                     <Title> {TRANSLATE.openLintPanel[lan]} </Title>
                     <SubRow> <MetaKey/><ShiftKey/>M </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.nextDiagnostic[lan]} </Title>
                     <SubRow> F8 </SubRow>
-                </Row>
-            </Grid>
-            <Divider horizontal={true} className={"my-3"}/>
-            <Grid>
-                <Row>
-                    <Title> {TRANSLATE.prevFile[lan]} </Title>
-                    <SubRow> <MetaKey/><OptionKey/>[ </SubRow>
-                </Row>
-                <Row>
-                    <Title> {TRANSLATE.nextFile[lan]} </Title>
-                    <SubRow> <MetaKey/><OptionKey/>] </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
