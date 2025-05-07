@@ -3,7 +3,6 @@ import {Clipboard, CustomFlowbiteTheme, Flowbite, Toast, Tooltip} from "flowbite
 
 import {HiExclamation as ErrorIcon, HiInformationCircle as InfoIcon, HiRefresh as RefreshIcon,} from "react-icons/hi";
 
-export { BiCut as CutIcon, BiSearch as SearchIcon } from "react-icons/bi";
 export {
     MdOutlineContentPaste as PasteIcon,
     MdContentCopy as CopyIcon,
@@ -14,7 +13,6 @@ export {
 export {BsShift as ShiftKey} from "react-icons/bs";
 export {FiPlay as RunICon} from "react-icons/fi";
 export {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
-export {RiShareBoxLine as ShareIcon} from "react-icons/ri";
 
 import {languages, toastType} from "../types";
 import {isMac} from "../utils.ts";

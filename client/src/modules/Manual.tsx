@@ -11,13 +11,12 @@ import {
     CtrlKey,
     EnterKey,
     RunICon,
-    ShareIcon,
-    FormatIcon, SearchIcon
+    FormatIcon
 } from "./Common.tsx";
 import {ReactNode} from "react";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {DEFAULT_LANGUAGE} from "../constants.ts";
-import {ManualIcon, SettingsIcon} from "./Icons.tsx";
+import {ManualIcon, SearchIcon, SettingsIcon, ShareIcon} from "./Icons.tsx";
 
 
 function SubRow(props: {
