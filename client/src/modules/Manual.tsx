@@ -32,7 +32,7 @@ function SubRow(props: {
 function Title(props: {
     children: ReactNode,
 }) {
-    return <div className={"flex items-center gap-1 text-sm max-md:text-xs"}>
+    return <div className={"flex items-center gap-1.5 text-sm max-md:text-xs"}>
         {props.children}
     </div>
 }
@@ -56,26 +56,26 @@ export default function Component(props: {
         <Modal.Body className={"text-gray-900 dark:text-gray-100"}>
             <Grid>
                 <Row>
-                    <Title> <SettingsIcon color={"gray"}/>{TRANSLATE.settings[lan]} </Title>
+                    <Title> <SettingsIcon size={16} color={"gray"}/>{TRANSLATE.settings[lan]} </Title>
                     <SubRow> <MetaKey/>, </SubRow>
                 </Row>
                 <Row>
-                    <Title> <ManualIcon size={16} color={"gray"}/>{TRANSLATE.manual[lan]} </Title>
+                    <Title> <ManualIcon size={18} color={"gray"}/>{TRANSLATE.manual[lan]} </Title>
                     <SubRow> F12 </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> <FoldIcon color={"gray"}/>{TRANSLATE.foldCode[lan]} </Title>
+                    <Title> <FoldIcon size={16} color={"gray"}/>{TRANSLATE.foldCode[lan]} </Title>
                     <SubRow> <MetaKey/>- </SubRow>
                 </Row>
                 <Row>
-                    <Title> <UnfoldIcon color={"gray"}/>{TRANSLATE.unfoldCode[lan]} </Title>
+                    <Title> <UnfoldIcon size={16} color={"gray"}/>{TRANSLATE.unfoldCode[lan]} </Title>
                     <SubRow> <MetaKey/>+ </SubRow>
                 </Row>
                 <Row>
-                    <Title> <FoldAllIcon color={"gray"}/>{TRANSLATE.foldAll[lan]} </Title>
+                    <Title> <FoldAllIcon size={16} color={"gray"}/>{TRANSLATE.foldAll[lan]} </Title>
                     <SubRow> <CtrlKey/><OptionKey/>[ </SubRow>
                 </Row>
                 <Row>
@@ -86,33 +86,33 @@ export default function Component(props: {
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> <RunICon color={"gray"}/>{TRANSLATE.run[lan]} </Title>
+                    <Title> <RunICon size={16} color={"gray"}/>{TRANSLATE.run[lan]} </Title>
                     <SubRow> <MetaKey/><EnterKey/> </SubRow>
                 </Row>
                 <Row>
-                    <Title> <FormatIcon color={"gray"}/>{TRANSLATE.format[lan]} </Title>
+                    <Title> <FormatIcon size={16} color={"gray"}/>{TRANSLATE.format[lan]} </Title>
                     <SubRow>
                         <span className={`mr-2 flex items-center ${SUB_TEXT}`}><MetaKey/><OptionKey/>L</span>
                         <ShiftKey/><OptionKey/>F
                     </SubRow>
                 </Row>
                 <Row>
-                    <Title> <ShareIcon color={"gray"}/>{TRANSLATE.share[lan]} </Title>
+                    <Title> <ShareIcon size={16} color={"gray"}/>{TRANSLATE.share[lan]} </Title>
                     <SubRow> <MetaKey/>S </SubRow>
                 </Row>
                 <Row>
-                    <Title> <SearchIcon color={"gray"}/>{TRANSLATE.search[lan]} </Title>
+                    <Title> <SearchIcon size={16} color={"gray"}/>{TRANSLATE.search[lan]} </Title>
                     <SubRow> <MetaKey/>F </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> <PrevIcon color={"gray"}/>{TRANSLATE.prevFile[lan]} </Title>
+                    <Title> <PrevIcon size={15} color={"gray"}/>{TRANSLATE.prevFile[lan]} </Title>
                     <SubRow> <MetaKey/><OptionKey/>[ </SubRow>
                 </Row>
                 <Row>
-                    <Title> <NextIcon color={"gray"}/>{TRANSLATE.nextFile[lan]} </Title>
+                    <Title> <NextIcon size={15} color={"gray"}/>{TRANSLATE.nextFile[lan]} </Title>
                     <SubRow> <MetaKey/><OptionKey/>] </SubRow>
                 </Row>
             </Grid>
