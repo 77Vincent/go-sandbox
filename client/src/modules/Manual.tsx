@@ -58,40 +58,26 @@ export default function Component(props: {
             <Grid>
                 <Row>
                     <Title> {TRANSLATE.foldCode[lan]} </Title>
-                    <SubRow>
-                        <span className={`mr-2 flex items-center ${SUB_TEXT}`}><MetaKey/><OptionKey/>[</span>
-                        <MetaKey/>-
-                    </SubRow>
+                    <SubRow> <MetaKey/>- </SubRow>
                 </Row>
                 <Row>
-                    <SubRow>
-                        <Title> {TRANSLATE.unfoldCode[lan]} </Title>
-                    </SubRow>
-                    <SubRow>
-                        <span className={`mr-2 flex items-center ${SUB_TEXT}`}><MetaKey/><OptionKey/>]</span>
-                        <MetaKey/>+
-                    </SubRow>
+                    <SubRow> <Title> {TRANSLATE.unfoldCode[lan]} </Title> </SubRow>
+                    <SubRow> <MetaKey/>+ </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.foldAll[lan]} </Title>
-                    <SubRow>
-                        <CtrlKey/><OptionKey/>[
-                    </SubRow>
+                    <SubRow> <CtrlKey/><OptionKey/>[ </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.unfoldAll[lan]} </Title>
-                    <SubRow>
-                        <CtrlKey/><OptionKey/>]
-                    </SubRow>
+                    <SubRow> <CtrlKey/><OptionKey/>] </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
                     <Title> {TRANSLATE.run[lan]} </Title>
-                    <SubRow>
-                        <MetaKey/><EnterKey/>
-                    </SubRow>
+                    <SubRow> <MetaKey/><EnterKey/> </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.format[lan]} </Title>
@@ -126,6 +112,17 @@ export default function Component(props: {
                     <SubRow>
                         F8
                     </SubRow>
+                </Row>
+            </Grid>
+            <Divider horizontal={true} className={"my-3"}/>
+            <Grid>
+                <Row>
+                    <Title> {TRANSLATE.prevFile[lan]} </Title>
+                    <SubRow> <MetaKey/><OptionKey/>[ </SubRow>
+                </Row>
+                <Row>
+                    <Title> {TRANSLATE.nextFile[lan]} </Title>
+                    <SubRow> <MetaKey/><OptionKey/>] </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
