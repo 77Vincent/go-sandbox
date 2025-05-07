@@ -13,7 +13,7 @@ import {
     CtrlKey, EnterKey, FoldAllIcon, FoldIcon,
     FormatIcon,
     ManualIcon,
-    MetaKey, OptionKey,
+    MetaKey, NextIcon, OptionKey, PrevIcon,
     RunICon,
     SearchIcon,
     SettingsIcon,
@@ -108,23 +108,23 @@ export default function Component(props: {
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
+                    <Title> <PrevIcon color={"gray"}/>{TRANSLATE.prevFile[lan]} </Title>
+                    <SubRow> <MetaKey/><OptionKey/>[ </SubRow>
+                </Row>
+                <Row>
+                    <Title> <NextIcon color={"gray"}/>{TRANSLATE.nextFile[lan]} </Title>
+                    <SubRow> <MetaKey/><OptionKey/>] </SubRow>
+                </Row>
+            </Grid>
+            <Divider horizontal={true} className={"my-3"}/>
+            <Grid>
+                <Row>
                     <Title> {TRANSLATE.openLintPanel[lan]} </Title>
                     <SubRow> <MetaKey/><ShiftKey/>M </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.nextDiagnostic[lan]} </Title>
                     <SubRow> F8 </SubRow>
-                </Row>
-            </Grid>
-            <Divider horizontal={true} className={"my-3"}/>
-            <Grid>
-                <Row>
-                    <Title> {TRANSLATE.prevFile[lan]} </Title>
-                    <SubRow> <MetaKey/><OptionKey/>[ </SubRow>
-                </Row>
-                <Row>
-                    <Title> {TRANSLATE.nextFile[lan]} </Title>
-                    <SubRow> <MetaKey/><OptionKey/>] </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>

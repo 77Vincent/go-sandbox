@@ -10,6 +10,8 @@ export {
 
 export {GoUnfold as UnfoldAllIcon, GoFold as FoldAllIcon} from "react-icons/go";
 
+export { GrPrevious as PrevIcon, GrNext as NextIcon } from "react-icons/gr";
+
 export {
     IoClose as CloseIcon,
     IoSchoolOutline as LearnIcon,
