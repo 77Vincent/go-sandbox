@@ -4,6 +4,7 @@ import {languages, toastType} from "../types";
 
 import {TRANSLATE} from "../lib/i18n.ts";
 import {ErrorIcon, InfoIcon, RefreshIcon, CopyIcon} from "./Icons.tsx";
+import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
 
 export function Wrapper(props: {
     children: ReactNode,
@@ -147,16 +148,18 @@ export function Grid(props: {
 
 export function Row(props: {
     children: ReactNode;
+    className?: string;
 }) {
-    return <div className={"flex w-full items-center justify-between"}>
-        {props.children}
+    const {children, className} = props
+    return <div className={`flex items-center justify-between ${className}`}>
+        {children}
     </div>
 }
 
 export function Typography(props: {
     children: ReactNode;
     className?: string;
-    variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body1" | "body2" | "subtitle" | "caption" | "body";
+    variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body1" | "body2" | "subtitle" | "caption";
 }) {
     const {children, variant = "p", className} = props
     let classes = ""
@@ -177,4 +180,24 @@ export function Typography(props: {
     return <div className={`${classes} ${className}`}>
         {children}
     </div>
+}
+
+export function IconButton(props: {
+    icon: ReactNode
+    disabled?: boolean
+    onClick?: () => void
+}) {
+    const {icon, disabled, onClick} = props
+
+    const handleClick = () => {
+        if (onClick) {
+            onClick()
+        }
+    }
+
+    return (
+        <div onClick={handleClick} className={disabled ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}>
+            {icon}
+        </div>
+    )
 }

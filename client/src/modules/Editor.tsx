@@ -898,7 +898,11 @@ export default function Component(props: {
                 </div>
 
                 <StatusBar
+                    lan={lan}
                     row={row} col={col} file={file.current}
+                    sessions={sessions.current}
+                    prevSession={prevSession}
+                    nextSession={nextSession}
                     onLintClick={onLintClick}
                     errors={errorCount}
                     warnings={warningCount}
