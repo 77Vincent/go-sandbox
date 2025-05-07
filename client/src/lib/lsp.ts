@@ -13,7 +13,7 @@ import {
 import {Diagnostic} from "@codemirror/lint";
 import {EditorView} from "@codemirror/view";
 import {URI_BASE, WORKSPACE} from "../constants.ts";
-import {getCursorPos, getFileUri, posToHead} from "../utils.ts";
+import {getCursorPos, getFileUri, isUserCode, posToHead} from "../utils.ts";
 import {MutableRefObject} from "react";
 import {SessionI} from "../modules/Sessions.tsx";
 import {fetchSourceCode} from "../api/api.ts";
@@ -396,6 +396,10 @@ export class LSPClient {
 
             // Handle notifications or unsolicited messages
             if (method === DIAGNOSTICS_METHOD) {
+                if (!isUserCode(this.file.current)) {
+                    this.handleDiagnostic([]) // clear the diagnostics for non-user code
+                    return
+                }
                 this.handleDiagnostic(params.diagnostics.map((diagnostic: LSPDiagnostic) => {
                         const {range, severity, message, source} = diagnostic;
                         return {
