@@ -5,14 +5,6 @@ import {languages, toastType} from "../types";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {ErrorIcon, InfoIcon, RefreshIcon, CopyIcon} from "./Icons.tsx";
 
-export {
-    MdOutlineContentPaste as PasteIcon,
-    MdContentCopy as CopyIcon,
-    MdKeyboardControlKey as CtrlKey,
-    MdKeyboardOptionKey as OptionKey,
-    MdKeyboardReturn as EnterKey,
-} from "react-icons/md";
-
 export function Wrapper(props: {
     children: ReactNode,
     className?: string

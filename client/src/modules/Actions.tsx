@@ -2,9 +2,8 @@ import {Tooltip} from "flowbite-react";
 
 import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
 import {languages} from "../types";
-import {OptionKey, EnterKey} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {FormatIcon, MetaKey, RunICon, ShareIcon, ShiftKey} from "./Icons.tsx";
+import {EnterKey, FormatIcon, MetaKey, OptionKey, RunICon, ShareIcon, ShiftKey} from "./Icons.tsx";
 
 const COMMON_CLASSES = "z-20 text-xs font-light";
 

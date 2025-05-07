@@ -4,9 +4,6 @@ import {EDITOR_MENU_ID} from "../constants.ts";
 import {EditorView} from "@codemirror/view";
 import {useThemeMode} from "flowbite-react";
 import {
-    CopyIcon,
-    EnterKey,
-    OptionKey, PasteIcon,
     Row,
     Typography
 } from "./Common.tsx";
@@ -16,7 +13,7 @@ import {BsShift as ShiftKey} from "react-icons/bs";
 
 import {TRANSLATE} from "../lib/i18n.ts";
 import {languages} from "../types";
-import {CutIcon, FormatIcon, MetaKey, RunICon, ShareIcon} from "./Icons.tsx";
+import {CopyIcon, CutIcon, EnterKey, FormatIcon, MetaKey, OptionKey, PasteIcon, RunICon, ShareIcon} from "./Icons.tsx";
 
 function CopyItem(props: {
     view: EditorView;

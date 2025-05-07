@@ -5,14 +5,21 @@ import {
     Row,
     Grid,
     Divider,
-    OptionKey,
-    CtrlKey,
-    EnterKey,
 } from "./Common.tsx";
 import {ReactNode} from "react";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {DEFAULT_LANGUAGE} from "../constants.ts";
-import {FormatIcon, ManualIcon, MetaKey, RunICon, SearchIcon, SettingsIcon, ShareIcon, ShiftKey} from "./Icons.tsx";
+import {
+    CtrlKey, EnterKey,
+    FormatIcon,
+    ManualIcon,
+    MetaKey, OptionKey,
+    RunICon,
+    SearchIcon,
+    SettingsIcon,
+    ShareIcon,
+    ShiftKey
+} from "./Icons.tsx";
 
 function SubRow(props: {
     children: ReactNode,
