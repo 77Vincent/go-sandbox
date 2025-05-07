@@ -26,6 +26,9 @@ function getNextSandboxId(sandboxes: mySandboxes[]): mySandboxes {
     return DEFAULT_ACTIVE_SANDBOX
 }
 
+const initialSandboxes = getSandboxes();
+const initialSandboxNames = getSandboxesNames();
+
 export default function Component(props: {
     lan: languages,
     isRunning: boolean,
@@ -33,8 +36,8 @@ export default function Component(props: {
     onSelect: (id: mySandboxes) => void
 }) {
     const {isRunning, active, onSelect, lan} = props;
-    const [sandboxes, setSandboxes] = useState(getSandboxes())
-    const [sandboxNames, setSandboxNames] = useState(getSandboxesNames());
+    const [sandboxes, setSandboxes] = useState(initialSandboxes)
+    const [sandboxNames, setSandboxNames] = useState(initialSandboxNames);
     const sandboxesRef = useRef(sandboxes);
     const upperLimit = Object.keys(MY_SANDBOXES).length;
     const lowerLimit = 1;
