@@ -59,6 +59,7 @@ export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
 export const MOBILE_WIDTH = 768;
 
 export const KEEP_ALIVE_INTERVAL = 30000;
+export const DEBOUNCE_TIME_SHORT = 25;
 export const DEBOUNCE_TIME = 75;
 export const DEBOUNCE_TIME_LONG = 150;
 export const ACTIVE_COLOR = "cyan"

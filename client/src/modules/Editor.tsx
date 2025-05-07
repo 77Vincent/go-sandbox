@@ -89,7 +89,7 @@ import {
     NONE,
     SEEING_IMPLEMENTATIONS,
     SEEING_USAGES,
-    VIM, DRAWER_STATS, EDITOR_MENU_ID,
+    VIM, DRAWER_STATS, EDITOR_MENU_ID, DEBOUNCE_TIME_SHORT,
 } from "../constants.ts";
 import {
     getCodeContent,
@@ -852,7 +852,7 @@ export default function Component(props: {
         // go to the previous session
         const i = !index ? 0 : index - 1;
         onSessionClick(i);
-    }, [onSessionClick]), DEBOUNCE_TIME);
+    }, [onSessionClick]), DEBOUNCE_TIME_SHORT);
 
     const nextSession = debounce(useCallback(() => {
         if (sessions.current.length < 2) return;
@@ -862,7 +862,7 @@ export default function Component(props: {
         // go to the next session
         const i = index + 1 >= sessions.current.length ? index : index + 1;
         onSessionClick(i);
-    }, [onSessionClick]), DEBOUNCE_TIME);
+    }, [onSessionClick]), DEBOUNCE_TIME_SHORT);
 
     // context menu
     const {show} = useContextMenu({id: EDITOR_MENU_ID});

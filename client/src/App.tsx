@@ -4,6 +4,10 @@ import {healthCheck} from "./api/api.ts";
 import {BrowserRouter} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 import {Flowbite} from "flowbite-react";
+import {getGoVersion, getSandboxId} from "./utils.ts";
+
+const initialSandboxId = getSandboxId()
+const initialGoVersion = getGoVersion()
 
 function App() {
     const [toastError, setToastError] = useState<ReactNode>(null);
@@ -26,7 +30,9 @@ function App() {
                     <MyToast type={"error"} show={!!toastError} setShowToast={setToastError}>{toastError}</MyToast>
                     <MyToast type={"info"} show={!!toastInfo} setShowToast={setToastInfo}>{toastInfo}</MyToast>
 
-                    <Main setToastInfo={setToastInfo} setToastError={setToastError}/>
+                    <Main
+                        sandboxId={initialSandboxId} goVersion={initialGoVersion}
+                        setToastInfo={setToastInfo} setToastError={setToastError}/>
                 </main>
             </Flowbite>
         </BrowserRouter>
