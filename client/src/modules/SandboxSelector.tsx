@@ -26,6 +26,9 @@ function getNextSandboxId(sandboxes: mySandboxes[]): mySandboxes {
     return DEFAULT_ACTIVE_SANDBOX
 }
 
+const initialSandboxes = getSandboxes();
+const initialSandboxNames = getSandboxesNames();
+
 export default function Component(props: {
     lan: languages,
     isRunning: boolean,
@@ -33,8 +36,8 @@ export default function Component(props: {
     onSelect: (id: mySandboxes) => void
 }) {
     const {isRunning, active, onSelect, lan} = props;
-    const [sandboxes, setSandboxes] = useState(getSandboxes())
-    const [sandboxNames, setSandboxNames] = useState(getSandboxesNames());
+    const [sandboxes, setSandboxes] = useState(initialSandboxes)
+    const [sandboxNames, setSandboxNames] = useState(initialSandboxNames);
     const sandboxesRef = useRef(sandboxes);
     const upperLimit = Object.keys(MY_SANDBOXES).length;
     const lowerLimit = 1;
@@ -103,7 +106,11 @@ export default function Component(props: {
 
     return (
         <Dropdown inline={true} className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
-                  label={<span className={`text-xs ${isRunning ? INACTIVE_TEXT_CLASS : ""}`}>{sandboxNames[active] || MY_SANDBOXES[active] || active}</span>}
+                  label={
+                      <span className={`text-xs ${isRunning ? INACTIVE_TEXT_CLASS : ""}`}>
+                          {sandboxNames[active] || MY_SANDBOXES[active] || active}
+                      </span>
+                  }
         >
             {
                 sandboxes.map((key) => {
@@ -117,8 +124,8 @@ export default function Component(props: {
                             <div className={"flex gap-1.5"}>
                                 <Tooltip content={TRANSLATE.rename[lan]} className={"text-xs"}>
                                     <EditIcon size={18}
-                                                onClick={onRename(key)}
-                                                className={`opacity-80 ${ICON_BUTTON_CLASS}`}/>
+                                              onClick={onRename(key)}
+                                              className={`opacity-80 ${ICON_BUTTON_CLASS}`}/>
                                 </Tooltip>
 
                                 <Tooltip content={TRANSLATE.remove[lan]} className={"text-xs"}>

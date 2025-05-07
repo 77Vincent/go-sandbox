@@ -28,7 +28,7 @@ import {
     IS_AUTOCOMPLETION_ON_KEY,
     DRAWER_SIZE_KEY,
     RESIZABLE_HANDLER_WIDTH,
-    DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER, OPENED_DRAWER_KEY, DEFAULT_ACTIVE_SANDBOX,
+    DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER, OPENED_DRAWER_KEY,
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
 import {Divider, Wrapper} from "./Common.tsx";
@@ -51,7 +51,6 @@ import {
     getLintOn,
     getUrl,
     getLanguage,
-    getGoVersion,
     getIsVerticalLayout,
     isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer
 } from "../utils.ts";
@@ -102,8 +101,6 @@ const resizeHandlerHoverClasses = "w-1 z-10 hover:bg-cyan-500 transition-colors"
 const initialValue = getCodeContent(getSandboxId());
 const initialIsLintOn = getLintOn()
 const initialIsAutoCompletionOn = getAutoCompletionOn()
-const initialGoVersion = getGoVersion()
-const initialSandboxId = getSandboxId();
 const initialIsVerticalLayout = getIsVerticalLayout();
 const initialLanguage = getLanguage()
 const initialFontSize = getFontSize()
@@ -113,10 +110,12 @@ const initialOpenedDrawer = getOpenedDrawer();
 const initialKeyBindings = getKeyBindings()
 
 export default function Component(props: {
+    sandboxId: mySandboxes
+    goVersion: string
     setToastError: (message: ReactNode) => void
     setToastInfo: (message: ReactNode) => void
 }) {
-    const {setToastError, setToastInfo} = props
+    const {sandboxId, goVersion, setToastError, setToastInfo} = props
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
@@ -171,7 +170,7 @@ export default function Component(props: {
 
     const debouncedShare = debounce(useCallback(async () => {
         try {
-            const id = await shareSnippet(getCodeContent(initialSandboxId)); // so won't share the non-user code
+            const id = await shareSnippet(getCodeContent(sandboxId)); // so won't share the non-user code
             const url = `${location.origin}/snippets/${id}`
             // this is a hack for Safari!
             setTimeout(() => {
@@ -249,7 +248,7 @@ export default function Component(props: {
 
             const source = new SSE(getUrl("/execute"), {
                 headers: {'Content-Type': 'application/json'},
-                payload: JSON.stringify({code: value.current, version: initialGoVersion})
+                payload: JSON.stringify({code: value.current, version: goVersion})
             });
 
             source.addEventListener(EVENT_STDOUT, ({data}: MessageEvent) => {
@@ -306,6 +305,10 @@ export default function Component(props: {
     // fetch the snippet if the url contains the snippet id, do only once
     useEffect(() => {
         (async () => {
+            if (isRunningRef.current) {
+                return
+            }
+
             const matches = location.pathname.match(SNIPPET_REGEX)
             if (matches) {
                 const raw = matches[0]
@@ -315,7 +318,6 @@ export default function Component(props: {
                     if (data) {
                         setPatch({value: data})
                         debouncedRun() // run immediately after fetching
-                        localStorage.setItem(ACTIVE_SANDBOX_KEY, DEFAULT_ACTIVE_SANDBOX);
                     }
                 } catch (e) {
                     setToastError(<FetchErrorMessage error={(e as Error).message}/>)
@@ -416,7 +418,7 @@ export default function Component(props: {
                 setShow={setShowSettings}
                 lan={lan}
                 fontSize={fontSize}
-                goVersion={initialGoVersion}
+                goVersion={goVersion}
                 onGoVersionChange={onGoVersionChange}
                 onFontL={onFontL}
                 onFontM={onFontM}
@@ -456,7 +458,7 @@ export default function Component(props: {
                         isMobile ? null : <>
                             <Divider/>
                             <SandboxSelector lan={lan} onSelect={onSandboxIdChange} isRunning={isRunning}
-                                             active={initialSandboxId}/>
+                                             active={sandboxId}/>
 
                             <Divider/>
 
@@ -464,7 +466,7 @@ export default function Component(props: {
 
                             <Divider/>
 
-                            <VersionSelector version={initialGoVersion} isRunning={isRunning}
+                            <VersionSelector version={goVersion} isRunning={isRunning}
                                              onSelect={onGoVersionChange}/>
                         </>
                     }
@@ -534,8 +536,8 @@ export default function Component(props: {
                                 openedDrawer={openedDrawer}
                                 setDocumentSymbols={setDocumentSymbols}
                                 selectedSymbol={selectedSymbol}
-                                sandboxId={initialSandboxId}
-                                goVersion={initialGoVersion}
+                                sandboxId={sandboxId}
+                                goVersion={goVersion}
                                 setToastError={setToastError}
                                 isVertical={isLayoutVertical}
                                 isLintOn={isLintOn}

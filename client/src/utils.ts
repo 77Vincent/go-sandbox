@@ -23,7 +23,7 @@ import {
     MOBILE_WIDTH,
     MY_SANDBOXES, OPENED_DRAWER_KEY,
     SANDBOX_NAMES_KEY,
-    URI_BASE,
+    URI_BASE, SANDBOX_TEMP,
 } from "./constants.ts";
 import {KeyBindingsType, languages, mySandboxes, selectableDrawers} from "./types";
 import {EditorView, ViewUpdate} from "@codemirror/view";
@@ -88,6 +88,7 @@ export function getSandboxesNames(): Record<mySandboxes, string> {
 export function getSandboxes(): mySandboxes[] {
     const sandboxes: mySandboxes[] = []
     Object.keys(MY_SANDBOXES).forEach((key) => {
+        if (key === SANDBOX_TEMP) return // do not display temp sandbox
         if (localStorage.getItem(key) !== null) {
             sandboxes.push(key as mySandboxes)
         }
