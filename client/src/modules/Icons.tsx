@@ -1,6 +1,10 @@
 import {isMac} from "../utils.ts";
 import {MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
 
+export {IoMdRemoveCircleOutline as RemoveIcon} from "react-icons/io";
+
+export {IoClose as CloseIcon} from "react-icons/io5";
+export {CiFaceFrown as BadIcon, CiFaceSmile as GoodIcon} from "react-icons/ci";
 export {VscSettingsGear as SettingsIcon} from "react-icons/vsc";
 export {
     HiOutlineInformationCircle as AboutIcon,
@@ -8,6 +12,7 @@ export {
     HiExclamation as ErrorIcon,
     HiInformationCircle as InfoIcon,
     HiRefresh as RefreshIcon,
+    HiMail as MailIcon,
 } from "react-icons/hi";
 export {
     BiCut as CutIcon,
@@ -22,6 +27,8 @@ export {
     MdKeyboardControlKey as CtrlKey,
     MdKeyboardOptionKey as OptionKey,
     MdKeyboardReturn as EnterKey,
+    MdOutlineAdd as AddIcon,
+    MdOutlineEdit as EditIcon,
 } from "react-icons/md";
 export {BsShift as ShiftKey} from "react-icons/bs";
 
