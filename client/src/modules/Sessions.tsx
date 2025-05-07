@@ -4,7 +4,7 @@ import {displayFileUri} from "../utils.ts";
 import {MouseEventHandler} from "react";
 import {ACTIVE_ICON_BUTTON_CLASS_2} from "../constants.ts";
 
-const activeClasses = "border-b-cyan-500 border-b-3 dark:text-white"
+const activeClasses = "border-b-cyan-500 border-b-2 dark:text-white"
 const inactiveClasses = "text-gray-800 dark:text-gray-300"
 
 function Session(props: {
