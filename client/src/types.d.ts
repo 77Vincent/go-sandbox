@@ -23,8 +23,7 @@ export interface patchI {
 }
 
 export type mySandboxes =
-    "sandbox-tmp"
-    | "my-sandbox-1"
+    "my-sandbox-1"
     | "my-sandbox-2"
     | "my-sandbox-3"
     | "my-sandbox-4"

@@ -55,7 +55,6 @@ export const FONT_SIZE_L = 15;
 export const FONT_SIZE_M = 13;
 export const FONT_SIZE_S = 11;
 export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
-export const SANDBOX_TMP = "sandbox-tmp";
 
 export const MOBILE_WIDTH = 768;
 
@@ -166,7 +165,6 @@ export const MY_SANDBOXES: Record<mySandboxes, string> = {
     "my-sandbox-8": "Sandbox 8",
     "my-sandbox-9": "Sandbox 9",
     "my-sandbox-10": "Sandbox 10",
-    "sandbox-tmp": "Temporary",
 }
 
 export const WORKSPACE = "workspace";

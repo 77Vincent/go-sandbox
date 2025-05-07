@@ -28,7 +28,7 @@ import {
     IS_AUTOCOMPLETION_ON_KEY,
     DRAWER_SIZE_KEY,
     RESIZABLE_HANDLER_WIDTH,
-    DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER, OPENED_DRAWER_KEY, DEFAULT_ACTIVE_SANDBOX, SANDBOX_TMP,
+    DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER, OPENED_DRAWER_KEY, DEFAULT_ACTIVE_SANDBOX,
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
 import {Divider, Wrapper} from "./Common.tsx";
@@ -311,12 +311,6 @@ export default function Component(props: {
                 const raw = matches[0]
                 const id = raw.split("/")[2]
                 try {
-                    // switch to the tmp sandbox to avoid overwriting the user's sandbox
-                    if (getSandboxId() !== SANDBOX_TMP) {
-                        localStorage.setItem(ACTIVE_SANDBOX_KEY, SANDBOX_TMP);
-                        location.reload()
-                    }
-
                     const data = await fetchSnippet(id)
                     if (data) {
                         setPatch({value: data})
