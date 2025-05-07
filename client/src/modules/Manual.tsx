@@ -2,21 +2,17 @@ import {Modal} from "flowbite-react";
 
 import {languages} from "../types";
 import {
-    MetaKey,
     Row,
     Grid,
     Divider,
-    ShiftKey,
     OptionKey,
     CtrlKey,
     EnterKey,
-    RunICon,
 } from "./Common.tsx";
 import {ReactNode} from "react";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {DEFAULT_LANGUAGE} from "../constants.ts";
-import {FormatIcon, ManualIcon, SearchIcon, SettingsIcon, ShareIcon} from "./Icons.tsx";
-
+import {FormatIcon, ManualIcon, MetaKey, RunICon, SearchIcon, SettingsIcon, ShareIcon, ShiftKey} from "./Icons.tsx";
 
 function SubRow(props: {
     children: ReactNode,

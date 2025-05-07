@@ -1,7 +1,9 @@
 import {ReactNode} from "react";
 import {Clipboard, CustomFlowbiteTheme, Flowbite, Toast, Tooltip} from "flowbite-react";
+import {languages, toastType} from "../types";
 
-import {HiExclamation as ErrorIcon, HiInformationCircle as InfoIcon, HiRefresh as RefreshIcon,} from "react-icons/hi";
+import {TRANSLATE} from "../lib/i18n.ts";
+import {ErrorIcon, InfoIcon, RefreshIcon, CopyIcon} from "./Icons.tsx";
 
 export {
     MdOutlineContentPaste as PasteIcon,
@@ -10,14 +12,6 @@ export {
     MdKeyboardOptionKey as OptionKey,
     MdKeyboardReturn as EnterKey,
 } from "react-icons/md";
-export {BsShift as ShiftKey} from "react-icons/bs";
-export {FiPlay as RunICon} from "react-icons/fi";
-
-import {languages, toastType} from "../types";
-import {isMac} from "../utils.ts";
-import {MdContentCopy as CopyIcon, MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
-
-import {TRANSLATE} from "../lib/i18n.ts";
 
 export function Wrapper(props: {
     children: ReactNode,
@@ -31,10 +25,6 @@ export function Wrapper(props: {
             {children}
         </div>
     )
-}
-
-export function MetaKey() {
-    return isMac() ? <MdKeyboardCommandKey/> : <MdKeyboardControlKey/>;
 }
 
 export function Divider(props: {

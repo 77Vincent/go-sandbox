@@ -2,9 +2,9 @@ import {DEFAULT_LANGUAGE, ICON_BUTTON_CLASS} from "../constants.ts";
 
 import {Tooltip} from "flowbite-react";
 import {languages} from "../types";
-import {Divider, MetaKey} from "./Common.tsx";
+import {Divider} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {AboutIcon, ManualIcon, SettingsIcon} from "./Icons.tsx";
+import {AboutIcon, ManualIcon, MetaKey, SettingsIcon} from "./Icons.tsx";
 
 const commonClasses = `${ICON_BUTTON_CLASS} max-md:mx-0 max-md:text-lg`
 
