@@ -12,7 +12,6 @@ export {
 } from "react-icons/md";
 export {BsShift as ShiftKey} from "react-icons/bs";
 export {FiPlay as RunICon} from "react-icons/fi";
-export {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
 
 import {languages, toastType} from "../types";
 import {isMac} from "../utils.ts";

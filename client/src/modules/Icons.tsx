@@ -8,3 +8,4 @@ export {
     BiSearch as SearchIcon,
 } from "react-icons/bi";
 export {RiShareBoxLine as ShareIcon} from "react-icons/ri";
+export {HiMiniCodeBracket as FormatIcon} from "react-icons/hi2";
