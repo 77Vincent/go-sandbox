@@ -35,6 +35,8 @@ func SetupSeccomp() error {
 		// "socket", "bind", "listen", "accept", "accept4", "connect",
 		// should disallow them in order to prevent network access
 		"socketpair", "sendto", "recvfrom", "sendmsg", "recvmsg",
+		"unlink", "unlinkat", // File removal syscalls
+		"rename", // File renaming syscall
 	}
 
 	for _, call := range disallowed {
