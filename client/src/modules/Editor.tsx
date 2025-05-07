@@ -861,7 +861,6 @@ export default function Component(props: {
         if (sessions.current.length < 2) return;
         const index = sessions.current.findIndex((s) => s.id === file.current)
         if (index === -1) return;
-        console.log(index);
 
         // go to the next session
         const newIndex = index + 1 >= sessions.current.length ? index : index + 1;
