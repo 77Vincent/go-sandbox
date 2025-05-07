@@ -171,7 +171,7 @@ export default function Component(props: {
 
     const debouncedShare = debounce(useCallback(async () => {
         try {
-            const id = await shareSnippet(value.current);
+            const id = await shareSnippet(getCodeContent(initialSandboxId)); // so won't share the non-user code
             const url = `${location.origin}/snippets/${id}`
             // this is a hack for Safari!
             setTimeout(() => {
