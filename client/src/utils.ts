@@ -169,10 +169,14 @@ export function viewUpdate(view: EditorView, data: string, cursor?: number) {
             to: view.state.doc.length,
             insert: data,
         },
+    })
+    view.dispatch({
         selection: {
             anchor: cursor || 0,
         },
-        scrollIntoView: true,
+        effects: EditorView.scrollIntoView(cursor || 0, {
+            y: "center",
+        })
     })
     view.focus()
 }

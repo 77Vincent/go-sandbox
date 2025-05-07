@@ -1,5 +1,3 @@
-import {IoClose as CloseIcon} from "react-icons/io5";
-
 import {languages, LSPDocumentSymbol, selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS_2,
@@ -13,6 +11,7 @@ import {
 import {countSymbols, SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {Divider} from "./Common.tsx";
+import {CloseIcon} from "./Icons.tsx";
 
 const symbolStyle = (kind: number): string => {
     switch (kind) {

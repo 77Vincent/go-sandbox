@@ -1,10 +1,10 @@
 import {Button, Modal} from "flowbite-react";
-import {HiMail} from "react-icons/hi";
 
 import {TITLE} from "../constants.ts";
 import {languages} from "../types";
 import {Divider} from "./Common.tsx";
 import {Link} from "react-router";
+import {MailIcon} from "./Icons.tsx";
 
 export default function Component(props: {
     show: boolean,
@@ -69,7 +69,7 @@ export default function Component(props: {
                         target={"_blank"}
                 >
                     <div className={"flex items-center gap-2"}>
-                        <HiMail size={20}/>
+                        <MailIcon size={20}/>
                         Contact me
                     </div>
                 </Button>

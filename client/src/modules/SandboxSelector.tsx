@@ -8,13 +8,11 @@ import {
     SELECTED_COLOR_CLASS
 } from "../constants.ts";
 
-import {MdOutlineAdd as AddIcon, MdOutlineEdit as EditButton} from "react-icons/md";
-import {IoMdRemoveCircleOutline as RemoveIcon} from "react-icons/io";
-
 import {Dropdown, Tooltip} from "flowbite-react";
 import {MouseEventHandler, useEffect, useRef, useState} from "react";
 import {getSandboxes, getSandboxesNames} from "../utils.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
+import {AddIcon, EditIcon, RemoveIcon} from "./Icons.tsx";
 
 const MY_SANDBOX_PREFIX = "my-sandbox-";
 
@@ -118,7 +116,7 @@ export default function Component(props: {
 
                             <div className={"flex gap-1.5"}>
                                 <Tooltip content={TRANSLATE.rename[lan]} className={"text-xs"}>
-                                    <EditButton size={18}
+                                    <EditIcon size={18}
                                                 onClick={onRename(key)}
                                                 className={`opacity-80 ${ICON_BUTTON_CLASS}`}/>
                                 </Tooltip>

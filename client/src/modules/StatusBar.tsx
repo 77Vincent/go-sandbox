@@ -1,5 +1,5 @@
-import {CiFaceFrown as ErrorIcon, CiFaceSmile as GoodIcon} from "react-icons/ci";
 import {displayFileUri} from "../utils.ts";
+import {BadIcon, GoodIcon} from "./Icons.tsx";
 
 const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";
@@ -42,7 +42,7 @@ export default function Component(props: {
 
                 <div className={"flex items-center gap-1"}>
                     <div className={`text-sm ${chooseColor(errors, warnings, info)}`}>
-                        {errors === 0 ? <GoodIcon/> : <ErrorIcon/>}
+                        {errors === 0 ? <GoodIcon/> : <BadIcon/>}
                     </div>
                     {!!errors &&
                         <span onClick={onLintClick}

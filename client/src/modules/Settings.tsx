@@ -1,9 +1,5 @@
 import {DarkThemeToggle, Dropdown, Label, Modal, useThemeMode} from "flowbite-react";
 
-import {VscLayoutPanel as LayoutVerticalIcon, VscLayoutSidebarRight as LayoutHorizontalIcon,} from "react-icons/vsc";
-import {MdTextDecrease as TextSIcon, MdTextIncrease as TextLIcon,} from "react-icons/md";
-import {ImTextColor as TextMIcon} from "react-icons/im"
-
 import {
     ACTIVE_COLOR,
     FONT_SIZE_L,
@@ -15,6 +11,7 @@ import {
 import {KeyBindingsType, languages} from "../types";
 import {Divider, Grid, Row, ToggleSwitch} from "./Common.tsx";
 import {LANGUAGES, TRANSLATE} from "../lib/i18n.ts";
+import {LayoutHorizontalIcon, LayoutVerticalIcon, TextLIcon, TextMIcon, TextSIcon} from "./Icons.tsx";
 
 const activeClasses = "cursor-pointer hover:opacity-50";
 

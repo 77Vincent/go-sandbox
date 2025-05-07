@@ -1,11 +1,25 @@
 import {Modal} from "flowbite-react";
 
 import {languages} from "../types";
-import {MetaKey, Row, Grid, Divider, ShiftKey, OptionKey, CtrlKey, EnterKey} from "./Common.tsx";
+import {
+    Row,
+    Grid,
+    Divider,
+} from "./Common.tsx";
 import {ReactNode} from "react";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {DEFAULT_LANGUAGE} from "../constants.ts";
-
+import {
+    CtrlKey, EnterKey,
+    FormatIcon,
+    ManualIcon,
+    MetaKey, OptionKey,
+    RunICon,
+    SearchIcon,
+    SettingsIcon,
+    ShareIcon,
+    ShiftKey
+} from "./Icons.tsx";
 
 function SubRow(props: {
     children: ReactNode,
@@ -18,7 +32,7 @@ function SubRow(props: {
 function Title(props: {
     children: ReactNode,
 }) {
-    return <div className={"text-sm max-md:text-xs"}>
+    return <div className={"flex items-center gap-1 text-sm max-md:text-xs"}>
         {props.children}
     </div>
 }
@@ -42,105 +56,86 @@ export default function Component(props: {
         <Modal.Body className={"text-gray-900 dark:text-gray-100"}>
             <Grid>
                 <Row>
-                    <Title> {TRANSLATE.settings[lan]} </Title>
-                    <SubRow>
-                        <MetaKey/>,
-                    </SubRow>
+                    <Title> <SettingsIcon color={"gray"}/>{TRANSLATE.settings[lan]} </Title>
+                    <SubRow> <MetaKey/>, </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.manual[lan]} </Title>
-                    <SubRow>
-                        F12
-                    </SubRow>
+                    <Title> <ManualIcon size={16} color={"gray"}/>{TRANSLATE.manual[lan]} </Title>
+                    <SubRow> F12 </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
                     <Title> {TRANSLATE.foldCode[lan]} </Title>
-                    <SubRow>
-                        <span className={`mr-2 flex items-center ${SUB_TEXT}`}><MetaKey/><OptionKey/>[</span>
-                        <MetaKey/>-
-                    </SubRow>
+                    <SubRow> <MetaKey/>- </SubRow>
                 </Row>
                 <Row>
-                    <SubRow>
-                        <Title> {TRANSLATE.unfoldCode[lan]} </Title>
-                    </SubRow>
-                    <SubRow>
-                        <span className={`mr-2 flex items-center ${SUB_TEXT}`}><MetaKey/><OptionKey/>]</span>
-                        <MetaKey/>+
-                    </SubRow>
+                    <SubRow> <Title> {TRANSLATE.unfoldCode[lan]} </Title> </SubRow>
+                    <SubRow> <MetaKey/>+ </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.foldAll[lan]} </Title>
-                    <SubRow>
-                        <CtrlKey/><OptionKey/>[
-                    </SubRow>
+                    <SubRow> <CtrlKey/><OptionKey/>[ </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.unfoldAll[lan]} </Title>
-                    <SubRow>
-                        <CtrlKey/><OptionKey/>]
-                    </SubRow>
+                    <SubRow> <CtrlKey/><OptionKey/>] </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> {TRANSLATE.run[lan]} </Title>
-                    <SubRow>
-                        <MetaKey/><EnterKey/>
-                    </SubRow>
+                    <Title> <RunICon color={"gray"}/>{TRANSLATE.run[lan]} </Title>
+                    <SubRow> <MetaKey/><EnterKey/> </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.format[lan]} </Title>
+                    <Title> <FormatIcon color={"gray"}/>{TRANSLATE.format[lan]} </Title>
                     <SubRow>
                         <span className={`mr-2 flex items-center ${SUB_TEXT}`}><MetaKey/><OptionKey/>L</span>
                         <ShiftKey/><OptionKey/>F
                     </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.share[lan]} </Title>
-                    <SubRow>
-                        <MetaKey/>S
-                    </SubRow>
+                    <Title> <ShareIcon color={"gray"}/>{TRANSLATE.share[lan]} </Title>
+                    <SubRow> <MetaKey/>S </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.search[lan]} </Title>
-                    <SubRow>
-                        <MetaKey/>F
-                    </SubRow>
+                    <Title> <SearchIcon color={"gray"}/>{TRANSLATE.search[lan]} </Title>
+                    <SubRow> <MetaKey/>F </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
                     <Title> {TRANSLATE.openLintPanel[lan]} </Title>
-                    <SubRow>
-                        <MetaKey/><ShiftKey/>M
-                    </SubRow>
+                    <SubRow> <MetaKey/><ShiftKey/>M </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.nextDiagnostic[lan]} </Title>
-                    <SubRow>
-                        F8
-                    </SubRow>
+                    <SubRow> F8 </SubRow>
+                </Row>
+            </Grid>
+            <Divider horizontal={true} className={"my-3"}/>
+            <Grid>
+                <Row>
+                    <Title> {TRANSLATE.prevFile[lan]} </Title>
+                    <SubRow> <MetaKey/><OptionKey/>[ </SubRow>
+                </Row>
+                <Row>
+                    <Title> {TRANSLATE.nextFile[lan]} </Title>
+                    <SubRow> <MetaKey/><OptionKey/>] </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
                     <Title> {TRANSLATE.definitions[lan]} </Title>
-                    <SubRow>
-                        <MetaKey/>B
-                    </SubRow>
+                    <SubRow> <MetaKey/>B </SubRow>
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.implementations[lan]} </Title>
-                    <SubRow>
-                        <MetaKey/><OptionKey/>B
-                    </SubRow>
+                    <SubRow> <MetaKey/><OptionKey/>B </SubRow>
                 </Row>
             </Grid>
             <Grid>
@@ -162,9 +157,7 @@ export default function Component(props: {
                 </Row>
                 <Row>
                     <Title> {TRANSLATE.suggestCompletion[lan]} </Title>
-                    <SubRow>
-                        <CtrlKey/>Space
-                    </SubRow>
+                    <SubRow> <CtrlKey/>Space </SubRow>
                 </Row>
             </Grid>
         </Modal.Body>

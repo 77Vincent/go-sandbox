@@ -345,11 +345,6 @@ export default function Component(props: {
         setWarningCount(0);
         setInfoCount(0);
 
-        // do no display diagnostic for non-user code
-        if (!isUserCode(file.current)) {
-            return
-        }
-
         diagnostics.forEach((v) => {
             switch (v.severity) {
                 case "error":
@@ -378,15 +373,12 @@ export default function Component(props: {
             // update file view in lsp
             await lsp.current.didChange(version.current, v.state.doc.toString());
 
-            // do not display completion for non-user code
-            if (!isUserCode(file.current)) {
-                return
+            // only get completion for user code
+            if (isUserCode(file.current)) {
+                const {row, col} = getCursorPos(v);
+                const completions = await lsp.current.getCompletions(row - 1, col - 1) // use 0-based index
+                setCompletions(completions);
             }
-
-            // get completions
-            const {row, col} = getCursorPos(v);
-            const completions = await lsp.current.getCompletions(row - 1, col - 1) // use 0-based index
-            setCompletions(completions);
         } catch (e) {
             setToastError((e as Error).message)
         }
@@ -564,6 +556,22 @@ export default function Component(props: {
             }
         },
         {
+            key: `Mod-Alt-[`,
+            preventDefault: true,
+            run: () => {
+                prevSession()
+                return true;
+            }
+        },
+        {
+            key: `Mod-Alt-]`,
+            preventDefault: true,
+            run: () => {
+                nextSession()
+                return true;
+            }
+        },
+        {
             // for intellij
             key: `Mod-Alt-l`,
             preventDefault: true,
@@ -639,8 +647,8 @@ export default function Component(props: {
         usageHighlightField,
         hoverCompartment.of([]), // empty hover tooltip at first because lsp is not ready
         readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(file.current))),
-        lintCompartment.of(setLint(isLintOn && isUserCode(file.current), diagnostics)),
-        autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn && isUserCode(file.current) ? [setAutoCompletion(completions)] : []})),
+        lintCompartment.of(setLint(isLintOn, diagnostics)),
+        autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []})),
         fontSizeCompartment.of(setFontSize(fontSize)),
         indentCompartment.of(setIndent(DEFAULT_INDENTATION_SIZE)),
         keyBindingsCompartment.of(setKeyBindings(keyBindings)),
@@ -789,16 +797,14 @@ export default function Component(props: {
         view.current?.dispatch({effects: [fontSizeCompartment.reconfigure(setFontSize(fontSize))]})
     }, [fontSize]);
     useEffect(() => {
-        const on = isAutoCompletionOn && isUserCode(file.current);
         view.current?.dispatch({
             effects: [autoCompletionCompartment.reconfigure(autocompletion({
-                override: on ? [setAutoCompletion(completions)] : []
+                override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []
             }))]
         })
     }, [completions, isAutoCompletionOn]);
     useEffect(() => {
-        const on = isLintOn && isUserCode(file.current);
-        view.current?.dispatch({effects: [lintCompartment.reconfigure(setLint(on, diagnostics))]})
+        view.current?.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, diagnostics))]})
         view.current?.dispatch({effects: [readOnlyCompartment.reconfigure(EditorState.readOnly.of(!isUserCode(file.current)))]})
     }, [diagnostics, isLintOn]);
 
@@ -834,9 +840,32 @@ export default function Component(props: {
         // if the new session is user code, use the latest value
         const content = isUserCode(id) ? getCodeContent(sandboxId) : data || "";
         viewUpdate(view.current, content, cursor);
-    }, [sandboxId])
+    }, [sandboxId]);
 
     const backgroundColor = mode === "dark" ? "editor-bg-dark" : "editor-bg-light";
+
+    const prevSession = useCallback(() => {
+        try {
+            if (sessions.current.length < 2) return;
+            const index = sessions.current.findIndex((s) => s.id === file.current)
+            if (index === -1) return;
+
+            // go to the previous session
+            const newIndex = !index ? 0 : index - 1;
+            onSessionClick(newIndex);
+        } catch (e) {
+            throw new Error("Error while going to the previous session: " + (e as Error).message)
+        }
+    }, [onSessionClick]);
+    const nextSession = useCallback(() => {
+        if (sessions.current.length < 2) return;
+        const index = sessions.current.findIndex((s) => s.id === file.current)
+        if (index === -1) return;
+
+        // go to the next session
+        const newIndex = index + 1 >= sessions.current.length ? index : index + 1;
+        onSessionClick(newIndex);
+    }, [onSessionClick]);
 
     // context menu
     const {show} = useContextMenu({id: EDITOR_MENU_ID});
