@@ -1,7 +1,3 @@
-import {VscSymbolStructure as OutlineIcon} from "react-icons/vsc";
-import {IoSchoolOutline as LearnIcon} from "react-icons/io5";
-import {IoMdStats as StatsIcon} from "react-icons/io";
-
 import {Divider} from "./Common.tsx";
 import {Tooltip} from "flowbite-react";
 import {TRANSLATE} from "../lib/i18n.ts";
@@ -12,6 +8,7 @@ import {
     DRAWER_DOCUMENT_SYMBOLS, DRAWER_STATS,
     ICON_BUTTON_CLASS
 } from "../constants.ts";
+import {LearnIcon, OutlineIcon, StatsIcon} from "./Icons.tsx";
 
 export default function Component(props: {
     lan: languages,

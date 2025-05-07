@@ -3,14 +3,21 @@ import {MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
 
 export {ImTextColor as TextMIcon} from "react-icons/im"
 
-export {IoMdRemoveCircleOutline as RemoveIcon} from "react-icons/io";
+export {
+    IoMdRemoveCircleOutline as RemoveIcon,
+    IoMdStats as StatsIcon,
+} from "react-icons/io";
 
-export {IoClose as CloseIcon} from "react-icons/io5";
+export {
+    IoClose as CloseIcon,
+    IoSchoolOutline as LearnIcon,
+} from "react-icons/io5";
 export {CiFaceFrown as BadIcon, CiFaceSmile as GoodIcon} from "react-icons/ci";
 export {
     VscSettingsGear as SettingsIcon,
     VscLayoutPanel as LayoutVerticalIcon,
     VscLayoutSidebarRight as LayoutHorizontalIcon,
+    VscSymbolStructure as OutlineIcon,
 } from "react-icons/vsc";
 
 export {
