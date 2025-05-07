@@ -10,7 +10,7 @@ import {ReactNode} from "react";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {DEFAULT_LANGUAGE} from "../constants.ts";
 import {
-    CtrlKey, EnterKey,
+    CtrlKey, EnterKey, FoldAllIcon, FoldIcon,
     FormatIcon,
     ManualIcon,
     MetaKey, OptionKey,
@@ -18,7 +18,7 @@ import {
     SearchIcon,
     SettingsIcon,
     ShareIcon,
-    ShiftKey
+    ShiftKey, UnfoldAllIcon, UnfoldIcon
 } from "./Icons.tsx";
 
 function SubRow(props: {
@@ -67,19 +67,19 @@ export default function Component(props: {
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> {TRANSLATE.foldCode[lan]} </Title>
+                    <Title> <FoldIcon color={"gray"}/>{TRANSLATE.foldCode[lan]} </Title>
                     <SubRow> <MetaKey/>- </SubRow>
                 </Row>
                 <Row>
-                    <SubRow> <Title> {TRANSLATE.unfoldCode[lan]} </Title> </SubRow>
+                    <Title> <UnfoldIcon color={"gray"}/>{TRANSLATE.unfoldCode[lan]} </Title>
                     <SubRow> <MetaKey/>+ </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.foldAll[lan]} </Title>
+                    <Title> <FoldAllIcon color={"gray"}/>{TRANSLATE.foldAll[lan]} </Title>
                     <SubRow> <CtrlKey/><OptionKey/>[ </SubRow>
                 </Row>
                 <Row>
-                    <Title> {TRANSLATE.unfoldAll[lan]} </Title>
+                    <Title> <UnfoldAllIcon color={"gray"}/>{TRANSLATE.unfoldAll[lan]} </Title>
                     <SubRow> <CtrlKey/><OptionKey/>] </SubRow>
                 </Row>
             </Grid>
