@@ -28,6 +28,7 @@ const SEVERITY_MAP: Record<number, string> = {
 
 const SKIP_ERROR_NO_IDENTIFIER = "no identifier found"
 const SKIP_NO_METADATA_FOUND = "no package metadata for file"
+const SKIP_INVALID_LINE_NUMBER = "Invalid line number"
 
 // LSP events
 const EVENT_INITIALIZE = "initialize"
@@ -101,8 +102,8 @@ export const LSP_KIND_LABELS: Record<number, string> = {
 
 export class LSPClient {
     goVersion: string;
-    setReady: (ready: boolean) => void;
     file: MutableRefObject<string>;
+    ready: MutableRefObject<boolean>;
     sessions: MutableRefObject<SessionI[]>;
     ws: WebSocket;
     requestId: number;
@@ -119,7 +120,7 @@ export class LSPClient {
         sessions: MutableRefObject<SessionI[]>,
         handleDiagnostic: (diagnostic: Diagnostic[]) => void,
         handleError: (error: string) => void,
-        setReady: (ready: boolean) => void
+        ready: MutableRefObject<boolean>,
     ) {
         this.ws = new WebSocket(backendUrl);
 
@@ -129,10 +130,10 @@ export class LSPClient {
         this.requestId = 0;
         this.pendingRequests = new Map();
         this.view = view;
+        this.ready = ready;
 
         this.handleDiagnostic = handleDiagnostic;
         this.handleError = handleError;
-        this.setReady = setReady;
 
         this.start()
     }
@@ -335,7 +336,7 @@ export class LSPClient {
                     text,
                 },
             });
-            this.setReady(true);
+            this.ready.current = true;
         } catch (error) {
             console.error("LSP Initialize error:", error)
         }
@@ -415,7 +416,10 @@ export class LSPClient {
                 ))
             }
         } catch (error) {
-            this.handleError(error as string);
+            const e = (error as Error).message
+            if (!e.includes(SKIP_INVALID_LINE_NUMBER)) {
+                this.handleError(e);
+            }
         }
     }
 }

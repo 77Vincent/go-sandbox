@@ -262,7 +262,6 @@ export default function Component(props: {
     const {mode} = useThemeMode();
 
     // local state
-    const [lspReady, setLspReady] = useState<boolean>(false);
     const [row, setRow] = useState(1); // 1-based index
     const [col, setCol] = useState(1); // 1-based index
     const [errorCount, setErrorCount] = useState(0);
@@ -281,6 +280,7 @@ export default function Component(props: {
     const file = useRef<string>(getFileUri(goVersion));
     const sessions = useRef<SessionI[]>([]);
     const metaKey = useRef<boolean>(false);
+    const ready = useRef<boolean>(false); // initially not ready
 
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
@@ -305,7 +305,7 @@ export default function Component(props: {
     }, [setDocumentSymbols]), DEBOUNCE_TIME_LONG);
 
     useEffect(() => {
-        if (!lsp.current || !lspReady) return;
+        if (!lsp.current || !ready.current) return;
 
         switch (openedDrawer) {
             case "":
@@ -317,10 +317,10 @@ export default function Component(props: {
                 break
 
         }
-    }, [lspReady, openedDrawer]); // no more dependencies here!!
+    }, [ready.current, openedDrawer]); // no more dependencies here!!
 
     useEffect(() => {
-        if (!lsp.current || !view.current || !lspReady) return;
+        if (!lsp.current || !view.current || !ready.current) return;
 
         if (!selectedSymbol) {
             return
@@ -337,7 +337,7 @@ export default function Component(props: {
             }),
         })
         view.current.focus();
-    }, [lspReady, selectedSymbol]);
+    }, [selectedSymbol]);
 
     useEffect(() => {
         // reset error/warning/info count
@@ -716,7 +716,7 @@ export default function Component(props: {
         lsp.current = new LSPClient(
             getWsUrl("/ws"), goVersion, view.current,
             file, sessions,
-            handleDiagnostics, handleError, setLspReady,
+            handleDiagnostics, handleError, ready,
         );
 
         // asynchronously add the hover tooltip when the lsp is ready
@@ -844,28 +844,25 @@ export default function Component(props: {
 
     const backgroundColor = mode === "dark" ? "editor-bg-dark" : "editor-bg-light";
 
-    const prevSession = useCallback(() => {
-        try {
-            if (sessions.current.length < 2) return;
-            const index = sessions.current.findIndex((s) => s.id === file.current)
-            if (index === -1) return;
+    const prevSession = debounce(useCallback(() => {
+        if (sessions.current.length < 2) return;
+        const index = sessions.current.findIndex((s) => s.id === file.current)
+        if (index === -1) return;
 
-            // go to the previous session
-            const newIndex = !index ? 0 : index - 1;
-            onSessionClick(newIndex);
-        } catch (e) {
-            throw new Error("Error while going to the previous session: " + (e as Error).message)
-        }
-    }, [onSessionClick]);
-    const nextSession = useCallback(() => {
+        // go to the previous session
+        const i = !index ? 0 : index - 1;
+        onSessionClick(i);
+    }, [onSessionClick]), DEBOUNCE_TIME);
+
+    const nextSession = debounce(useCallback(() => {
         if (sessions.current.length < 2) return;
         const index = sessions.current.findIndex((s) => s.id === file.current)
         if (index === -1) return;
 
         // go to the next session
-        const newIndex = index + 1 >= sessions.current.length ? index : index + 1;
-        onSessionClick(newIndex);
-    }, [onSessionClick]);
+        const i = index + 1 >= sessions.current.length ? index : index + 1;
+        onSessionClick(i);
+    }, [onSessionClick]), DEBOUNCE_TIME);
 
     // context menu
     const {show} = useContextMenu({id: EDITOR_MENU_ID});
