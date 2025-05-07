@@ -881,7 +881,8 @@ export default function Component(props: {
             <div
                 className={`relative flex-1 flex-col overflow-hidden ${isVertical ? "" : "pb-5"} ${backgroundColor}`}>
 
-                <MyMenu lan={lan} view={view.current} seeDefinition={seeDefinition} seeImplementation={seeImplementations}
+                <MyMenu lan={lan} view={view.current}
+                        seeDefinition={seeDefinition} seeImplementation={seeImplementations} seeUsages={seeUsages}
                         run={debouncedRun} format={debouncedFormat} share={debouncedShare}/>
 
                 <Usages

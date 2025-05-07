@@ -101,8 +101,9 @@ function GotoItem(props: {
     lan: languages;
     seeDefinition: () => boolean;
     seeImplementation: () => boolean;
+    seeUsages: () => boolean;
 }) {
-    const {view, lan, seeDefinition, seeImplementation} = props;
+    const {view, lan, seeDefinition, seeImplementation, seeUsages} = props;
     const onSeeDefinition = useCallback(() => {
         seeDefinition();
         view.focus();
@@ -111,6 +112,10 @@ function GotoItem(props: {
         seeImplementation();
         view.focus();
     }, [seeImplementation, view]);
+    const onSeeUsages = useCallback(() => {
+        seeUsages();
+        view.focus();
+    }, [seeUsages, view]);
 
     return (
         view.state.wordAt(view.state.selection.main.head) && (
@@ -129,6 +134,14 @@ function GotoItem(props: {
                         </Typography>
                     </Row>
                 </Item>
+                <Item onClick={onSeeUsages}>
+                    <Row>
+                        <Typography variant={"body2"}>{TRANSLATE.usages[lan]}</Typography>
+                        <Typography variant={"caption"} className={"flex items-center"}>
+                            <MetaKey/><OptionKey/>F7<span>&#160;</span><span>&#160;</span>or<span>&#160;</span><span>&#160;</span><ShiftKey/>F12
+                        </Typography>
+                    </Row>
+                </Item>
                 <Separator/>
             </>
         )
@@ -140,12 +153,13 @@ export default function Component(props: {
     view: EditorView | null;
     seeDefinition: () => boolean;
     seeImplementation: () => boolean;
+    seeUsages: () => boolean;
     run: () => void;
     format: () => void;
     share: () => void;
 }) {
     const {mode} = useThemeMode()
-    const {lan, view, seeDefinition, seeImplementation, run, format, share} = props;
+    const {lan, view, seeDefinition, seeImplementation, seeUsages, run, format, share} = props;
 
     const onRun = useCallback(() => {
         run();
@@ -167,7 +181,11 @@ export default function Component(props: {
 
     return (
         <Menu theme={mode} id={EDITOR_MENU_ID} className={"text-sm font-light dark:border dark:border-gray-700"}>
-            <GotoItem view={view} lan={lan} seeDefinition={seeDefinition} seeImplementation={seeImplementation}/>
+            <GotoItem view={view} lan={lan}
+                      seeDefinition={seeDefinition}
+                      seeImplementation={seeImplementation}
+                      seeUsages={seeUsages}
+            />
 
             <CopyItem view={view} lan={lan} cut={true}/>
             <CopyItem view={view} lan={lan}/>
