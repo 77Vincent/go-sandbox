@@ -1,10 +1,11 @@
 import Main from "./modules/Main.tsx";
 import {ReactNode, useEffect, useState} from "react";
 import {healthCheck} from "./api/api.ts";
-import {BrowserRouter} from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 import {Flowbite} from "flowbite-react";
 import {getGoVersion, getSandboxId} from "./utils.ts";
+import {SANDBOX_TEMP} from "./constants.ts";
 
 const initialSandboxId = getSandboxId()
 const initialGoVersion = getGoVersion()
@@ -30,9 +31,18 @@ function App() {
                     <MyToast type={"error"} show={!!toastError} setShowToast={setToastError}>{toastError}</MyToast>
                     <MyToast type={"info"} show={!!toastInfo} setShowToast={setToastInfo}>{toastInfo}</MyToast>
 
-                    <Main
-                        sandboxId={initialSandboxId} goVersion={initialGoVersion}
-                        setToastInfo={setToastInfo} setToastError={setToastError}/>
+                    <Routes>
+                        <Route path="/" element={
+                            <Main
+                                sandboxId={initialSandboxId} goVersion={initialGoVersion}
+                                setToastInfo={setToastInfo} setToastError={setToastError}/>
+                        }/>
+                        <Route path="/snippets/:id" element={
+                            <Main
+                                sandboxId={SANDBOX_TEMP} goVersion={initialGoVersion}
+                                setToastInfo={setToastInfo} setToastError={setToastError}/>
+                        }/>
+                    </Routes>
                 </main>
             </Flowbite>
         </BrowserRouter>
