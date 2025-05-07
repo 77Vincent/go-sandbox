@@ -48,7 +48,7 @@ function CopyItem(props: {
             if (text.length > 0) {
                 return (
                     <Item key={index} onClick={() => onClick(text)}>
-                        <Row>
+                        <Row className={"w-full"}>
                             {
 
                                 cut
@@ -85,7 +85,7 @@ function PasteItem(props: {
                     changes: {from: view.state.selection.main.from, to: view.state.selection.main.to, insert: text}
                 });
             })}>
-                <Row>
+                <Row className={"w-full"}>
                     <Typography variant={"body2"} className={"flex items-center gap-1.5"}>
                         <PasteIcon/>{TRANSLATE.paste[lan]}
                     </Typography>
@@ -121,13 +121,13 @@ function GotoItem(props: {
         view.state.wordAt(view.state.selection.main.head) && (
             <>
                 <Item onClick={onSeeDefinition}>
-                    <Row>
+                    <Row className={"w-full"}>
                         <Typography variant={"body2"}>{TRANSLATE.definitions[lan]}</Typography>
                         <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/>B </Typography>
                     </Row>
                 </Item>
                 <Item onClick={onSeeImplementation}>
-                    <Row>
+                    <Row className={"w-full"}>
                         <Typography variant={"body2"}>{TRANSLATE.implementations[lan]}</Typography>
                         <Typography variant={"caption"} className={"flex items-center"}>
                             <MetaKey/><OptionKey/>B
@@ -135,7 +135,7 @@ function GotoItem(props: {
                     </Row>
                 </Item>
                 <Item onClick={onSeeUsages}>
-                    <Row>
+                    <Row className={"w-full"}>
                         <Typography variant={"body2"}>{TRANSLATE.usages[lan]}</Typography>
                         <Typography variant={"caption"} className={"flex items-center"}>
                             <MetaKey/><OptionKey/>F7<span>&#160;</span><span>&#160;</span>or<span>&#160;</span><span>&#160;</span><ShiftKey/>F12
@@ -194,7 +194,7 @@ export default function Component(props: {
             <Separator/>
 
             <Item onClick={onRun}>
-                <Row>
+                <Row className={"w-full"}>
                     <Typography variant={"body2"} className={"flex items-center gap-1.5"}>
                         <RunICon/>{TRANSLATE.run[lan]}
                     </Typography>
@@ -202,7 +202,7 @@ export default function Component(props: {
                 </Row>
             </Item>
             <Item onClick={onFormat}>
-                <Row>
+                <Row className={"w-full"}>
                     <Typography variant={"body2"} className={"flex items-center gap-1.5"}>
                         <FormatIcon/>{TRANSLATE.format[lan]}
                     </Typography>
@@ -212,7 +212,7 @@ export default function Component(props: {
                 </Row>
             </Item>
             <Item onClick={onShare}>
-                <Row>
+                <Row className={"w-full"}>
                     <Typography variant={"body2"} className={"flex items-center gap-1.5"}>
                         <ShareIcon/>{TRANSLATE.share[lan]}
                     </Typography>

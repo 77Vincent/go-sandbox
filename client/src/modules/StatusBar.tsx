@@ -1,5 +1,6 @@
 import {displayFileUri} from "../utils.ts";
 import {BadIcon, GoodIcon} from "./Icons.tsx";
+import {Row, Typography} from "./Common.tsx";
 
 const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";
@@ -30,10 +31,10 @@ export default function Component(props: {
     return (
         <div
             className={"fixed bottom-0 left-0 z-20 flex w-full justify-between border-t border-t-gray-400 bg-gray-200 px-3 py-0.5 dark:border-t-gray-600 dark:bg-gray-900 "}>
-            <div className={`flex items-center gap-1 ${textClasses}`}>
-                <img src={"/logo.svg"} alt={"logo"} className={"h-2"}/>
-                <span className={"text-xs italic tracking-wide"}> {displayFileUri(file)} </span>
-            </div>
+                <Row className={"gap-1"}>
+                    <img src={"/logo.svg"} alt={"logo"} className={"h-2"}/>
+                    <Typography variant={"caption"} className={"text-xs italic tracking-wide"}> {displayFileUri(file)} </Typography>
+                </Row>
 
 
             <div className={"flex items-center gap-5"}>

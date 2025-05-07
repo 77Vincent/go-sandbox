@@ -147,16 +147,18 @@ export function Grid(props: {
 
 export function Row(props: {
     children: ReactNode;
+    className?: string;
 }) {
-    return <div className={"flex w-full items-center justify-between"}>
-        {props.children}
+    const {children, className} = props
+    return <div className={`flex items-center justify-between ${className}`}>
+        {children}
     </div>
 }
 
 export function Typography(props: {
     children: ReactNode;
     className?: string;
-    variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body1" | "body2" | "subtitle" | "caption" | "body";
+    variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "body1" | "body2" | "subtitle" | "caption";
 }) {
     const {children, variant = "p", className} = props
     let classes = ""
