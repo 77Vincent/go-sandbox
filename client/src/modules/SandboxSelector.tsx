@@ -106,7 +106,11 @@ export default function Component(props: {
 
     return (
         <Dropdown inline={true} className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
-                  label={<span className={`text-xs ${isRunning ? INACTIVE_TEXT_CLASS : ""}`}>{sandboxNames[active] || MY_SANDBOXES[active] || active}</span>}
+                  label={
+                      <span className={`text-xs ${isRunning ? INACTIVE_TEXT_CLASS : ""}`}>
+                          {sandboxNames[active] || MY_SANDBOXES[active] || active}
+                      </span>
+                  }
         >
             {
                 sandboxes.map((key) => {
@@ -120,8 +124,8 @@ export default function Component(props: {
                             <div className={"flex gap-1.5"}>
                                 <Tooltip content={TRANSLATE.rename[lan]} className={"text-xs"}>
                                     <EditIcon size={18}
-                                                onClick={onRename(key)}
-                                                className={`opacity-80 ${ICON_BUTTON_CLASS}`}/>
+                                              onClick={onRename(key)}
+                                              className={`opacity-80 ${ICON_BUTTON_CLASS}`}/>
                                 </Tooltip>
 
                                 <Tooltip content={TRANSLATE.remove[lan]} className={"text-xs"}>
