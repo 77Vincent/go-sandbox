@@ -70,6 +70,12 @@ export default function Component(props: {
         }
     }
 
+    const displaySymbols = Object.entries(countSymbols(documentSymbols))
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([_, value]) => {
+            return value > 0;
+        })
+
     return (
         <div
             className={"relative z-10 flex h-full flex-col overflow-y-auto border-r border-r-gray-400 dark:border-gray-600"}>
@@ -105,11 +111,11 @@ export default function Component(props: {
                     type === DRAWER_STATS && (
                         <>
                             {
-                                Object.entries(countSymbols(documentSymbols)).map(([key, value]) => {
+                                displaySymbols.map(([key, value]) => {
                                     return (
                                         <div key={key} className={LINE_STYLE}>
                                             <div
-                                                className={`${value ? "font-semibold text-black dark:text-white" : INACTIVE_TEXT_CLASS} italic`}>
+                                                className={`${value ? "text-black dark:text-white" : INACTIVE_TEXT_CLASS} italic`}>
                                                 {key}
                                             </div>
 
@@ -120,10 +126,12 @@ export default function Component(props: {
                                 })
                             }
 
-                            <Divider horizontal={true} className={"my-1"}/>
-                            <div className={`${LINE_STYLE} font-semibold text-black dark:text-white`}>
+                            {
+                                displaySymbols.length > 0 && <Divider horizontal={true} className={"my-1"}/>
+                            }
+                            <div className={`${LINE_STYLE} text-black dark:text-white`}>
                                 <div>Lines</div>
-                                <div>{lines}</div>
+                                <div className={"font-semibold"}>{lines}</div>
                             </div>
                         </>
                     )
