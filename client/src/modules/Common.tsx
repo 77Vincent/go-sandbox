@@ -164,6 +164,15 @@ export function Typography(props: {
     const {children, variant = "p", className} = props
     let classes = ""
     switch (variant) {
+        case "h3":
+            classes = "text-2xl font-semibold text-gray-800 dark:text-gray-300"
+            break
+        case "h4":
+            classes = "text-lg font-semibold text-gray-800 dark:text-gray-300"
+            break
+        case "h5":
+            classes = "text-base text-gray-800 dark:text-gray-300"
+            break
         case "body1":
             classes = "text-base font-normal text-gray-800 dark:text-gray-300"
             break
