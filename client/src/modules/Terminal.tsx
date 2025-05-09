@@ -19,9 +19,10 @@ export default function Component(props: {
 }) {
     const {fontSize, result, info, error, running, hint, lan} = props
 
+    const textSize = `text-${mapFontSize(fontSize)}`
     return (
         <Wrapper
-            className={`overflow-hidden flex flex-col p-1.5 pb-5 bg-neutral-200 dark:bg-neutral-800 text-${mapFontSize(fontSize)}`}>
+            className={`flex flex-col overflow-hidden bg-neutral-200 p-1.5 pb-5 dark:bg-neutral-800 ${textSize}`}>
             <ClickBoard content={
                 result.map(item => item.content).join("\n")
             }/>

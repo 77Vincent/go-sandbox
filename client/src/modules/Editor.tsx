@@ -879,7 +879,7 @@ export default function Component(props: {
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
                       activeSession={file.current}/>
             <div
-                className={`relative flex-1 flex-col overflow-hidden ${isVertical ? "" : "pb-5"} ${backgroundColor}`}>
+                className={`flex-1 flex-col overflow-hidden ${isVertical ? "" : "pb-5"} ${backgroundColor}`}>
 
                 <MyMenu lan={lan} view={view.current}
                         seeDefinition={seeDefinition} seeImplementation={seeImplementations} seeUsages={seeUsages}
