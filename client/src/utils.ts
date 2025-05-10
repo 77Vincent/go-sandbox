@@ -25,8 +25,9 @@ import {
     SANDBOX_NAMES_KEY,
     URI_BASE, SANDBOX_TEMP,
 } from "./constants.ts";
-import {KeyBindingsType, languages, mySandboxes, selectableDrawers} from "./types";
+import {AppContextI, KeyBindingsType, languages, mySandboxes, selectableDrawers} from "./types";
 import {EditorView, ViewUpdate} from "@codemirror/view";
+import {createContext} from "react";
 
 export function getFontSize(): number {
     return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
@@ -186,3 +187,10 @@ export function posToHead(v: ViewUpdate | EditorView, row: number, col: number) 
     const line = v.state.doc.line(row);
     return line.from + col - 1;
 }
+
+export const initialAppContext = {
+    lan: DEFAULT_LANGUAGE,
+    goVersion: getGoVersion(),
+    file: getFileUri(getGoVersion()),
+}
+export const AppCtx = createContext<AppContextI>(initialAppContext);

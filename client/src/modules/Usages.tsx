@@ -79,7 +79,6 @@ export function Usages(props: {
 
     const onJumpClick = useCallback((row: number, col: number) => {
         return () => {
-            console.log(`jump to ${row} ${col}`);
             jumpToUsage(row + 1, col); // LSP is 0-indexed, but CodeMirror is 1-indexed
             setUsages([]); // to close the modal
         }

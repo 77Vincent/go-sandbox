@@ -106,6 +106,12 @@ export interface LSPDocumentSymbol {
     }
 }
 
+export interface AppContextI {
+    lan: languages;
+    goVersion: string;
+    file: string;
+}
+
 export interface LSPCompletionItem {
     label: string;
     additionalTextEdits?: Array<{
@@ -149,7 +155,7 @@ export interface LSPCompletionResult {
     items: LSPCompletionItem[];
     isIncomplete?: boolean;
 }
-G
+
 export interface LSPDiagnostic {
     range: LSPRange;
     severity: number;

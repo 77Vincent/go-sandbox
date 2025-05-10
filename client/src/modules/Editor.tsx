@@ -4,7 +4,7 @@ import 'react-contexify/ReactContexify.css';
 
 import "highlight.js/styles/github-dark.css"; // load once
 // react
-import {MouseEvent, ReactNode, useCallback, useEffect, useRef, useState} from "react";
+import {MouseEvent, ReactNode, useCallback, useContext, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
@@ -78,7 +78,6 @@ import {
     DEBOUNCE_TIME_LONG,
     DEBOUNCE_TIME,
     DEFAULT_INDENTATION_SIZE,
-    DEFAULT_LANGUAGE,
     DRAWER_DOCUMENT_SYMBOLS,
     EMACS,
     focusEvent,
@@ -92,6 +91,7 @@ import {
     VIM, DRAWER_STATS, EDITOR_MENU_ID, DEBOUNCE_TIME_SHORT,
 } from "../constants.ts";
 import {
+    AppCtx,
     getCodeContent,
     getCursorHead,
     getCursorPos,
@@ -252,7 +252,6 @@ export default function Component(props: {
         selectedSymbol,
 
         // props
-        lan = DEFAULT_LANGUAGE,
         value, patch,
         fontSize, keyBindings,
         isLintOn, isAutoCompletionOn, isVertical,
@@ -267,6 +266,7 @@ export default function Component(props: {
         debouncedShare,
     } = props;
     const {mode} = useThemeMode();
+    const {lan} = useContext(AppCtx)
 
     // local state
     const [row, setRow] = useState(1); // 1-based index

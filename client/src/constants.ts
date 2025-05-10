@@ -1,4 +1,4 @@
-import {KeyBindingsType, mySandboxes, SeeingType, selectableDrawers} from "./types";
+import {KeyBindingsType, languages, mySandboxes, SeeingType, selectableDrawers} from "./types";
 
 export const TITLE = "Go Sandbox";
 export const LANGUAGE_GO = "go";
@@ -50,7 +50,7 @@ export const DEFAULT_DRAWER_SIZE = 240;
 export const DRAWER_SIZE_MAX = 360
 export const DRAWER_SIZE_MIN = 180
 
-export const DEFAULT_LANGUAGE = "en";
+export const DEFAULT_LANGUAGE: languages = "en";
 export const FONT_SIZE_L = 15;
 export const FONT_SIZE_M = 13;
 export const FONT_SIZE_S = 11;

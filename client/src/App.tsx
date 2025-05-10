@@ -4,7 +4,7 @@ import {healthCheck} from "./api/api.ts";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 import {Flowbite} from "flowbite-react";
-import {getGoVersion, getSandboxId} from "./utils.ts";
+import {getGoVersion, getSandboxId, AppCtx, initialAppContext} from "./utils.ts";
 import {SANDBOX_TEMP} from "./constants.ts";
 
 const initialSandboxId = getSandboxId()
@@ -25,27 +25,29 @@ function App() {
     }, []);
 
     return (
-        <BrowserRouter>
-            <Flowbite theme={{mode: "dark"}}>
-                <main>
-                    <MyToast type={"error"} show={!!toastError} setShowToast={setToastError}>{toastError}</MyToast>
-                    <MyToast type={"info"} show={!!toastInfo} setShowToast={setToastInfo}>{toastInfo}</MyToast>
+        <AppCtx.Provider value={initialAppContext}>
+            <BrowserRouter>
+                <Flowbite theme={{mode: "dark"}}>
+                    <main>
+                        <MyToast type={"error"} show={!!toastError} setShowToast={setToastError}>{toastError}</MyToast>
+                        <MyToast type={"info"} show={!!toastInfo} setShowToast={setToastInfo}>{toastInfo}</MyToast>
 
-                    <Routes>
-                        <Route path="*" element={
-                            <Main
-                                sandboxId={initialSandboxId} goVersion={initialGoVersion}
-                                setToastInfo={setToastInfo} setToastError={setToastError}/>
-                        }/>
-                        <Route path="/snippets/:id" element={
-                            <Main
-                                sandboxId={SANDBOX_TEMP} goVersion={initialGoVersion}
-                                setToastInfo={setToastInfo} setToastError={setToastError}/>
-                        }/>
-                    </Routes>
-                </main>
-            </Flowbite>
-        </BrowserRouter>
+                        <Routes>
+                            <Route path="*" element={
+                                <Main
+                                    sandboxId={initialSandboxId} goVersion={initialGoVersion}
+                                    setToastInfo={setToastInfo} setToastError={setToastError}/>
+                            }/>
+                            <Route path="/snippets/:id" element={
+                                <Main
+                                    sandboxId={SANDBOX_TEMP} goVersion={initialGoVersion}
+                                    setToastInfo={setToastInfo} setToastError={setToastError}/>
+                            }/>
+                        </Routes>
+                    </main>
+                </Flowbite>
+            </BrowserRouter>
+        </AppCtx.Provider>
     );
 }
 
