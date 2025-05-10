@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState, useEffect, ReactNode} from "react";
+import {useCallback, useRef, useState, useEffect, ReactNode, useContext} from "react";
 import {Resizable, ResizeDirection} from "re-resizable";
 import debounce from 'debounce';
 
@@ -50,7 +50,7 @@ import {
     getLintOn,
     getUrl,
     getIsVerticalLayout,
-    isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer
+    isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer, AppCtx
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {
@@ -107,10 +107,9 @@ const initialKeyBindings = getKeyBindings()
 export default function Component(props: {
     sandboxId: mySandboxes
     goVersion: string
-    setToastError: (message: ReactNode) => void
-    setToastInfo: (message: ReactNode) => void
 }) {
-    const {sandboxId, goVersion, setToastError, setToastInfo} = props
+    const {sandboxId, goVersion} = props
+    const {setToastError, setToastInfo} = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);

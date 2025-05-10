@@ -50,14 +50,10 @@ function App() {
 
                         <Routes>
                             <Route path="*" element={
-                                <Main
-                                    sandboxId={initialSandboxId} goVersion={initialGoVersion}
-                                    setToastInfo={setToastInfo} setToastError={setToastError}/>
+                                <Main sandboxId={initialSandboxId} goVersion={initialGoVersion}/>
                             }/>
                             <Route path="/snippets/:id" element={
-                                <Main
-                                    sandboxId={SANDBOX_TEMP} goVersion={initialGoVersion}
-                                    setToastInfo={setToastInfo} setToastError={setToastError}/>
+                                <Main sandboxId={SANDBOX_TEMP} goVersion={initialGoVersion}/>
                             }/>
                         </Routes>
                     </main>
