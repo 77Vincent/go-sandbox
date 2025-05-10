@@ -1,23 +1,23 @@
 import {ClickBoard, Wrapper} from "./Common.tsx";
-import {mapFontSize} from "../utils.ts";
-import {languages, resultI} from "../types";
+import {AppCtx, mapFontSize} from "../utils.ts";
+import {resultI} from "../types";
 import {EVENT_STDERR} from "../constants.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
+import {useContext} from "react";
 
 const common = "border-b dark:border-neutral-700 border-neutral-300 pb-1.5 mb-1"
 const errorColor = "text-red-700 dark:text-red-500"
 const infoColor = "text-green-600 dark:text-green-300"
 
 export default function Component(props: {
-    lan: languages,
-    hint: string,
     running: boolean,
     result: resultI[],
     fontSize: number,
     info: string,
     error: string,
 }) {
-    const {fontSize, result, info, error, running, hint, lan} = props
+    const {fontSize, result, info, error, running} = props
+    const {lan} = useContext(AppCtx)
 
     const textSize = `text-${mapFontSize(fontSize)}`
     return (
@@ -30,7 +30,7 @@ export default function Component(props: {
             {
                 (!error && !info) &&
                 <div className={`${common} font-light text-neutral-400 dark:text-neutral-500`}>
-                    {running ? TRANSLATE.running[lan] : hint}
+                    {running ? TRANSLATE.running[lan] : TRANSLATE.hintManual[lan]}
                 </div>
             }
 

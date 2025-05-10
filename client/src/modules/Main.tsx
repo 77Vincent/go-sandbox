@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState, useEffect, ReactNode, useContext} from "react";
+import {useCallback, useRef, useState, useEffect, ReactNode} from "react";
 import {Resizable, ResizeDirection} from "re-resizable";
 import debounce from 'debounce';
 
@@ -12,7 +12,6 @@ import {
     KEY_BINDINGS_KEY,
     FONT_SIZE_M,
     STATS_INFO_PREFIX,
-    LANGUAGE_KEY,
     EVENT_STDOUT,
     EVENT_ERROR,
     EVENT_STDERR,
@@ -51,12 +50,11 @@ import {
     getLintOn,
     getUrl,
     getIsVerticalLayout,
-    isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer, AppCtx
+    isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {
     KeyBindingsType,
-    languages,
     LSPDocumentSymbol,
     mySandboxes,
     patchI,
@@ -67,7 +65,6 @@ import About from "./About.tsx";
 import Manual from "./Manual.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
-import {TRANSLATE} from "../lib/i18n.ts";
 
 function ShareSuccessMessage(props: {
     url: string,
@@ -114,7 +111,6 @@ export default function Component(props: {
     setToastInfo: (message: ReactNode) => void
 }) {
     const {sandboxId, goVersion, setToastError, setToastInfo} = props
-    const {lan, setLan} = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
@@ -355,11 +351,6 @@ export default function Component(props: {
         window.location.href = window.location.origin // remove all paths and query string
     }
 
-    function onLanguageChange(value: languages) {
-        localStorage.setItem(LANGUAGE_KEY, value);
-        setLan(value)
-    }
-
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         // calculate the size
         let size
@@ -408,8 +399,8 @@ export default function Component(props: {
 
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
-            <About lan={lan} show={showAbout} setShow={setShowAbout}/>
-            <Manual lan={lan} show={showManual} setShow={setShowManual}/>
+            <About show={showAbout} setShow={setShowAbout}/>
+            <Manual show={showManual} setShow={setShowManual}/>
 
             <Settings
                 show={showSettings}
@@ -423,7 +414,6 @@ export default function Component(props: {
                 isVerticalLayout={isLayoutVertical}
                 setIsVerticalLayout={onIsVerticalLayoutChange}
                 onKeyBindingsChange={onKeyBindingsChange}
-                onLanguageChange={onLanguageChange}
                 keyBindings={keyBindings}
                 isLintOn={isLintOn}
                 onLint={onLint}
@@ -443,18 +433,18 @@ export default function Component(props: {
                     </Link>
 
                     <Divider/>
-                    <Features lan={lan} openedDrawer={openedDrawer} setOpenedDrawer={onOpenedDrawer}/>
+                    <Features openedDrawer={openedDrawer} setOpenedDrawer={onOpenedDrawer}/>
                 </div>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
                     <Actions isMobile={isMobile} isRunning={isRunning} format={debouncedFormat}
                              run={debouncedRun}
-                             share={debouncedShare} hasCode={value.current.length > 0} lan={lan}/>
+                             share={debouncedShare} hasCode={value.current.length > 0} />
 
                     {
                         isMobile ? null : <>
                             <Divider/>
-                            <SandboxSelector lan={lan} onSelect={onSandboxIdChange} isRunning={isRunning}
+                            <SandboxSelector onSelect={onSandboxIdChange} isRunning={isRunning}
                                              active={sandboxId}/>
 
                             <Divider/>
@@ -469,7 +459,7 @@ export default function Component(props: {
                     }
 
                     <div className={"flex items-center"}>
-                        <Info lan={lan} isMobile={isMobile} setShowAbout={setShowAbout}
+                        <Info isMobile={isMobile} setShowAbout={setShowAbout}
                               setShowSettings={setShowSettings} setShowManual={setShowManual}/>
                     </div>
                 </div>
@@ -490,7 +480,7 @@ export default function Component(props: {
                     defaultSize={{width: `${drawerSize}px`, height: "100%"}}
                     onResizeStop={onDrawerResizeStop}
                 >
-                    <Drawer lan={lan} type={openedDrawer} documentSymbols={documentSymbols}
+                    <Drawer type={openedDrawer} documentSymbols={documentSymbols}
                             setOpenedDrawer={setOpenedDrawer}
                             setSelectedSymbol={setSelectedSymbol}
                             lines={value.current.split("\n").length}
@@ -553,8 +543,6 @@ export default function Component(props: {
                     </Resizable>
 
                     <Terminal
-                        lan={lan}
-                        hint={TRANSLATE.hintManual[lan]}
                         running={isRunning}
                         fontSize={fontSize}
                         result={result}

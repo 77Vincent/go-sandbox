@@ -5,7 +5,7 @@ import {
     FONT_SIZE_L,
     FONT_SIZE_M,
     FONT_SIZE_S, GO_VERSION_MAP, INACTIVE_TEXT_CLASS,
-    keyBindingsMap,
+    keyBindingsMap, LANGUAGE_KEY,
     SELECTED_COLOR_CLASS
 } from "../constants.ts";
 import {KeyBindingsType, languages} from "../types";
@@ -21,7 +21,6 @@ export default function Component(props: {
     show: boolean;
     setShow: (show: boolean) => void;
 
-    onLanguageChange: (id: languages) => void;
     // for layout
     isVerticalLayout: boolean;
     setIsVerticalLayout: () => void;
@@ -43,14 +42,11 @@ export default function Component(props: {
     isAutoCompletionOn: boolean;
     onAutoCompletion: () => void;
 }) {
-    const {lan} = useContext(AppCtx)
+    const {lan, setLan} = useContext(AppCtx)
     const {mode} = useThemeMode()
     const {
         // for key bindings
         keyBindings, onKeyBindingsChange,
-
-        // for language
-        onLanguageChange,
 
         // for go version
         goVersion, onGoVersionChange,
@@ -82,7 +78,8 @@ export default function Component(props: {
     function onLanguage(id: languages) {
         return () => {
             if (id !== lan) {
-                onLanguageChange(id);
+                localStorage.setItem(LANGUAGE_KEY, id);
+                setLan(id)
             }
         }
     }
