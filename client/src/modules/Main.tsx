@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState, useEffect, ReactNode} from "react";
+import {useCallback, useRef, useState, useEffect, ReactNode, useContext} from "react";
 import {Resizable, ResizeDirection} from "re-resizable";
 import debounce from 'debounce';
 
@@ -50,9 +50,8 @@ import {
     getFontSize,
     getLintOn,
     getUrl,
-    getLanguage,
     getIsVerticalLayout,
-    isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer
+    isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer, AppCtx
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {
@@ -102,7 +101,6 @@ const initialValue = getCodeContent(getSandboxId());
 const initialIsLintOn = getLintOn()
 const initialIsAutoCompletionOn = getAutoCompletionOn()
 const initialIsVerticalLayout = getIsVerticalLayout();
-const initialLanguage = getLanguage()
 const initialFontSize = getFontSize()
 const initialEditorSize = getEditorSize()
 const initialDrawerSize = getDrawerSize()
@@ -116,6 +114,7 @@ export default function Component(props: {
     setToastInfo: (message: ReactNode) => void
 }) {
     const {sandboxId, goVersion, setToastError, setToastInfo} = props
+    const {lan, setLan} = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
@@ -127,7 +126,6 @@ export default function Component(props: {
     const [editorSize, setEditorSize] = useState<number>(initialEditorSize);
     const [drawerSize, setDrawerSize] = useState<number>(initialDrawerSize);
     const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
-    const [lan, setLan] = useState<languages>(initialLanguage)
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -416,7 +414,6 @@ export default function Component(props: {
             <Settings
                 show={showSettings}
                 setShow={setShowSettings}
-                lan={lan}
                 fontSize={fontSize}
                 goVersion={goVersion}
                 onGoVersionChange={onGoVersionChange}
@@ -532,7 +529,6 @@ export default function Component(props: {
                         <Wrapper
                             className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                             <Editor
-                                lan={lan}
                                 openedDrawer={openedDrawer}
                                 setDocumentSymbols={setDocumentSymbols}
                                 selectedSymbol={selectedSymbol}

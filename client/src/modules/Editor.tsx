@@ -63,7 +63,6 @@ import debounce from "debounce";
 // local imports
 import {
     KeyBindingsType,
-    languages,
     LSPCompletionItem,
     LSPDocumentSymbol,
     LSPReferenceResult,
@@ -223,7 +222,6 @@ export default function Component(props: {
     selectedSymbol: LSPDocumentSymbol | null;
 
     // settings
-    lan: languages
     keyBindings: KeyBindingsType;
     fontSize: number;
     isLintOn: boolean;

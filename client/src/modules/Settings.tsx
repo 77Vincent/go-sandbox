@@ -12,6 +12,8 @@ import {KeyBindingsType, languages} from "../types";
 import {Divider, Grid, Row, ToggleSwitch} from "./Common.tsx";
 import {LANGUAGES, TRANSLATE} from "../lib/i18n.ts";
 import {LayoutHorizontalIcon, LayoutVerticalIcon, TextLIcon, TextMIcon, TextSIcon} from "./Icons.tsx";
+import {useContext} from "react";
+import {AppCtx} from "../utils.ts";
 
 const activeClasses = "cursor-pointer hover:opacity-50";
 
@@ -19,7 +21,6 @@ export default function Component(props: {
     show: boolean;
     setShow: (show: boolean) => void;
 
-    lan: languages;
     onLanguageChange: (id: languages) => void;
     // for layout
     isVerticalLayout: boolean;
@@ -42,13 +43,14 @@ export default function Component(props: {
     isAutoCompletionOn: boolean;
     onAutoCompletion: () => void;
 }) {
+    const {lan} = useContext(AppCtx)
     const {mode} = useThemeMode()
     const {
         // for key bindings
         keyBindings, onKeyBindingsChange,
 
         // for language
-        lan, onLanguageChange,
+        onLanguageChange,
 
         // for go version
         goVersion, onGoVersionChange,

@@ -108,6 +108,7 @@ export interface LSPDocumentSymbol {
 
 export interface AppContextI {
     lan: languages;
+    setLan: (lan: languages) => void;
     goVersion: string;
     file: string;
 }

@@ -188,9 +188,11 @@ export function posToHead(v: ViewUpdate | EditorView, row: number, col: number) 
     return line.from + col - 1;
 }
 
-export const initialAppContext = {
+export const AppCtx = createContext<AppContextI>({
+    // default empty context value
     lan: DEFAULT_LANGUAGE,
-    goVersion: getGoVersion(),
-    file: getFileUri(getGoVersion()),
-}
-export const AppCtx = createContext<AppContextI>(initialAppContext);
+    setLan: () => {
+    },
+    goVersion: "",
+    file: "",
+});
