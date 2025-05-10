@@ -58,7 +58,7 @@ export function MyToast(props: {
                 }
             </div>
 
-            <div className={"mr-2 text-sm"}>
+            <div className={"mr-2 break-all text-sm"}>
                 {children}
             </div>
 
