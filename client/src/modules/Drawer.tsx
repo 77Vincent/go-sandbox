@@ -1,7 +1,6 @@
 import {LSPDocumentSymbol, selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS_2,
-    DEFAULT_LANGUAGE,
     DRAWER_DOCUMENT_SYMBOLS,
     DRAWER_STATS,
     INACTIVE_TEXT_CLASS,
