@@ -1,14 +1,12 @@
 import {Button, Modal} from "flowbite-react";
 
 import {TITLE} from "../constants.ts";
-import {languages} from "../types";
 import {Divider} from "./Common.tsx";
 import {Link} from "react-router";
 import {MailIcon} from "./Icons.tsx";
 
 export default function Component(props: {
     show: boolean,
-    lan: languages,
     setShow: (show: boolean) => void,
 }) {
     const {show, setShow} = props
@@ -50,17 +48,6 @@ export default function Component(props: {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-3">
-                {/*<Button size={"xs"}*/}
-                {/*        as={Link}*/}
-                {/*        className={"hover:opacity-80"}*/}
-                {/*        gradientMonochrome={"cyan"}*/}
-                {/*        to={""} target={"_blank"}>*/}
-                {/*    <div className={"flex items-center gap-2"}>*/}
-                {/*        <FaCoffee size={20}/>*/}
-                {/*        {TRANSLATE.coffee[lan]}*/}
-                {/*    </div>*/}
-                {/*</Button>*/}
-
                 <Button size={"xs"}
                         as={Link}
                         gradientMonochrome={"teal"}

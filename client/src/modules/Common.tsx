@@ -1,10 +1,11 @@
-import {ReactNode} from "react";
+import {ReactNode, useContext} from "react";
 import {Clipboard, CustomFlowbiteTheme, Flowbite, Toast, Tooltip} from "flowbite-react";
-import {languages, toastType} from "../types";
+import {toastType} from "../types";
 
 import {TRANSLATE} from "../lib/i18n.ts";
 import {ErrorIcon, InfoIcon, RefreshIcon, CopyIcon} from "./Icons.tsx";
 import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
+import {AppCtx} from "../utils.ts";
 
 export function Wrapper(props: {
     children: ReactNode,
@@ -90,10 +91,10 @@ export function ToggleSwitch(props: {
 }
 
 export function RefreshButton(props: {
-    lan: languages;
     onClick?: () => void;
 }) {
-    const {onClick, lan} = props
+    const {onClick} = props
+    const {lan} = useContext(AppCtx)
     const onClockHandler = () => {
         if (onClick) {
             onClick()

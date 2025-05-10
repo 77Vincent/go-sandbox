@@ -1,11 +1,10 @@
-import {displayFileUri} from "../utils.ts";
+import {AppCtx, displayFileUri} from "../utils.ts";
 import {BadIcon, GoodIcon, MetaKey, NextIcon, OptionKey, PrevIcon} from "./Icons.tsx";
 import {IconButton, Row, Typography} from "./Common.tsx";
 import {SessionI} from "./Sessions.tsx";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {Tooltip} from "flowbite-react";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {languages} from "../types";
 
 const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";
@@ -21,7 +20,6 @@ function chooseColor(errors: number, warnings: number, info: number) {
 }
 
 export default function Component(props: {
-    lan: languages,
     row: number, col: number,
     errors: number, warnings: number, info: number,
     onLintClick: () => void,
@@ -30,8 +28,8 @@ export default function Component(props: {
     prevSession: () => void
     nextSession: () => void
 }) {
+    const {lan} = useContext(AppCtx)
     const {
-        lan,
         row, col,
         errors, warnings, info,
         onLintClick,

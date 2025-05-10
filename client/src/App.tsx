@@ -4,16 +4,17 @@ import {healthCheck} from "./api/api.ts";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 import {Flowbite} from "flowbite-react";
-import {getGoVersion, getSandboxId, AppCtx} from "./utils.ts";
-import {DEFAULT_LANGUAGE, SANDBOX_TEMP} from "./constants.ts";
+import {getGoVersion, getSandboxId, AppCtx, getLanguage} from "./utils.ts";
+import {SANDBOX_TEMP} from "./constants.ts";
 
 const initialSandboxId = getSandboxId()
 const initialGoVersion = getGoVersion()
+const initialLan = getLanguage()
 
 function App() {
     const [toastError, setToastError] = useState<ReactNode>(null);
     const [toastInfo, setToastInfo] = useState<ReactNode>(null);
-    const [lan, setLan] = useState(DEFAULT_LANGUAGE);
+    const [lan, setLan] = useState(initialLan);
 
     useEffect(() => {
         (async () => {
