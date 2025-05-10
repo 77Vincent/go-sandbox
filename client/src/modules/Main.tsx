@@ -524,7 +524,6 @@ export default function Component(props: {
                                 selectedSymbol={selectedSymbol}
                                 sandboxId={sandboxId}
                                 goVersion={goVersion}
-                                setToastError={setToastError}
                                 isVertical={isLayoutVertical}
                                 isLintOn={isLintOn}
                                 isAutoCompletionOn={isAutoCompletionOn}

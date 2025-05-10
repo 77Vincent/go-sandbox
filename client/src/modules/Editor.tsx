@@ -4,7 +4,7 @@ import 'react-contexify/ReactContexify.css';
 
 import "highlight.js/styles/github-dark.css"; // load once
 // react
-import {MouseEvent, ReactNode, useCallback, useEffect, useRef, useState} from "react";
+import {MouseEvent, useCallback, useContext, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
@@ -90,6 +90,7 @@ import {
     VIM, DRAWER_STATS, EDITOR_MENU_ID, DEBOUNCE_TIME_SHORT,
 } from "../constants.ts";
 import {
+    AppCtx,
     getCodeContent,
     getCursorHead,
     getCursorPos,
@@ -205,9 +206,6 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
 }
 
 export default function Component(props: {
-    // toast
-    setToastError: (message: ReactNode) => void
-
     sandboxId: mySandboxes
     goVersion: string;
     value: string;
@@ -240,7 +238,6 @@ export default function Component(props: {
     const {
         sandboxId,
         goVersion,
-        setToastError,
         // drawers
         openedDrawer,
 
@@ -263,6 +260,7 @@ export default function Component(props: {
         debouncedShare,
     } = props;
     const {mode} = useThemeMode();
+    const {setToastError} = useContext(AppCtx)
 
     // local state
     const [row, setRow] = useState(1); // 1-based index

@@ -188,11 +188,24 @@ export function posToHead(v: ViewUpdate | EditorView, row: number, col: number) 
     return line.from + col - 1;
 }
 
+// default empty context value
 export const AppCtx = createContext<AppContextI>({
-    // default empty context value
     lan: DEFAULT_LANGUAGE,
     setLan: () => {
     },
-    goVersion: "",
     file: "",
+    setFile: () => {
+    },
+    goVersion: "",
+    setGoVersion: () => {
+    },
+    sandboxId: DEFAULT_ACTIVE_SANDBOX,
+    setSandboxId: () => {
+    },
+    toastError: null,
+    setToastError: () => {
+    },
+    toastInfo: null,
+    setToastInfo: () => {
+    },
 });

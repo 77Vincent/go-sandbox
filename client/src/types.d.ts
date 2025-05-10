@@ -107,10 +107,23 @@ export interface LSPDocumentSymbol {
 }
 
 export interface AppContextI {
+    // language
     lan: languages;
     setLan: (lan: languages) => void;
-    goVersion: string;
+    // file
     file: string;
+    setFile: (file: string) => void;
+    // go version
+    goVersion: string;
+    setGoVersion: (goVersion: string) => void;
+    // sandbox id
+    sandboxId: mySandboxes;
+    setSandboxId: (sandboxId: mySandboxes) => void;
+    // toast
+    toastInfo: ReactNode;
+    setToastInfo: (toastInfo: ReactNode) => void;
+    toastError: ReactNode;
+    setToastError: (toastError: ReactNode) => void;
 }
 
 export interface LSPCompletionItem {
