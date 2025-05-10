@@ -4,7 +4,7 @@ import {
     ACTIVE_COLOR,
     FONT_SIZE_L,
     FONT_SIZE_M,
-    FONT_SIZE_S, GO_VERSION_MAP, INACTIVE_TEXT_CLASS,
+    FONT_SIZE_S, GO_VERSION_KEY, GO_VERSION_MAP, INACTIVE_TEXT_CLASS,
     keyBindingsMap, LANGUAGE_KEY,
     SELECTED_COLOR_CLASS
 } from "../constants.ts";
@@ -24,9 +24,6 @@ export default function Component(props: {
     // for layout
     isVerticalLayout: boolean;
     setIsVerticalLayout: () => void;
-    // for go version
-    goVersion: string;
-    onGoVersionChange: (id: string) => void;
     // for editor fontSize
     fontSize: number;
     onFontL: () => void;
@@ -42,14 +39,11 @@ export default function Component(props: {
     isAutoCompletionOn: boolean;
     onAutoCompletion: () => void;
 }) {
-    const {lan, setLan} = useContext(AppCtx)
+    const {lan, setLan, goVersion} = useContext(AppCtx)
     const {mode} = useThemeMode()
     const {
         // for key bindings
         keyBindings, onKeyBindingsChange,
-
-        // for go version
-        goVersion, onGoVersionChange,
 
         // for layout
         isVerticalLayout, setIsVerticalLayout,
@@ -87,7 +81,8 @@ export default function Component(props: {
     function onGoVersion(id: string) {
         return () => {
             if (id !== goVersion) {
-                onGoVersionChange(id);
+                localStorage.setItem(GO_VERSION_KEY, goVersion);
+                location.reload()
             }
         }
     }

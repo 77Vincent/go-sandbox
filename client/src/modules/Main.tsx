@@ -18,7 +18,6 @@ import {
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    GO_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
     EDITOR_SIZE_MAX,
@@ -106,10 +105,9 @@ const initialKeyBindings = getKeyBindings()
 
 export default function Component(props: {
     sandboxId: mySandboxes
-    goVersion: string
 }) {
-    const {sandboxId, goVersion} = props
-    const {setToastError, setToastInfo} = useContext(AppCtx)
+    const {sandboxId} = props
+    const {goVersion, setToastError, setToastInfo} = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
@@ -334,11 +332,6 @@ export default function Component(props: {
         setKeyBindings(value)
     }
 
-    function onGoVersionChange(version: string) {
-        localStorage.setItem(GO_VERSION_KEY, version);
-        location.reload()
-    }
-
     function onIsVerticalLayoutChange() {
         const value = !isLayoutVertical
         localStorage.setItem(IS_VERTICAL_LAYOUT_KEY, JSON.stringify(value));
@@ -405,8 +398,6 @@ export default function Component(props: {
                 show={showSettings}
                 setShow={setShowSettings}
                 fontSize={fontSize}
-                goVersion={goVersion}
-                onGoVersionChange={onGoVersionChange}
                 onFontL={onFontL}
                 onFontM={onFontM}
                 onFontS={onFontS}
@@ -438,7 +429,7 @@ export default function Component(props: {
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
                     <Actions isMobile={isMobile} isRunning={isRunning} format={debouncedFormat}
                              run={debouncedRun}
-                             share={debouncedShare} hasCode={value.current.length > 0} />
+                             share={debouncedShare} hasCode={value.current.length > 0}/>
 
                     {
                         isMobile ? null : <>
@@ -452,8 +443,7 @@ export default function Component(props: {
 
                             <Divider/>
 
-                            <VersionSelector version={goVersion} isRunning={isRunning}
-                                             onSelect={onGoVersionChange}/>
+                            <VersionSelector/>
                         </>
                     }
 
@@ -522,7 +512,6 @@ export default function Component(props: {
                                 setDocumentSymbols={setDocumentSymbols}
                                 selectedSymbol={selectedSymbol}
                                 sandboxId={sandboxId}
-                                goVersion={goVersion}
                                 isVertical={isLayoutVertical}
                                 isLintOn={isLintOn}
                                 isAutoCompletionOn={isAutoCompletionOn}

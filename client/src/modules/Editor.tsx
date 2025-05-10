@@ -207,7 +207,6 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
 
 export default function Component(props: {
     sandboxId: mySandboxes
-    goVersion: string;
     value: string;
     patch: patchI;
 
@@ -237,7 +236,6 @@ export default function Component(props: {
 }) {
     const {
         sandboxId,
-        goVersion,
         // drawers
         openedDrawer,
 
@@ -260,7 +258,7 @@ export default function Component(props: {
         debouncedShare,
     } = props;
     const {mode} = useThemeMode();
-    const {setToastError} = useContext(AppCtx)
+    const {setToastError, goVersion} = useContext(AppCtx)
 
     // local state
     const [row, setRow] = useState(1); // 1-based index

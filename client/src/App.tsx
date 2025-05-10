@@ -50,10 +50,10 @@ function App() {
 
                         <Routes>
                             <Route path="*" element={
-                                <Main sandboxId={initialSandboxId} goVersion={initialGoVersion}/>
+                                <Main sandboxId={initialSandboxId}/>
                             }/>
                             <Route path="/snippets/:id" element={
-                                <Main sandboxId={SANDBOX_TEMP} goVersion={initialGoVersion}/>
+                                <Main sandboxId={SANDBOX_TEMP}/>
                             }/>
                         </Routes>
                     </main>
