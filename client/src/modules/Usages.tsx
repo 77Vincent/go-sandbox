@@ -3,9 +3,9 @@ import {EditorView} from "@codemirror/view"; // or any other style you like
 
 import {languages, LSPReferenceResult, SeeingType} from "../types";
 import {arrowDownEvent, arrowUpEvent, DEFAULT_LANGUAGE, keyDownEvent, SEEING_IMPLEMENTATIONS} from "../constants.ts";
-import {displayFileUri, isUserCode, posToHead} from "../utils.ts";
+import {displayFileUri, getCursorPos, isUserCode, posToHead} from "../utils.ts";
 import MiniEditor from "./MiniEditor.tsx";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {Divider} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
 
@@ -23,15 +23,30 @@ export function Usages(props: {
 }) {
     const {lan = DEFAULT_LANGUAGE, view, usages, setUsages, seeing, value} = props;
     const [lookAt, setLookAt] = useState<number>(0);
+    const [displayUsages, setDisplayUsages] = useState<LSPReferenceResult[]>(usages);
+    const [previewHead, setPreviewHead] = useState<number>(0);
 
-    const allLines = value.split("\n");
-    const displayUsages = usages.filter(v => isUserCode(v.uri)); // only show usages in user code
-    const start = displayUsages[lookAt]?.range.start;
-    const head = start ? posToHead(view as EditorView, start.line + 1, start.character) : 0;
+    // useRef to store the lines of the code without re-rendering
+    const lines = useRef<string[]>(value.split("\n"));
 
     useEffect(() => {
-        setLookAt(0); // reset the lookAt index when usages change
-    }, [usages]);
+        if (!view) return;
+
+        setDisplayUsages(
+            // only show usages in user code
+            usages.filter(v => isUserCode(v.uri))
+        );
+        // find the current lookAt index
+        const {row: currentLine} = getCursorPos(view); // 1-indexed
+        const usageIndex = usages.findIndex(v => v.range.start.line + 1 === currentLine);
+        setLookAt(usageIndex === -1 ? 0 : usageIndex)
+    }, [usages, view]);
+
+    useEffect(() => {
+        const start = displayUsages[lookAt]?.range.start;
+        const head = start ? posToHead(view as EditorView, start.line + 1, start.character) : 0;
+        setPreviewHead(head);
+    }, [displayUsages, lookAt, view]);
 
     const jumpToUsage = useCallback((row: number, col: number) => {
         if (!view) return;
@@ -103,7 +118,7 @@ export function Usages(props: {
             <Modal.Body className={"relative"}>
                 <MiniEditor
                     className={"sticky top-0 mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
-                    value={value} head={head}/>
+                    value={value} head={previewHead}/>
 
                 <div className="flex flex-col">
                     {displayUsages.map(({uri, range: {start, end}}, index) => {
@@ -111,11 +126,11 @@ export function Usages(props: {
                         const fromCol = start.character;
                         const toCol = end.character;
                         const previewStart = Math.max(0, lineIndex);
-                        const previewEnd = Math.min(allLines.length, lineIndex + 1);
+                        const previewEnd = Math.min(lines.current.length, lineIndex + 1);
 
-                        const contextLines = allLines.slice(
+                        const contextLines = lines.current.slice(
                             Math.max(0, previewStart),
-                            Math.min(allLines.length, previewEnd)
+                            Math.min(lines.current.length, previewEnd)
                         );
 
                         const annotatedLines = [...contextLines];
