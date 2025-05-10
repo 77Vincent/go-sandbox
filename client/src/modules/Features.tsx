@@ -4,7 +4,6 @@ import {TRANSLATE} from "../lib/i18n.ts";
 import {selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS,
-    DEFAULT_LANGUAGE,
     DRAWER_DOCUMENT_SYMBOLS, DRAWER_STATS,
     ICON_BUTTON_CLASS
 } from "../constants.ts";
