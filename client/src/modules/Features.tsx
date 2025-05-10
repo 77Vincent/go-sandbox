@@ -1,7 +1,7 @@
 import {Divider} from "./Common.tsx";
 import {Tooltip} from "flowbite-react";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {languages, selectableDrawers} from "../types";
+import {selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS,
     DEFAULT_LANGUAGE,
@@ -9,13 +9,15 @@ import {
     ICON_BUTTON_CLASS
 } from "../constants.ts";
 import {LearnIcon, OutlineIcon, StatsIcon} from "./Icons.tsx";
+import {useContext} from "react";
+import {AppCtx} from "../utils.ts";
 
 export default function Component(props: {
-    lan: languages,
     openedDrawer: selectableDrawers
     setOpenedDrawer: (id: selectableDrawers) => void
 }) {
-    const {lan = DEFAULT_LANGUAGE, openedDrawer, setOpenedDrawer} = props;
+    const {openedDrawer, setOpenedDrawer} = props;
+    const {lan} = useContext(AppCtx)
     const onClick = (id: selectableDrawers) => {
         return () => {
             if (id !== openedDrawer) {

@@ -1,4 +1,4 @@
-import {languages, LSPDocumentSymbol, selectableDrawers} from "../types";
+import {LSPDocumentSymbol, selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS_2,
     DEFAULT_LANGUAGE,
@@ -12,6 +12,8 @@ import {countSymbols, SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {Divider} from "./Common.tsx";
 import {CloseIcon} from "./Icons.tsx";
+import {useContext} from "react";
+import {AppCtx} from "../utils.ts";
 
 const symbolStyle = (kind: number): string => {
     switch (kind) {
@@ -38,7 +40,6 @@ const LINE_STYLE = "flex cursor-pointer items-center justify-between gap-2 px-2 
 
 export default function Component(props: {
     type: selectableDrawers,
-    lan: languages,
     documentSymbols: LSPDocumentSymbol[],
     setOpenedDrawer: (id: selectableDrawers) => void
     setSelectedSymbol: (symbol: LSPDocumentSymbol) => void
@@ -46,12 +47,12 @@ export default function Component(props: {
 }) {
     const {
         type,
-        lan = DEFAULT_LANGUAGE,
         documentSymbols,
         setOpenedDrawer,
         setSelectedSymbol,
         lines,
     } = props;
+    const {lan} = useContext(AppCtx)
 
     const closeDrawer = () => {
         setOpenedDrawer(NO_OPENED_DRAWER);

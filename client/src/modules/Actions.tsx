@@ -1,9 +1,10 @@
 import {Tooltip} from "flowbite-react";
 
 import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
-import {languages} from "../types";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {EnterKey, FormatIcon, MetaKey, OptionKey, RunICon, ShareIcon, ShiftKey} from "./Icons.tsx";
+import {useContext} from "react";
+import {AppCtx} from "../utils.ts";
 
 const COMMON_CLASSES = "z-20 text-xs font-light";
 
@@ -14,9 +15,9 @@ export default function Component(props: {
     share: () => void;
     hasCode: boolean;
     isRunning: boolean;
-    lan: languages;
 }) {
-    const {isMobile, run, format, share, hasCode, isRunning, lan} = props;
+    const {isMobile, run, format, share, hasCode, isRunning} = props;
+    const {lan} = useContext(AppCtx)
     const isEnabled = hasCode && !isRunning;
 
     return (
