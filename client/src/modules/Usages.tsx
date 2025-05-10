@@ -24,7 +24,8 @@ export function Usages(props: {
     const {lan = DEFAULT_LANGUAGE, view, usages, setUsages, seeing, value} = props;
     const [lookAt, setLookAt] = useState<number>(0);
     const [displayUsages, setDisplayUsages] = useState<LSPReferenceResult[]>(usages);
-    const [previewHead, setPreviewHead] = useState<number>(0);
+    const [previewFrom, setPreviewFrom] = useState<number>(0);
+    const [previewTo, setPreviewTo] = useState<number>(0);
 
     // useRef to store the lines of the code without re-rendering
     const lines = useRef<string[]>(value.split("\n"));
@@ -32,20 +33,24 @@ export function Usages(props: {
     useEffect(() => {
         if (!view) return;
 
-        setDisplayUsages(
-            // only show usages in user code
-            usages.filter(v => isUserCode(v.uri))
-        );
+        // only show usages in user code
+        const displayed = usages.filter(v => isUserCode(v.uri))
+        setDisplayUsages(displayed);
         // find the current lookAt index
-        const {row: currentLine} = getCursorPos(view); // 1-indexed
-        const usageIndex = usages.findIndex(v => v.range.start.line + 1 === currentLine);
+
+        // find the usage index to look at
+        const usageIndex = displayed.findIndex(v => v.range.start.line + 1 === getCursorPos(view).row);
         setLookAt(usageIndex === -1 ? 0 : usageIndex)
     }, [usages, view]);
 
     useEffect(() => {
-        const start = displayUsages[lookAt]?.range.start;
-        const head = start ? posToHead(view as EditorView, start.line + 1, start.character) : 0;
-        setPreviewHead(head);
+        const u = displayUsages[lookAt];
+        if (u) {
+            const {range: {start, end}} = u;
+            const head = posToHead(view as EditorView, start.line + 1, start.character + 1);
+            setPreviewFrom(head);
+            setPreviewTo(head + end.character - start.character);
+        }
     }, [displayUsages, lookAt, view]);
 
     const jumpToUsage = useCallback((row: number, col: number) => {
@@ -117,8 +122,9 @@ export function Usages(props: {
 
             <Modal.Body className={"relative"}>
                 <MiniEditor
+                    from={previewFrom} to={previewTo}
                     className={"sticky top-0 mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
-                    value={value} head={previewHead}/>
+                    value={value}/>
 
                 <div className="flex flex-col">
                     {displayUsages.map(({uri, range: {start, end}}, index) => {

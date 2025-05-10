@@ -10,7 +10,6 @@ import {Compartment, EditorSelection, EditorState} from "@codemirror/state";
 import {go} from "@codemirror/lang-go";
 import {indentationMarkers} from "@replit/codemirror-indentation-markers";
 import {bracketMatching, indentOnInput} from "@codemirror/language";
-import {highlightSelectionMatches} from "@codemirror/search";
 
 // theme import
 import {vsCodeDark as themeDark} from '@fsegurai/codemirror-theme-vscode-dark'
@@ -25,12 +24,13 @@ const setTheme = (mode: ThemeMode) => {
 export default function Component(props: {
     value: string,
     className?: string,
-    head: number,
+    from: number,
+    to: number,
 }) {
     const {mode} = useThemeMode();
     const editor = useRef<HTMLDivElement>(null);
     const view = useRef<EditorView | null>(null);
-    const {value, head, className} = props;
+    const {value, from, className, to} = props;
 
     const [extensions] = useState(() => [
         go(),
@@ -50,7 +50,6 @@ export default function Component(props: {
         rectangularSelection(), // Allow alt-drag to select rectangular regions
         highlightActiveLine(), // Style the current line specially
         highlightActiveLineGutter(), // Style the gutter for the current line specially
-        highlightSelectionMatches(), // Highlight text that matches the selected text
         themeCompartment.of(setTheme(mode)),
     ]);
 
@@ -67,12 +66,12 @@ export default function Component(props: {
             parent: editor.current,
         });
         view.current.dispatch({
-            selection: EditorSelection.cursor(head),
-            effects: EditorView.scrollIntoView(head, {
+            selection: EditorSelection.range(from, to),
+            effects: EditorView.scrollIntoView(from, {
                 y: "center",
             })
         });
-    }, [extensions, head, value]);
+    }, [extensions, from, to, value]);
 
     useEffect(() => {
         if (!view.current) return;
