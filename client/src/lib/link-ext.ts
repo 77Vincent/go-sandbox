@@ -1,9 +1,8 @@
 import {ViewPlugin, Decoration, DecorationSet, EditorView} from "@codemirror/view";
 import {MutableRefObject} from "react";
-import {LSPClient} from "./lsp.ts";
 
 export function createHoverLink(
-    lsp: LSPClient | null,
+    seeDefinition: () => boolean,
     metaKey: MutableRefObject<boolean>,
 ) {
     return ViewPlugin.fromClass(class {
@@ -18,10 +17,9 @@ export function createHoverLink(
         }
 
         onClick = async () => {
-            if (!lsp || !metaKey.current) {
-                return
+            if (metaKey.current) {
+                seeDefinition()
             }
-            await lsp.loadDefinition();
         };
 
         update() {

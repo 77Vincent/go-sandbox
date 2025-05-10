@@ -722,7 +722,7 @@ export default function Component(props: {
         view.current.dispatch({
             effects: hoverCompartment.reconfigure([
                 createHoverTooltip(lsp.current),
-                createHoverLink(lsp.current, metaKey),
+                createHoverLink(seeDefinition, metaKey),
             ])
         });
 
