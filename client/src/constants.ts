@@ -92,6 +92,7 @@ export const focusEvent = "focus"
 
 export const arrowUpEvent = "ArrowUp"
 export const arrowDownEvent = "ArrowDown"
+export const enterEvent = "Enter"
 
 export const HELLO_WORLD = `package main
 

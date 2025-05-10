@@ -2,7 +2,14 @@ import {Modal, Tooltip} from "flowbite-react";
 import {EditorView} from "@codemirror/view"; // or any other style you like
 
 import {languages, LSPReferenceResult, SeeingType} from "../types";
-import {arrowDownEvent, arrowUpEvent, DEFAULT_LANGUAGE, keyDownEvent, SEEING_IMPLEMENTATIONS} from "../constants.ts";
+import {
+    arrowDownEvent,
+    arrowUpEvent,
+    DEFAULT_LANGUAGE,
+    enterEvent,
+    keyDownEvent,
+    SEEING_IMPLEMENTATIONS
+} from "../constants.ts";
 import {displayFileUri, getCursorPos, isUserCode, posToHead} from "../utils.ts";
 import MiniEditor from "./MiniEditor.tsx";
 import {useCallback, useEffect, useRef, useState} from "react";
@@ -60,9 +67,7 @@ export function Usages(props: {
         const pos = line.from + col;
         view.dispatch({
             selection: {anchor: pos, head: pos},
-            effects: EditorView.scrollIntoView(pos, {
-                y: "center",
-            })
+            scrollIntoView: true,
         });
     }, [view])
 
@@ -74,36 +79,42 @@ export function Usages(props: {
 
     const onJumpClick = useCallback((row: number, col: number) => {
         return () => {
+            console.log(`jump to ${row} ${col}`);
             jumpToUsage(row + 1, col); // LSP is 0-indexed, but CodeMirror is 1-indexed
             setUsages([]); // to close the modal
         }
     }, [jumpToUsage, setUsages])
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === arrowDownEvent) {
-                setLookAt(prev => {
-                    if (prev + 1 >= displayUsages.length) {
-                        return prev;
-                    }
-                    return prev + 1;
-                })
-            }
-            if (e.key === arrowUpEvent) {
-                setLookAt(prev => {
-                    if (prev - 1 < 0) {
-                        return prev;
-                    }
-                    return prev - 1;
-                })
-            }
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        if (e.key === arrowDownEvent) {
+            setLookAt(prev => {
+                if (prev + 1 >= displayUsages.length) {
+                    return prev;
+                }
+                return prev + 1;
+            })
         }
+        if (e.key === arrowUpEvent) {
+            setLookAt(prev => {
+                if (prev - 1 < 0) {
+                    return prev;
+                }
+                return prev - 1;
+            })
+        }
+        if (e.key === enterEvent) {
+            e.preventDefault();
+            const {range: {start: {line, character}}} = displayUsages[lookAt];
+            onJumpClick(line, character)();
+        }
+    }, [displayUsages, lookAt, onJumpClick]);
 
+    useEffect(() => {
         window.addEventListener(keyDownEvent, handleKeyDown);
         return () => {
             window.removeEventListener(keyDownEvent, handleKeyDown);
         }
-    }, [displayUsages]);
+    }, [handleKeyDown]);
 
     return (
         <Modal size={"5xl"} dismissible show={!!usages.length} onClose={() => setUsages([])}>
