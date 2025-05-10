@@ -32,7 +32,7 @@ function App() {
                     <MyToast type={"info"} show={!!toastInfo} setShowToast={setToastInfo}>{toastInfo}</MyToast>
 
                     <Routes>
-                        <Route path="/" element={
+                        <Route path="*" element={
                             <Main
                                 sandboxId={initialSandboxId} goVersion={initialGoVersion}
                                 setToastInfo={setToastInfo} setToastError={setToastError}/>

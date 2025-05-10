@@ -19,7 +19,7 @@ import {
     CompletionContext,
     completionKeymap,
     CompletionResult,
-    completionStatus
+    completionStatus,
 } from "@codemirror/autocomplete";
 import {ChangeSpec, Compartment, EditorSelection, EditorState, RangeSetBuilder} from "@codemirror/state"
 import {
@@ -101,7 +101,7 @@ import {
     posToHead,
     viewUpdate
 } from "../utils.ts";
-import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
+import {isFunc, LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import MyMenu from "./Menu.tsx";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -143,8 +143,8 @@ const setAutoCompletion = (completions: LSPCompletionItem[]) => {
                 apply: (view, _completion, from, to) => {
                     let insert = v.insertText ?? v.label;
 
-                    // method or function
-                    if (v.kind && v.kind > 1 && v.kind < 5) {
+                    // method or function, add brackets
+                    if (isFunc(v.kind)) {
                         insert = `${insert}()`
                     }
 
@@ -161,6 +161,13 @@ const setAutoCompletion = (completions: LSPCompletionItem[]) => {
                     }
                     changes.push({from, to, insert})
                     view.dispatch({changes});
+
+                    if (isFunc(v.kind)) {
+                        // move the cursor to the middle of the brackets
+                        view.dispatch({
+                            selection: EditorSelection.cursor(view.state.selection.main.head - 1),
+                        })
+                    }
                 },
             }
         });
