@@ -1,11 +1,17 @@
 import {Modal, Tooltip} from "flowbite-react";
 import {EditorView} from "@codemirror/view"; // or any other style you like
 
-import {languages, LSPReferenceResult, SeeingType} from "../types";
-import {arrowDownEvent, arrowUpEvent, DEFAULT_LANGUAGE, keyDownEvent, SEEING_IMPLEMENTATIONS} from "../constants.ts";
-import {displayFileUri, isUserCode, posToHead} from "../utils.ts";
+import {LSPReferenceResult, SeeingType} from "../types";
+import {
+    arrowDownEvent,
+    arrowUpEvent,
+    enterEvent,
+    keyDownEvent,
+    SEEING_IMPLEMENTATIONS
+} from "../constants.ts";
+import {AppCtx, displayFileUri, getCursorPos, isUserCode, posToHead} from "../utils.ts";
 import MiniEditor from "./MiniEditor.tsx";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useContext, useEffect, useRef, useState} from "react";
 import {Divider} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
 
@@ -14,24 +20,44 @@ const startMarker = "/*__START__*/";
 const endMarker = "/*__END__*/";
 
 export function Usages(props: {
-    lan: languages
     seeing: SeeingType
     usages: LSPReferenceResult[],
     setUsages: (v: LSPReferenceResult[]) => void
     value: string,
     view: EditorView | null,
 }) {
-    const {lan = DEFAULT_LANGUAGE, view, usages, setUsages, seeing, value} = props;
+    const {view, usages, setUsages, seeing, value} = props;
+    const {lan} = useContext(AppCtx);
     const [lookAt, setLookAt] = useState<number>(0);
+    const [displayUsages, setDisplayUsages] = useState<LSPReferenceResult[]>(usages);
+    const [previewFrom, setPreviewFrom] = useState<number>(0);
+    const [previewTo, setPreviewTo] = useState<number>(0);
 
-    const allLines = value.split("\n");
-    const displayUsages = usages.filter(v => isUserCode(v.uri)); // only show usages in user code
-    const start = displayUsages[lookAt]?.range.start;
-    const head = start ? posToHead(view as EditorView, start.line + 1, start.character) : 0;
+    // useRef to store the lines of the code without re-rendering
+    const lines = useRef<string[]>(value.split("\n"));
 
     useEffect(() => {
-        setLookAt(0); // reset the lookAt index when usages change
-    }, [usages]);
+        if (!view) return;
+
+        // only show usages in user code
+        const displayed = usages.filter(v => isUserCode(v.uri))
+        setDisplayUsages(displayed);
+        // find the current lookAt index
+
+        // find the usage index to look at
+        const usageIndex = displayed.findIndex(v => v.range.start.line + 1 === getCursorPos(view).row);
+        setLookAt(usageIndex === -1 ? 0 : usageIndex)
+    }, [usages, view]);
+
+    useEffect(() => {
+        const u = displayUsages[lookAt];
+        if (u) {
+            const {range: {start, end}} = u;
+            const head = posToHead(view as EditorView, start.line + 1, start.character + 1);
+            setPreviewFrom(head);
+            setPreviewTo(head + end.character - start.character);
+        }
+    }, [displayUsages, lookAt, view]);
 
     const jumpToUsage = useCallback((row: number, col: number) => {
         if (!view) return;
@@ -40,9 +66,7 @@ export function Usages(props: {
         const pos = line.from + col;
         view.dispatch({
             selection: {anchor: pos, head: pos},
-            effects: EditorView.scrollIntoView(pos, {
-                y: "center",
-            })
+            scrollIntoView: true,
         });
     }, [view])
 
@@ -59,31 +83,36 @@ export function Usages(props: {
         }
     }, [jumpToUsage, setUsages])
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === arrowDownEvent) {
-                setLookAt(prev => {
-                    if (prev + 1 >= displayUsages.length) {
-                        return prev;
-                    }
-                    return prev + 1;
-                })
-            }
-            if (e.key === arrowUpEvent) {
-                setLookAt(prev => {
-                    if (prev - 1 < 0) {
-                        return prev;
-                    }
-                    return prev - 1;
-                })
-            }
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        if (e.key === arrowDownEvent) {
+            setLookAt(prev => {
+                if (prev + 1 >= displayUsages.length) {
+                    return prev;
+                }
+                return prev + 1;
+            })
         }
+        if (e.key === arrowUpEvent) {
+            setLookAt(prev => {
+                if (prev - 1 < 0) {
+                    return prev;
+                }
+                return prev - 1;
+            })
+        }
+        if (e.key === enterEvent) {
+            e.preventDefault();
+            const {range: {start: {line, character}}} = displayUsages[lookAt];
+            onJumpClick(line, character)();
+        }
+    }, [displayUsages, lookAt, onJumpClick]);
 
+    useEffect(() => {
         window.addEventListener(keyDownEvent, handleKeyDown);
         return () => {
             window.removeEventListener(keyDownEvent, handleKeyDown);
         }
-    }, [displayUsages]);
+    }, [handleKeyDown]);
 
     return (
         <Modal size={"5xl"} dismissible show={!!usages.length} onClose={() => setUsages([])}>
@@ -102,8 +131,9 @@ export function Usages(props: {
 
             <Modal.Body className={"relative"}>
                 <MiniEditor
+                    from={previewFrom} to={previewTo}
                     className={"sticky top-0 mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
-                    value={value} head={head}/>
+                    value={value}/>
 
                 <div className="flex flex-col">
                     {displayUsages.map(({uri, range: {start, end}}, index) => {
@@ -111,11 +141,11 @@ export function Usages(props: {
                         const fromCol = start.character;
                         const toCol = end.character;
                         const previewStart = Math.max(0, lineIndex);
-                        const previewEnd = Math.min(allLines.length, lineIndex + 1);
+                        const previewEnd = Math.min(lines.current.length, lineIndex + 1);
 
-                        const contextLines = allLines.slice(
+                        const contextLines = lines.current.slice(
                             Math.max(0, previewStart),
-                            Math.min(allLines.length, previewEnd)
+                            Math.min(lines.current.length, previewEnd)
                         );
 
                         const annotatedLines = [...contextLines];

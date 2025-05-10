@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState, useEffect, ReactNode} from "react";
+import {useCallback, useRef, useState, useEffect, ReactNode, useContext} from "react";
 import {Resizable, ResizeDirection} from "re-resizable";
 import debounce from 'debounce';
 
@@ -12,14 +12,12 @@ import {
     KEY_BINDINGS_KEY,
     FONT_SIZE_M,
     STATS_INFO_PREFIX,
-    LANGUAGE_KEY,
     EVENT_STDOUT,
     EVENT_ERROR,
     EVENT_STDERR,
     EVENT_CLEAR,
     EVENT_DONE,
     SNIPPET_REGEX,
-    GO_VERSION_KEY,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
     EDITOR_SIZE_MAX,
@@ -50,14 +48,12 @@ import {
     getFontSize,
     getLintOn,
     getUrl,
-    getLanguage,
     getIsVerticalLayout,
-    isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer
+    isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer, AppCtx
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {
     KeyBindingsType,
-    languages,
     LSPDocumentSymbol,
     mySandboxes,
     patchI,
@@ -68,7 +64,6 @@ import About from "./About.tsx";
 import Manual from "./Manual.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
-import {TRANSLATE} from "../lib/i18n.ts";
 
 function ShareSuccessMessage(props: {
     url: string,
@@ -102,7 +97,6 @@ const initialValue = getCodeContent(getSandboxId());
 const initialIsLintOn = getLintOn()
 const initialIsAutoCompletionOn = getAutoCompletionOn()
 const initialIsVerticalLayout = getIsVerticalLayout();
-const initialLanguage = getLanguage()
 const initialFontSize = getFontSize()
 const initialEditorSize = getEditorSize()
 const initialDrawerSize = getDrawerSize()
@@ -111,11 +105,9 @@ const initialKeyBindings = getKeyBindings()
 
 export default function Component(props: {
     sandboxId: mySandboxes
-    goVersion: string
-    setToastError: (message: ReactNode) => void
-    setToastInfo: (message: ReactNode) => void
 }) {
-    const {sandboxId, goVersion, setToastError, setToastInfo} = props
+    const {sandboxId} = props
+    const {goVersion, setToastError, setToastInfo} = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
@@ -127,7 +119,6 @@ export default function Component(props: {
     const [editorSize, setEditorSize] = useState<number>(initialEditorSize);
     const [drawerSize, setDrawerSize] = useState<number>(initialDrawerSize);
     const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
-    const [lan, setLan] = useState<languages>(initialLanguage)
 
     // editor status
     const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -341,11 +332,6 @@ export default function Component(props: {
         setKeyBindings(value)
     }
 
-    function onGoVersionChange(version: string) {
-        localStorage.setItem(GO_VERSION_KEY, version);
-        location.reload()
-    }
-
     function onIsVerticalLayoutChange() {
         const value = !isLayoutVertical
         localStorage.setItem(IS_VERTICAL_LAYOUT_KEY, JSON.stringify(value));
@@ -355,11 +341,6 @@ export default function Component(props: {
     function onSandboxIdChange(id: mySandboxes) {
         localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
         window.location.href = window.location.origin // remove all paths and query string
-    }
-
-    function onLanguageChange(value: languages) {
-        localStorage.setItem(LANGUAGE_KEY, value);
-        setLan(value)
     }
 
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
@@ -410,23 +391,19 @@ export default function Component(props: {
 
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
-            <About lan={lan} show={showAbout} setShow={setShowAbout}/>
-            <Manual lan={lan} show={showManual} setShow={setShowManual}/>
+            <About show={showAbout} setShow={setShowAbout}/>
+            <Manual show={showManual} setShow={setShowManual}/>
 
             <Settings
                 show={showSettings}
                 setShow={setShowSettings}
-                lan={lan}
                 fontSize={fontSize}
-                goVersion={goVersion}
-                onGoVersionChange={onGoVersionChange}
                 onFontL={onFontL}
                 onFontM={onFontM}
                 onFontS={onFontS}
                 isVerticalLayout={isLayoutVertical}
                 setIsVerticalLayout={onIsVerticalLayoutChange}
                 onKeyBindingsChange={onKeyBindingsChange}
-                onLanguageChange={onLanguageChange}
                 keyBindings={keyBindings}
                 isLintOn={isLintOn}
                 onLint={onLint}
@@ -446,18 +423,18 @@ export default function Component(props: {
                     </Link>
 
                     <Divider/>
-                    <Features lan={lan} openedDrawer={openedDrawer} setOpenedDrawer={onOpenedDrawer}/>
+                    <Features openedDrawer={openedDrawer} setOpenedDrawer={onOpenedDrawer}/>
                 </div>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
                     <Actions isMobile={isMobile} isRunning={isRunning} format={debouncedFormat}
                              run={debouncedRun}
-                             share={debouncedShare} hasCode={value.current.length > 0} lan={lan}/>
+                             share={debouncedShare} hasCode={value.current.length > 0}/>
 
                     {
                         isMobile ? null : <>
                             <Divider/>
-                            <SandboxSelector lan={lan} onSelect={onSandboxIdChange} isRunning={isRunning}
+                            <SandboxSelector onSelect={onSandboxIdChange} isRunning={isRunning}
                                              active={sandboxId}/>
 
                             <Divider/>
@@ -466,13 +443,12 @@ export default function Component(props: {
 
                             <Divider/>
 
-                            <VersionSelector version={goVersion} isRunning={isRunning}
-                                             onSelect={onGoVersionChange}/>
+                            <VersionSelector/>
                         </>
                     }
 
                     <div className={"flex items-center"}>
-                        <Info lan={lan} isMobile={isMobile} setShowAbout={setShowAbout}
+                        <Info isMobile={isMobile} setShowAbout={setShowAbout}
                               setShowSettings={setShowSettings} setShowManual={setShowManual}/>
                     </div>
                 </div>
@@ -493,7 +469,7 @@ export default function Component(props: {
                     defaultSize={{width: `${drawerSize}px`, height: "100%"}}
                     onResizeStop={onDrawerResizeStop}
                 >
-                    <Drawer lan={lan} type={openedDrawer} documentSymbols={documentSymbols}
+                    <Drawer type={openedDrawer} documentSymbols={documentSymbols}
                             setOpenedDrawer={setOpenedDrawer}
                             setSelectedSymbol={setSelectedSymbol}
                             lines={value.current.split("\n").length}
@@ -532,13 +508,10 @@ export default function Component(props: {
                         <Wrapper
                             className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                             <Editor
-                                lan={lan}
                                 openedDrawer={openedDrawer}
                                 setDocumentSymbols={setDocumentSymbols}
                                 selectedSymbol={selectedSymbol}
                                 sandboxId={sandboxId}
-                                goVersion={goVersion}
-                                setToastError={setToastError}
                                 isVertical={isLayoutVertical}
                                 isLintOn={isLintOn}
                                 isAutoCompletionOn={isAutoCompletionOn}
@@ -557,8 +530,6 @@ export default function Component(props: {
                     </Resizable>
 
                     <Terminal
-                        lan={lan}
-                        hint={TRANSLATE.hintManual[lan]}
                         running={isRunning}
                         fontSize={fontSize}
                         result={result}

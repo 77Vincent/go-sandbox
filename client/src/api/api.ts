@@ -48,8 +48,8 @@ export async function shareSnippet(code: string): Promise<string> {
     return await res.text();
 }
 
-export async function fetchSourceCode(path: string, sandboxVersion: string): Promise<fetchSourceRes> {
-    const res = await fetch(getUrl(`/source?path=${path}&version=${sandboxVersion}`));
+export async function fetchSourceCode(path: string, goVersion: string): Promise<fetchSourceRes> {
+    const res = await fetch(getUrl(`/source?path=${path}&version=${goVersion}`));
     if (res.status >= HTTP_INTERNAL_ERROR) {
         const {error} = await res.json();
         throw new Error(error);

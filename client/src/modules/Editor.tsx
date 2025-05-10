@@ -4,7 +4,7 @@ import 'react-contexify/ReactContexify.css';
 
 import "highlight.js/styles/github-dark.css"; // load once
 // react
-import {MouseEvent, ReactNode, useCallback, useEffect, useRef, useState} from "react";
+import {MouseEvent, useCallback, useContext, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
@@ -19,7 +19,7 @@ import {
     CompletionContext,
     completionKeymap,
     CompletionResult,
-    completionStatus
+    completionStatus,
 } from "@codemirror/autocomplete";
 import {ChangeSpec, Compartment, EditorSelection, EditorState, RangeSetBuilder} from "@codemirror/state"
 import {
@@ -63,7 +63,6 @@ import debounce from "debounce";
 // local imports
 import {
     KeyBindingsType,
-    languages,
     LSPCompletionItem,
     LSPDocumentSymbol,
     LSPReferenceResult,
@@ -78,7 +77,6 @@ import {
     DEBOUNCE_TIME_LONG,
     DEBOUNCE_TIME,
     DEFAULT_INDENTATION_SIZE,
-    DEFAULT_LANGUAGE,
     DRAWER_DOCUMENT_SYMBOLS,
     EMACS,
     focusEvent,
@@ -92,6 +90,7 @@ import {
     VIM, DRAWER_STATS, EDITOR_MENU_ID, DEBOUNCE_TIME_SHORT,
 } from "../constants.ts";
 import {
+    AppCtx,
     getCodeContent,
     getCursorHead,
     getCursorPos,
@@ -101,7 +100,7 @@ import {
     posToHead,
     viewUpdate
 } from "../utils.ts";
-import {LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
+import {isFunc, LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
 import MyMenu from "./Menu.tsx";
 import {ClickBoard, RefreshButton} from "./Common.tsx";
 import StatusBar from "./StatusBar.tsx";
@@ -143,8 +142,8 @@ const setAutoCompletion = (completions: LSPCompletionItem[]) => {
                 apply: (view, _completion, from, to) => {
                     let insert = v.insertText ?? v.label;
 
-                    // method or function
-                    if (v.kind && v.kind > 1 && v.kind < 5) {
+                    // method or function, add brackets
+                    if (isFunc(v.kind)) {
                         insert = `${insert}()`
                     }
 
@@ -161,6 +160,13 @@ const setAutoCompletion = (completions: LSPCompletionItem[]) => {
                     }
                     changes.push({from, to, insert})
                     view.dispatch({changes});
+
+                    if (isFunc(v.kind)) {
+                        // move the cursor to the middle of the brackets
+                        view.dispatch({
+                            selection: EditorSelection.cursor(view.state.selection.main.head - 1),
+                        })
+                    }
                 },
             }
         });
@@ -200,11 +206,7 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
 }
 
 export default function Component(props: {
-    // toast
-    setToastError: (message: ReactNode) => void
-
     sandboxId: mySandboxes
-    goVersion: string;
     value: string;
     patch: patchI;
 
@@ -216,7 +218,6 @@ export default function Component(props: {
     selectedSymbol: LSPDocumentSymbol | null;
 
     // settings
-    lan: languages
     keyBindings: KeyBindingsType;
     fontSize: number;
     isLintOn: boolean;
@@ -235,8 +236,6 @@ export default function Component(props: {
 }) {
     const {
         sandboxId,
-        goVersion,
-        setToastError,
         // drawers
         openedDrawer,
 
@@ -245,7 +244,6 @@ export default function Component(props: {
         selectedSymbol,
 
         // props
-        lan = DEFAULT_LANGUAGE,
         value, patch,
         fontSize, keyBindings,
         isLintOn, isAutoCompletionOn, isVertical,
@@ -260,6 +258,7 @@ export default function Component(props: {
         debouncedShare,
     } = props;
     const {mode} = useThemeMode();
+    const {setToastError, goVersion} = useContext(AppCtx)
 
     // local state
     const [row, setRow] = useState(1); // 1-based index
@@ -723,7 +722,7 @@ export default function Component(props: {
         view.current.dispatch({
             effects: hoverCompartment.reconfigure([
                 createHoverTooltip(lsp.current),
-                createHoverLink(lsp.current, metaKey),
+                createHoverLink(seeDefinition, metaKey),
             ])
         });
 
@@ -881,24 +880,22 @@ export default function Component(props: {
             <div
                 className={`flex-1 flex-col overflow-hidden ${isVertical ? "" : "pb-5"} ${backgroundColor}`}>
 
-                <MyMenu lan={lan} view={view.current}
+                <MyMenu view={view.current}
                         seeDefinition={seeDefinition} seeImplementation={seeImplementations} seeUsages={seeUsages}
                         run={debouncedRun} format={debouncedFormat} share={debouncedShare}/>
 
                 <Usages
-                    lan={lan}
                     seeing={seeing} view={view.current} value={value}
                     usages={usages} setUsages={setUsages}/>
 
                 <div className={"h-full overflow-auto"} ref={editor} onContextMenu={handleContextMenu}>
                     <div className={"sticky right-0 top-0 z-10"}>
-                        <RefreshButton lan={lan}/>
+                        <RefreshButton/>
                         <ClickBoard content={value}/>
                     </div>
                 </div>
 
                 <StatusBar
-                    lan={lan}
                     row={row} col={col} file={file.current}
                     sessions={sessions.current}
                     prevSession={prevSession}

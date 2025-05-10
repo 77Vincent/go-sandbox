@@ -1,4 +1,4 @@
-import {languages, LSPDocumentSymbol, selectableDrawers} from "../types";
+import {LSPDocumentSymbol, selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS_2,
     DEFAULT_LANGUAGE,
@@ -12,6 +12,8 @@ import {countSymbols, SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {Divider} from "./Common.tsx";
 import {CloseIcon} from "./Icons.tsx";
+import {useContext} from "react";
+import {AppCtx} from "../utils.ts";
 
 const symbolStyle = (kind: number): string => {
     switch (kind) {
@@ -38,7 +40,6 @@ const LINE_STYLE = "flex cursor-pointer items-center justify-between gap-2 px-2 
 
 export default function Component(props: {
     type: selectableDrawers,
-    lan: languages,
     documentSymbols: LSPDocumentSymbol[],
     setOpenedDrawer: (id: selectableDrawers) => void
     setSelectedSymbol: (symbol: LSPDocumentSymbol) => void
@@ -46,12 +47,12 @@ export default function Component(props: {
 }) {
     const {
         type,
-        lan = DEFAULT_LANGUAGE,
         documentSymbols,
         setOpenedDrawer,
         setSelectedSymbol,
         lines,
     } = props;
+    const {lan} = useContext(AppCtx)
 
     const closeDrawer = () => {
         setOpenedDrawer(NO_OPENED_DRAWER);
@@ -81,7 +82,7 @@ export default function Component(props: {
             className={"relative z-10 flex h-full flex-col overflow-y-auto border-r border-r-gray-400 dark:border-gray-600"}>
 
             <div
-                className={"sticky top-0 border-b border-b-gray-200 bg-white py-2 shadow dark:border-b-gray-700 dark:bg-neutral-900"}>
+                className={"sticky top-0 border-b border-b-gray-300 bg-gray-100 py-2 shadow dark:border-b-gray-700 dark:bg-neutral-900"}>
                 <div
                     className={"flex items-center justify-between px-2 text-xs font-semibold text-gray-900 dark:text-gray-100"}>
                     {type && TRANSLATE[type][lan]}

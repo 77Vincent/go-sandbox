@@ -44,6 +44,10 @@ const EVENT_HOVER = "textDocument/hover"
 const EVENT_DID_OPEN = "textDocument/didOpen"
 const EVENT_DID_CHANGE = "textDocument/didChange"
 
+export function isFunc(kind: number | undefined): boolean {
+    return kind === 2 || kind === 3 || kind === 4
+}
+
 export const SYMBOL_KIND_MAP: Record<number, string> = {
     1: "File",
     2: "Module",

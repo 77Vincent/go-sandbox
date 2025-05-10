@@ -1,4 +1,4 @@
-import {languages, mySandboxes} from "../types";
+import {mySandboxes} from "../types";
 import {
     BUTTON_INACTIVE,
     DEFAULT_ACTIVE_SANDBOX,
@@ -9,8 +9,8 @@ import {
 } from "../constants.ts";
 
 import {Dropdown, Tooltip} from "flowbite-react";
-import {MouseEventHandler, useEffect, useRef, useState} from "react";
-import {getSandboxes, getSandboxesNames} from "../utils.ts";
+import {MouseEventHandler, useContext, useEffect, useRef, useState} from "react";
+import {AppCtx, getSandboxes, getSandboxesNames} from "../utils.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {AddIcon, EditIcon, RemoveIcon} from "./Icons.tsx";
 
@@ -30,12 +30,12 @@ const initialSandboxes = getSandboxes();
 const initialSandboxNames = getSandboxesNames();
 
 export default function Component(props: {
-    lan: languages,
     isRunning: boolean,
     active: mySandboxes,
     onSelect: (id: mySandboxes) => void
 }) {
-    const {isRunning, active, onSelect, lan} = props;
+    const {isRunning, active, onSelect} = props;
+    const {lan} = useContext(AppCtx)
     const [sandboxes, setSandboxes] = useState(initialSandboxes)
     const [sandboxNames, setSandboxNames] = useState(initialSandboxNames);
     const sandboxesRef = useRef(sandboxes);

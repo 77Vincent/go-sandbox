@@ -1,14 +1,12 @@
 import {Modal} from "flowbite-react";
 
-import {languages} from "../types";
 import {
     Row,
     Grid,
     Divider,
 } from "./Common.tsx";
-import {ReactNode} from "react";
+import {ReactNode, useContext} from "react";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {DEFAULT_LANGUAGE} from "../constants.ts";
 import {
     CtrlKey, EnterKey, FoldAllIcon, FoldIcon,
     FormatIcon,
@@ -20,6 +18,7 @@ import {
     ShareIcon,
     ShiftKey, UnfoldAllIcon, UnfoldIcon
 } from "./Icons.tsx";
+import {AppCtx} from "../utils.ts";
 
 function SubRow(props: {
     children: ReactNode,
@@ -41,10 +40,10 @@ const SUB_TEXT = "text-xs text-gray-400"
 
 export default function Component(props: {
     show: boolean,
-    lan: languages,
     setShow: (show: boolean) => void,
 }) {
-    const {lan = DEFAULT_LANGUAGE, show, setShow} = props
+    const {show, setShow} = props
+    const {lan} = useContext(AppCtx)
 
     return <Modal dismissible show={show} onClose={() => setShow(false)}>
         <Modal.Header>
