@@ -81,7 +81,7 @@ export default function Component(props: {
             className={"relative z-10 flex h-full flex-col overflow-y-auto border-r border-r-gray-400 dark:border-gray-600"}>
 
             <div
-                className={"sticky top-0 border-b border-b-gray-200 bg-white py-2 shadow dark:border-b-gray-700 dark:bg-neutral-900"}>
+                className={"sticky top-0 border-b border-b-gray-300 bg-gray-100 py-2 shadow dark:border-b-gray-700 dark:bg-neutral-900"}>
                 <div
                     className={"flex items-center justify-between px-2 text-xs font-semibold text-gray-900 dark:text-gray-100"}>
                     {type && TRANSLATE[type][lan]}
