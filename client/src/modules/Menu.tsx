@@ -8,10 +8,9 @@ import {
     Typography
 } from "./Common.tsx";
 
-import {useCallback} from "react";
+import {useCallback, useContext} from "react";
 
 import {TRANSLATE} from "../lib/i18n.ts";
-import {languages} from "../types";
 import {
     CopyIcon,
     CutIcon,
@@ -24,13 +23,14 @@ import {
     ShareIcon,
     ShiftKey
 } from "./Icons.tsx";
+import {AppCtx} from "../utils.ts";
 
 function CopyItem(props: {
     view: EditorView;
-    lan: languages;
     cut?: boolean;
 }) {
-    const {view, lan, cut} = props;
+    const {view, cut} = props;
+    const {lan} = useContext(AppCtx)
     const onClick = useCallback((text: string) => {
         navigator.clipboard.writeText(text);
 
@@ -75,9 +75,9 @@ function CopyItem(props: {
 
 function PasteItem(props: {
     view: EditorView;
-    lan: languages;
 }) {
-    const {view, lan} = props;
+    const {view} = props;
+    const {lan} = useContext(AppCtx)
     return (
         navigator.clipboard && (
             <Item onClick={() => navigator.clipboard.readText().then(text => {
@@ -98,12 +98,12 @@ function PasteItem(props: {
 
 function GotoItem(props: {
     view: EditorView;
-    lan: languages;
     seeDefinition: () => boolean;
     seeImplementation: () => boolean;
     seeUsages: () => boolean;
 }) {
-    const {view, lan, seeDefinition, seeImplementation, seeUsages} = props;
+    const {view, seeDefinition, seeImplementation, seeUsages} = props;
+    const {lan} = useContext(AppCtx)
     const onSeeDefinition = useCallback(() => {
         seeDefinition();
         view.focus();
@@ -149,7 +149,6 @@ function GotoItem(props: {
 }
 
 export default function Component(props: {
-    lan: languages;
     view: EditorView | null;
     seeDefinition: () => boolean;
     seeImplementation: () => boolean;
@@ -159,7 +158,8 @@ export default function Component(props: {
     share: () => void;
 }) {
     const {mode} = useThemeMode()
-    const {lan, view, seeDefinition, seeImplementation, seeUsages, run, format, share} = props;
+    const {lan} = useContext(AppCtx)
+    const {view, seeDefinition, seeImplementation, seeUsages, run, format, share} = props;
 
     const onRun = useCallback(() => {
         run();
@@ -181,15 +181,15 @@ export default function Component(props: {
 
     return (
         <Menu theme={mode} id={EDITOR_MENU_ID} className={"text-sm font-light dark:border dark:border-gray-700"}>
-            <GotoItem view={view} lan={lan}
+            <GotoItem view={view}
                       seeDefinition={seeDefinition}
                       seeImplementation={seeImplementation}
                       seeUsages={seeUsages}
             />
 
-            <CopyItem view={view} lan={lan} cut={true}/>
-            <CopyItem view={view} lan={lan}/>
-            <PasteItem view={view} lan={lan}/>
+            <CopyItem view={view} cut={true}/>
+            <CopyItem view={view}/>
+            <PasteItem view={view}/>
 
             <Separator/>
 

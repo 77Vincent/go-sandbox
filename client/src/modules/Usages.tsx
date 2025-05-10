@@ -1,18 +1,17 @@
 import {Modal, Tooltip} from "flowbite-react";
 import {EditorView} from "@codemirror/view"; // or any other style you like
 
-import {languages, LSPReferenceResult, SeeingType} from "../types";
+import {LSPReferenceResult, SeeingType} from "../types";
 import {
     arrowDownEvent,
     arrowUpEvent,
-    DEFAULT_LANGUAGE,
     enterEvent,
     keyDownEvent,
     SEEING_IMPLEMENTATIONS
 } from "../constants.ts";
-import {displayFileUri, getCursorPos, isUserCode, posToHead} from "../utils.ts";
+import {AppCtx, displayFileUri, getCursorPos, isUserCode, posToHead} from "../utils.ts";
 import MiniEditor from "./MiniEditor.tsx";
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useContext, useEffect, useRef, useState} from "react";
 import {Divider} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
 
@@ -21,14 +20,14 @@ const startMarker = "/*__START__*/";
 const endMarker = "/*__END__*/";
 
 export function Usages(props: {
-    lan: languages
     seeing: SeeingType
     usages: LSPReferenceResult[],
     setUsages: (v: LSPReferenceResult[]) => void
     value: string,
     view: EditorView | null,
 }) {
-    const {lan = DEFAULT_LANGUAGE, view, usages, setUsages, seeing, value} = props;
+    const {view, usages, setUsages, seeing, value} = props;
+    const {lan} = useContext(AppCtx);
     const [lookAt, setLookAt] = useState<number>(0);
     const [displayUsages, setDisplayUsages] = useState<LSPReferenceResult[]>(usages);
     const [previewFrom, setPreviewFrom] = useState<number>(0);

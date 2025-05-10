@@ -4,7 +4,7 @@ import 'react-contexify/ReactContexify.css';
 
 import "highlight.js/styles/github-dark.css"; // load once
 // react
-import {MouseEvent, ReactNode, useCallback, useContext, useEffect, useRef, useState} from "react";
+import {MouseEvent, ReactNode, useCallback, useEffect, useRef, useState} from "react";
 import {ThemeMode, useThemeMode} from "flowbite-react";
 
 // codemirror imports
@@ -90,7 +90,6 @@ import {
     VIM, DRAWER_STATS, EDITOR_MENU_ID, DEBOUNCE_TIME_SHORT,
 } from "../constants.ts";
 import {
-    AppCtx,
     getCodeContent,
     getCursorHead,
     getCursorPos,
@@ -264,7 +263,6 @@ export default function Component(props: {
         debouncedShare,
     } = props;
     const {mode} = useThemeMode();
-    const {lan} = useContext(AppCtx)
 
     // local state
     const [row, setRow] = useState(1); // 1-based index
@@ -886,24 +884,22 @@ export default function Component(props: {
             <div
                 className={`flex-1 flex-col overflow-hidden ${isVertical ? "" : "pb-5"} ${backgroundColor}`}>
 
-                <MyMenu lan={lan} view={view.current}
+                <MyMenu view={view.current}
                         seeDefinition={seeDefinition} seeImplementation={seeImplementations} seeUsages={seeUsages}
                         run={debouncedRun} format={debouncedFormat} share={debouncedShare}/>
 
                 <Usages
-                    lan={lan}
                     seeing={seeing} view={view.current} value={value}
                     usages={usages} setUsages={setUsages}/>
 
                 <div className={"h-full overflow-auto"} ref={editor} onContextMenu={handleContextMenu}>
                     <div className={"sticky right-0 top-0 z-10"}>
-                        <RefreshButton lan={lan}/>
+                        <RefreshButton/>
                         <ClickBoard content={value}/>
                     </div>
                 </div>
 
                 <StatusBar
-                    lan={lan}
                     row={row} col={col} file={file.current}
                     sessions={sessions.current}
                     prevSession={prevSession}
