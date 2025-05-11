@@ -1,7 +1,7 @@
 import {mySandboxes} from "../types";
 import {
     BUTTON_INACTIVE,
-    DEFAULT_ACTIVE_SANDBOX,
+    DEFAULT_SANDBOX_ID,
     HELLO_WORLD,
     ICON_BUTTON_CLASS, INACTIVE_TEXT_CLASS,
     MY_SANDBOXES, SANDBOX_NAMES_KEY,
@@ -23,17 +23,14 @@ function getNextSandboxId(sandboxes: mySandboxes[]): mySandboxes {
             return id as mySandboxes;
         }
     }
-    return DEFAULT_ACTIVE_SANDBOX
+    return DEFAULT_SANDBOX_ID
 }
 
 const initialSandboxes = getSandboxes();
 const initialSandboxNames = getSandboxesNames();
 
-export default function Component(props: {
-    onSelect: (id: mySandboxes) => void
-}) {
-    const {onSelect} = props;
-    const {lan, isRunning, sandboxId} = useContext(AppCtx)
+export default function Component() {
+    const {lan, isRunning, sandboxId, updateSandboxId} = useContext(AppCtx)
     const [sandboxes, setSandboxes] = useState(initialSandboxes)
     const [sandboxNames, setSandboxNames] = useState(initialSandboxNames);
     const sandboxesRef = useRef(sandboxes);
@@ -43,7 +40,7 @@ export default function Component(props: {
     function onClick(key: mySandboxes) {
         return () => {
             if (key !== sandboxId) {
-                onSelect(key);
+                updateSandboxId(key);
             }
         }
     }
@@ -52,7 +49,7 @@ export default function Component(props: {
         const next = getNextSandboxId(sandboxesRef.current);
         setSandboxes((prev) => [...prev, next]);
         localStorage.setItem(next, HELLO_WORLD)
-        onSelect(next);
+        updateSandboxId(next);
     }
 
     const onRemove = (id: mySandboxes): MouseEventHandler<SVGAElement> => {
@@ -77,7 +74,7 @@ export default function Component(props: {
                 }))
                 // select next sandbox if available
                 if (next.length > 0) {
-                    onSelect(next[0]);
+                    updateSandboxId(next[0]);
                 }
             }
         }

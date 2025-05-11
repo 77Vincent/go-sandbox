@@ -1,7 +1,7 @@
 import {
-    ACTIVE_SANDBOX_KEY,
+    SANDBOX_ID_KEY,
     CURSOR_HEAD_KEY,
-    DEFAULT_ACTIVE_SANDBOX,
+    DEFAULT_SANDBOX_ID,
     DEFAULT_AUTOCOMPLETION_ON,
     DEFAULT_CURSOR_HEAD, DEFAULT_DRAWER_SIZE,
     DEFAULT_EDITOR_SIZE,
@@ -33,7 +33,7 @@ export function getFontSize(): number {
 }
 
 export function getSandboxId(): mySandboxes {
-    return localStorage.getItem(ACTIVE_SANDBOX_KEY) as mySandboxes || DEFAULT_ACTIVE_SANDBOX
+    return localStorage.getItem(SANDBOX_ID_KEY) as mySandboxes || DEFAULT_SANDBOX_ID
 }
 
 export function getLanguage(): languages {
@@ -96,9 +96,9 @@ export function getSandboxes(): mySandboxes[] {
 
     // if no sandboxes are found, create a default one
     if (sandboxes.length === 0) {
-        const i = DEFAULT_ACTIVE_SANDBOX
+        const i = DEFAULT_SANDBOX_ID
         sandboxes.push(i)
-        localStorage.setItem(ACTIVE_SANDBOX_KEY, i)
+        localStorage.setItem(SANDBOX_ID_KEY, i)
         localStorage.setItem(i, HELLO_WORLD)
     }
 
@@ -200,10 +200,10 @@ export const AppCtx = createContext<AppContextI>({
     setFile: () => {
     },
     goVersion: "",
-    setGoVersion: () => {
+    updateGoVersion: () => {
     },
-    sandboxId: DEFAULT_ACTIVE_SANDBOX,
-    setSandboxId: () => {
+    sandboxId: DEFAULT_SANDBOX_ID,
+    updateSandboxId: () => {
     },
     toastError: null,
     setToastError: () => {

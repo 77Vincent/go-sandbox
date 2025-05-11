@@ -18,7 +18,6 @@ import {
     EDITOR_SIZE_MIN,
     EDITOR_SIZE_MAX,
     TITLE,
-    ACTIVE_SANDBOX_KEY,
     IS_AUTOCOMPLETION_ON_KEY,
     DRAWER_SIZE_KEY,
     RESIZABLE_HANDLER_WIDTH,
@@ -101,7 +100,7 @@ export default function Component(props: {
     const {
         isMobile, goVersion,
         isRunning, setIsRunning,
-        openedDrawer ,
+        openedDrawer,
         setToastError, setToastInfo,
     } = useContext(AppCtx)
 
@@ -328,11 +327,6 @@ export default function Component(props: {
         setIsLayoutVertical(value)
     }
 
-    function onSandboxIdChange(id: mySandboxes) {
-        localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
-        window.location.href = window.location.origin // remove all paths and query string
-    }
-
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         // calculate the size
         let size
@@ -394,7 +388,7 @@ export default function Component(props: {
                     {
                         isMobile ? null : <>
                             <Divider/>
-                            <SandboxSelector onSelect={onSandboxIdChange}/>
+                            <SandboxSelector/>
 
                             <Divider/>
 

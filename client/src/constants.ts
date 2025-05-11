@@ -18,7 +18,7 @@ export const DRAWER_STATS: selectableDrawers = "stats"
 export const DRAWER_LIBRARY: selectableDrawers = "library"
 
 export const SANDBOX_NAMES_KEY = "sandboxNames";
-export const ACTIVE_SANDBOX_KEY = "activeSandbox";
+export const SANDBOX_ID_KEY = "activeSandbox";
 export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
 export const GO_VERSION_KEY = "sandboxVersion";
 export const KEY_BINDINGS_KEY = "keyBindings";
@@ -55,7 +55,7 @@ export const AVAILABLE_FONT_SIZES = [10, 11, 12, 13, 14, 15, 16]
 
 export const DEFAULT_LANGUAGE: languages = "en";
 export const DEFAULT_FONT_SIZE = 12;
-export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
+export const DEFAULT_SANDBOX_ID = "my-sandbox-1";
 export const SANDBOX_TEMP: mySandboxes = "my-sandbox-temp";
 
 export const MOBILE_WIDTH = 768;

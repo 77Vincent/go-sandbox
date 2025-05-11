@@ -125,10 +125,10 @@ export interface AppContextI {
     setFile: (file: string) => void;
     // go version
     goVersion: string;
-    setGoVersion: (goVersion: string) => void;
+    updateGoVersion: (goVersion: string) => void;
     // sandbox id
     sandboxId: mySandboxes;
-    setSandboxId: (sandboxId: mySandboxes) => void;
+    updateSandboxId: (sandboxId: mySandboxes) => void;
     // toast
     toastInfo: ReactNode;
     setToastInfo: (toastInfo: ReactNode) => void;

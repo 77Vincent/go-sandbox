@@ -13,7 +13,14 @@ import {
     getFontSize,
     getOpenedDrawer
 } from "./utils.ts";
-import {FONT_SIZE_KEY, LANGUAGE_KEY, OPENED_DRAWER_KEY, SANDBOX_TEMP} from "./constants.ts";
+import {
+    SANDBOX_ID_KEY,
+    FONT_SIZE_KEY,
+    GO_VERSION_KEY,
+    LANGUAGE_KEY,
+    OPENED_DRAWER_KEY,
+    SANDBOX_TEMP
+} from "./constants.ts";
 import {languages, mySandboxes, selectableDrawers} from "./types";
 
 const initSandboxId = getSandboxId()
@@ -34,8 +41,8 @@ function App() {
     // settings
     const [lan, setLan] = useState(initLan);
     const [fontSize, setFontSize] = useState(initFontSize);
-    const [goVersion, setGoVersion] = useState(initGoVersion);
-    const [sandboxId, setSandboxId] = useState<mySandboxes>(initSandboxId);
+    const [goVersion] = useState(initGoVersion);
+    const [sandboxId] = useState<mySandboxes>(initSandboxId);
 
     // editor state
     const [file, setFile] = useState(initFile);
@@ -54,17 +61,28 @@ function App() {
         setLan(lan);
         localStorage.setItem(LANGUAGE_KEY, lan);
     }, []);
+    const updateGoVersion = useCallback((version: string) => {
+        localStorage.setItem(GO_VERSION_KEY, version);
+        window.location.href = window.location.origin // remove all paths and query string
+    }, []);
+    const updateSandboxId = useCallback((id: mySandboxes) => {
+        localStorage.setItem(SANDBOX_ID_KEY, id);
+        window.location.href = window.location.origin // remove all paths and query string
+    }, []);
 
     return (
         <AppCtx.Provider value={{
             isMobile: isMobileDevice(),
+            // runtime status
             isRunning, setIsRunning,
+            file, setFile,
+            // settings
             openedDrawer, updateOpenedDrawer,
             lan, updateLan,
             fontSize, updateFontSize,
-            file, setFile,
-            goVersion, setGoVersion,
-            sandboxId, setSandboxId,
+            goVersion, updateGoVersion,
+            sandboxId, updateSandboxId,
+            // toast
             toastInfo, setToastInfo,
             toastError, setToastError,
         }}>
