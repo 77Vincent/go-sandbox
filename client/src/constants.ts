@@ -15,6 +15,7 @@ export const NONE = ""
 
 export const DRAWER_DOCUMENT_SYMBOLS: selectableDrawers = "documentSymbols"
 export const DRAWER_STATS: selectableDrawers = "stats"
+export const DRAWER_LIBRARY: selectableDrawers = "library"
 
 export const SANDBOX_NAMES_KEY = "sandboxNames";
 export const ACTIVE_SANDBOX_KEY = "activeSandbox";

@@ -29,7 +29,7 @@ import {EditorView, ViewUpdate} from "@codemirror/view";
 import {createContext} from "react";
 
 export function getFontSize(): number {
-    return Number(localStorage.getItem(FONT_SIZE_KEY)) || DEFAULT_FONT_SIZE
+    return Math.floor(Number(localStorage.getItem(FONT_SIZE_KEY))) || DEFAULT_FONT_SIZE
 }
 
 export function getSandboxId(): mySandboxes {

@@ -52,6 +52,7 @@ export {
     MdOutlineEdit as EditIcon,
     MdUnfoldLess as  FoldIcon,
     MdUnfoldMore as UnfoldIcon,
+    MdOutlineLibraryAdd as LibraryIcon,
 } from "react-icons/md";
 
 export {BsShift as ShiftKey} from "react-icons/bs";

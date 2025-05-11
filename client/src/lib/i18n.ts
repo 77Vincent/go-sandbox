@@ -1,6 +1,30 @@
 import {languages} from "../types";
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    library: {
+        en: "Snippet library",
+        zh_CN: "代码片段库",
+        zh_TW: "程式碼片段庫",
+        ja: "スニペットライブラリ",
+        ko: "스니펫 라이브러리",
+        fr: "Bibliothèque de snippets",
+        de: "Snippet-Bibliothek",
+        es: "Biblioteca de fragmentos",
+        it: "Libreria di frammenti",
+        ru: "Библиотека фрагментов",
+        hi: "कोड स्निप्पेट लाइब्रेरी",
+        pt_BR: "Biblioteca de snippets",
+        pt_PT: "Biblioteca de snippets",
+        vi: "Thư viện mã",
+        th: "คลังโค้ด",
+        tr: "Snippet kütüphanesi",
+        id: "Perpustakaan cuplikan",
+        uk: "Бібліотека фрагментів",
+        pl: "Biblioteka fragmentów",
+        nl: "Snippet-bibliotheek",
+        he: "ספריית קטעי קוד",
+        ar: "مكتبة الشيفرات",
+    },
     about: {
         en: "About",
         zh_CN: "关于",

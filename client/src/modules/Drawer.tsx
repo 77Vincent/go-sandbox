@@ -1,17 +1,17 @@
 import {LSPDocumentSymbol, selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS_2,
-    DRAWER_DOCUMENT_SYMBOLS,
+    DRAWER_DOCUMENT_SYMBOLS, DRAWER_LIBRARY,
     DRAWER_STATS,
     INACTIVE_TEXT_CLASS,
     NO_OPENED_DRAWER,
-    OPENED_DRAWER_KEY
+    OPENED_DRAWER_KEY, SNIPPETS
 } from "../constants.ts";
 import {countSymbols, SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {Divider} from "./Common.tsx";
 import {CloseIcon} from "./Icons.tsx";
-import {useContext} from "react";
+import {useCallback, useContext} from "react";
 import {AppCtx} from "../utils.ts";
 
 const symbolStyle = (kind: number): string => {
@@ -42,6 +42,7 @@ export default function Component(props: {
     documentSymbols: LSPDocumentSymbol[],
     setOpenedDrawer: (id: selectableDrawers) => void
     setSelectedSymbol: (symbol: LSPDocumentSymbol) => void
+    setSelectedSnippet: (id: string) => void
     lines: number
 }) {
     const {
@@ -49,26 +50,32 @@ export default function Component(props: {
         documentSymbols,
         setOpenedDrawer,
         setSelectedSymbol,
+        setSelectedSnippet,
         lines,
     } = props;
-    const {lan} = useContext(AppCtx)
+    const {lan, isRunning} = useContext(AppCtx)
 
     const closeDrawer = () => {
         setOpenedDrawer(NO_OPENED_DRAWER);
         localStorage.setItem(OPENED_DRAWER_KEY, NO_OPENED_DRAWER);
     }
 
-    const onClick = (type: selectableDrawers, i: number) => {
+    const onSymbolClick = (i: number) => {
         return () => {
-            switch (type) {
-                case DRAWER_DOCUMENT_SYMBOLS:
-                    if (documentSymbols[i]) {
-                        setSelectedSymbol(documentSymbols[i]);
-                    }
-                    break;
+            if (documentSymbols[i]) {
+                setSelectedSymbol(documentSymbols[i]);
             }
         }
     }
+
+    const onSnippetClick = useCallback((id: string) => {
+        return () => {
+            if (isRunning) {
+                return;
+            }
+            setSelectedSnippet(id);
+        }
+    }, [isRunning, setSelectedSnippet]);
 
     const displaySymbols = Object.entries(countSymbols(documentSymbols))
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -93,7 +100,7 @@ export default function Component(props: {
                 {
                     type === DRAWER_DOCUMENT_SYMBOLS && documentSymbols.map(({name, kind}, index) => {
                         return (
-                            <div key={name} onClick={onClick(type, index)}
+                            <div key={name} onClick={onSymbolClick(index)}
                                  className={LINE_STYLE}
                             >
                                 <div className={`flex items-center gap-1 truncate ${symbolStyle(kind)}`}>
@@ -133,6 +140,39 @@ export default function Component(props: {
                                 <div>Lines</div>
                                 <div className={"font-semibold"}>{lines}</div>
                             </div>
+                        </>
+                    )
+                }
+                {
+                    type == DRAWER_LIBRARY && (
+                        <>
+                            {
+                                Object.keys(SNIPPETS).map(key => {
+                                    return (
+                                        <div key={key}>
+                                            <div key={key}
+                                                 className={"border-b p-2 text-sm font-semibold text-black dark:border-b-gray-700 dark:text-white"}>{key}</div>
+
+                                            <div className={"border-b text-gray-900 dark:border-b-gray-700 dark:text-gray-200"}>
+                                                {
+                                                    Object.entries(SNIPPETS[key]).map(([subkey, value]) => {
+                                                        return (
+                                                            <div
+                                                                key={subkey}
+                                                                className={`${LINE_STYLE} ${isRunning ? "opacity-50" : ""}`}
+                                                                onClick={onSnippetClick(subkey)}
+                                                            >
+
+                                                                {value}
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
                         </>
                     )
                 }

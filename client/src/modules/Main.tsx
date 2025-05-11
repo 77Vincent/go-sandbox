@@ -166,7 +166,7 @@ export default function Component(props: {
         } catch (e) {
             setToastError((e as Error).message)
         }
-    }, [setToastInfo, setToastError]), DEBOUNCE_TIME);
+    }, [sandboxId, setToastInfo, setToastError]), DEBOUNCE_TIME);
 
     const debouncedFormat = debounce(useCallback(async () => {
         if (shouldAbort()) {
@@ -195,7 +195,7 @@ export default function Component(props: {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [setToastError]), DEBOUNCE_TIME);
+    }, [setIsRunning, setToastError]), DEBOUNCE_TIME);
 
     const debouncedRun = debounce(useCallback(async () => {
         if (shouldAbort()) {
@@ -286,7 +286,7 @@ export default function Component(props: {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [debouncedRun, setToastError]), DEBOUNCE_TIME);
+    }, [debouncedRun, setIsRunning, setToastError]), DEBOUNCE_TIME);
 
     // fetch the snippet if the url contains the snippet id, do only once
     useEffect(() => {
@@ -441,6 +441,7 @@ export default function Component(props: {
                     <Drawer type={openedDrawer} documentSymbols={documentSymbols}
                             setOpenedDrawer={setOpenedDrawer}
                             setSelectedSymbol={setSelectedSymbol}
+                            setSelectedSnippet={debouncedGetSnippet}
                             lines={value.current.split("\n").length}
                     />
                 </Resizable>

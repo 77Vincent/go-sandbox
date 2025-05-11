@@ -4,10 +4,10 @@ import {TRANSLATE} from "../lib/i18n.ts";
 import {selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS,
-    DRAWER_DOCUMENT_SYMBOLS, DRAWER_STATS,
+    DRAWER_DOCUMENT_SYMBOLS, DRAWER_LIBRARY, DRAWER_STATS,
     ICON_BUTTON_CLASS
 } from "../constants.ts";
-import {LearnIcon, OutlineIcon, StatsIcon} from "./Icons.tsx";
+import {LearnIcon, LibraryIcon, OutlineIcon, StatsIcon} from "./Icons.tsx";
 import {useContext} from "react";
 import {AppCtx} from "../utils.ts";
 
@@ -40,6 +40,13 @@ export default function Component(props: {
                 <StatsIcon
                     onClick={onClick(DRAWER_STATS)} size={18}
                     className={`${openedDrawer === DRAWER_STATS ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}
+                />
+            </Tooltip>
+
+            <Tooltip className={"text-xs"} content={TRANSLATE.library[lan]}>
+                <LibraryIcon
+                    onClick={onClick(DRAWER_LIBRARY)} size={18}
+                    className={`${openedDrawer === DRAWER_LIBRARY ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}
                 />
             </Tooltip>
 
