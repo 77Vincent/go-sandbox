@@ -29,7 +29,6 @@ import {Divider, Wrapper} from "./Common.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import Actions from "./Actions.tsx";
-import SnippetSelector from "./SnippetSelector.tsx";
 import VersionSelector from "./VersionSelector.tsx";
 import SandboxSelector from "./SandboxSelector.tsx";
 import Features from "./Features.tsx";
@@ -405,10 +404,6 @@ export default function Component(props: {
                         isMobile ? null : <>
                             <Divider/>
                             <SandboxSelector onSelect={onSandboxIdChange}/>
-
-                            <Divider/>
-
-                            <SnippetSelector onSelect={debouncedGetSnippet}/>
 
                             <Divider/>
 
