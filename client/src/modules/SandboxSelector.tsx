@@ -30,11 +30,10 @@ const initialSandboxes = getSandboxes();
 const initialSandboxNames = getSandboxesNames();
 
 export default function Component(props: {
-    active: mySandboxes,
     onSelect: (id: mySandboxes) => void
 }) {
-    const {active, onSelect} = props;
-    const {lan, isRunning} = useContext(AppCtx)
+    const {onSelect} = props;
+    const {lan, isRunning, sandboxId} = useContext(AppCtx)
     const [sandboxes, setSandboxes] = useState(initialSandboxes)
     const [sandboxNames, setSandboxNames] = useState(initialSandboxNames);
     const sandboxesRef = useRef(sandboxes);
@@ -43,7 +42,7 @@ export default function Component(props: {
 
     function onClick(key: mySandboxes) {
         return () => {
-            if (key !== active) {
+            if (key !== sandboxId) {
                 onSelect(key);
             }
         }
@@ -107,7 +106,7 @@ export default function Component(props: {
         <Dropdown inline={true} className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
                   label={
                       <span className={`text-xs ${isRunning ? INACTIVE_TEXT_CLASS : ""}`}>
-                          {sandboxNames[active] || MY_SANDBOXES[active] || active}
+                          {sandboxNames[sandboxId] || MY_SANDBOXES[sandboxId] || sandboxId}
                       </span>
                   }
         >
@@ -115,7 +114,7 @@ export default function Component(props: {
                 sandboxes.map((key) => {
                     return (
                         <Dropdown.Item
-                            className={`flex items-center justify-between gap-3 ${active === key ? SELECTED_COLOR_CLASS : ""}`}
+                            className={`flex items-center justify-between gap-3 ${sandboxId === key ? SELECTED_COLOR_CLASS : ""}`}
                             key={key}
                             onClick={onClick(key)}>
                             {sandboxNames[key] || MY_SANDBOXES[key]}

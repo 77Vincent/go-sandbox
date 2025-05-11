@@ -436,7 +436,7 @@ export default function Component(props: {
                     {
                         isMobile ? null : <>
                             <Divider/>
-                            <SandboxSelector onSelect={onSandboxIdChange} active={sandboxId}/>
+                            <SandboxSelector onSelect={onSandboxIdChange}/>
 
                             <Divider/>
 
