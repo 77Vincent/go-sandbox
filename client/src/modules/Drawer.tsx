@@ -1,4 +1,4 @@
-import {LSPDocumentSymbol, selectableDrawers} from "../types";
+import {LSPDocumentSymbol} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS_2,
     DRAWER_DOCUMENT_SYMBOLS, DRAWER_LIBRARY,
@@ -38,22 +38,18 @@ const symbolStyle = (kind: number): string => {
 const LINE_STYLE = "flex cursor-pointer items-center justify-between gap-2 px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs"
 
 export default function Component(props: {
-    type: selectableDrawers,
     documentSymbols: LSPDocumentSymbol[],
-    setOpenedDrawer: (id: selectableDrawers) => void
     setSelectedSymbol: (symbol: LSPDocumentSymbol) => void
     setSelectedSnippet: (id: string) => void
     lines: number
 }) {
     const {
-        type,
         documentSymbols,
-        setOpenedDrawer,
         setSelectedSymbol,
         setSelectedSnippet,
         lines,
     } = props;
-    const {lan, isRunning} = useContext(AppCtx)
+    const {lan, isRunning, openedDrawer, setOpenedDrawer} = useContext(AppCtx)
 
     const closeDrawer = () => {
         setOpenedDrawer(NO_OPENED_DRAWER);
@@ -91,14 +87,14 @@ export default function Component(props: {
                 className={"sticky top-0 border-b border-b-gray-300 bg-gray-100 py-2 shadow dark:border-b-gray-700 dark:bg-neutral-900"}>
                 <div
                     className={"flex items-center justify-between px-2 text-xs font-semibold text-gray-900 dark:text-gray-100"}>
-                    {type && TRANSLATE[type][lan]}
+                    {openedDrawer && TRANSLATE[openedDrawer][lan]}
                     <CloseIcon size={14} className={ACTIVE_ICON_BUTTON_CLASS_2} onClick={closeDrawer}/>
                 </div>
             </div>
 
             <div className={"flex flex-1 flex-col overflow-x-auto bg-neutral-50 pb-6 dark:bg-neutral-900"}>
                 {
-                    type === DRAWER_DOCUMENT_SYMBOLS && documentSymbols.map(({name, kind}, index) => {
+                    openedDrawer === DRAWER_DOCUMENT_SYMBOLS && documentSymbols.map(({name, kind}, index) => {
                         return (
                             <div key={name} onClick={onSymbolClick(index)}
                                  className={LINE_STYLE}
@@ -115,7 +111,7 @@ export default function Component(props: {
                     })
                 }
                 {
-                    type === DRAWER_STATS && (
+                    openedDrawer === DRAWER_STATS && (
                         <>
                             {
                                 displaySymbols.map(([key, value]) => {
@@ -144,7 +140,7 @@ export default function Component(props: {
                     )
                 }
                 {
-                    type == DRAWER_LIBRARY && (
+                    openedDrawer == DRAWER_LIBRARY && (
                         <>
                             {
                                 Object.keys(SNIPPETS).map(key => {

@@ -69,7 +69,6 @@ import {
     mySandboxes,
     patchI,
     SeeingType,
-    selectableDrawers
 } from "../types";
 import {
     blurEvent,
@@ -87,7 +86,7 @@ import {
     NONE,
     SEEING_IMPLEMENTATIONS,
     SEEING_USAGES,
-    VIM, DRAWER_STATS, EDITOR_MENU_ID, DEBOUNCE_TIME_SHORT,
+    VIM, DRAWER_STATS, EDITOR_MENU_ID, DEBOUNCE_TIME_SHORT, NO_OPENED_DRAWER,
 } from "../constants.ts";
 import {
     AppCtx,
@@ -210,9 +209,6 @@ export default function Component(props: {
     value: string;
     patch: patchI;
 
-    // drawers
-    openedDrawer: selectableDrawers;
-
     // document symbols
     setDocumentSymbols: (v: LSPDocumentSymbol[]) => void;
     selectedSymbol: LSPDocumentSymbol | null;
@@ -235,8 +231,6 @@ export default function Component(props: {
 }) {
     const {
         sandboxId,
-        // drawers
-        openedDrawer,
 
         // document symbols
         setDocumentSymbols,
@@ -257,7 +251,7 @@ export default function Component(props: {
         debouncedShare,
     } = props;
     const {mode} = useThemeMode();
-    const {setToastError, goVersion, fontSize} = useContext(AppCtx)
+    const {setToastError, goVersion, fontSize, openedDrawer} = useContext(AppCtx)
 
     // local state
     const [row, setRow] = useState(1); // 1-based index
@@ -306,7 +300,7 @@ export default function Component(props: {
         if (!lsp.current || !ready.current) return;
 
         switch (openedDrawer) {
-            case "":
+            case NO_OPENED_DRAWER:
                 // do nothing
                 break
             case DRAWER_STATS:

@@ -101,7 +101,7 @@ export default function Component(props: {
     const {
         isMobile, goVersion,
         isRunning, setIsRunning,
-        openedDrawer, setOpenedDrawer,
+        openedDrawer ,
         setToastError, setToastInfo,
     } = useContext(AppCtx)
 
@@ -424,8 +424,7 @@ export default function Component(props: {
                     defaultSize={{width: `${drawerSize}px`, height: "100%"}}
                     onResizeStop={onDrawerResizeStop}
                 >
-                    <Drawer type={openedDrawer} documentSymbols={documentSymbols}
-                            setOpenedDrawer={setOpenedDrawer}
+                    <Drawer documentSymbols={documentSymbols}
                             setSelectedSymbol={setSelectedSymbol}
                             setSelectedSnippet={debouncedGetSnippet}
                             lines={value.current.split("\n").length}
@@ -464,7 +463,6 @@ export default function Component(props: {
                         <Wrapper
                             className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                             <Editor
-                                openedDrawer={openedDrawer}
                                 setDocumentSymbols={setDocumentSymbols}
                                 selectedSymbol={selectedSymbol}
                                 sandboxId={sandboxId}
