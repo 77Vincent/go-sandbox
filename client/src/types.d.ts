@@ -107,6 +107,7 @@ export interface LSPDocumentSymbol {
 }
 
 export interface AppContextI {
+    isMobile: boolean;
     // language
     lan: languages;
     setLan: (lan: languages) => void;

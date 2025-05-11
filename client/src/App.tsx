@@ -1,10 +1,9 @@
 import Main from "./modules/Main.tsx";
-import {ReactNode, useEffect, useState} from "react";
-import {healthCheck} from "./api/api.ts";
+import {ReactNode, useState} from "react";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 import {Flowbite} from "flowbite-react";
-import {getGoVersion, getSandboxId, AppCtx, getLanguage, getFileUri} from "./utils.ts";
+import {getGoVersion, getSandboxId, AppCtx, getLanguage, getFileUri, isMobileDevice} from "./utils.ts";
 import {SANDBOX_TEMP} from "./constants.ts";
 import {mySandboxes} from "./types";
 
@@ -22,19 +21,9 @@ function App() {
     const [goVersion, setGoVersion] = useState(initialGoVersion);
     const [sandboxId, setSandboxId] = useState<mySandboxes>(initialSandboxId);
 
-    // health check
-    useEffect(() => {
-        (async () => {
-            try {
-                await healthCheck();
-            } catch (e) {
-                setToastError(`No backend connection: ${(e as Error).message}`);
-            }
-        })();
-    }, []);
-
     return (
         <AppCtx.Provider value={{
+            isMobile: isMobileDevice(),
             lan, setLan,
             file, setFile,
             goVersion, setGoVersion,

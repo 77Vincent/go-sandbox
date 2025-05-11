@@ -196,8 +196,9 @@ export function IconButton(props: {
     icon: ReactNode
     disabled?: boolean
     onClick?: () => void
+    className?: string
 }) {
-    const {icon, disabled, onClick} = props
+    const {icon, disabled, onClick, className} = props
 
     const handleClick = () => {
         if (onClick) {
@@ -205,8 +206,9 @@ export function IconButton(props: {
         }
     }
 
+    const classes = `${disabled ? BUTTON_INACTIVE : ICON_BUTTON_CLASS} ${className}`
     return (
-        <div onClick={handleClick} className={disabled ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}>
+        <div onClick={handleClick} className={classes}>
             {icon}
         </div>
     )

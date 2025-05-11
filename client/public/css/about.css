@@ -1,0 +1,43 @@
+.section ul li {
+    padding-left: 1.5em;
+    margin-bottom: 0.25em;
+    position: relative;
+}
+
+.section ul li::before {
+    content: "✔";
+    position: absolute;
+    left: 0;
+}
+
+.divider {
+    margin: 1.5rem 0;
+    border: 0.5px solid #dcdcdc;
+}
+
+.preview-img {
+    width: 100%;
+    height: 240px;
+    background-image: url("../image/preview.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+h4 {
+    font-size: 1.25rem;
+    font-style: italic;
+    font-weight: 500;
+}
+
+p {
+    color: #333;
+}

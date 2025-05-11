@@ -1,6 +1,30 @@
 import {languages} from "../types";
 
 export const TRANSLATE: Record<string, Record<languages, string>> = {
+    about: {
+        en: "About",
+        zh_CN: "关于",
+        zh_TW: "關於",
+        ja: "約",
+        ko: "정보",
+        fr: "À propos",
+        de: "Über",
+        es: "Acerca de",
+        it: "Informazioni",
+        ru: "О нас",
+        hi: "के बारे में",
+        pt_BR: "Sobre",
+        pt_PT: "Sobre",
+        vi: "Về chúng tôi",
+        th: "เกี่ยวกับเรา",
+        tr: "Hakkında",
+        id: "Tentang kami",
+        uk: "Про нас",
+        pl: "O nas",
+        nl: "Over ons",
+        he: "עלינו",
+        ar: "معلومات عنا",
+    },
     prevFile: {
         en: "Previous File",
         zh_CN: "上一个文件",

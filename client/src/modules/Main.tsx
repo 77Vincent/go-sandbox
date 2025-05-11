@@ -49,7 +49,7 @@ import {
     getLintOn,
     getUrl,
     getIsVerticalLayout,
-    isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer, AppCtx
+    getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer, AppCtx
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {
@@ -107,12 +107,11 @@ export default function Component(props: {
     sandboxId: mySandboxes
 }) {
     const {sandboxId} = props
-    const {goVersion, setToastError, setToastInfo} = useContext(AppCtx)
+    const {isMobile, goVersion, setToastError, setToastInfo} = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
-    const [isMobile] = useState<boolean>(isMobileDevice());
 
     // settings
     const [fontSize, setFontSize] = useState<number>(initialFontSize);
@@ -427,7 +426,7 @@ export default function Component(props: {
                 </div>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
-                    <Actions isMobile={isMobile} isRunning={isRunning} format={debouncedFormat}
+                    <Actions isRunning={isRunning} format={debouncedFormat}
                              run={debouncedRun}
                              share={debouncedShare} hasCode={value.current.length > 0}/>
 
@@ -448,7 +447,7 @@ export default function Component(props: {
                     }
 
                     <div className={"flex items-center"}>
-                        <Info isMobile={isMobile} setShowAbout={setShowAbout}
+                        <Info setShowAbout={setShowAbout}
                               setShowSettings={setShowSettings} setShowManual={setShowManual}/>
                     </div>
                 </div>

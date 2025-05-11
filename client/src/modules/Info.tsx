@@ -1,7 +1,7 @@
 import {ICON_BUTTON_CLASS} from "../constants.ts";
 
 import {Tooltip} from "flowbite-react";
-import {Divider} from "./Common.tsx";
+import {Divider, IconButton} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {AboutIcon, ManualIcon, MetaKey, SettingsIcon} from "./Icons.tsx";
 import {AppCtx} from "../utils.ts";
@@ -10,13 +10,12 @@ import {useContext} from "react";
 const commonClasses = `${ICON_BUTTON_CLASS} max-md:mx-0 max-md:text-lg`
 
 export default function Component(props: {
-    isMobile: boolean;
     setShowSettings: (show: boolean) => void;
     setShowAbout: (show: boolean) => void;
     setShowManual: (show: boolean) => void;
 }) {
-    const {isMobile, setShowSettings, setShowAbout, setShowManual} = props
-    const {lan} = useContext(AppCtx)
+    const {setShowSettings, setShowManual} = props
+    const {lan, isMobile} = useContext(AppCtx)
 
     return (
         <div className={"flex items-center gap-2.5 max-md:gap-2"}>
@@ -49,10 +48,14 @@ export default function Component(props: {
                     className={`${commonClasses} ml-0.5 max-md:ml-0.5`}/>
             </Tooltip>
 
-            <AboutIcon
-                size={isMobile ? 21 : 23}
-                onClick={() => setShowAbout(true)}
-                className={commonClasses}/>
+
+            <Tooltip className={"text-xs"} content={TRANSLATE.about[lan]}>
+                <IconButton icon={<AboutIcon size={isMobile ? 22 : 23}/>} className={ICON_BUTTON_CLASS}
+                            onClick={() => {
+                                window.open("/about.html", "_blank");
+                            }}
+                />
+            </Tooltip>
         </div>
     )
 }
