@@ -16,6 +16,7 @@ function App() {
     const [toastError, setToastError] = useState<ReactNode>(null);
     const [toastInfo, setToastInfo] = useState<ReactNode>(null);
 
+    const [isRunning, setIsRunning] = useState(false);
     const [lan, setLan] = useState(initialLan);
     const [file, setFile] = useState(initialFile);
     const [goVersion, setGoVersion] = useState(initialGoVersion);
@@ -24,6 +25,7 @@ function App() {
     return (
         <AppCtx.Provider value={{
             isMobile: isMobileDevice(),
+            isRunning, setIsRunning,
             lan, setLan,
             file, setFile,
             goVersion, setGoVersion,

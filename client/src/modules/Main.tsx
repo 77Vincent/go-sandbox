@@ -107,7 +107,11 @@ export default function Component(props: {
     sandboxId: mySandboxes
 }) {
     const {sandboxId} = props
-    const {isMobile, goVersion, setToastError, setToastInfo} = useContext(AppCtx)
+    const {
+        isRunning, setIsRunning,
+        isMobile, goVersion,
+        setToastError, setToastInfo
+    } = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
@@ -120,7 +124,6 @@ export default function Component(props: {
     const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
 
     // editor status
-    const [isRunning, setIsRunning] = useState<boolean>(false);
     const [patch, setPatch] = useState<patchI>({value: "", keepCursor: false});
 
     // result

@@ -191,6 +191,9 @@ export function posToHead(v: ViewUpdate | EditorView, row: number, col: number) 
 // default empty context value
 export const AppCtx = createContext<AppContextI>({
     isMobile: false,
+    isRunning: false,
+    setIsRunning: () => {
+    },
     lan: DEFAULT_LANGUAGE,
     setLan: () => {
     },
