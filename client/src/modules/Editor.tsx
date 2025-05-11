@@ -382,7 +382,9 @@ export default function Component(props: {
         if (v.docChanged) {
             const data = v.state.doc.toString();
             onChange(data);
-            updateValue(data);
+            if (isUserCode(file.current)) {
+                updateValue(data);
+            }
             debouncedLspUpdate(v);
             debouncedGetDocumentSymbol();
         }

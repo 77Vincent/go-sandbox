@@ -11,7 +11,7 @@ import {
     getFileUri,
     isMobileDevice,
     getFontSize,
-    getOpenedDrawer, getCodeContent, isUserCode
+    getOpenedDrawer, getCodeContent
 } from "./utils.ts";
 import {
     SANDBOX_ID_KEY,
@@ -19,7 +19,7 @@ import {
     GO_VERSION_KEY,
     LANGUAGE_KEY,
     OPENED_DRAWER_KEY,
-    SANDBOX_TEMP, DEBOUNCE_TIME
+    SANDBOX_TEMP, DEBOUNCE_TIME_LONG
 } from "./constants.ts";
 import {languages, mySandboxes, selectableDrawers} from "./types";
 import debounce from "debounce";
@@ -53,7 +53,7 @@ function App() {
     // debounced function
     const debouncedStoreValue = debounce(useCallback((v: string) => {
         localStorage.setItem(sandboxId, v);
-    }, [sandboxId]), DEBOUNCE_TIME);
+    }, [sandboxId]), DEBOUNCE_TIME_LONG);
 
     const updateOpenedDrawer = useCallback((id: selectableDrawers) => {
         setOpenedDrawer(id);
@@ -79,10 +79,8 @@ function App() {
     }, []);
     const updateValue = useCallback((v: string) => {
         setValue(v);
-        if (isUserCode(file)) {
-            debouncedStoreValue(v);
-        }
-    }, [debouncedStoreValue, file]);
+        debouncedStoreValue(v);
+    }, [debouncedStoreValue]);
 
     return (
         <AppCtx.Provider value={{
