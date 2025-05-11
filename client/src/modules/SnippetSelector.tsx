@@ -1,6 +1,7 @@
 import {Dropdown} from "flowbite-react";
 import {INACTIVE_TEXT_CLASS, SNIPPETS} from "../constants.ts";
-import {MouseEventHandler} from "react";
+import {MouseEventHandler, useContext} from "react";
+import {AppCtx} from "../utils.ts";
 
 const buttonLabel = "Snippets";
 
@@ -21,10 +22,10 @@ function Item(props: {
 }
 
 export default function Component(props: {
-    isRunning: boolean,
     onSelect: (id: string) => void,
 }) {
-    const {onSelect, isRunning} = props;
+    const {onSelect} = props;
+    const {isRunning} = useContext(AppCtx)
 
     function onClick(key: string): MouseEventHandler<HTMLDivElement> {
         return (e) => {

@@ -429,19 +429,18 @@ export default function Component(props: {
                 </div>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
-                    <Actions isRunning={isRunning} format={debouncedFormat}
+                    <Actions format={debouncedFormat}
                              run={debouncedRun}
                              share={debouncedShare} hasCode={value.current.length > 0}/>
 
                     {
                         isMobile ? null : <>
                             <Divider/>
-                            <SandboxSelector onSelect={onSandboxIdChange} isRunning={isRunning}
-                                             active={sandboxId}/>
+                            <SandboxSelector onSelect={onSandboxIdChange} active={sandboxId}/>
 
                             <Divider/>
 
-                            <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
+                            <SnippetSelector onSelect={debouncedGetSnippet}/>
 
                             <Divider/>
 

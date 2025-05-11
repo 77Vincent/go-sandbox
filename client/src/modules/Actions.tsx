@@ -13,10 +13,9 @@ export default function Component(props: {
     format: () => void;
     share: () => void;
     hasCode: boolean;
-    isRunning: boolean;
 }) {
-    const {run, format, share, hasCode, isRunning} = props;
-    const {lan, isMobile} = useContext(AppCtx)
+    const {run, format, share, hasCode} = props;
+    const {lan, isMobile, isRunning} = useContext(AppCtx)
     const isEnabled = hasCode && !isRunning;
 
     return (

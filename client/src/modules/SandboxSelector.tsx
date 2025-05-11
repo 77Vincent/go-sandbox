@@ -30,12 +30,11 @@ const initialSandboxes = getSandboxes();
 const initialSandboxNames = getSandboxesNames();
 
 export default function Component(props: {
-    isRunning: boolean,
     active: mySandboxes,
     onSelect: (id: mySandboxes) => void
 }) {
-    const {isRunning, active, onSelect} = props;
-    const {lan} = useContext(AppCtx)
+    const {active, onSelect} = props;
+    const {lan, isRunning} = useContext(AppCtx)
     const [sandboxes, setSandboxes] = useState(initialSandboxes)
     const [sandboxNames, setSandboxNames] = useState(initialSandboxNames);
     const sandboxesRef = useRef(sandboxes);
