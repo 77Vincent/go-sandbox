@@ -252,6 +252,7 @@ export default function Component(props: {
     const {mode} = useThemeMode();
     const {
         setToastError, goVersion, fontSize, openedDrawer,
+        file, setFile,
         value, updateValue,
     } = useContext(AppCtx)
 
@@ -271,7 +272,7 @@ export default function Component(props: {
     const view = useRef<EditorView | null>(null);
     const lsp = useRef<LSPClient | null>(null);
     const version = useRef<number>(1); // initial version
-    const file = useRef<string>(getFileUri(goVersion));
+    const fileRef = useRef<string>(file);
     const sessions = useRef<SessionI[]>([]);
     const metaKey = useRef<boolean>(false);
     const ready = useRef<boolean>(false); // initially not ready
@@ -286,7 +287,7 @@ export default function Component(props: {
 
 
         // update the main session
-        if (isUserCode(file.current)) {
+        if (isUserCode(fileRef.current)) {
             sessions.current[0].cursor = head
         }
     }, []), DEBOUNCE_TIME)
@@ -368,7 +369,7 @@ export default function Component(props: {
             await lsp.current.didChange(version.current, v.state.doc.toString());
 
             // only get completion for user code
-            if (isUserCode(file.current)) {
+            if (isUserCode(fileRef.current)) {
                 const {row, col} = getCursorPos(v);
                 const completions = await lsp.current.getCompletions(row - 1, col - 1) // use 0-based index
                 setCompletions(completions);
@@ -382,7 +383,7 @@ export default function Component(props: {
         if (v.docChanged) {
             const data = v.state.doc.toString();
             onChange(data);
-            if (isUserCode(file.current)) {
+            if (isUserCode(fileRef.current)) {
                 updateValue(data);
             }
             debouncedLspUpdate(v);
@@ -401,13 +402,13 @@ export default function Component(props: {
         (async function () {
             if (!lsp.current || !view.current) return;
 
-            const res = await lsp.current.getImplementations(file.current);
+            const res = await lsp.current.getImplementations(fileRef.current);
             if (res.length === 0) {
                 return
             }
             // for display the implementations popup
             // only display for user code
-            if (isUserCode(file.current)) {
+            if (isUserCode(fileRef.current)) {
                 setUsages(res as LSPReferenceResult[]);
                 setSeeing(SEEING_IMPLEMENTATIONS)
             }
@@ -430,7 +431,7 @@ export default function Component(props: {
             // for highlighting
             const builder = new RangeSetBuilder<Decoration>();
             for (const {uri, range} of res as LSPReferenceResult[]) {
-                if (uri !== file.current) continue; // only decorate in the current file
+                if (uri !== fileRef.current) continue; // only decorate in the current file
 
                 const {start, end} = range
                 const startLine = start.line + 1;
@@ -450,7 +451,7 @@ export default function Component(props: {
 
             // for display the usages popup
             // only display for user code
-            if (isUserCode(file.current)) {
+            if (isUserCode(fileRef.current)) {
                 setUsages(res as LSPReferenceResult[]);
                 setSeeing(SEEING_USAGES)
             }
@@ -467,11 +468,11 @@ export default function Component(props: {
 
             // update the current session before going to the definition
             const data = {
-                id: file.current,
+                id: fileRef.current,
                 cursor: view.current.state.selection.main.head,
                 data: view.current.state.doc.toString()
             }
-            const index = sessions.current.findIndex((s) => s.id === file.current)
+            const index = sessions.current.findIndex((s) => s.id === fileRef.current)
             // update the session
             sessions.current[index] = data
 
@@ -635,7 +636,7 @@ export default function Component(props: {
         ]),
         usageHighlightField,
         hoverCompartment.of([]), // empty hover tooltip at first because lsp is not ready
-        readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(file.current))),
+        readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(fileRef.current))),
         lintCompartment.of(setLint(isLintOn, diagnostics)),
         autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []})),
         fontSizeCompartment.of(setFontSize(fontSize)),
@@ -658,7 +659,8 @@ export default function Component(props: {
         }
 
         // reset the file back to the main file
-        file.current = getFileUri(goVersion);
+        fileRef.current = getFileUri(goVersion);
+        setFile(getFileUri(goVersion))
 
         // update the view
         view.current.dispatch({
@@ -672,7 +674,7 @@ export default function Component(props: {
             },
             scrollIntoView: true,
         });
-    }, [goVersion, patch]);
+    }, [goVersion, patch, setFile]);
 
     const handleDiagnostics = useCallback((data: Diagnostic[]) => {
         setDiagnostics(data);
@@ -704,7 +706,7 @@ export default function Component(props: {
 
         lsp.current = new LSPClient(
             getWsUrl("/ws"), goVersion, view.current,
-            file, sessions,
+            fileRef, sessions,
             handleDiagnostics, handleError, ready,
         );
 
@@ -794,7 +796,7 @@ export default function Component(props: {
     }, [completions, isAutoCompletionOn]);
     useEffect(() => {
         view.current?.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, diagnostics))]})
-        view.current?.dispatch({effects: [readOnlyCompartment.reconfigure(EditorState.readOnly.of(!isUserCode(file.current)))]})
+        view.current?.dispatch({effects: [readOnlyCompartment.reconfigure(EditorState.readOnly.of(!isUserCode(fileRef.current)))]})
     }, [diagnostics, isLintOn]);
 
     const onLintClick = useCallback(() => {
@@ -808,7 +810,8 @@ export default function Component(props: {
         const {id, data, cursor} = sessions.current[newIndex];
 
         // update the file
-        file.current = id;
+        fileRef.current = id
+        setFile(id)
 
         // remove the session from the list
         sessions.current.splice(index, 1);
@@ -816,26 +819,27 @@ export default function Component(props: {
         // if the new session is user code, use the latest value
         const content = isUserCode(id) ? getCodeContent(sandboxId) : data || "";
         viewUpdate(view.current, content, cursor);
-    }, [sandboxId])
+    }, [sandboxId, setFile])
 
     const onSessionClick = useCallback((index: number) => {
         if (!view.current) return;
 
         const {id, data, cursor} = sessions.current[index];
-        if (id === file.current) return; // already selected
+        if (id === fileRef.current) return; // already selected
 
-        file.current = id;
+        fileRef.current = id
+        setFile(id)
 
         // if the new session is user code, use the latest value
         const content = isUserCode(id) ? getCodeContent(sandboxId) : data || "";
         viewUpdate(view.current, content, cursor);
-    }, [sandboxId]);
+    }, [sandboxId, setFile]);
 
     const backgroundColor = mode === "dark" ? "editor-bg-dark" : "editor-bg-light";
 
     const prevSession = debounce(useCallback(() => {
         if (sessions.current.length < 2) return;
-        const index = sessions.current.findIndex((s) => s.id === file.current)
+        const index = sessions.current.findIndex((s) => s.id === fileRef.current)
         if (index === -1) return;
 
         // go to the previous session
@@ -845,7 +849,7 @@ export default function Component(props: {
 
     const nextSession = debounce(useCallback(() => {
         if (sessions.current.length < 2) return;
-        const index = sessions.current.findIndex((s) => s.id === file.current)
+        const index = sessions.current.findIndex((s) => s.id === fileRef.current)
         if (index === -1) return;
 
         // go to the next session
@@ -866,7 +870,7 @@ export default function Component(props: {
     return (
         <>
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
-                      activeSession={file.current}/>
+                      activeSession={fileRef.current}/>
             <div
                 className={`flex-1 flex-col overflow-hidden ${isVertical ? "" : "pb-5"} ${backgroundColor}`}>
 
@@ -886,7 +890,7 @@ export default function Component(props: {
                 </div>
 
                 <StatusBar
-                    row={row} col={col} file={file.current}
+                    row={row} col={col} file={fileRef.current}
                     sessions={sessions.current}
                     prevSession={prevSession}
                     nextSession={nextSession}
