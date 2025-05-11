@@ -1,5 +1,5 @@
 import {ClickBoard, Wrapper} from "./Common.tsx";
-import {AppCtx, mapFontSize} from "../utils.ts";
+import {AppCtx} from "../utils.ts";
 import {resultI} from "../types";
 import {EVENT_STDERR} from "../constants.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
@@ -12,14 +12,13 @@ const infoColor = "text-green-600 dark:text-green-300"
 export default function Component(props: {
     running: boolean,
     result: resultI[],
-    fontSize: number,
     info: string,
     error: string,
 }) {
-    const {fontSize, result, info, error, running} = props
-    const {lan} = useContext(AppCtx)
+    const {result, info, error, running} = props
+    const {lan, fontSize} = useContext(AppCtx)
 
-    const textSize = `text-${mapFontSize(fontSize)}`
+    const textSize = `text-size-${fontSize}`
     return (
         <Wrapper
             className={`flex flex-col overflow-hidden bg-neutral-200 p-1.5 pb-5 dark:bg-neutral-800 ${textSize}`}>

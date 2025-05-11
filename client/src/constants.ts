@@ -50,10 +50,10 @@ export const DEFAULT_DRAWER_SIZE = 240;
 export const DRAWER_SIZE_MAX = 360
 export const DRAWER_SIZE_MIN = 180
 
+export const AVAILABLE_FONT_SIZES = [10, 11, 12, 13, 14, 15, 16]
+
 export const DEFAULT_LANGUAGE: languages = "en";
-export const FONT_SIZE_L = 15;
-export const FONT_SIZE_M = 13;
-export const FONT_SIZE_S = 11;
+export const DEFAULT_FONT_SIZE = 12;
 export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
 export const SANDBOX_TEMP: mySandboxes = "my-sandbox-temp";
 

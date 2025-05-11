@@ -3,30 +3,38 @@ import {ReactNode, useState} from "react";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 import {Flowbite} from "flowbite-react";
-import {getGoVersion, getSandboxId, AppCtx, getLanguage, getFileUri, isMobileDevice} from "./utils.ts";
+import {getGoVersion, getSandboxId, AppCtx, getLanguage, getFileUri, isMobileDevice, getFontSize} from "./utils.ts";
 import {SANDBOX_TEMP} from "./constants.ts";
 import {mySandboxes} from "./types";
 
-const initialSandboxId = getSandboxId()
-const initialGoVersion = getGoVersion()
-const initialLan = getLanguage()
-const initialFile = getFileUri(initialGoVersion)
+const initSandboxId = getSandboxId()
+const initGoVersion = getGoVersion()
+const initLan = getLanguage()
+const initFile = getFileUri(initGoVersion)
+const initFontSize = getFontSize()
 
 function App() {
     const [toastError, setToastError] = useState<ReactNode>(null);
     const [toastInfo, setToastInfo] = useState<ReactNode>(null);
 
+    // status
     const [isRunning, setIsRunning] = useState(false);
-    const [lan, setLan] = useState(initialLan);
-    const [file, setFile] = useState(initialFile);
-    const [goVersion, setGoVersion] = useState(initialGoVersion);
-    const [sandboxId, setSandboxId] = useState<mySandboxes>(initialSandboxId);
+
+    // settings
+    const [lan, setLan] = useState(initLan);
+    const [fontSize, setFontSize] = useState(initFontSize);
+    const [goVersion, setGoVersion] = useState(initGoVersion);
+    const [sandboxId, setSandboxId] = useState<mySandboxes>(initSandboxId);
+
+    // editor state
+    const [file, setFile] = useState(initFile);
 
     return (
         <AppCtx.Provider value={{
             isMobile: isMobileDevice(),
             isRunning, setIsRunning,
             lan, setLan,
+            fontSize, setFontSize,
             file, setFile,
             goVersion, setGoVersion,
             sandboxId, setSandboxId,
@@ -41,7 +49,7 @@ function App() {
 
                         <Routes>
                             <Route path="*" element={
-                                <Main sandboxId={initialSandboxId}/>
+                                <Main sandboxId={initSandboxId}/>
                             }/>
                             <Route path="/snippets/:id" element={
                                 <Main sandboxId={SANDBOX_TEMP}/>

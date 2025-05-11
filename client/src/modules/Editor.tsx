@@ -219,7 +219,6 @@ export default function Component(props: {
 
     // settings
     keyBindings: KeyBindingsType;
-    fontSize: number;
     isLintOn: boolean;
     isAutoCompletionOn: boolean;
     isVertical: boolean;
@@ -245,7 +244,7 @@ export default function Component(props: {
 
         // props
         value, patch,
-        fontSize, keyBindings,
+        keyBindings,
         isLintOn, isAutoCompletionOn, isVertical,
         // handlers
         onChange,
@@ -258,7 +257,7 @@ export default function Component(props: {
         debouncedShare,
     } = props;
     const {mode} = useThemeMode();
-    const {setToastError, goVersion} = useContext(AppCtx)
+    const {setToastError, goVersion, fontSize} = useContext(AppCtx)
 
     // local state
     const [row, setRow] = useState(1); // 1-based index

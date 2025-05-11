@@ -1,17 +1,15 @@
 import {DarkThemeToggle, Dropdown, Label, Modal, useThemeMode} from "flowbite-react";
 
 import {
-    ACTIVE_COLOR,
-    FONT_SIZE_L,
-    FONT_SIZE_M,
-    FONT_SIZE_S, GO_VERSION_KEY, GO_VERSION_MAP, INACTIVE_TEXT_CLASS,
+    ACTIVE_COLOR, AVAILABLE_FONT_SIZES, FONT_SIZE_KEY,
+    GO_VERSION_KEY, GO_VERSION_MAP, INACTIVE_TEXT_CLASS,
     keyBindingsMap, LANGUAGE_KEY,
     SELECTED_COLOR_CLASS
 } from "../constants.ts";
 import {KeyBindingsType, languages} from "../types";
 import {Divider, Grid, Row, ToggleSwitch} from "./Common.tsx";
 import {LANGUAGES, TRANSLATE} from "../lib/i18n.ts";
-import {LayoutHorizontalIcon, LayoutVerticalIcon, TextLIcon, TextMIcon, TextSIcon} from "./Icons.tsx";
+import {LayoutHorizontalIcon, LayoutVerticalIcon} from "./Icons.tsx";
 import {useContext} from "react";
 import {AppCtx} from "../utils.ts";
 
@@ -24,11 +22,6 @@ export default function Component(props: {
     // for layout
     isVerticalLayout: boolean;
     setIsVerticalLayout: () => void;
-    // for editor fontSize
-    fontSize: number;
-    onFontL: () => void;
-    onFontS: () => void;
-    onFontM: () => void;
     // for keyBindings
     keyBindings: KeyBindingsType;
     onKeyBindingsChange: (id: KeyBindingsType) => void;
@@ -39,7 +32,11 @@ export default function Component(props: {
     isAutoCompletionOn: boolean;
     onAutoCompletion: () => void;
 }) {
-    const {lan, setLan, goVersion} = useContext(AppCtx)
+    const {
+        lan, setLan,
+        fontSize, setFontSize,
+        goVersion,
+    } = useContext(AppCtx)
     const {mode} = useThemeMode()
     const {
         // for key bindings
@@ -47,9 +44,6 @@ export default function Component(props: {
 
         // for layout
         isVerticalLayout, setIsVerticalLayout,
-
-        // for font size
-        fontSize, onFontL, onFontS, onFontM,
 
         // for lint
         isLintOn, onLint,
@@ -87,6 +81,15 @@ export default function Component(props: {
         }
     }
 
+    function onFontSize(v: number) {
+        return () => {
+            if (v !== fontSize) {
+                localStorage.setItem(FONT_SIZE_KEY, String(v));
+                setFontSize(v);
+            }
+        }
+    }
+
     return (
         <>
             <Modal size={"3xl"} dismissible show={show} onClose={() => setShow(false)}>
@@ -112,14 +115,17 @@ export default function Component(props: {
                     <Grid>
                         <Row>
                             <Label value={TRANSLATE.fontSize[lan]}/>
-                            <div className={"flex items-center gap-3"}>
-                                <TextSIcon color={fontSize === FONT_SIZE_S ? ACTIVE_COLOR : ""}
-                                           onClick={onFontS} className={`${activeClasses} text-lg`}/>
-                                <TextMIcon color={fontSize === FONT_SIZE_M ? ACTIVE_COLOR : ""}
-                                           onClick={onFontM} className={`${activeClasses} text-xl`}/>
-                                <TextLIcon color={fontSize === FONT_SIZE_L ? ACTIVE_COLOR : ""}
-                                           onClick={onFontL} className={`${activeClasses} text-2xl`}/>
-                            </div>
+                            <Dropdown color={"light"} label={fontSize} size={"xs"} id="fontSize">
+                                {
+                                    AVAILABLE_FONT_SIZES.map((v) =>
+                                        <Dropdown.Item
+                                            key={v} onClick={onFontSize(v)}
+                                            className={`${fontSize === v ? SELECTED_COLOR_CLASS : ""}`}>
+                                            {v}
+                                        </Dropdown.Item>
+                                    )
+                                }
+                            </Dropdown>
                         </Row>
 
                         <Row>

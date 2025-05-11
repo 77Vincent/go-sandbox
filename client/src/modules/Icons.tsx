@@ -1,8 +1,6 @@
 import {isMac} from "../utils.ts";
 import {MdKeyboardCommandKey, MdKeyboardControlKey} from "react-icons/md";
 
-export {ImTextColor as TextMIcon} from "react-icons/im"
-
 export {
     IoMdRemoveCircleOutline as RemoveIcon,
     IoMdStats as StatsIcon,
@@ -52,8 +50,6 @@ export {
     MdKeyboardReturn as EnterKey,
     MdOutlineAdd as AddIcon,
     MdOutlineEdit as EditIcon,
-    MdTextDecrease as TextSIcon,
-    MdTextIncrease as TextLIcon,
     MdUnfoldLess as  FoldIcon,
     MdUnfoldMore as UnfoldIcon,
 } from "react-icons/md";

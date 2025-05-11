@@ -13,7 +13,6 @@ import {
     DEFAULT_MAIN_FILE_PATH, NO_OPENED_DRAWER, DRAWER_SIZE_KEY,
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
-    FONT_SIZE_M,
     HELLO_WORLD,
     IS_AUTOCOMPLETION_ON_KEY,
     IS_LINT_ON_KEY,
@@ -23,14 +22,14 @@ import {
     MOBILE_WIDTH,
     MY_SANDBOXES, OPENED_DRAWER_KEY,
     SANDBOX_NAMES_KEY,
-    URI_BASE, SANDBOX_TEMP,
+    URI_BASE, SANDBOX_TEMP, DEFAULT_FONT_SIZE,
 } from "./constants.ts";
 import {AppContextI, KeyBindingsType, languages, mySandboxes, selectableDrawers} from "./types";
 import {EditorView, ViewUpdate} from "@codemirror/view";
 import {createContext} from "react";
 
 export function getFontSize(): number {
-    return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
+    return Number(localStorage.getItem(FONT_SIZE_KEY)) || DEFAULT_FONT_SIZE
 }
 
 export function getSandboxId(): mySandboxes {
@@ -114,12 +113,6 @@ export function getAutoCompletionOn(): boolean {
     return JSON.parse(localStorage.getItem(IS_AUTOCOMPLETION_ON_KEY) || DEFAULT_AUTOCOMPLETION_ON)
 }
 
-export function mapFontSize(size: number): "xs" | "sm" | "md" {
-    if (size < 12) return "xs";
-    if (size >= 15) return "md";
-    return "sm";
-}
-
 const apiUrl = import.meta.env.VITE_API_URL || "";
 const isDev = import.meta.env.MODE === "development";
 
@@ -191,6 +184,9 @@ export function posToHead(v: ViewUpdate | EditorView, row: number, col: number) 
 // default empty context value
 export const AppCtx = createContext<AppContextI>({
     isMobile: false,
+    fontSize: DEFAULT_FONT_SIZE,
+    setFontSize: () => {
+    },
     isRunning: false,
     setIsRunning: () => {
     },

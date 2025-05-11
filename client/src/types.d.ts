@@ -111,6 +111,9 @@ export interface AppContextI {
     // running
     isRunning: boolean;
     setIsRunning: (isRunning: boolean) => void;
+    // font size
+    fontSize: number;
+    setFontSize: (fontSize: number) => void;
     // language
     lan: languages;
     setLan: (lan: languages) => void;

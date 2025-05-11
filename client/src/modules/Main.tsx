@@ -4,13 +4,9 @@ import debounce from 'debounce';
 
 import {
     EDITOR_SIZE_KEY,
-    FONT_SIZE_KEY,
-    FONT_SIZE_L,
-    FONT_SIZE_S,
     IS_LINT_ON_KEY,
     DEBOUNCE_TIME,
     KEY_BINDINGS_KEY,
-    FONT_SIZE_M,
     STATS_INFO_PREFIX,
     EVENT_STDOUT,
     EVENT_ERROR,
@@ -45,7 +41,6 @@ import {
     getCodeContent,
     getKeyBindings,
     getEditorSize,
-    getFontSize,
     getLintOn,
     getUrl,
     getIsVerticalLayout,
@@ -97,7 +92,6 @@ const initialValue = getCodeContent(getSandboxId());
 const initialIsLintOn = getLintOn()
 const initialIsAutoCompletionOn = getAutoCompletionOn()
 const initialIsVerticalLayout = getIsVerticalLayout();
-const initialFontSize = getFontSize()
 const initialEditorSize = getEditorSize()
 const initialDrawerSize = getDrawerSize()
 const initialOpenedDrawer = getOpenedDrawer();
@@ -118,7 +112,6 @@ export default function Component(props: {
     const [showManual, setShowManual] = useState<boolean>(false);
 
     // settings
-    const [fontSize, setFontSize] = useState<number>(initialFontSize);
     const [editorSize, setEditorSize] = useState<number>(initialEditorSize);
     const [drawerSize, setDrawerSize] = useState<number>(initialDrawerSize);
     const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
@@ -370,27 +363,6 @@ export default function Component(props: {
         setDrawerSize(size)
     }
 
-    function onFontL() {
-        if (fontSize !== FONT_SIZE_L) {
-            setFontSize(FONT_SIZE_L)
-            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_L))
-        }
-    }
-
-    function onFontM() {
-        if (fontSize !== FONT_SIZE_M) {
-            setFontSize(FONT_SIZE_M)
-            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_M))
-        }
-    }
-
-    function onFontS() {
-        if (fontSize !== FONT_SIZE_S) {
-            setFontSize(FONT_SIZE_S)
-            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_S))
-        }
-    }
-
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
             <About show={showAbout} setShow={setShowAbout}/>
@@ -399,10 +371,6 @@ export default function Component(props: {
             <Settings
                 show={showSettings}
                 setShow={setShowSettings}
-                fontSize={fontSize}
-                onFontL={onFontL}
-                onFontM={onFontM}
-                onFontS={onFontS}
                 isVerticalLayout={isLayoutVertical}
                 setIsVerticalLayout={onIsVerticalLayoutChange}
                 onKeyBindingsChange={onKeyBindingsChange}
@@ -518,7 +486,6 @@ export default function Component(props: {
                                 isAutoCompletionOn={isAutoCompletionOn}
                                 value={value.current}
                                 patch={patch}
-                                fontSize={fontSize}
                                 keyBindings={keyBindings}
                                 onChange={onChange}
                                 setShowSettings={setShowSettings}
@@ -532,7 +499,6 @@ export default function Component(props: {
 
                     <Terminal
                         running={isRunning}
-                        fontSize={fontSize}
                         result={result}
                         info={info}
                         error={error}
