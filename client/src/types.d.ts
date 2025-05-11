@@ -108,6 +108,9 @@ export interface LSPDocumentSymbol {
 
 export interface AppContextI {
     isMobile: boolean;
+    // opened drawer
+    openedDrawer: selectableDrawers;
+    setOpenedDrawer: (id: selectableDrawers) => void;
     // running
     isRunning: boolean;
     setIsRunning: (isRunning: boolean) => void;

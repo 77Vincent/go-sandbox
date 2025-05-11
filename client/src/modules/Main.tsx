@@ -22,7 +22,7 @@ import {
     IS_AUTOCOMPLETION_ON_KEY,
     DRAWER_SIZE_KEY,
     RESIZABLE_HANDLER_WIDTH,
-    DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER, OPENED_DRAWER_KEY,
+    DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER,
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
 import {Divider, Wrapper} from "./Common.tsx";
@@ -43,7 +43,7 @@ import {
     getLintOn,
     getUrl,
     getIsVerticalLayout,
-    getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer, AppCtx
+    getSandboxId, getAutoCompletionOn, getDrawerSize, AppCtx
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {
@@ -52,7 +52,6 @@ import {
     mySandboxes,
     patchI,
     resultI,
-    selectableDrawers
 } from "../types";
 import About from "./About.tsx";
 import Manual from "./Manual.tsx";
@@ -93,7 +92,6 @@ const initialIsAutoCompletionOn = getAutoCompletionOn()
 const initialIsVerticalLayout = getIsVerticalLayout();
 const initialEditorSize = getEditorSize()
 const initialDrawerSize = getDrawerSize()
-const initialOpenedDrawer = getOpenedDrawer();
 const initialKeyBindings = getKeyBindings()
 
 export default function Component(props: {
@@ -101,9 +99,10 @@ export default function Component(props: {
 }) {
     const {sandboxId} = props
     const {
-        isRunning, setIsRunning,
         isMobile, goVersion,
-        setToastError, setToastInfo
+        isRunning, setIsRunning,
+        openedDrawer, setOpenedDrawer,
+        setToastError, setToastInfo,
     } = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
@@ -122,9 +121,6 @@ export default function Component(props: {
     const [result, setResult] = useState<resultI[]>([]);
     const [error, setError] = useState<string>("")
     const [info, setInfo] = useState<string>("")
-
-    // drawer related
-    const [openedDrawer, setOpenedDrawer] = useState<selectableDrawers>(initialOpenedDrawer);
 
     // document symbols
     const [documentSymbols, setDocumentSymbols] = useState<LSPDocumentSymbol[]>([])
@@ -350,11 +346,6 @@ export default function Component(props: {
         setEditorSize(size)
     }
 
-    function onOpenedDrawer(id: selectableDrawers) {
-        setOpenedDrawer(id)
-        localStorage.setItem(OPENED_DRAWER_KEY, id)
-    }
-
     function onDrawerResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         // calculate the size
         const size = refToElement.clientWidth
@@ -392,7 +383,7 @@ export default function Component(props: {
                     </Link>
 
                     <Divider/>
-                    <Features openedDrawer={openedDrawer} setOpenedDrawer={onOpenedDrawer}/>
+                    <Features/>
                 </div>
 
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">

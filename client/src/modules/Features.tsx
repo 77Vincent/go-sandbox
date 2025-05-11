@@ -5,24 +5,23 @@ import {selectableDrawers} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS,
     DRAWER_DOCUMENT_SYMBOLS, DRAWER_LIBRARY, DRAWER_STATS,
-    ICON_BUTTON_CLASS
+    ICON_BUTTON_CLASS, NO_OPENED_DRAWER, OPENED_DRAWER_KEY
 } from "../constants.ts";
 import {LearnIcon, LibraryIcon, OutlineIcon, StatsIcon} from "./Icons.tsx";
 import {useContext} from "react";
 import {AppCtx} from "../utils.ts";
 
-export default function Component(props: {
-    openedDrawer: selectableDrawers
-    setOpenedDrawer: (id: selectableDrawers) => void
-}) {
-    const {openedDrawer, setOpenedDrawer} = props;
-    const {lan} = useContext(AppCtx)
+export default function Component() {
+    const {lan, openedDrawer, setOpenedDrawer} = useContext(AppCtx)
+
     const onClick = (id: selectableDrawers) => {
         return () => {
             if (id !== openedDrawer) {
                 setOpenedDrawer(id);
+                localStorage.setItem(OPENED_DRAWER_KEY, id)
             } else {
-                setOpenedDrawer("");
+                setOpenedDrawer(NO_OPENED_DRAWER);
+                localStorage.setItem(OPENED_DRAWER_KEY, NO_OPENED_DRAWER)
             }
         };
     }

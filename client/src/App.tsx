@@ -3,7 +3,16 @@ import {ReactNode, useState} from "react";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 import {Flowbite} from "flowbite-react";
-import {getGoVersion, getSandboxId, AppCtx, getLanguage, getFileUri, isMobileDevice, getFontSize} from "./utils.ts";
+import {
+    getGoVersion,
+    getSandboxId,
+    AppCtx,
+    getLanguage,
+    getFileUri,
+    isMobileDevice,
+    getFontSize,
+    getOpenedDrawer
+} from "./utils.ts";
 import {SANDBOX_TEMP} from "./constants.ts";
 import {mySandboxes} from "./types";
 
@@ -12,6 +21,7 @@ const initGoVersion = getGoVersion()
 const initLan = getLanguage()
 const initFile = getFileUri(initGoVersion)
 const initFontSize = getFontSize()
+const initOpenedDrawer = getOpenedDrawer();
 
 function App() {
     const [toastError, setToastError] = useState<ReactNode>(null);
@@ -19,6 +29,7 @@ function App() {
 
     // status
     const [isRunning, setIsRunning] = useState(false);
+    const [openedDrawer, setOpenedDrawer] = useState(initOpenedDrawer);
 
     // settings
     const [lan, setLan] = useState(initLan);
@@ -33,6 +44,7 @@ function App() {
         <AppCtx.Provider value={{
             isMobile: isMobileDevice(),
             isRunning, setIsRunning,
+            openedDrawer, setOpenedDrawer,
             lan, setLan,
             fontSize, setFontSize,
             file, setFile,

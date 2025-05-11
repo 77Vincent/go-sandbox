@@ -184,6 +184,9 @@ export function posToHead(v: ViewUpdate | EditorView, row: number, col: number) 
 // default empty context value
 export const AppCtx = createContext<AppContextI>({
     isMobile: false,
+    openedDrawer: NO_OPENED_DRAWER,
+    setOpenedDrawer: () => {
+    },
     fontSize: DEFAULT_FONT_SIZE,
     setFontSize: () => {
     },
