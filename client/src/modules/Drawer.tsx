@@ -9,9 +9,9 @@ import {
 } from "../constants.ts";
 import {countSymbols, SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {Divider} from "./Common.tsx";
-import {CloseIcon} from "./Icons.tsx";
-import {useCallback, useContext} from "react";
+import {Divider, IconButton, Row} from "./Common.tsx";
+import {CloseIcon, FoldIcon, UnfoldIcon} from "./Icons.tsx";
+import {useCallback, useContext, useState} from "react";
 import {AppCtx} from "../utils.ts";
 
 const symbolStyle = (kind: number): string => {
@@ -50,6 +50,7 @@ export default function Component(props: {
         lines,
     } = props;
     const {lan, isRunning, openedDrawer, setOpenedDrawer} = useContext(AppCtx)
+    const [foldedSnippetSections, setFoldedSnippetSections] = useState<Record<string, boolean>>({})
 
     const closeDrawer = () => {
         setOpenedDrawer(NO_OPENED_DRAWER);
@@ -72,6 +73,17 @@ export default function Component(props: {
             setSelectedSnippet(id);
         }
     }, [isRunning, setSelectedSnippet]);
+
+    const foldSection = useCallback((key: string) => {
+        return () => {
+            setFoldedSnippetSections((prev) => {
+                return {
+                    ...prev,
+                    [key]: !prev[key]
+                }
+            })
+        }
+    }, []);
 
     const displaySymbols = Object.entries(countSymbols(documentSymbols))
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -146,10 +158,14 @@ export default function Component(props: {
                                 Object.keys(SNIPPETS).map(key => {
                                     return (
                                         <div key={key}>
-                                            <div key={key}
-                                                 className={"border-b p-2 text-sm font-semibold text-black dark:border-b-gray-700 dark:text-white"}>{key}</div>
+                                            <Row className={"border-b p-2 pr-1.5 dark:border-b-gray-700"}>
+                                                <div key={key}
+                                                     className={"text-sm font-semibold text-black  dark:text-white"}>{key}</div>
+                                                <IconButton onClick={foldSection(key)} icon={foldedSnippetSections[key] ? <UnfoldIcon/> : <FoldIcon/>}/>
+                                            </Row>
 
-                                            <div className={"border-b text-gray-900 dark:border-b-gray-700 dark:text-gray-200"}>
+                                            <div
+                                                className={`border-b text-gray-900 dark:border-b-gray-700 dark:text-gray-200 ${foldedSnippetSections[key] ? "hidden" : ""}`}>
                                                 {
                                                     Object.entries(SNIPPETS[key]).map(([subkey, value]) => {
                                                         return (
