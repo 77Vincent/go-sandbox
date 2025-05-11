@@ -13,8 +13,8 @@ import {
     getFontSize,
     getOpenedDrawer
 } from "./utils.ts";
-import {FONT_SIZE_KEY, OPENED_DRAWER_KEY, SANDBOX_TEMP} from "./constants.ts";
-import {mySandboxes, selectableDrawers} from "./types";
+import {FONT_SIZE_KEY, LANGUAGE_KEY, OPENED_DRAWER_KEY, SANDBOX_TEMP} from "./constants.ts";
+import {languages, mySandboxes, selectableDrawers} from "./types";
 
 const initSandboxId = getSandboxId()
 const initGoVersion = getGoVersion()
@@ -50,12 +50,17 @@ function App() {
         localStorage.setItem(FONT_SIZE_KEY, size.toString());
     }, []);
 
+    const updateLan = useCallback((lan: languages) => {
+        setLan(lan);
+        localStorage.setItem(LANGUAGE_KEY, lan);
+    }, []);
+
     return (
         <AppCtx.Provider value={{
             isMobile: isMobileDevice(),
             isRunning, setIsRunning,
             openedDrawer, updateOpenedDrawer,
-            lan, setLan,
+            lan, updateLan,
             fontSize, updateFontSize,
             file, setFile,
             goVersion, setGoVersion,

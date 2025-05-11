@@ -194,7 +194,7 @@ export const AppCtx = createContext<AppContextI>({
     setIsRunning: () => {
     },
     lan: DEFAULT_LANGUAGE,
-    setLan: () => {
+    updateLan: () => {
     },
     file: "",
     setFile: () => {

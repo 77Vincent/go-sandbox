@@ -119,7 +119,7 @@ export interface AppContextI {
     updateFontSize: (fontSize: number) => void;
     // language
     lan: languages;
-    setLan: (lan: languages) => void;
+    updateLan: (lan: languages) => void;
     // file
     file: string;
     setFile: (file: string) => void;

@@ -3,7 +3,7 @@ import {DarkThemeToggle, Dropdown, Label, Modal, useThemeMode} from "flowbite-re
 import {
     ACTIVE_COLOR, AVAILABLE_FONT_SIZES,
     GO_VERSION_KEY, GO_VERSION_MAP, INACTIVE_TEXT_CLASS,
-    keyBindingsMap, LANGUAGE_KEY,
+    keyBindingsMap,
     SELECTED_COLOR_CLASS
 } from "../constants.ts";
 import {KeyBindingsType, languages} from "../types";
@@ -33,7 +33,7 @@ export default function Component(props: {
     onAutoCompletion: () => void;
 }) {
     const {
-        lan, setLan,
+        lan, updateLan,
         fontSize, updateFontSize,
         goVersion,
     } = useContext(AppCtx)
@@ -66,8 +66,7 @@ export default function Component(props: {
     function onLanguage(id: languages) {
         return () => {
             if (id !== lan) {
-                localStorage.setItem(LANGUAGE_KEY, id);
-                setLan(id)
+                updateLan(id)
             }
         }
     }
