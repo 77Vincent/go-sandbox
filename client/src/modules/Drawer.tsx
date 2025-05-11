@@ -5,7 +5,7 @@ import {
     DRAWER_STATS,
     INACTIVE_TEXT_CLASS,
     NO_OPENED_DRAWER,
-    OPENED_DRAWER_KEY, SNIPPETS
+    SNIPPETS
 } from "../constants.ts";
 import {countSymbols, SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
@@ -49,12 +49,11 @@ export default function Component(props: {
         setSelectedSnippet,
         lines,
     } = props;
-    const {lan, isRunning, openedDrawer, setOpenedDrawer} = useContext(AppCtx)
+    const {lan, isRunning, openedDrawer, updateOpenedDrawer} = useContext(AppCtx)
     const [foldedSnippetSections, setFoldedSnippetSections] = useState<Record<string, boolean>>({})
 
     const closeDrawer = () => {
-        setOpenedDrawer(NO_OPENED_DRAWER);
-        localStorage.setItem(OPENED_DRAWER_KEY, NO_OPENED_DRAWER);
+        updateOpenedDrawer(NO_OPENED_DRAWER);
     }
 
     const onSymbolClick = (i: number) => {

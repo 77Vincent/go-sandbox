@@ -1,5 +1,5 @@
 import Main from "./modules/Main.tsx";
-import {ReactNode, useState} from "react";
+import {ReactNode, useCallback, useState} from "react";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 import {Flowbite} from "flowbite-react";
@@ -13,8 +13,8 @@ import {
     getFontSize,
     getOpenedDrawer
 } from "./utils.ts";
-import {SANDBOX_TEMP} from "./constants.ts";
-import {mySandboxes} from "./types";
+import {OPENED_DRAWER_KEY, SANDBOX_TEMP} from "./constants.ts";
+import {mySandboxes, selectableDrawers} from "./types";
 
 const initSandboxId = getSandboxId()
 const initGoVersion = getGoVersion()
@@ -40,11 +40,16 @@ function App() {
     // editor state
     const [file, setFile] = useState(initFile);
 
+    const updateOpenedDrawer = useCallback((id: selectableDrawers) => {
+        setOpenedDrawer(id);
+        localStorage.setItem(OPENED_DRAWER_KEY, id);
+    }, []);
+
     return (
         <AppCtx.Provider value={{
             isMobile: isMobileDevice(),
             isRunning, setIsRunning,
-            openedDrawer, setOpenedDrawer,
+            openedDrawer, updateOpenedDrawer,
             lan, setLan,
             fontSize, setFontSize,
             file, setFile,

@@ -110,7 +110,7 @@ export interface AppContextI {
     isMobile: boolean;
     // opened drawer
     openedDrawer: selectableDrawers;
-    setOpenedDrawer: (id: selectableDrawers) => void;
+    updateOpenedDrawer: (id: selectableDrawers) => void;
     // running
     isRunning: boolean;
     setIsRunning: (isRunning: boolean) => void;
