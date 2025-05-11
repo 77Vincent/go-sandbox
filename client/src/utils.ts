@@ -188,7 +188,7 @@ export const AppCtx = createContext<AppContextI>({
     updateOpenedDrawer: () => {
     },
     fontSize: DEFAULT_FONT_SIZE,
-    setFontSize: () => {
+    updateFontSize: () => {
     },
     isRunning: false,
     setIsRunning: () => {

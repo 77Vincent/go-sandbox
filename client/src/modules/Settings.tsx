@@ -1,7 +1,7 @@
 import {DarkThemeToggle, Dropdown, Label, Modal, useThemeMode} from "flowbite-react";
 
 import {
-    ACTIVE_COLOR, AVAILABLE_FONT_SIZES, FONT_SIZE_KEY,
+    ACTIVE_COLOR, AVAILABLE_FONT_SIZES,
     GO_VERSION_KEY, GO_VERSION_MAP, INACTIVE_TEXT_CLASS,
     keyBindingsMap, LANGUAGE_KEY,
     SELECTED_COLOR_CLASS
@@ -34,7 +34,7 @@ export default function Component(props: {
 }) {
     const {
         lan, setLan,
-        fontSize, setFontSize,
+        fontSize, updateFontSize,
         goVersion,
     } = useContext(AppCtx)
     const {mode} = useThemeMode()
@@ -84,8 +84,7 @@ export default function Component(props: {
     function onFontSize(v: number) {
         return () => {
             if (v !== fontSize) {
-                localStorage.setItem(FONT_SIZE_KEY, String(v));
-                setFontSize(v);
+                updateFontSize(v);
             }
         }
     }
