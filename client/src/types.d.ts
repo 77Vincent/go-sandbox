@@ -120,6 +120,9 @@ export interface AppContextI {
     // language
     lan: languages;
     updateLan: (lan: languages) => void;
+    // code value
+    value: string;
+    updateValue: (value: string) => void;
     // file
     file: string;
     setFile: (file: string) => void;

@@ -11,7 +11,7 @@ import {
     getFileUri,
     isMobileDevice,
     getFontSize,
-    getOpenedDrawer
+    getOpenedDrawer, getCodeContent, isUserCode
 } from "./utils.ts";
 import {
     SANDBOX_ID_KEY,
@@ -19,9 +19,10 @@ import {
     GO_VERSION_KEY,
     LANGUAGE_KEY,
     OPENED_DRAWER_KEY,
-    SANDBOX_TEMP
+    SANDBOX_TEMP, DEBOUNCE_TIME
 } from "./constants.ts";
 import {languages, mySandboxes, selectableDrawers} from "./types";
+import debounce from "debounce";
 
 const initSandboxId = getSandboxId()
 const initGoVersion = getGoVersion()
@@ -29,6 +30,7 @@ const initLan = getLanguage()
 const initFile = getFileUri(initGoVersion)
 const initFontSize = getFontSize()
 const initOpenedDrawer = getOpenedDrawer();
+const initValue = getCodeContent(initSandboxId)
 
 function App() {
     const [toastError, setToastError] = useState<ReactNode>(null);
@@ -46,6 +48,12 @@ function App() {
 
     // editor state
     const [file, setFile] = useState(initFile);
+    const [value, setValue] = useState<string>(initValue);
+
+    // debounced function
+    const debouncedStoreValue = debounce(useCallback((v: string) => {
+        localStorage.setItem(sandboxId, v);
+    }, [sandboxId]), DEBOUNCE_TIME);
 
     const updateOpenedDrawer = useCallback((id: selectableDrawers) => {
         setOpenedDrawer(id);
@@ -69,6 +77,12 @@ function App() {
         localStorage.setItem(SANDBOX_ID_KEY, id);
         window.location.href = window.location.origin // remove all paths and query string
     }, []);
+    const updateValue = useCallback((v: string) => {
+        setValue(v);
+        if (isUserCode(file)) {
+            debouncedStoreValue(v);
+        }
+    }, [debouncedStoreValue, file]);
 
     return (
         <AppCtx.Provider value={{
@@ -76,6 +90,7 @@ function App() {
             // runtime status
             isRunning, setIsRunning,
             file, setFile,
+            value, updateValue,
             // settings
             openedDrawer, updateOpenedDrawer,
             lan, updateLan,

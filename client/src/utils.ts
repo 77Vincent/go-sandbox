@@ -199,6 +199,9 @@ export const AppCtx = createContext<AppContextI>({
     file: "",
     setFile: () => {
     },
+    value: "",
+    updateValue: () => {
+    },
     goVersion: "",
     updateGoVersion: () => {
     },

@@ -206,7 +206,6 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
 
 export default function Component(props: {
     sandboxId: mySandboxes
-    value: string;
     patch: patchI;
 
     // document symbols
@@ -237,7 +236,7 @@ export default function Component(props: {
         selectedSymbol,
 
         // props
-        value, patch,
+        patch,
         keyBindings,
         isLintOn, isAutoCompletionOn, isVertical,
         // handlers
@@ -251,7 +250,10 @@ export default function Component(props: {
         debouncedShare,
     } = props;
     const {mode} = useThemeMode();
-    const {setToastError, goVersion, fontSize, openedDrawer} = useContext(AppCtx)
+    const {
+        setToastError, goVersion, fontSize, openedDrawer,
+        value, updateValue,
+    } = useContext(AppCtx)
 
     // local state
     const [row, setRow] = useState(1); // 1-based index
@@ -376,22 +378,15 @@ export default function Component(props: {
         }
     }, [setToastError]), DEBOUNCE_TIME)
 
-    const debouncedStoreCode = debounce(useCallback((data: string) => {
-        // only store user code
-        if (isUserCode(file.current)) {
-            localStorage.setItem(sandboxId, data)
-        }
-    }, [sandboxId]), DEBOUNCE_TIME);
-
     const onViewUpdate = useCallback((v: ViewUpdate) => {
         if (v.docChanged) {
             const data = v.state.doc.toString();
             onChange(data);
-            debouncedStoreCode(data);
+            updateValue(data);
             debouncedLspUpdate(v);
             debouncedGetDocumentSymbol();
         }
-    }, [onChange, debouncedLspUpdate, debouncedStoreCode, debouncedGetDocumentSymbol]);
+    }, [onChange, updateValue, debouncedLspUpdate, debouncedGetDocumentSymbol]);
 
     const clearUsages = useCallback(() => {
         view.current?.dispatch({

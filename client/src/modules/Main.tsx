@@ -42,7 +42,7 @@ import {
     getLintOn,
     getUrl,
     getIsVerticalLayout,
-    getSandboxId, getAutoCompletionOn, getDrawerSize, AppCtx
+    getAutoCompletionOn, getDrawerSize, AppCtx
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {
@@ -85,7 +85,6 @@ function FetchErrorMessage(props: {
 const resizeHandlerHoverClasses = "w-1 z-10 hover:bg-cyan-500 transition-colors";
 
 // default values
-const initialValue = getCodeContent(getSandboxId());
 const initialIsLintOn = getLintOn()
 const initialIsAutoCompletionOn = getAutoCompletionOn()
 const initialIsVerticalLayout = getIsVerticalLayout();
@@ -102,6 +101,7 @@ export default function Component(props: {
         isRunning, setIsRunning,
         openedDrawer,
         setToastError, setToastInfo,
+        value,
     } = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
@@ -126,7 +126,7 @@ export default function Component(props: {
     const [selectedSymbol, setSelectedSymbol] = useState<LSPDocumentSymbol | null>(null)
 
     // reference the latest state
-    const value = useRef(initialValue);
+    const valueRef = useRef(value);
     const isRunningRef = useRef(isRunning);
 
     // mode status
@@ -137,15 +137,16 @@ export default function Component(props: {
     // IMPORTANT: update the ref when the state changes
     useEffect(() => {
         isRunningRef.current = isRunning
-    }, [isRunning]);
+        valueRef.current = value
+    }, [isRunning, value]);
 
     function onChange(newCode: string = "") {
-        value.current = newCode
+        valueRef.current = newCode
     }
 
     function shouldAbort(): boolean {
         // do not continue if the code is empty or running
-        return isRunningRef.current || !value.current
+        return isRunningRef.current || !valueRef.current
     }
 
     const debouncedShare = debounce(useCallback(async () => {
@@ -170,11 +171,11 @@ export default function Component(props: {
         try {
             setIsRunning(true)
 
-            const {stdout, error, message} = await formatCode(value.current);
+            const {stdout, error, message} = await formatCode(valueRef.current);
 
             if (stdout) {
                 // must call together
-                value.current = stdout // important: update immediately
+                valueRef.current = stdout // important: update immediately
                 setPatch({value: stdout, keepCursor: true})
             }
             if (error) {
@@ -203,7 +204,7 @@ export default function Component(props: {
                 stdout: formatted,
                 error: formatError,
                 message: formatMessage
-            } = await formatCode(value.current);
+            } = await formatCode(valueRef.current);
 
             setInfo("")
             setResult([])
@@ -224,11 +225,11 @@ export default function Component(props: {
             // TODO: annotation or marker
             // must call together
             setPatch({value: formatted, keepCursor: true})
-            value.current = formatted // important: update immediately
+            valueRef.current = formatted // important: update immediately
 
             const source = new SSE(getUrl("/execute"), {
                 headers: {'Content-Type': 'application/json'},
-                payload: JSON.stringify({code: value.current, version: goVersion})
+                payload: JSON.stringify({code: valueRef.current, version: goVersion})
             });
 
             source.addEventListener(EVENT_STDOUT, ({data}: MessageEvent) => {
@@ -273,7 +274,7 @@ export default function Component(props: {
     const debouncedGetSnippet = debounce(useCallback(async (id: string) => {
         try {
             const data = await getSnippet(id);
-            value.current = data
+            valueRef.current = data
             setPatch({value: data});
             debouncedRun()
         } catch (e) {
@@ -383,7 +384,7 @@ export default function Component(props: {
                 <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
                     <Actions format={debouncedFormat}
                              run={debouncedRun}
-                             share={debouncedShare} hasCode={value.current.length > 0}/>
+                             share={debouncedShare} hasCode={valueRef.current.length > 0}/>
 
                     {
                         isMobile ? null : <>
@@ -421,7 +422,7 @@ export default function Component(props: {
                     <Drawer documentSymbols={documentSymbols}
                             setSelectedSymbol={setSelectedSymbol}
                             setSelectedSnippet={debouncedGetSnippet}
-                            lines={value.current.split("\n").length}
+                            lines={valueRef.current.split("\n").length}
                     />
                 </Resizable>
 
@@ -463,7 +464,6 @@ export default function Component(props: {
                                 isVertical={isLayoutVertical}
                                 isLintOn={isLintOn}
                                 isAutoCompletionOn={isAutoCompletionOn}
-                                value={value.current}
                                 patch={patch}
                                 keyBindings={keyBindings}
                                 onChange={onChange}
