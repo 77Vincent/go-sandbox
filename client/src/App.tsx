@@ -8,10 +8,9 @@ import {
     getSandboxId,
     AppCtx,
     getLanguage,
-    getFileUri,
     isMobileDevice,
     getFontSize,
-    getOpenedDrawer, getCodeContent, getSourceId, getSnippetId
+    getOpenedDrawer, getCodeContent, getSourceId, getSnippetId, getDefaultFileUri
 } from "./utils.ts";
 import {
     SANDBOX_ID_KEY,
@@ -31,7 +30,7 @@ const sourceId = getSourceId();
 const initSandboxId = getSandboxId()
 const initGoVersion = getGoVersion()
 const initLan = getLanguage()
-const initFile = getFileUri(initGoVersion)
+const initFile = getDefaultFileUri()
 const initFontSize = getFontSize()
 const initOpenedDrawer = getOpenedDrawer();
 const initValue = getCodeContent(initSandboxId)

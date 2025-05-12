@@ -154,6 +154,18 @@ export function getFileUri(sandboxVersion: string): string {
     return `${URI_BASE}/go${sandboxVersion}${DEFAULT_MAIN_FILE_PATH}`
 }
 
+export function getDefaultFileUri(): string {
+    const path = window.location.pathname
+    const matches = path.match(SOURCE_REGEX);
+    // return the source file path when viewing external source code
+    if (matches) {
+        const file = path.split("/").pop() || "";
+        return decodeURIComponent(file)
+
+    }
+    return getFileUri(getGoVersion())
+}
+
 export function displayFileUri(file: string): string {
     return file.includes(DEFAULT_MAIN_FILE_PATH) ? file.substring(21) : file.substring(24)
 }
