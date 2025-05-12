@@ -107,7 +107,10 @@ export interface LSPDocumentSymbol {
 }
 
 export interface AppContextI {
+    // on time state
     isMobile: boolean;
+    sourceId: string;
+    snippetId: string;
     // opened drawer
     openedDrawer: selectableDrawers;
     updateOpenedDrawer: (id: selectableDrawers) => void;

@@ -75,6 +75,7 @@ export const ACTIVE_ICON_BUTTON_CLASS_2 = "cursor-pointer text-gray-400 text-sm 
 export const INACTIVE_TEXT_CLASS = "text-gray-400 dark:text-gray-600"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
+export const SOURCE_REGEX = /\/sources\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
 export const STATS_INFO_PREFIX = "STATS_INFO:"
 
 export const HTTP_INTERNAL_ERROR = 500

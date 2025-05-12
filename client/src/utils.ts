@@ -22,17 +22,25 @@ import {
     MOBILE_WIDTH,
     MY_SANDBOXES, OPENED_DRAWER_KEY,
     SANDBOX_NAMES_KEY,
-    URI_BASE, SANDBOX_TEMP, DEFAULT_FONT_SIZE,
+    URI_BASE, SANDBOX_TEMP, DEFAULT_FONT_SIZE, SOURCE_REGEX, SNIPPET_REGEX,
 } from "./constants.ts";
 import {AppContextI, KeyBindingsType, languages, mySandboxes, selectableDrawers} from "./types";
 import {EditorView, ViewUpdate} from "@codemirror/view";
 import {createContext} from "react";
+import {SessionI} from "./modules/Sessions.tsx";
 
 export function getFontSize(): number {
     return Math.floor(Number(localStorage.getItem(FONT_SIZE_KEY))) || DEFAULT_FONT_SIZE
 }
 
 export function getSandboxId(): mySandboxes {
+    const path = window.location.pathname
+
+    // when viewing source or snippet, using the temp sandbox
+    if (path.match(SOURCE_REGEX) || path.match(SNIPPET_REGEX)) {
+        return SANDBOX_TEMP
+    }
+
     return localStorage.getItem(SANDBOX_ID_KEY) as mySandboxes || DEFAULT_SANDBOX_ID
 }
 
@@ -181,9 +189,31 @@ export function posToHead(v: ViewUpdate | EditorView, row: number, col: number) 
     return line.from + col - 1;
 }
 
+export function getSourceId(): string {
+    const path = window.location.pathname;
+    const matches = path.match(SOURCE_REGEX);
+    if (matches) {
+        const file = path.split("/").pop();
+        return decodeURIComponent(file || "");
+    }
+    return "";
+}
+
+export function getSnippetId(): string {
+    const path = window.location.pathname;
+    const matches = path.match(SNIPPET_REGEX);
+    if (matches) {
+        const id = path.split("/").pop();
+        return decodeURIComponent(id || "");
+    }
+    return "";
+}
+
 // default empty context value
 export const AppCtx = createContext<AppContextI>({
     isMobile: false,
+    sourceId: "",
+    snippetId: "",
     openedDrawer: NO_OPENED_DRAWER,
     updateOpenedDrawer: () => {
     },
@@ -215,3 +245,18 @@ export const AppCtx = createContext<AppContextI>({
     setToastInfo: () => {
     },
 });
+
+export const removeSession = (sessions: SessionI[], index: number) => {
+    if (index !== -1) {
+        sessions.splice(index, 1)
+    }
+}
+
+export const pushSession = (sessions: SessionI[], session: SessionI) => {
+    const index = sessions.findIndex((s) => s.id === session.id)
+    if (index !== -1) {
+        sessions[index] = session
+    } else {
+        sessions.push(session)
+    }
+}

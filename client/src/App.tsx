@@ -11,7 +11,7 @@ import {
     getFileUri,
     isMobileDevice,
     getFontSize,
-    getOpenedDrawer, getCodeContent
+    getOpenedDrawer, getCodeContent, getSourceId, getSnippetId
 } from "./utils.ts";
 import {
     SANDBOX_ID_KEY,
@@ -19,11 +19,15 @@ import {
     GO_VERSION_KEY,
     LANGUAGE_KEY,
     OPENED_DRAWER_KEY,
-    SANDBOX_TEMP, DEBOUNCE_TIME_LONG
+    DEBOUNCE_TIME_LONG
 } from "./constants.ts";
 import {languages, mySandboxes, selectableDrawers} from "./types";
 import debounce from "debounce";
 
+// init values
+const isMobile = isMobileDevice();
+const snippetId = getSnippetId();
+const sourceId = getSourceId();
 const initSandboxId = getSandboxId()
 const initGoVersion = getGoVersion()
 const initLan = getLanguage()
@@ -84,7 +88,9 @@ function App() {
 
     return (
         <AppCtx.Provider value={{
-            isMobile: isMobileDevice(),
+            isMobile,
+            sourceId,
+            snippetId,
             // runtime status
             isRunning, setIsRunning,
             file, setFile,
@@ -107,10 +113,7 @@ function App() {
 
                         <Routes>
                             <Route path="*" element={
-                                <Main sandboxId={initSandboxId}/>
-                            }/>
-                            <Route path="/snippets/:id" element={
-                                <Main sandboxId={SANDBOX_TEMP}/>
+                                <Main/>
                             }/>
                         </Routes>
                     </main>
