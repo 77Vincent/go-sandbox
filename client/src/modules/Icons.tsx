@@ -14,7 +14,6 @@ export { GrPrevious as PrevIcon, GrNext as NextIcon } from "react-icons/gr";
 
 export {
     IoClose as CloseIcon,
-    IoBook as LibraryIcon,
     IoStatsChart as StatsIcon,
     IoShareSocialSharp as ShareIcon,
     IoPlaySharp as RunIcon,
@@ -31,6 +30,8 @@ export {
     HiRefresh as RefreshIcon,
     HiMail as MailIcon,
 } from "react-icons/hi";
+
+export { ImBook as LibraryIcon } from "react-icons/im";
 
 export { FaCode as FormatIcon } from "react-icons/fa";
 
@@ -56,7 +57,9 @@ export {
     MdUnfoldMore as UnfoldIcon,
 } from "react-icons/md";
 
-export {BsShift as ShiftKey} from "react-icons/bs";
+export {
+    BsShift as ShiftKey,
+} from "react-icons/bs";
 
 export function MetaKey() {
     return isMac() ? <MdKeyboardCommandKey/> : <MdKeyboardControlKey/>;

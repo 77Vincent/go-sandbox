@@ -25,23 +25,23 @@ export default function Component() {
 
     return (
         <>
-            <Tooltip className={"text-xs"} content={TRANSLATE.documentSymbols[lan]}>
+            <Tooltip className={"text-xs font-light"} content={TRANSLATE.documentSymbols[lan]}>
                 <OutlineIcon
                     onClick={onClick(DRAWER_DOCUMENT_SYMBOLS)} size={isMobile ? 16 : 18}
                     className={`${openedDrawer === DRAWER_DOCUMENT_SYMBOLS ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}
                 />
             </Tooltip>
 
-            <Tooltip className={"text-xs"} content={TRANSLATE.stats[lan]}>
+            <Tooltip className={"text-xs font-light"} content={TRANSLATE.stats[lan]}>
                 <StatsIcon
                     onClick={onClick(DRAWER_STATS)} size={isMobile ? 14 : 16}
                     className={`${openedDrawer === DRAWER_STATS ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}
                 />
             </Tooltip>
 
-            <Tooltip className={"text-xs"} content={TRANSLATE.library[lan]}>
+            <Tooltip className={"text-xs font-light"} content={TRANSLATE.library[lan]}>
                 <LibraryIcon
-                    onClick={onClick(DRAWER_LIBRARY)} size={isMobile ? 16 : 18}
+                    onClick={onClick(DRAWER_LIBRARY)} size={isMobile ? 15 : 16}
                     className={`${openedDrawer === DRAWER_LIBRARY ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS}`}
                 />
             </Tooltip>

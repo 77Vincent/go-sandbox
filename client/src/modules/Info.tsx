@@ -50,7 +50,7 @@ export default function Component(props: {
             </Tooltip>
 
             <Tooltip className={"text-xs"} content={TRANSLATE.about[lan]}>
-                <IconButton icon={<AboutIcon size={isMobile ? 18 : 20}/>} className={ICON_BUTTON_CLASS}
+                <IconButton icon={<AboutIcon size={isMobile ? 18.5 : 20.5}/>} className={ICON_BUTTON_CLASS}
                             onClick={() => {
                                 window.open("/about.html", "_blank");
                             }}
