@@ -13,7 +13,6 @@ import {
     EVENT_STDERR,
     EVENT_CLEAR,
     EVENT_DONE,
-    SNIPPET_REGEX,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
     EDITOR_SIZE_MAX,
@@ -33,22 +32,20 @@ import SandboxSelector from "./SandboxSelector.tsx";
 import Features from "./Features.tsx";
 import Drawer from "./Drawer.tsx";
 import Info from "./Info.tsx";
-import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
+import {fetchSnippet, fetchSourceCode, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
 
 import {
-    getCodeContent,
     getKeyBindings,
     getEditorSize,
     getLintOn,
     getUrl,
     getIsVerticalLayout,
-    getAutoCompletionOn, getDrawerSize, AppCtx
+    getAutoCompletionOn, getDrawerSize, AppCtx, isUserCode
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {
     KeyBindingsType,
     LSPDocumentSymbol,
-    mySandboxes,
     patchI,
     resultI,
 } from "../types";
@@ -92,16 +89,14 @@ const initialEditorSize = getEditorSize()
 const initialDrawerSize = getDrawerSize()
 const initialKeyBindings = getKeyBindings()
 
-export default function Component(props: {
-    sandboxId: mySandboxes
-}) {
-    const {sandboxId} = props
+export default function Component() {
     const {
-        isMobile, goVersion,
+        isMobile, sourceId, snippetId,
+        goVersion, sandboxId,
         isRunning, setIsRunning,
         openedDrawer,
         setToastError, setToastInfo,
-        value,
+        value, file,
     } = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
@@ -127,6 +122,7 @@ export default function Component(props: {
 
     // reference the latest state
     const valueRef = useRef(value);
+    const fileRef = useRef(file);
     const isRunningRef = useRef(isRunning);
 
     // mode status
@@ -138,7 +134,8 @@ export default function Component(props: {
     useEffect(() => {
         isRunningRef.current = isRunning
         valueRef.current = value
-    }, [isRunning, value]);
+        fileRef.current = file
+    }, [isRunning, value, file]);
 
     function onChange(newCode: string = "") {
         valueRef.current = newCode
@@ -150,18 +147,24 @@ export default function Component(props: {
     }
 
     const debouncedShare = debounce(useCallback(async () => {
-        try {
-            const id = await shareSnippet(getCodeContent(sandboxId)); // so won't share the non-user code
-            const url = `${location.origin}/snippets/${id}`
-            // this is a hack for Safari!
-            setTimeout(() => {
-                navigator.clipboard.writeText(url);
-            }, 0);
-            setToastInfo(<ShareSuccessMessage url={url}/>)
-        } catch (e) {
-            setToastError((e as Error).message)
+        let url = ""
+        if (isUserCode(fileRef.current)) {
+            try {
+                const id = await shareSnippet(valueRef.current);
+                url = `${location.origin}/snippets/${id}`
+            } catch (e) {
+                setToastError((e as Error).message)
+            }
+        } else {
+            url = `${location.origin}/sources/${encodeURIComponent(fileRef.current)}`
         }
-    }, [sandboxId, setToastInfo, setToastError]), DEBOUNCE_TIME);
+
+        // this is a hack for Safari!
+        setTimeout(() => {
+            navigator.clipboard.writeText(url);
+        }, 0);
+        setToastInfo(<ShareSuccessMessage url={url}/>)
+    }, [setToastInfo, setToastError]), DEBOUNCE_TIME);
 
     const debouncedFormat = debounce(useCallback(async () => {
         if (shouldAbort()) {
@@ -290,15 +293,23 @@ export default function Component(props: {
                 return
             }
 
-            const matches = location.pathname.match(SNIPPET_REGEX)
-            if (matches) {
-                const raw = matches[0]
-                const id = raw.split("/")[2]
+            if (snippetId) {
                 try {
-                    const data = await fetchSnippet(id)
+                    const data = await fetchSnippet(snippetId)
                     if (data) {
                         setPatch({value: data})
                         debouncedRun() // run immediately after fetching
+                    }
+                } catch (e) {
+                    setToastError(<FetchErrorMessage error={(e as Error).message}/>)
+                }
+            }
+
+            if (sourceId) {
+                try {
+                    const data = await fetchSourceCode(decodeURIComponent(sourceId), goVersion)
+                    if (data) {
+                        setPatch({value: data.content})
                     }
                 } catch (e) {
                     setToastError(<FetchErrorMessage error={(e as Error).message}/>)

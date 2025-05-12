@@ -96,7 +96,7 @@ import {
     getFileUri,
     getWsUrl,
     isUserCode,
-    posToHead,
+    posToHead, pushSession, removeSession,
     viewUpdate
 } from "../utils.ts";
 import {isFunc, LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
@@ -682,6 +682,10 @@ export default function Component(props: {
     const handleError = useCallback((message: string) => {
         setToastError(message);
     }, [setToastError]);
+    const handleFileChange = useCallback((file: string) => {
+        fileRef.current = file;
+        setFile(file);
+    }, [setFile]);
 
     // must only run once, so no dependencies
     useEffect(() => {
@@ -702,12 +706,14 @@ export default function Component(props: {
         view.current.focus();
 
         // add the default session
-        sessions.current = [{id: getFileUri(goVersion), cursor: cursorHead}]
+        pushSession(sessions.current, {
+            id: fileRef.current, cursor: cursorHead, data: value
+        })
 
         lsp.current = new LSPClient(
             getWsUrl("/ws"), goVersion, view.current,
             fileRef, sessions,
-            handleDiagnostics, handleError, ready,
+            handleDiagnostics, handleError, handleFileChange, ready,
         );
 
         // asynchronously add the hover tooltip when the lsp is ready
@@ -814,7 +820,7 @@ export default function Component(props: {
         setFile(id)
 
         // remove the session from the list
-        sessions.current.splice(index, 1);
+        removeSession(sessions.current, index);
 
         // if the new session is user code, use the latest value
         const content = isUserCode(id) ? getCodeContent(sandboxId) : data || "";

@@ -115,6 +115,7 @@ export class LSPClient {
     view: EditorView;
     handleDiagnostic: (diagnostic: Diagnostic[]) => void;
     handleError: (error: string) => void;
+    handleFileChange: (file: string) => void;
 
     constructor(
         backendUrl: string,
@@ -124,6 +125,7 @@ export class LSPClient {
         sessions: MutableRefObject<SessionI[]>,
         handleDiagnostic: (diagnostic: Diagnostic[]) => void,
         handleError: (error: string) => void,
+        handleFileChange: (file: string) => void,
         ready: MutableRefObject<boolean>,
     ) {
         this.ws = new WebSocket(backendUrl);
@@ -138,6 +140,7 @@ export class LSPClient {
 
         this.handleDiagnostic = handleDiagnostic;
         this.handleError = handleError;
+        this.handleFileChange = handleFileChange;
 
         this.start()
     }
@@ -197,7 +200,7 @@ export class LSPClient {
             return;
         }
         if (is_main) {
-            this.file.current = path; // update file immediately
+            this.handleFileChange(path);
             this.view.dispatch({
                 selection: {
                     anchor: posToHead(this.view, row, col), // 1-based index
@@ -208,7 +211,7 @@ export class LSPClient {
             })
         }
         if (content) {
-            this.file.current = path; // update file immediately
+            this.handleFileChange(path);
             this.view.dispatch({
                 changes: {
                     from: 0,
