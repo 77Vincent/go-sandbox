@@ -157,10 +157,10 @@ export default function Component(props: {
                                 Object.keys(SNIPPETS).map(key => {
                                     return (
                                         <div key={key}>
-                                            <Row className={"border-b p-2 pr-1.5 dark:border-b-gray-700"}>
+                                            <Row onClick={foldSection(key)} className={"cursor-pointer border-b p-2 pr-1.5 shadow-sm dark:border-b-gray-700"}>
                                                 <div key={key}
                                                      className={"text-sm font-semibold text-black  dark:text-white"}>{key}</div>
-                                                <IconButton onClick={foldSection(key)} icon={foldedSnippetSections[key] ? <UnfoldIcon/> : <FoldIcon/>}/>
+                                                <IconButton icon={foldedSnippetSections[key] ? <UnfoldIcon/> : <FoldIcon/>}/>
                                             </Row>
 
                                             <div

@@ -149,10 +149,11 @@ export function Grid(props: {
 
 export function Row(props: {
     children: ReactNode;
+    onClick?: () => void;
     className?: string;
 }) {
-    const {children, className} = props
-    return <div className={`flex items-center justify-between ${className}`}>
+    const {children, className, onClick} = props
+    return <div onClick={onClick} className={`flex items-center justify-between ${className}`}>
         {children}
     </div>
 }

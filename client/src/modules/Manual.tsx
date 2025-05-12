@@ -31,7 +31,7 @@ function SubRow(props: {
 function Title(props: {
     children: ReactNode,
 }) {
-    return <div className={"flex items-center gap-1.5 text-sm max-md:text-xs"}>
+    return <div className={"flex items-center gap-2 text-sm max-md:text-xs"}>
         {props.children}
     </div>
 }
