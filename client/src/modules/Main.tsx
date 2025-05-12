@@ -143,7 +143,7 @@ export default function Component() {
 
     function shouldAbort(): boolean {
         // do not continue if the code is empty or running
-        return isRunningRef.current || !valueRef.current
+        return isRunningRef.current || !valueRef.current || !isUserCode(fileRef.current)
     }
 
     const debouncedShare = debounce(useCallback(async () => {

@@ -55,7 +55,7 @@ function Session(props: {
     return (
         <div
             onClick={handleClick(id)}
-            className={`flex h-8 cursor-default items-center gap-1 border-r border-r-gray-200 px-2 py-1.5 hover:bg-gray-200 dark:border-r-gray-800 dark:hover:bg-gray-700 ${active
+            className={`flex h-8 cursor-default items-center gap-1.5 border-r border-r-gray-200 px-2 py-1.5 hover:bg-gray-200 dark:border-r-gray-800 dark:hover:bg-gray-700 ${active
                 ? activeClasses
                 : isUserCode(id) ? inactiveUserClasses : inactiveSourceClasses}`}
         >

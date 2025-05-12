@@ -12,7 +12,7 @@ import {TRANSLATE} from "../lib/i18n.ts";
 import {Divider, IconButton, Row} from "./Common.tsx";
 import {CloseIcon, FoldIcon, UnfoldIcon} from "./Icons.tsx";
 import {useCallback, useContext, useState} from "react";
-import {AppCtx} from "../utils.ts";
+import {AppCtx, isUserCode} from "../utils.ts";
 
 const symbolStyle = (kind: number): string => {
     switch (kind) {
@@ -49,7 +49,7 @@ export default function Component(props: {
         setSelectedSnippet,
         lines,
     } = props;
-    const {lan, isRunning, openedDrawer, updateOpenedDrawer} = useContext(AppCtx)
+    const {lan, file, isRunning, openedDrawer, updateOpenedDrawer} = useContext(AppCtx)
     const [foldedSnippetSections, setFoldedSnippetSections] = useState<Record<string, boolean>>({})
 
     const closeDrawer = () => {
@@ -66,12 +66,12 @@ export default function Component(props: {
 
     const onSnippetClick = useCallback((id: string) => {
         return () => {
-            if (isRunning) {
+            if (isRunning || !isUserCode(file)) {
                 return;
             }
             setSelectedSnippet(id);
         }
-    }, [isRunning, setSelectedSnippet]);
+    }, [file, isRunning, setSelectedSnippet]);
 
     const foldSection = useCallback((key: string) => {
         return () => {
@@ -170,7 +170,7 @@ export default function Component(props: {
                                                         return (
                                                             <div
                                                                 key={subkey}
-                                                                className={`${LINE_STYLE} ${isRunning ? "opacity-50" : ""}`}
+                                                                className={`${LINE_STYLE} ${isRunning || !isUserCode(file) ? "opacity-50" : ""}`}
                                                                 onClick={onSnippetClick(subkey)}
                                                             >
 

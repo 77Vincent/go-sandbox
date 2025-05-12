@@ -93,7 +93,6 @@ import {
     getCodeContent,
     getCursorHead,
     getCursorPos,
-    getFileUri,
     getWsUrl,
     isUserCode,
     posToHead, pushSession, removeSession,
@@ -658,10 +657,6 @@ export default function Component(props: {
                 return;
         }
 
-        // reset the file back to the main file
-        fileRef.current = getFileUri(goVersion);
-        setFile(getFileUri(goVersion))
-
         // update the view
         view.current.dispatch({
             changes: {
@@ -896,7 +891,7 @@ export default function Component(props: {
                 </div>
 
                 <StatusBar
-                    row={row} col={col} file={fileRef.current}
+                    row={row} col={col}
                     sessions={sessions.current}
                     prevSession={prevSession}
                     nextSession={nextSession}

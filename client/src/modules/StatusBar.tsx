@@ -23,17 +23,16 @@ export default function Component(props: {
     row: number, col: number,
     errors: number, warnings: number, info: number,
     onLintClick: () => void,
-    file: string
     sessions: SessionI[]
     prevSession: () => void
     nextSession: () => void
 }) {
-    const {lan} = useContext(AppCtx)
+    const {lan, file} = useContext(AppCtx)
     const {
         row, col,
         errors, warnings, info,
         onLintClick,
-        file, sessions,
+        sessions,
         prevSession,
         nextSession,
     } = props
