@@ -378,10 +378,10 @@ export default function Component() {
             />
 
             <div
-                className="flex items-center justify-between border-b border-b-gray-400 px-4 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:px-2 max-md:py-1.5">
-                <div className="z-20 flex items-center gap-5 max-lg:gap-3.5 max-md:gap-2.5">
+                className="z-20 flex items-center justify-between border-b border-b-gray-400 px-4 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:px-2 max-md:py-1.5">
+                <div className="flex items-center gap-5 max-lg:gap-3.5 max-md:gap-2.5">
                     <Link to={""}
-                          className={"flex items-center gap-4 text-gray-600 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-300 dark:hover:text-cyan-400"}>
+                          className={"flex items-center gap-4 text-gray-800 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-200 dark:hover:text-cyan-400"}>
                         <img src={"/favicon-512x512.png"} alt={"logo"} className={"h-5 max-md:hidden"}/>
 
                         <div className="text-xl font-light max-md:text-sm">{TITLE}</div>
