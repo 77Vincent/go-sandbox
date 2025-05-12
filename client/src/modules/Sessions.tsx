@@ -1,11 +1,12 @@
 import {useThemeMode} from "flowbite-react";
-import {displayFileUri} from "../utils.ts";
+import {displayFileUri, isUserCode} from "../utils.ts";
 import {MouseEventHandler} from "react";
 import {ACTIVE_ICON_BUTTON_CLASS_2} from "../constants.ts";
 import {CloseIcon} from "./Icons.tsx";
 
 const activeClasses = "border-b-cyan-500 border-b-2 bg-white dark:bg-neutral-800 dark:text-white"
-const inactiveClasses = "text-gray-800 dark:text-gray-300"
+const inactiveUserClasses = "text-gray-800 dark:text-gray-300"
+const inactiveSourceClasses = `${inactiveUserClasses} bg-lime-600/15 dark:bg-lime-700/15`
 
 function Session(props: {
     num: number
@@ -54,7 +55,10 @@ function Session(props: {
     return (
         <div
             onClick={handleClick(id)}
-            className={`flex h-8 cursor-default items-center gap-1 border-r border-r-gray-200 px-2 py-1.5 hover:bg-gray-200 dark:border-r-gray-800 dark:hover:bg-gray-700 ${active ? activeClasses : inactiveClasses}`}>
+            className={`flex h-8 cursor-default items-center gap-1 border-r border-r-gray-200 px-2 py-1.5 hover:bg-gray-200 dark:border-r-gray-800 dark:hover:bg-gray-700 ${active
+                ? activeClasses
+                : isUserCode(id) ? inactiveUserClasses : inactiveSourceClasses}`}
+        >
             <span className={"max-w-32 truncate text-xs italic tracking-wide"}>{displayFileUri(id)}</span>
             {
                 num > 0 &&
