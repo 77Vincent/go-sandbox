@@ -1,4 +1,4 @@
-import {AppCtx, displayFileUri} from "../utils.ts";
+import {AppCtx, displayFileUri, isUserCode} from "../utils.ts";
 import {BadIcon, GoodIcon, MetaKey, NextIcon, OptionKey, PrevIcon} from "./Icons.tsx";
 import {IconButton, Row, Typography} from "./Common.tsx";
 import {SessionI} from "./Sessions.tsx";
@@ -70,9 +70,18 @@ export default function Component(props: {
                     </Tooltip>
                 </Row>
 
-                <Row className={"gap-1"}>
-                    <Typography variant={"caption"}
-                                className={"text-xs italic tracking-wide"}> {displayFileUri(file)} </Typography>
+                <Row className={"gap-2"}>
+                    <Typography
+                        variant={"caption"}
+                        className={"text-xs font-normal italic tracking-wide"}> {displayFileUri(file)} </Typography>
+                    {
+                        isUserCode(file)
+                            ? null
+                            :
+                            <Typography variant={"caption"}
+                                        className={"text-xs text-yellow-600/90 dark:text-yellow-500/90"}>(read
+                                only)</Typography>
+                    }
                 </Row>
             </Row>
 

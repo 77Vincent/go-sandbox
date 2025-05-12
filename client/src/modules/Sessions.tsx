@@ -5,8 +5,8 @@ import {ACTIVE_ICON_BUTTON_CLASS_2} from "../constants.ts";
 import {CloseIcon} from "./Icons.tsx";
 
 const activeClasses = "border-b-cyan-500 border-b-2 bg-white dark:bg-neutral-800 dark:text-white"
-const inactiveUserClasses = "text-gray-800 dark:text-gray-300"
-const inactiveSourceClasses = `${inactiveUserClasses} bg-lime-600/15 dark:bg-lime-700/15`
+const inactiveUserClasses = "opacity-70"
+const inactiveSourceClasses = `${inactiveUserClasses} bg-yellow-500/15 dark:bg-yellow-700/15`
 
 function Session(props: {
     num: number
