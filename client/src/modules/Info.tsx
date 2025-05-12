@@ -18,8 +18,9 @@ export default function Component(props: {
     const {lan, isMobile} = useContext(AppCtx)
 
     return (
-        <div className={"flex items-center gap-2.5 max-md:gap-2"}>
+        <>
             <Divider/>
+
             <Tooltip className={"z-20 text-xs"} content={
                 <div className={"flex items-center gap-1"}>
                     {TRANSLATE.settings[lan]}
@@ -30,7 +31,7 @@ export default function Component(props: {
             }>
                 <SettingsIcon
                     onClick={() => setShowSettings(true)}
-                    size={isMobile ? 16 : 17}
+                    size={isMobile ? 18 : 20}
                     className={commonClasses}/>
             </Tooltip>
 
@@ -43,19 +44,18 @@ export default function Component(props: {
                 </div>
             }>
                 <ManualIcon
-                    size={isMobile ? 21 : 22}
+                    size={isMobile ? 18 : 20}
                     onClick={() => setShowManual(true)}
-                    className={`${commonClasses} ml-0.5 max-md:ml-0.5`}/>
+                    className={commonClasses}/>
             </Tooltip>
 
-
             <Tooltip className={"text-xs"} content={TRANSLATE.about[lan]}>
-                <IconButton icon={<AboutIcon size={isMobile ? 22 : 23}/>} className={ICON_BUTTON_CLASS}
+                <IconButton icon={<AboutIcon size={isMobile ? 18 : 20}/>} className={ICON_BUTTON_CLASS}
                             onClick={() => {
                                 window.open("/about.html", "_blank");
                             }}
                 />
             </Tooltip>
-        </div>
+        </>
     )
 }

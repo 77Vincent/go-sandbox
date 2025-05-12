@@ -12,7 +12,7 @@ import {
     FormatIcon,
     ManualIcon,
     MetaKey, NextIcon, OptionKey, PrevIcon,
-    RunICon,
+    RunIcon,
     SearchIcon,
     SettingsIcon,
     ShareIcon,
@@ -85,7 +85,7 @@ export default function Component(props: {
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> <RunICon size={16} color={"gray"}/>{TRANSLATE.run[lan]} </Title>
+                    <Title> <RunIcon size={16} color={"gray"}/>{TRANSLATE.run[lan]} </Title>
                     <SubRow> <MetaKey/><EnterKey/> </SubRow>
                 </Row>
                 <Row>

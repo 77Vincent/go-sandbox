@@ -378,21 +378,19 @@ export default function Component() {
             />
 
             <div
-                className="flex items-center justify-between border-b border-b-gray-400 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-1">
-                <div className="flex items-baseline gap-4 max-md:gap-2">
+                className="flex items-center justify-between border-b border-b-gray-400 px-4 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-1">
+                <div className="flex items-baseline gap-5 max-md:gap-2">
                     <Link to={""}
-                          className={"flex items-center gap-2 text-gray-600 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-300 dark:hover:text-cyan-400"}>
-                        <img src={"/favicon-512x512.png"} alt={"logo"} className={"mr-1 h-5 max-md:hidden"}/>
+                          className={"flex items-center gap-4 text-gray-600 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-300 dark:hover:text-cyan-400"}>
+                        <img src={"/favicon-512x512.png"} alt={"logo"} className={"h-5 max-md:hidden"}/>
 
-                        <div
-                            className="text-xl font-light max-md:text-sm">{TITLE}</div>
+                        <div className="text-xl font-light max-md:text-sm">{TITLE}</div>
                     </Link>
-
                     <Divider/>
                     <Features/>
                 </div>
 
-                <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
+                <div className="flex items-center justify-end gap-5 max-md:gap-2">
                     <Actions format={debouncedFormat}
                              run={debouncedRun}
                              share={debouncedShare} hasCode={valueRef.current.length > 0}/>
@@ -401,17 +399,13 @@ export default function Component() {
                         isMobile ? null : <>
                             <Divider/>
                             <SandboxSelector/>
-
                             <Divider/>
-
                             <VersionSelector/>
                         </>
                     }
 
-                    <div className={"flex items-center"}>
-                        <Info setShowAbout={setShowAbout}
-                              setShowSettings={setShowSettings} setShowManual={setShowManual}/>
-                    </div>
+                    <Info setShowAbout={setShowAbout}
+                          setShowSettings={setShowSettings} setShowManual={setShowManual}/>
                 </div>
             </div>
 

@@ -102,7 +102,7 @@ export default function Component() {
     return (
         <Dropdown inline={true} className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
                   label={
-                      <span className={`text-xs ${isRunning ? INACTIVE_TEXT_CLASS : ""}`}>
+                      <span className={`text-sm ${isRunning ? INACTIVE_TEXT_CLASS : ""}`}>
                           {sandboxNames[sandboxId] || MY_SANDBOXES[sandboxId] || sandboxId}
                       </span>
                   }

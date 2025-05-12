@@ -2,7 +2,7 @@ import {Tooltip} from "flowbite-react";
 
 import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {EnterKey, FormatIcon, MetaKey, OptionKey, RunICon, ShareIcon, ShiftKey} from "./Icons.tsx";
+import {EnterKey, FormatIcon, MetaKey, OptionKey, RunIcon, ShareIcon, ShiftKey} from "./Icons.tsx";
 import {useContext} from "react";
 import {AppCtx, isUserCode} from "../utils.ts";
 
@@ -30,8 +30,8 @@ export default function Component(props: {
                     </div>
                 </div>
             }>
-                <RunICon className={executable ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
-                         onClick={executable ? run : undefined} size={isMobile ? 21 : 22}/>
+                <RunIcon className={executable ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
+                         onClick={executable ? run : undefined} size={isMobile ? 18 : 20}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={
@@ -42,8 +42,8 @@ export default function Component(props: {
                     </div>
                 </div>
             }>
-                <FormatIcon className={`mx-1.5 max-md:mx-0.5 ${executable ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}`}
-                            onClick={executable ? format : undefined} size={isMobile ? 21 : 22}/>
+                <FormatIcon className={executable ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
+                            onClick={executable ? format : undefined} size={isMobile ? 18 : 20}/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={
@@ -55,7 +55,7 @@ export default function Component(props: {
                 </div>
             }>
                 <ShareIcon className={sharable ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
-                           onClick={sharable ? share : undefined} size={isMobile ? 20 : 21}/>
+                           onClick={sharable ? share : undefined} size={isMobile ? 17 : 19}/>
             </Tooltip>
         </>
     );
