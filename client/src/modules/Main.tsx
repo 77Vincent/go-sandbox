@@ -20,7 +20,7 @@ import {
     IS_AUTOCOMPLETION_ON_KEY,
     DRAWER_SIZE_KEY,
     RESIZABLE_HANDLER_WIDTH,
-    DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER,
+    DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER, DEBOUNCE_TIME_LONG,
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
 import {Divider, Wrapper} from "./Common.tsx";
@@ -93,6 +93,7 @@ export default function Component() {
     const {
         isMobile, sourceId, snippetId,
         goVersion, sandboxId,
+        showTerminal,
         isRunning, setIsRunning,
         openedDrawer,
         setToastError, setToastInfo,
@@ -339,16 +340,20 @@ export default function Component() {
         setIsLayoutVertical(value)
     }
 
+    const debouncedStoreEditorSize = debounce(useCallback((size: number) => {
+        localStorage.setItem(EDITOR_SIZE_KEY, JSON.stringify(size))
+    }, []), DEBOUNCE_TIME_LONG)
+
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         // calculate the size
         let size
         if (isLayoutVertical) {
             size = (refToElement.clientHeight / (window.innerHeight - 45)) * 100
         } else {
-            size = (refToElement.clientWidth / (window.innerWidth - drawerSize)) * 100
+            size = (refToElement.clientWidth / (window.innerWidth - (openedDrawer ? drawerSize : 0))) * 100
         }
 
-        localStorage.setItem(EDITOR_SIZE_KEY, JSON.stringify(size))
+        debouncedStoreEditorSize(size)
         setEditorSize(size)
     }
 
@@ -450,9 +455,9 @@ export default function Component() {
                             bottom: isLayoutVertical ? resizeHandlerHoverClasses : "",
                         }}
                         minWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MIN}%`}
-                        maxWidth={isLayoutVertical ? "100%" : `${EDITOR_SIZE_MAX}%`}
+                        maxWidth={isLayoutVertical || !showTerminal ? "100%" : `${EDITOR_SIZE_MAX}%`}
                         minHeight={isLayoutVertical ? `${EDITOR_SIZE_MIN}%` : "100%"}
-                        maxHeight={isLayoutVertical ? `${EDITOR_SIZE_MAX}%` : "100%"}
+                        maxHeight={isLayoutVertical && showTerminal ? `${EDITOR_SIZE_MAX}%` : "100%"}
                         enable={{
                             right: !isLayoutVertical,
                             bottom: isLayoutVertical,
@@ -461,6 +466,9 @@ export default function Component() {
                             width: isLayoutVertical ? "100%" : `${editorSize}%`,
                             height: isLayoutVertical ? `${editorSize}%` : "100%",
                         }}
+                        size={showTerminal
+                            ? {width: `${editorSize}%`, height: `${editorSize}%`}
+                            : {width: "100%", height: "auto"}}
                         grid={[10, 1]}
                         onResizeStop={onResizeStop}
                     >
@@ -485,12 +493,15 @@ export default function Component() {
                         </Wrapper>
                     </Resizable>
 
-                    <Terminal
-                        running={isRunning}
-                        result={result}
-                        info={info}
-                        error={error}
-                    />
+                    {
+                        showTerminal &&
+                        <Terminal
+                            running={isRunning}
+                            result={result}
+                            info={info}
+                            error={error}
+                        />
+                    }
                 </div>
             </div>
 
