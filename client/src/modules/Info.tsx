@@ -14,7 +14,7 @@ export default function Component(props: {
     setShowAbout: (show: boolean) => void;
     setShowManual: (show: boolean) => void;
 }) {
-    const {setShowSettings, setShowManual} = props
+    const {setShowSettings, setShowManual, setShowAbout} = props
     const {lan, isMobile} = useContext(AppCtx)
 
     return (
@@ -51,9 +51,7 @@ export default function Component(props: {
 
             <Tooltip className={"text-xs"} content={TRANSLATE.about[lan]}>
                 <IconButton icon={<AboutIcon size={isMobile ? 18.5 : 20.5}/>} className={ICON_BUTTON_CLASS}
-                            onClick={() => {
-                                window.open("/about.html", "_blank");
-                            }}
+                            onClick={() => setShowAbout(true)}
                 />
             </Tooltip>
         </>
