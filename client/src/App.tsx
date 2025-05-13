@@ -10,7 +10,7 @@ import {
     getLanguage,
     isMobileDevice,
     getFontSize,
-    getOpenedDrawer, getCodeContent, getSourceId, getSnippetId, getDefaultFileUri
+    getOpenedDrawer, getCodeContent, getSourceId, getSnippetId, getDefaultFileUri, getShowTerminal
 } from "./utils.ts";
 import {
     SANDBOX_ID_KEY,
@@ -18,7 +18,7 @@ import {
     GO_VERSION_KEY,
     LANGUAGE_KEY,
     OPENED_DRAWER_KEY,
-    DEBOUNCE_TIME_LONG
+    DEBOUNCE_TIME_LONG, SHOW_TERMINAL_KEY
 } from "./constants.ts";
 import {languages, mySandboxes, selectableDrawers} from "./types";
 import debounce from "debounce";
@@ -32,6 +32,7 @@ const initGoVersion = getGoVersion()
 const initLan = getLanguage()
 const initFile = getDefaultFileUri()
 const initFontSize = getFontSize()
+const initShowTerminal = getShowTerminal()
 const initOpenedDrawer = getOpenedDrawer();
 const initValue = getCodeContent(initSandboxId)
 
@@ -46,6 +47,7 @@ function App() {
     // settings
     const [lan, setLan] = useState(initLan);
     const [fontSize, setFontSize] = useState(initFontSize);
+    const [showTerminal, setShowTerminal] = useState(initShowTerminal);
     const [goVersion] = useState(initGoVersion);
     const [sandboxId] = useState<mySandboxes>(initSandboxId);
 
@@ -58,16 +60,19 @@ function App() {
         localStorage.setItem(sandboxId, v);
     }, [sandboxId]), DEBOUNCE_TIME_LONG);
 
+    // storable state
+    const updateShowTerminal = useCallback((show: boolean) => {
+        setShowTerminal(show);
+        localStorage.setItem(SHOW_TERMINAL_KEY, show.toString());
+    }, []);
     const updateOpenedDrawer = useCallback((id: selectableDrawers) => {
         setOpenedDrawer(id);
         localStorage.setItem(OPENED_DRAWER_KEY, id);
     }, []);
-
     const updateFontSize = useCallback((size: number) => {
         setFontSize(size);
         localStorage.setItem(FONT_SIZE_KEY, size.toString());
     }, []);
-
     const updateLan = useCallback((lan: languages) => {
         setLan(lan);
         localStorage.setItem(LANGUAGE_KEY, lan);
@@ -95,6 +100,7 @@ function App() {
             file, setFile,
             value, updateValue,
             // settings
+            showTerminal, updateShowTerminal,
             openedDrawer, updateOpenedDrawer,
             lan, updateLan,
             fontSize, updateFontSize,

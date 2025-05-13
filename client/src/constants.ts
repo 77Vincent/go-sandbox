@@ -30,6 +30,7 @@ export const DRAWER_SIZE_KEY = "drawerSize";
 export const OPENED_DRAWER_KEY = "openedDrawer";
 export const FONT_SIZE_KEY = "fontSize";
 export const CURSOR_HEAD_KEY = "cursorHead";
+export const SHOW_TERMINAL_KEY = "showTerminal";
 
 export const NO_OPENED_DRAWER: selectableDrawers = ""; // no drawer opened
 export const DEFAULT_MAIN_FILE_PATH = "/main.go"
@@ -40,6 +41,7 @@ export const DEFAULT_GO_VERSION = "1";
 export const DEFAULT_KEY_BINDINGS: KeyBindingsType = "";
 export const DEFAULT_LINT_ON = "true";
 export const DEFAULT_AUTOCOMPLETION_ON = "true";
+export const DEFAULT_SHOW_TERMINAL = "true";
 
 export const RESIZABLE_HANDLER_WIDTH = 5;
 

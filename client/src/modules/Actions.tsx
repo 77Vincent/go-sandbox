@@ -5,6 +5,7 @@ import {TRANSLATE} from "../lib/i18n.ts";
 import {EnterKey, FormatIcon, MetaKey, OptionKey, RunIcon, ShareIcon, ShiftKey} from "./Icons.tsx";
 import {useContext} from "react";
 import {AppCtx, isUserCode} from "../utils.ts";
+import {IconButton} from "./Common.tsx";
 
 const COMMON_CLASSES = "z-20 text-xs font-light";
 
@@ -30,8 +31,9 @@ export default function Component(props: {
                     </div>
                 </div>
             }>
-                <RunIcon className={executable ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
-                         onClick={executable ? run : undefined} size={isMobile ? 18 : 20}/>
+                <IconButton disabled={!executable} icon={
+                    <RunIcon onClick={executable ? run : undefined} size={isMobile ? 18 : 20}/>
+                }/>
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={

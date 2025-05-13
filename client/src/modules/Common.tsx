@@ -4,7 +4,7 @@ import {toastType} from "../types";
 
 import {TRANSLATE} from "../lib/i18n.ts";
 import {ErrorIcon, InfoIcon, RefreshIcon, CopyIcon} from "./Icons.tsx";
-import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
+import {ACTIVE_ICON_BUTTON_CLASS, BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
 import {AppCtx} from "../utils.ts";
 
 export function Wrapper(props: {
@@ -195,11 +195,12 @@ export function Typography(props: {
 
 export function IconButton(props: {
     icon: ReactNode
+    active?: boolean
     disabled?: boolean
     onClick?: () => void
     className?: string
 }) {
-    const {icon, disabled, onClick, className} = props
+    const {icon, disabled, onClick, className, active} = props
 
     const handleClick = () => {
         if (onClick) {
@@ -207,7 +208,7 @@ export function IconButton(props: {
         }
     }
 
-    const classes = `${disabled ? BUTTON_INACTIVE : ICON_BUTTON_CLASS} ${className}`
+    const classes = `${disabled ? BUTTON_INACTIVE : active ? ACTIVE_ICON_BUTTON_CLASS : ICON_BUTTON_CLASS} ${className}`
     return (
         <div onClick={handleClick} className={classes}>
             {icon}

@@ -22,12 +22,16 @@ import {
     MOBILE_WIDTH,
     MY_SANDBOXES, OPENED_DRAWER_KEY,
     SANDBOX_NAMES_KEY,
-    URI_BASE, SANDBOX_TEMP, DEFAULT_FONT_SIZE, SOURCE_REGEX, SNIPPET_REGEX,
+    URI_BASE, SANDBOX_TEMP, DEFAULT_FONT_SIZE, SOURCE_REGEX, SNIPPET_REGEX, SHOW_TERMINAL_KEY, DEFAULT_SHOW_TERMINAL,
 } from "./constants.ts";
 import {AppContextI, KeyBindingsType, languages, mySandboxes, selectableDrawers} from "./types";
 import {EditorView, ViewUpdate} from "@codemirror/view";
 import {createContext} from "react";
 import {SessionI} from "./modules/Sessions.tsx";
+
+export function getShowTerminal(): boolean {
+    return JSON.parse(localStorage.getItem(SHOW_TERMINAL_KEY) || DEFAULT_SHOW_TERMINAL)
+}
 
 export function getFontSize(): number {
     return Math.floor(Number(localStorage.getItem(FONT_SIZE_KEY))) || DEFAULT_FONT_SIZE
@@ -226,6 +230,10 @@ export const AppCtx = createContext<AppContextI>({
     isMobile: false,
     sourceId: "",
     snippetId: "",
+    // settable states
+    showTerminal: false,
+    updateShowTerminal: () => {
+    },
     openedDrawer: NO_OPENED_DRAWER,
     updateOpenedDrawer: () => {
     },
