@@ -900,7 +900,7 @@ export default function Component(props: {
                         run={debouncedRun} format={debouncedFormat} share={debouncedShare}/>
 
                 <Usages
-                    seeing={seeing} view={view.current} value={value}
+                    seeing={seeing} view={view}
                     usages={usages} setUsages={setUsages}/>
 
                 <div className={"h-full overflow-auto"} ref={editor} onContextMenu={handleContextMenu}>
