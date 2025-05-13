@@ -19,7 +19,7 @@ import {
     MetaKey,
     OptionKey,
     PasteIcon,
-    RunICon,
+    RunIcon,
     ShareIcon,
     ShiftKey
 } from "./Icons.tsx";
@@ -196,7 +196,7 @@ export default function Component(props: {
             <Item onClick={onRun}>
                 <Row className={"w-full"}>
                     <Typography variant={"body2"} className={"flex items-center gap-1.5"}>
-                        <RunICon/>{TRANSLATE.run[lan]}
+                        <RunIcon/>{TRANSLATE.run[lan]}
                     </Typography>
                     <Typography variant={"caption"} className={"flex items-center"}> <MetaKey/><EnterKey/> </Typography>
                 </Row>

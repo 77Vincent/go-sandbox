@@ -1,18 +1,18 @@
-import {LSPDocumentSymbol, selectableDrawers} from "../types";
+import {LSPDocumentSymbol} from "../types";
 import {
     ACTIVE_ICON_BUTTON_CLASS_2,
-    DRAWER_DOCUMENT_SYMBOLS,
+    DRAWER_DOCUMENT_SYMBOLS, DRAWER_LIBRARY,
     DRAWER_STATS,
     INACTIVE_TEXT_CLASS,
     NO_OPENED_DRAWER,
-    OPENED_DRAWER_KEY
+    SNIPPETS
 } from "../constants.ts";
 import {countSymbols, SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {Divider} from "./Common.tsx";
-import {CloseIcon} from "./Icons.tsx";
-import {useContext} from "react";
-import {AppCtx} from "../utils.ts";
+import {Divider, IconButton, Row} from "./Common.tsx";
+import {CloseIcon, FoldIcon, UnfoldIcon} from "./Icons.tsx";
+import {useCallback, useContext, useState} from "react";
+import {AppCtx, isUserCode} from "../utils.ts";
 
 const symbolStyle = (kind: number): string => {
     switch (kind) {
@@ -38,37 +38,51 @@ const symbolStyle = (kind: number): string => {
 const LINE_STYLE = "flex cursor-pointer items-center justify-between gap-2 px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs"
 
 export default function Component(props: {
-    type: selectableDrawers,
     documentSymbols: LSPDocumentSymbol[],
-    setOpenedDrawer: (id: selectableDrawers) => void
     setSelectedSymbol: (symbol: LSPDocumentSymbol) => void
+    setSelectedSnippet: (id: string) => void
     lines: number
 }) {
     const {
-        type,
         documentSymbols,
-        setOpenedDrawer,
         setSelectedSymbol,
+        setSelectedSnippet,
         lines,
     } = props;
-    const {lan} = useContext(AppCtx)
+    const {lan, file, isRunning, openedDrawer, updateOpenedDrawer} = useContext(AppCtx)
+    const [foldedSnippetSections, setFoldedSnippetSections] = useState<Record<string, boolean>>({})
 
     const closeDrawer = () => {
-        setOpenedDrawer(NO_OPENED_DRAWER);
-        localStorage.setItem(OPENED_DRAWER_KEY, NO_OPENED_DRAWER);
+        updateOpenedDrawer(NO_OPENED_DRAWER);
     }
 
-    const onClick = (type: selectableDrawers, i: number) => {
+    const onSymbolClick = (i: number) => {
         return () => {
-            switch (type) {
-                case DRAWER_DOCUMENT_SYMBOLS:
-                    if (documentSymbols[i]) {
-                        setSelectedSymbol(documentSymbols[i]);
-                    }
-                    break;
+            if (documentSymbols[i]) {
+                setSelectedSymbol(documentSymbols[i]);
             }
         }
     }
+
+    const onSnippetClick = useCallback((id: string) => {
+        return () => {
+            if (isRunning || !isUserCode(file)) {
+                return;
+            }
+            setSelectedSnippet(id);
+        }
+    }, [file, isRunning, setSelectedSnippet]);
+
+    const foldSection = useCallback((key: string) => {
+        return () => {
+            setFoldedSnippetSections((prev) => {
+                return {
+                    ...prev,
+                    [key]: !prev[key]
+                }
+            })
+        }
+    }, []);
 
     const displaySymbols = Object.entries(countSymbols(documentSymbols))
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -84,16 +98,16 @@ export default function Component(props: {
                 className={"sticky top-0 border-b border-b-gray-300 bg-gray-100 py-2 shadow dark:border-b-gray-700 dark:bg-neutral-900"}>
                 <div
                     className={"flex items-center justify-between px-2 text-xs font-semibold text-gray-900 dark:text-gray-100"}>
-                    {type && TRANSLATE[type][lan]}
+                    {openedDrawer && TRANSLATE[openedDrawer][lan]}
                     <CloseIcon size={14} className={ACTIVE_ICON_BUTTON_CLASS_2} onClick={closeDrawer}/>
                 </div>
             </div>
 
             <div className={"flex flex-1 flex-col overflow-x-auto bg-neutral-50 pb-6 dark:bg-neutral-900"}>
                 {
-                    type === DRAWER_DOCUMENT_SYMBOLS && documentSymbols.map(({name, kind}, index) => {
+                    openedDrawer === DRAWER_DOCUMENT_SYMBOLS && documentSymbols.map(({name, kind}, index) => {
                         return (
-                            <div key={name} onClick={onClick(type, index)}
+                            <div key={name} onClick={onSymbolClick(index)}
                                  className={LINE_STYLE}
                             >
                                 <div className={`flex items-center gap-1 truncate ${symbolStyle(kind)}`}>
@@ -108,7 +122,7 @@ export default function Component(props: {
                     })
                 }
                 {
-                    type === DRAWER_STATS && (
+                    openedDrawer === DRAWER_STATS && (
                         <>
                             {
                                 displaySymbols.map(([key, value]) => {
@@ -133,6 +147,43 @@ export default function Component(props: {
                                 <div>Lines</div>
                                 <div className={"font-semibold"}>{lines}</div>
                             </div>
+                        </>
+                    )
+                }
+                {
+                    openedDrawer == DRAWER_LIBRARY && (
+                        <>
+                            {
+                                Object.keys(SNIPPETS).map(key => {
+                                    return (
+                                        <div key={key}>
+                                            <Row onClick={foldSection(key)} className={"cursor-pointer border-b p-2 pr-1.5 shadow-sm dark:border-b-gray-700"}>
+                                                <div key={key}
+                                                     className={"text-sm font-semibold text-black  dark:text-white"}>{key}</div>
+                                                <IconButton icon={foldedSnippetSections[key] ? <UnfoldIcon/> : <FoldIcon/>}/>
+                                            </Row>
+
+                                            <div
+                                                className={`border-b text-gray-900 dark:border-b-gray-700 dark:text-gray-200 ${foldedSnippetSections[key] ? "hidden" : ""}`}>
+                                                {
+                                                    Object.entries(SNIPPETS[key]).map(([subkey, value]) => {
+                                                        return (
+                                                            <div
+                                                                key={subkey}
+                                                                className={`${LINE_STYLE} ${isRunning || !isUserCode(file) ? "opacity-50" : ""}`}
+                                                                onClick={onSnippetClick(subkey)}
+                                                            >
+
+                                                                {value}
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
                         </>
                     )
                 }

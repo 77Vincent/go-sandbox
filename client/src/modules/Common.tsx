@@ -149,10 +149,11 @@ export function Grid(props: {
 
 export function Row(props: {
     children: ReactNode;
+    onClick?: () => void;
     className?: string;
 }) {
-    const {children, className} = props
-    return <div className={`flex items-center justify-between ${className}`}>
+    const {children, className, onClick} = props
+    return <div onClick={onClick} className={`flex items-center justify-between ${className}`}>
         {children}
     </div>
 }
@@ -196,8 +197,9 @@ export function IconButton(props: {
     icon: ReactNode
     disabled?: boolean
     onClick?: () => void
+    className?: string
 }) {
-    const {icon, disabled, onClick} = props
+    const {icon, disabled, onClick, className} = props
 
     const handleClick = () => {
         if (onClick) {
@@ -205,8 +207,9 @@ export function IconButton(props: {
         }
     }
 
+    const classes = `${disabled ? BUTTON_INACTIVE : ICON_BUTTON_CLASS} ${className}`
     return (
-        <div onClick={handleClick} className={disabled ? BUTTON_INACTIVE : ICON_BUTTON_CLASS}>
+        <div onClick={handleClick} className={classes}>
             {icon}
         </div>
     )

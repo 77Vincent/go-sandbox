@@ -1,7 +1,7 @@
 import {
-    ACTIVE_SANDBOX_KEY,
+    SANDBOX_ID_KEY,
     CURSOR_HEAD_KEY,
-    DEFAULT_ACTIVE_SANDBOX,
+    DEFAULT_SANDBOX_ID,
     DEFAULT_AUTOCOMPLETION_ON,
     DEFAULT_CURSOR_HEAD, DEFAULT_DRAWER_SIZE,
     DEFAULT_EDITOR_SIZE,
@@ -13,7 +13,6 @@ import {
     DEFAULT_MAIN_FILE_PATH, NO_OPENED_DRAWER, DRAWER_SIZE_KEY,
     EDITOR_SIZE_KEY,
     FONT_SIZE_KEY,
-    FONT_SIZE_M,
     HELLO_WORLD,
     IS_AUTOCOMPLETION_ON_KEY,
     IS_LINT_ON_KEY,
@@ -23,18 +22,26 @@ import {
     MOBILE_WIDTH,
     MY_SANDBOXES, OPENED_DRAWER_KEY,
     SANDBOX_NAMES_KEY,
-    URI_BASE, SANDBOX_TEMP,
+    URI_BASE, SANDBOX_TEMP, DEFAULT_FONT_SIZE, SOURCE_REGEX, SNIPPET_REGEX,
 } from "./constants.ts";
 import {AppContextI, KeyBindingsType, languages, mySandboxes, selectableDrawers} from "./types";
 import {EditorView, ViewUpdate} from "@codemirror/view";
 import {createContext} from "react";
+import {SessionI} from "./modules/Sessions.tsx";
 
 export function getFontSize(): number {
-    return Number(localStorage.getItem(FONT_SIZE_KEY)) || FONT_SIZE_M
+    return Math.floor(Number(localStorage.getItem(FONT_SIZE_KEY))) || DEFAULT_FONT_SIZE
 }
 
 export function getSandboxId(): mySandboxes {
-    return localStorage.getItem(ACTIVE_SANDBOX_KEY) as mySandboxes || DEFAULT_ACTIVE_SANDBOX
+    const path = window.location.pathname
+
+    // when viewing source or snippet, using the temp sandbox
+    if (path.match(SOURCE_REGEX) || path.match(SNIPPET_REGEX)) {
+        return SANDBOX_TEMP
+    }
+
+    return localStorage.getItem(SANDBOX_ID_KEY) as mySandboxes || DEFAULT_SANDBOX_ID
 }
 
 export function getLanguage(): languages {
@@ -97,9 +104,9 @@ export function getSandboxes(): mySandboxes[] {
 
     // if no sandboxes are found, create a default one
     if (sandboxes.length === 0) {
-        const i = DEFAULT_ACTIVE_SANDBOX
+        const i = DEFAULT_SANDBOX_ID
         sandboxes.push(i)
-        localStorage.setItem(ACTIVE_SANDBOX_KEY, i)
+        localStorage.setItem(SANDBOX_ID_KEY, i)
         localStorage.setItem(i, HELLO_WORLD)
     }
 
@@ -112,12 +119,6 @@ export function getLintOn(): boolean {
 
 export function getAutoCompletionOn(): boolean {
     return JSON.parse(localStorage.getItem(IS_AUTOCOMPLETION_ON_KEY) || DEFAULT_AUTOCOMPLETION_ON)
-}
-
-export function mapFontSize(size: number): "xs" | "sm" | "md" {
-    if (size < 12) return "xs";
-    if (size >= 15) return "md";
-    return "sm";
 }
 
 const apiUrl = import.meta.env.VITE_API_URL || "";
@@ -151,6 +152,18 @@ export function isUserCode(filePath: string): boolean {
 
 export function getFileUri(sandboxVersion: string): string {
     return `${URI_BASE}/go${sandboxVersion}${DEFAULT_MAIN_FILE_PATH}`
+}
+
+export function getDefaultFileUri(): string {
+    const path = window.location.pathname
+    const matches = path.match(SOURCE_REGEX);
+    // return the source file path when viewing external source code
+    if (matches) {
+        const file = path.split("/").pop() || "";
+        return decodeURIComponent(file)
+
+    }
+    return getFileUri(getGoVersion())
 }
 
 export function displayFileUri(file: string): string {
@@ -188,19 +201,54 @@ export function posToHead(v: ViewUpdate | EditorView, row: number, col: number) 
     return line.from + col - 1;
 }
 
+export function getSourceId(): string {
+    const path = window.location.pathname;
+    const matches = path.match(SOURCE_REGEX);
+    if (matches) {
+        const file = path.split("/").pop();
+        return decodeURIComponent(file || "");
+    }
+    return "";
+}
+
+export function getSnippetId(): string {
+    const path = window.location.pathname;
+    const matches = path.match(SNIPPET_REGEX);
+    if (matches) {
+        const id = path.split("/").pop();
+        return decodeURIComponent(id || "");
+    }
+    return "";
+}
+
 // default empty context value
 export const AppCtx = createContext<AppContextI>({
+    isMobile: false,
+    sourceId: "",
+    snippetId: "",
+    openedDrawer: NO_OPENED_DRAWER,
+    updateOpenedDrawer: () => {
+    },
+    fontSize: DEFAULT_FONT_SIZE,
+    updateFontSize: () => {
+    },
+    isRunning: false,
+    setIsRunning: () => {
+    },
     lan: DEFAULT_LANGUAGE,
-    setLan: () => {
+    updateLan: () => {
     },
     file: "",
     setFile: () => {
     },
-    goVersion: "",
-    setGoVersion: () => {
+    value: "",
+    updateValue: () => {
     },
-    sandboxId: DEFAULT_ACTIVE_SANDBOX,
-    setSandboxId: () => {
+    goVersion: "",
+    updateGoVersion: () => {
+    },
+    sandboxId: DEFAULT_SANDBOX_ID,
+    updateSandboxId: () => {
     },
     toastError: null,
     setToastError: () => {
@@ -209,3 +257,18 @@ export const AppCtx = createContext<AppContextI>({
     setToastInfo: () => {
     },
 });
+
+export const removeSession = (sessions: SessionI[], index: number) => {
+    if (index !== -1) {
+        sessions.splice(index, 1)
+    }
+}
+
+export const pushSession = (sessions: SessionI[], session: SessionI) => {
+    const index = sessions.findIndex((s) => s.id === session.id)
+    if (index !== -1) {
+        sessions[index] = session
+    } else {
+        sessions.push(session)
+    }
+}

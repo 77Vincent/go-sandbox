@@ -8,7 +8,7 @@ export default function Component() {
 
     return (
         <Dropdown inline={true} arrowIcon={false} disabled={true} color={"light"} size={"xs"}
-                  label={<span className={"text-xs"}> {GO_VERSION_MAP[goVersion]} </span>}
+                  label={<span className={"text-sm"}> {GO_VERSION_MAP[goVersion]} </span>}
         >
         </Dropdown>
     )

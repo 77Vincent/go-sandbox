@@ -4,61 +4,50 @@ import debounce from 'debounce';
 
 import {
     EDITOR_SIZE_KEY,
-    FONT_SIZE_KEY,
-    FONT_SIZE_L,
-    FONT_SIZE_S,
     IS_LINT_ON_KEY,
     DEBOUNCE_TIME,
     KEY_BINDINGS_KEY,
-    FONT_SIZE_M,
     STATS_INFO_PREFIX,
     EVENT_STDOUT,
     EVENT_ERROR,
     EVENT_STDERR,
     EVENT_CLEAR,
     EVENT_DONE,
-    SNIPPET_REGEX,
     IS_VERTICAL_LAYOUT_KEY,
     EDITOR_SIZE_MIN,
     EDITOR_SIZE_MAX,
     TITLE,
-    ACTIVE_SANDBOX_KEY,
     IS_AUTOCOMPLETION_ON_KEY,
     DRAWER_SIZE_KEY,
     RESIZABLE_HANDLER_WIDTH,
-    DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER, OPENED_DRAWER_KEY,
+    DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER,
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
 import {Divider, Wrapper} from "./Common.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import Actions from "./Actions.tsx";
-import SnippetSelector from "./SnippetSelector.tsx";
 import VersionSelector from "./VersionSelector.tsx";
 import SandboxSelector from "./SandboxSelector.tsx";
 import Features from "./Features.tsx";
 import Drawer from "./Drawer.tsx";
 import Info from "./Info.tsx";
-import {fetchSnippet, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
+import {fetchSnippet, fetchSourceCode, formatCode, getSnippet, shareSnippet} from "../api/api.ts";
 
 import {
-    getCodeContent,
     getKeyBindings,
     getEditorSize,
-    getFontSize,
     getLintOn,
     getUrl,
     getIsVerticalLayout,
-    isMobileDevice, getSandboxId, getAutoCompletionOn, getDrawerSize, getOpenedDrawer, AppCtx
+    getAutoCompletionOn, getDrawerSize, AppCtx, isUserCode
 } from "../utils.ts";
 import Settings from "./Settings.tsx";
 import {
     KeyBindingsType,
     LSPDocumentSymbol,
-    mySandboxes,
     patchI,
     resultI,
-    selectableDrawers
 } from "../types";
 import About from "./About.tsx";
 import Manual from "./Manual.tsx";
@@ -93,35 +82,33 @@ function FetchErrorMessage(props: {
 const resizeHandlerHoverClasses = "w-1 z-10 hover:bg-cyan-500 transition-colors";
 
 // default values
-const initialValue = getCodeContent(getSandboxId());
 const initialIsLintOn = getLintOn()
 const initialIsAutoCompletionOn = getAutoCompletionOn()
 const initialIsVerticalLayout = getIsVerticalLayout();
-const initialFontSize = getFontSize()
 const initialEditorSize = getEditorSize()
 const initialDrawerSize = getDrawerSize()
-const initialOpenedDrawer = getOpenedDrawer();
 const initialKeyBindings = getKeyBindings()
 
-export default function Component(props: {
-    sandboxId: mySandboxes
-}) {
-    const {sandboxId} = props
-    const {goVersion, setToastError, setToastInfo} = useContext(AppCtx)
+export default function Component() {
+    const {
+        isMobile, sourceId, snippetId,
+        goVersion, sandboxId,
+        isRunning, setIsRunning,
+        openedDrawer,
+        setToastError, setToastInfo,
+        value, file,
+    } = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showAbout, setShowAbout] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
-    const [isMobile] = useState<boolean>(isMobileDevice());
 
     // settings
-    const [fontSize, setFontSize] = useState<number>(initialFontSize);
     const [editorSize, setEditorSize] = useState<number>(initialEditorSize);
     const [drawerSize, setDrawerSize] = useState<number>(initialDrawerSize);
     const [isLayoutVertical, setIsLayoutVertical] = useState<boolean>(initialIsVerticalLayout)
 
     // editor status
-    const [isRunning, setIsRunning] = useState<boolean>(false);
     const [patch, setPatch] = useState<patchI>({value: "", keepCursor: false});
 
     // result
@@ -129,15 +116,13 @@ export default function Component(props: {
     const [error, setError] = useState<string>("")
     const [info, setInfo] = useState<string>("")
 
-    // drawer related
-    const [openedDrawer, setOpenedDrawer] = useState<selectableDrawers>(initialOpenedDrawer);
-
     // document symbols
     const [documentSymbols, setDocumentSymbols] = useState<LSPDocumentSymbol[]>([])
     const [selectedSymbol, setSelectedSymbol] = useState<LSPDocumentSymbol | null>(null)
 
     // reference the latest state
-    const value = useRef(initialValue);
+    const valueRef = useRef(value);
+    const fileRef = useRef(file);
     const isRunningRef = useRef(isRunning);
 
     // mode status
@@ -148,29 +133,37 @@ export default function Component(props: {
     // IMPORTANT: update the ref when the state changes
     useEffect(() => {
         isRunningRef.current = isRunning
-    }, [isRunning]);
+        valueRef.current = value
+        fileRef.current = file
+    }, [isRunning, value, file]);
 
     function onChange(newCode: string = "") {
-        value.current = newCode
+        valueRef.current = newCode
     }
 
     function shouldAbort(): boolean {
         // do not continue if the code is empty or running
-        return isRunningRef.current || !value.current
+        return isRunningRef.current || !valueRef.current || !isUserCode(fileRef.current)
     }
 
     const debouncedShare = debounce(useCallback(async () => {
-        try {
-            const id = await shareSnippet(getCodeContent(sandboxId)); // so won't share the non-user code
-            const url = `${location.origin}/snippets/${id}`
-            // this is a hack for Safari!
-            setTimeout(() => {
-                navigator.clipboard.writeText(url);
-            }, 0);
-            setToastInfo(<ShareSuccessMessage url={url}/>)
-        } catch (e) {
-            setToastError((e as Error).message)
+        let url = ""
+        if (isUserCode(fileRef.current)) {
+            try {
+                const id = await shareSnippet(valueRef.current);
+                url = `${location.origin}/snippets/${id}`
+            } catch (e) {
+                setToastError((e as Error).message)
+            }
+        } else {
+            url = `${location.origin}/sources/${encodeURIComponent(fileRef.current)}`
         }
+
+        // this is a hack for Safari!
+        setTimeout(() => {
+            navigator.clipboard.writeText(url);
+        }, 0);
+        setToastInfo(<ShareSuccessMessage url={url}/>)
     }, [setToastInfo, setToastError]), DEBOUNCE_TIME);
 
     const debouncedFormat = debounce(useCallback(async () => {
@@ -181,11 +174,11 @@ export default function Component(props: {
         try {
             setIsRunning(true)
 
-            const {stdout, error, message} = await formatCode(value.current);
+            const {stdout, error, message} = await formatCode(valueRef.current);
 
             if (stdout) {
                 // must call together
-                value.current = stdout // important: update immediately
+                valueRef.current = stdout // important: update immediately
                 setPatch({value: stdout, keepCursor: true})
             }
             if (error) {
@@ -200,7 +193,7 @@ export default function Component(props: {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [setToastError]), DEBOUNCE_TIME);
+    }, [setIsRunning, setToastError]), DEBOUNCE_TIME);
 
     const debouncedRun = debounce(useCallback(async () => {
         if (shouldAbort()) {
@@ -214,7 +207,7 @@ export default function Component(props: {
                 stdout: formatted,
                 error: formatError,
                 message: formatMessage
-            } = await formatCode(value.current);
+            } = await formatCode(valueRef.current);
 
             setInfo("")
             setResult([])
@@ -235,11 +228,11 @@ export default function Component(props: {
             // TODO: annotation or marker
             // must call together
             setPatch({value: formatted, keepCursor: true})
-            value.current = formatted // important: update immediately
+            valueRef.current = formatted // important: update immediately
 
             const source = new SSE(getUrl("/execute"), {
                 headers: {'Content-Type': 'application/json'},
-                payload: JSON.stringify({code: value.current, version: goVersion})
+                payload: JSON.stringify({code: valueRef.current, version: goVersion})
             });
 
             source.addEventListener(EVENT_STDOUT, ({data}: MessageEvent) => {
@@ -284,14 +277,14 @@ export default function Component(props: {
     const debouncedGetSnippet = debounce(useCallback(async (id: string) => {
         try {
             const data = await getSnippet(id);
-            value.current = data
+            valueRef.current = data
             setPatch({value: data});
             debouncedRun()
         } catch (e) {
             setToastError((e as Error).message)
             setIsRunning(false)
         }
-    }, [debouncedRun, setToastError]), DEBOUNCE_TIME);
+    }, [debouncedRun, setIsRunning, setToastError]), DEBOUNCE_TIME);
 
     // fetch the snippet if the url contains the snippet id, do only once
     useEffect(() => {
@@ -300,15 +293,23 @@ export default function Component(props: {
                 return
             }
 
-            const matches = location.pathname.match(SNIPPET_REGEX)
-            if (matches) {
-                const raw = matches[0]
-                const id = raw.split("/")[2]
+            if (snippetId) {
                 try {
-                    const data = await fetchSnippet(id)
+                    const data = await fetchSnippet(snippetId)
                     if (data) {
                         setPatch({value: data})
                         debouncedRun() // run immediately after fetching
+                    }
+                } catch (e) {
+                    setToastError(<FetchErrorMessage error={(e as Error).message}/>)
+                }
+            }
+
+            if (sourceId) {
+                try {
+                    const data = await fetchSourceCode(decodeURIComponent(sourceId), goVersion)
+                    if (data) {
+                        setPatch({value: data.content})
                     }
                 } catch (e) {
                     setToastError(<FetchErrorMessage error={(e as Error).message}/>)
@@ -338,11 +339,6 @@ export default function Component(props: {
         setIsLayoutVertical(value)
     }
 
-    function onSandboxIdChange(id: mySandboxes) {
-        localStorage.setItem(ACTIVE_SANDBOX_KEY, id);
-        window.location.href = window.location.origin // remove all paths and query string
-    }
-
     function onResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         // calculate the size
         let size
@@ -356,37 +352,11 @@ export default function Component(props: {
         setEditorSize(size)
     }
 
-    function onOpenedDrawer(id: selectableDrawers) {
-        setOpenedDrawer(id)
-        localStorage.setItem(OPENED_DRAWER_KEY, id)
-    }
-
     function onDrawerResizeStop(_event: MouseEvent | TouchEvent, _dir: ResizeDirection, refToElement: HTMLElement) {
         // calculate the size
         const size = refToElement.clientWidth
         localStorage.setItem(DRAWER_SIZE_KEY, JSON.stringify(size))
         setDrawerSize(size)
-    }
-
-    function onFontL() {
-        if (fontSize !== FONT_SIZE_L) {
-            setFontSize(FONT_SIZE_L)
-            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_L))
-        }
-    }
-
-    function onFontM() {
-        if (fontSize !== FONT_SIZE_M) {
-            setFontSize(FONT_SIZE_M)
-            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_M))
-        }
-    }
-
-    function onFontS() {
-        if (fontSize !== FONT_SIZE_S) {
-            setFontSize(FONT_SIZE_S)
-            localStorage.setItem(FONT_SIZE_KEY, JSON.stringify(FONT_SIZE_S))
-        }
     }
 
     return (
@@ -397,10 +367,6 @@ export default function Component(props: {
             <Settings
                 show={showSettings}
                 setShow={setShowSettings}
-                fontSize={fontSize}
-                onFontL={onFontL}
-                onFontM={onFontM}
-                onFontS={onFontS}
                 isVerticalLayout={isLayoutVertical}
                 setIsVerticalLayout={onIsVerticalLayoutChange}
                 onKeyBindingsChange={onKeyBindingsChange}
@@ -412,45 +378,38 @@ export default function Component(props: {
             />
 
             <div
-                className="flex items-center justify-between border-b border-b-gray-400 px-2 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:py-1">
-                <div className="flex items-baseline gap-4 max-md:gap-2">
+                className="z-20 flex items-center justify-between border-b border-b-gray-400 px-4 py-1.5 shadow-sm dark:border-b-gray-600 dark:text-white max-md:px-2 max-md:py-1.5">
+                <div className="flex items-center gap-6 max-lg:gap-4 max-md:gap-2.5">
                     <Link to={""}
-                          className={"flex items-center gap-2 text-gray-600 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-300 dark:hover:text-cyan-400"}>
-                        <img src={"/favicon-512x512.png"} alt={"logo"} className={"mr-1 h-5 max-md:hidden"}/>
+                          className={"flex items-center gap-4 text-gray-800 transition-colors duration-100 hover:text-cyan-600 dark:text-gray-200 dark:hover:text-cyan-400"}>
+                        <img src={"/favicon-512x512.png"} alt={"logo"} className={"h-5 max-md:hidden"}/>
 
-                        <div
-                            className="text-xl font-light max-md:text-sm">{TITLE}</div>
+                        <div className="text-xl font-light max-md:text-sm">{TITLE}</div>
                     </Link>
-
-                    <Divider/>
-                    <Features openedDrawer={openedDrawer} setOpenedDrawer={onOpenedDrawer}/>
+                    {
+                        isMobile ? null : <>
+                            <Divider/>
+                            <Features/>
+                        </>
+                    }
                 </div>
 
-                <div className="flex items-center justify-end gap-2.5 max-md:gap-1">
-                    <Actions isMobile={isMobile} isRunning={isRunning} format={debouncedFormat}
+                <div className="flex items-center justify-end gap-5 max-lg:gap-3.5 max-md:gap-2.5">
+                    <Actions format={debouncedFormat}
                              run={debouncedRun}
-                             share={debouncedShare} hasCode={value.current.length > 0}/>
+                             share={debouncedShare} hasCode={valueRef.current.length > 0}/>
 
                     {
                         isMobile ? null : <>
                             <Divider/>
-                            <SandboxSelector onSelect={onSandboxIdChange} isRunning={isRunning}
-                                             active={sandboxId}/>
-
+                            <SandboxSelector/>
                             <Divider/>
-
-                            <SnippetSelector isRunning={isRunning} onSelect={debouncedGetSnippet}/>
-
-                            <Divider/>
-
                             <VersionSelector/>
                         </>
                     }
 
-                    <div className={"flex items-center"}>
-                        <Info isMobile={isMobile} setShowAbout={setShowAbout}
-                              setShowSettings={setShowSettings} setShowManual={setShowManual}/>
-                    </div>
+                    <Info setShowAbout={setShowAbout}
+                          setShowSettings={setShowSettings} setShowManual={setShowManual}/>
                 </div>
             </div>
 
@@ -469,10 +428,10 @@ export default function Component(props: {
                     defaultSize={{width: `${drawerSize}px`, height: "100%"}}
                     onResizeStop={onDrawerResizeStop}
                 >
-                    <Drawer type={openedDrawer} documentSymbols={documentSymbols}
-                            setOpenedDrawer={setOpenedDrawer}
+                    <Drawer documentSymbols={documentSymbols}
                             setSelectedSymbol={setSelectedSymbol}
-                            lines={value.current.split("\n").length}
+                            setSelectedSnippet={debouncedGetSnippet}
+                            lines={valueRef.current.split("\n").length}
                     />
                 </Resizable>
 
@@ -508,16 +467,13 @@ export default function Component(props: {
                         <Wrapper
                             className={`flex flex-col border-gray-400 dark:border-gray-600 ${isLayoutVertical ? "border-b" : "border-r"}`}>
                             <Editor
-                                openedDrawer={openedDrawer}
                                 setDocumentSymbols={setDocumentSymbols}
                                 selectedSymbol={selectedSymbol}
                                 sandboxId={sandboxId}
                                 isVertical={isLayoutVertical}
                                 isLintOn={isLintOn}
                                 isAutoCompletionOn={isAutoCompletionOn}
-                                value={value.current}
                                 patch={patch}
-                                fontSize={fontSize}
                                 keyBindings={keyBindings}
                                 onChange={onChange}
                                 setShowSettings={setShowSettings}
@@ -531,7 +487,6 @@ export default function Component(props: {
 
                     <Terminal
                         running={isRunning}
-                        fontSize={fontSize}
                         result={result}
                         info={info}
                         error={error}

@@ -15,9 +15,10 @@ export const NONE = ""
 
 export const DRAWER_DOCUMENT_SYMBOLS: selectableDrawers = "documentSymbols"
 export const DRAWER_STATS: selectableDrawers = "stats"
+export const DRAWER_LIBRARY: selectableDrawers = "library"
 
 export const SANDBOX_NAMES_KEY = "sandboxNames";
-export const ACTIVE_SANDBOX_KEY = "activeSandbox";
+export const SANDBOX_ID_KEY = "activeSandbox";
 export const IS_VERTICAL_LAYOUT_KEY = "isVerticalLayout";
 export const GO_VERSION_KEY = "sandboxVersion";
 export const KEY_BINDINGS_KEY = "keyBindings";
@@ -50,11 +51,11 @@ export const DEFAULT_DRAWER_SIZE = 240;
 export const DRAWER_SIZE_MAX = 360
 export const DRAWER_SIZE_MIN = 180
 
+export const AVAILABLE_FONT_SIZES = [10, 11, 12, 13, 14, 15, 16]
+
 export const DEFAULT_LANGUAGE: languages = "en";
-export const FONT_SIZE_L = 15;
-export const FONT_SIZE_M = 13;
-export const FONT_SIZE_S = 11;
-export const DEFAULT_ACTIVE_SANDBOX = "my-sandbox-1";
+export const DEFAULT_FONT_SIZE = 12;
+export const DEFAULT_SANDBOX_ID = "my-sandbox-1";
 export const SANDBOX_TEMP: mySandboxes = "my-sandbox-temp";
 
 export const MOBILE_WIDTH = 768;
@@ -66,7 +67,7 @@ export const DEBOUNCE_TIME_LONG = 150;
 export const ACTIVE_COLOR = "cyan"
 export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
 
-export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-700 dark:hover:text-cyan-400 dark:text-gray-300"
+export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
 export const BUTTON_INACTIVE = "cursor-not-allowed text-gray-300 dark:text-gray-700";
 export const ACTIVE_ICON_BUTTON_CLASS = "cursor-pointer text-cyan-500 dark:text-cyan-400"
 export const ACTIVE_ICON_BUTTON_CLASS_2 = "cursor-pointer text-gray-400 text-sm hover:opacity-60"
@@ -74,6 +75,7 @@ export const ACTIVE_ICON_BUTTON_CLASS_2 = "cursor-pointer text-gray-400 text-sm 
 export const INACTIVE_TEXT_CLASS = "text-gray-400 dark:text-gray-600"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
+export const SOURCE_REGEX = /\/sources\/([a-zA-Z0-9-_]+)/g; // url base64 encoded
 export const STATS_INFO_PREFIX = "STATS_INFO:"
 
 export const HTTP_INTERNAL_ERROR = 500

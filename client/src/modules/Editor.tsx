@@ -69,7 +69,6 @@ import {
     mySandboxes,
     patchI,
     SeeingType,
-    selectableDrawers
 } from "../types";
 import {
     blurEvent,
@@ -87,17 +86,16 @@ import {
     NONE,
     SEEING_IMPLEMENTATIONS,
     SEEING_USAGES,
-    VIM, DRAWER_STATS, EDITOR_MENU_ID, DEBOUNCE_TIME_SHORT,
+    VIM, DRAWER_STATS, EDITOR_MENU_ID, DEBOUNCE_TIME_SHORT, NO_OPENED_DRAWER,
 } from "../constants.ts";
 import {
     AppCtx,
     getCodeContent,
     getCursorHead,
     getCursorPos,
-    getFileUri,
     getWsUrl,
     isUserCode,
-    posToHead,
+    posToHead, pushSession, removeSession,
     viewUpdate
 } from "../utils.ts";
 import {isFunc, LSP_KIND_LABELS, LSPClient} from "../lib/lsp.ts";
@@ -207,11 +205,7 @@ const setKeyBindings = (keyBindings: KeyBindingsType) => {
 
 export default function Component(props: {
     sandboxId: mySandboxes
-    value: string;
     patch: patchI;
-
-    // drawers
-    openedDrawer: selectableDrawers;
 
     // document symbols
     setDocumentSymbols: (v: LSPDocumentSymbol[]) => void;
@@ -219,7 +213,6 @@ export default function Component(props: {
 
     // settings
     keyBindings: KeyBindingsType;
-    fontSize: number;
     isLintOn: boolean;
     isAutoCompletionOn: boolean;
     isVertical: boolean;
@@ -236,16 +229,14 @@ export default function Component(props: {
 }) {
     const {
         sandboxId,
-        // drawers
-        openedDrawer,
 
         // document symbols
         setDocumentSymbols,
         selectedSymbol,
 
         // props
-        value, patch,
-        fontSize, keyBindings,
+        patch,
+        keyBindings,
         isLintOn, isAutoCompletionOn, isVertical,
         // handlers
         onChange,
@@ -258,7 +249,11 @@ export default function Component(props: {
         debouncedShare,
     } = props;
     const {mode} = useThemeMode();
-    const {setToastError, goVersion} = useContext(AppCtx)
+    const {
+        setToastError, goVersion, fontSize, openedDrawer,
+        file, setFile,
+        value, updateValue,
+    } = useContext(AppCtx)
 
     // local state
     const [row, setRow] = useState(1); // 1-based index
@@ -276,7 +271,7 @@ export default function Component(props: {
     const view = useRef<EditorView | null>(null);
     const lsp = useRef<LSPClient | null>(null);
     const version = useRef<number>(1); // initial version
-    const file = useRef<string>(getFileUri(goVersion));
+    const fileRef = useRef<string>(file);
     const sessions = useRef<SessionI[]>([]);
     const metaKey = useRef<boolean>(false);
     const ready = useRef<boolean>(false); // initially not ready
@@ -291,7 +286,7 @@ export default function Component(props: {
 
 
         // update the main session
-        if (isUserCode(file.current)) {
+        if (isUserCode(fileRef.current)) {
             sessions.current[0].cursor = head
         }
     }, []), DEBOUNCE_TIME)
@@ -307,7 +302,7 @@ export default function Component(props: {
         if (!lsp.current || !ready.current) return;
 
         switch (openedDrawer) {
-            case "":
+            case NO_OPENED_DRAWER:
                 // do nothing
                 break
             case DRAWER_STATS:
@@ -373,7 +368,7 @@ export default function Component(props: {
             await lsp.current.didChange(version.current, v.state.doc.toString());
 
             // only get completion for user code
-            if (isUserCode(file.current)) {
+            if (isUserCode(fileRef.current)) {
                 const {row, col} = getCursorPos(v);
                 const completions = await lsp.current.getCompletions(row - 1, col - 1) // use 0-based index
                 setCompletions(completions);
@@ -383,22 +378,17 @@ export default function Component(props: {
         }
     }, [setToastError]), DEBOUNCE_TIME)
 
-    const debouncedStoreCode = debounce(useCallback((data: string) => {
-        // only store user code
-        if (isUserCode(file.current)) {
-            localStorage.setItem(sandboxId, data)
-        }
-    }, [sandboxId]), DEBOUNCE_TIME);
-
     const onViewUpdate = useCallback((v: ViewUpdate) => {
         if (v.docChanged) {
             const data = v.state.doc.toString();
             onChange(data);
-            debouncedStoreCode(data);
+            if (isUserCode(fileRef.current)) {
+                updateValue(data);
+            }
             debouncedLspUpdate(v);
             debouncedGetDocumentSymbol();
         }
-    }, [onChange, debouncedLspUpdate, debouncedStoreCode, debouncedGetDocumentSymbol]);
+    }, [onChange, updateValue, debouncedLspUpdate, debouncedGetDocumentSymbol]);
 
     const clearUsages = useCallback(() => {
         view.current?.dispatch({
@@ -411,13 +401,13 @@ export default function Component(props: {
         (async function () {
             if (!lsp.current || !view.current) return;
 
-            const res = await lsp.current.getImplementations(file.current);
+            const res = await lsp.current.getImplementations(fileRef.current);
             if (res.length === 0) {
                 return
             }
             // for display the implementations popup
             // only display for user code
-            if (isUserCode(file.current)) {
+            if (isUserCode(fileRef.current)) {
                 setUsages(res as LSPReferenceResult[]);
                 setSeeing(SEEING_IMPLEMENTATIONS)
             }
@@ -440,7 +430,7 @@ export default function Component(props: {
             // for highlighting
             const builder = new RangeSetBuilder<Decoration>();
             for (const {uri, range} of res as LSPReferenceResult[]) {
-                if (uri !== file.current) continue; // only decorate in the current file
+                if (uri !== fileRef.current) continue; // only decorate in the current file
 
                 const {start, end} = range
                 const startLine = start.line + 1;
@@ -460,7 +450,7 @@ export default function Component(props: {
 
             // for display the usages popup
             // only display for user code
-            if (isUserCode(file.current)) {
+            if (isUserCode(fileRef.current)) {
                 setUsages(res as LSPReferenceResult[]);
                 setSeeing(SEEING_USAGES)
             }
@@ -477,11 +467,11 @@ export default function Component(props: {
 
             // update the current session before going to the definition
             const data = {
-                id: file.current,
+                id: fileRef.current,
                 cursor: view.current.state.selection.main.head,
                 data: view.current.state.doc.toString()
             }
-            const index = sessions.current.findIndex((s) => s.id === file.current)
+            const index = sessions.current.findIndex((s) => s.id === fileRef.current)
             // update the session
             sessions.current[index] = data
 
@@ -645,7 +635,7 @@ export default function Component(props: {
         ]),
         usageHighlightField,
         hoverCompartment.of([]), // empty hover tooltip at first because lsp is not ready
-        readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(file.current))),
+        readOnlyCompartment.of(EditorState.readOnly.of(!isUserCode(fileRef.current))),
         lintCompartment.of(setLint(isLintOn, diagnostics)),
         autoCompletionCompartment.of(autocompletion({override: isAutoCompletionOn ? [setAutoCompletion(completions)] : []})),
         fontSizeCompartment.of(setFontSize(fontSize)),
@@ -667,9 +657,6 @@ export default function Component(props: {
                 return;
         }
 
-        // reset the file back to the main file
-        file.current = getFileUri(goVersion);
-
         // update the view
         view.current.dispatch({
             changes: {
@@ -682,7 +669,7 @@ export default function Component(props: {
             },
             scrollIntoView: true,
         });
-    }, [goVersion, patch]);
+    }, [goVersion, patch, setFile]);
 
     const handleDiagnostics = useCallback((data: Diagnostic[]) => {
         setDiagnostics(data);
@@ -690,6 +677,10 @@ export default function Component(props: {
     const handleError = useCallback((message: string) => {
         setToastError(message);
     }, [setToastError]);
+    const handleFileChange = useCallback((file: string) => {
+        fileRef.current = file;
+        setFile(file);
+    }, [setFile]);
 
     // must only run once, so no dependencies
     useEffect(() => {
@@ -710,12 +701,14 @@ export default function Component(props: {
         view.current.focus();
 
         // add the default session
-        sessions.current = [{id: getFileUri(goVersion), cursor: cursorHead}]
+        pushSession(sessions.current, {
+            id: fileRef.current, cursor: cursorHead, data: value
+        })
 
         lsp.current = new LSPClient(
             getWsUrl("/ws"), goVersion, view.current,
-            file, sessions,
-            handleDiagnostics, handleError, ready,
+            fileRef, sessions,
+            handleDiagnostics, handleError, handleFileChange, ready,
         );
 
         // asynchronously add the hover tooltip when the lsp is ready
@@ -804,7 +797,7 @@ export default function Component(props: {
     }, [completions, isAutoCompletionOn]);
     useEffect(() => {
         view.current?.dispatch({effects: [lintCompartment.reconfigure(setLint(isLintOn, diagnostics))]})
-        view.current?.dispatch({effects: [readOnlyCompartment.reconfigure(EditorState.readOnly.of(!isUserCode(file.current)))]})
+        view.current?.dispatch({effects: [readOnlyCompartment.reconfigure(EditorState.readOnly.of(!isUserCode(fileRef.current)))]})
     }, [diagnostics, isLintOn]);
 
     const onLintClick = useCallback(() => {
@@ -818,34 +811,36 @@ export default function Component(props: {
         const {id, data, cursor} = sessions.current[newIndex];
 
         // update the file
-        file.current = id;
+        fileRef.current = id
+        setFile(id)
 
         // remove the session from the list
-        sessions.current.splice(index, 1);
+        removeSession(sessions.current, index);
 
         // if the new session is user code, use the latest value
         const content = isUserCode(id) ? getCodeContent(sandboxId) : data || "";
         viewUpdate(view.current, content, cursor);
-    }, [sandboxId])
+    }, [sandboxId, setFile])
 
     const onSessionClick = useCallback((index: number) => {
         if (!view.current) return;
 
         const {id, data, cursor} = sessions.current[index];
-        if (id === file.current) return; // already selected
+        if (id === fileRef.current) return; // already selected
 
-        file.current = id;
+        fileRef.current = id
+        setFile(id)
 
         // if the new session is user code, use the latest value
         const content = isUserCode(id) ? getCodeContent(sandboxId) : data || "";
         viewUpdate(view.current, content, cursor);
-    }, [sandboxId]);
+    }, [sandboxId, setFile]);
 
     const backgroundColor = mode === "dark" ? "editor-bg-dark" : "editor-bg-light";
 
     const prevSession = debounce(useCallback(() => {
         if (sessions.current.length < 2) return;
-        const index = sessions.current.findIndex((s) => s.id === file.current)
+        const index = sessions.current.findIndex((s) => s.id === fileRef.current)
         if (index === -1) return;
 
         // go to the previous session
@@ -855,7 +850,7 @@ export default function Component(props: {
 
     const nextSession = debounce(useCallback(() => {
         if (sessions.current.length < 2) return;
-        const index = sessions.current.findIndex((s) => s.id === file.current)
+        const index = sessions.current.findIndex((s) => s.id === fileRef.current)
         if (index === -1) return;
 
         // go to the next session
@@ -876,7 +871,7 @@ export default function Component(props: {
     return (
         <>
             <Sessions onSessionClick={onSessionClick} onSessionClose={onSessionClose} sessions={sessions.current}
-                      activeSession={file.current}/>
+                      activeSession={fileRef.current}/>
             <div
                 className={`flex-1 flex-col overflow-hidden ${isVertical ? "" : "pb-5"} ${backgroundColor}`}>
 
@@ -896,7 +891,7 @@ export default function Component(props: {
                 </div>
 
                 <StatusBar
-                    row={row} col={col} file={file.current}
+                    row={row} col={col}
                     sessions={sessions.current}
                     prevSession={prevSession}
                     nextSession={nextSession}

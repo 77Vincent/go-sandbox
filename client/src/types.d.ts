@@ -63,7 +63,7 @@ export type resultType = "stdout" | "stderr"
 
 export type toastType = "info" | "error"
 
-export type selectableDrawers = "documentSymbols" | "stats" | ""
+export type selectableDrawers = "documentSymbols" | "stats" | "library" | ""
 
 export interface resultI {
     type: resultType;
@@ -107,18 +107,34 @@ export interface LSPDocumentSymbol {
 }
 
 export interface AppContextI {
+    // on time state
+    isMobile: boolean;
+    sourceId: string;
+    snippetId: string;
+    // opened drawer
+    openedDrawer: selectableDrawers;
+    updateOpenedDrawer: (id: selectableDrawers) => void;
+    // running
+    isRunning: boolean;
+    setIsRunning: (isRunning: boolean) => void;
+    // font size
+    fontSize: number;
+    updateFontSize: (fontSize: number) => void;
     // language
     lan: languages;
-    setLan: (lan: languages) => void;
+    updateLan: (lan: languages) => void;
+    // code value
+    value: string;
+    updateValue: (value: string) => void;
     // file
     file: string;
     setFile: (file: string) => void;
     // go version
     goVersion: string;
-    setGoVersion: (goVersion: string) => void;
+    updateGoVersion: (goVersion: string) => void;
     // sandbox id
     sandboxId: mySandboxes;
-    setSandboxId: (sandboxId: mySandboxes) => void;
+    updateSandboxId: (sandboxId: mySandboxes) => void;
     // toast
     toastInfo: ReactNode;
     setToastInfo: (toastInfo: ReactNode) => void;

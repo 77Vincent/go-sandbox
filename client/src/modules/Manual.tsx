@@ -12,7 +12,7 @@ import {
     FormatIcon,
     ManualIcon,
     MetaKey, NextIcon, OptionKey, PrevIcon,
-    RunICon,
+    RunIcon,
     SearchIcon,
     SettingsIcon,
     ShareIcon,
@@ -31,7 +31,7 @@ function SubRow(props: {
 function Title(props: {
     children: ReactNode,
 }) {
-    return <div className={"flex items-center gap-1.5 text-sm max-md:text-xs"}>
+    return <div className={"flex items-center gap-2 text-sm max-md:text-xs"}>
         {props.children}
     </div>
 }
@@ -85,7 +85,7 @@ export default function Component(props: {
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> <RunICon size={16} color={"gray"}/>{TRANSLATE.run[lan]} </Title>
+                    <Title> <RunIcon size={16} color={"gray"}/>{TRANSLATE.run[lan]} </Title>
                     <SubRow> <MetaKey/><EnterKey/> </SubRow>
                 </Row>
                 <Row>
