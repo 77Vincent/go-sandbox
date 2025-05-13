@@ -7,13 +7,13 @@
     <script src="./js/tailwindcss.min.js"></script>
     <link rel="stylesheet" href="./css/about.css"/>
 </head>
-<body class="bg-gray-50">
+<body>
 
 <div class="fixed z-10 bottom-3 right-4 flex gap-4 shadow hover:to-green-300 transition-colors bg-gradient-to-tr from-teal-400 to-green-800 rounded-lg py-1.5 px-3 items-center text-white/90 text-sm">
     <a href="mailto:wentianqi77@outlook.com">Contact</a>
 </div>
 
-<header class="bg-gradient-to-br from-blue-900 via-teal-900 to-orange-900 py-14">
+<header class="bg-gradient-to-br from-blue-950 via-teal-900 to-orange-950 py-14">
     <div class="container mx-auto flex justify-between text-white gap-12">
         <div class="min-w-96 flex flex-1 flex-col items-center justify-center gap-2">
             <div class="flex items-center gap-6 justify-center">
@@ -30,7 +30,7 @@
         </div>
 
         <div class="flex flex-col justify-center">
-            <h2 class="font-light leading-12 break-words">
+            <h2 class="font-light break-words">
                 A lightweight and advanced online IDE-like coding environment for Go
             </h2>
         </div>
@@ -38,35 +38,18 @@
 </header>
 
 <main class="container mx-auto">
-    <h3 class="text-center my-10">Seamless Interaction</h3>
-    <div class="my-4 grid grid-cols-2 gap-16">
-        <div class="flex gap-4">
-            <div class="min-w-48 max-w-64">
-                <h4>Realtime execution</h4>
-                <p>Instant, remote execution over WebSocket that feels like a native terminal.</p>
-            </div>
-            <div class="preview-img img-realtime-execution h-60 w-full shadow"></div>
-        </div>
-        <div class="flex gap-4">
-            <div class="min-w-48 max-w-64">
-                <h4>Zero-setup start</h4>
-                <p>eque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...</p>
-            </div>
-            <div class="preview-img h-60 w-full shadow"></div>
-        </div>
-    </div>
-
     <h3 class="text-center my-10">IDE-Level Language Support</h3>
     <div class="my-4 grid grid-cols-2 gap-16">
-        <div class="flex gap-4">
-            <div class="min-w-48 max-w-64">
+        <div class="flex gap-8 items-center">
+            <div class="w-96">
                 <h4>Completion & linting</h4>
-                <p>Get real-time code suggestions, type hints, and inline diagnostics as you type—just like in a full IDE.</p>
+                <p>Get real-time code suggestions, type hints, and inline diagnostics as you type—just like in a full
+                    IDE.</p>
             </div>
             <div class="preview-img h-60 w-full shadow"></div>
         </div>
-        <div class="flex gap-4">
-            <div class="min-w-48 max-w-64">
+        <div class="flex gap-8 items-center">
+            <div class="w-96">
                 <h4>Code navigation</h4>
                 <p>Explore definitions, references, and standard library source in one seamless flow.</p>
             </div>
@@ -74,21 +57,39 @@
         </div>
     </div>
 
-    <h3 class="text-center my-10">Feature-Rich, Developer Friendly</h3>
+    <h3 class="text-center my-10">Ideal for learning</h3>
     <div class="my-4 grid grid-cols-2 gap-16">
-        <div class="flex gap-4">
-            <div class="min-w-48 max-w-64">
-                <h4>Snippet library and sharing</h4>
+        <div class="flex gap-8 items-center">
+            <div class="w-96">
+                <h4>Snippet library</h4>
                 <p>Browse and share runnable Go snippets—curated for learning, reuse, and collaboration.</p>
             </div>
             <div class="preview-img h-60 w-full shadow"></div>
         </div>
-        <div class="flex gap-4">
-            <div class="min-w-48 max-w-64">
-                <h4>Keybindings</h4>
+        <div class="flex gap-8 items-center">
+            <div class="w-96">
+                <h4>Share any code</h4>
                 <p>Support for Vim and Emacs keybindings for a truly native editing feel.</p>
             </div>
             <div class="preview-img h-60 w-full shadow"></div>
+        </div>
+    </div>
+
+    <h3 class="text-center my-10">Seamless Interaction</h3>
+    <div class="my-4 grid grid-cols-2 gap-16">
+        <div class="flex gap-8 items-center">
+            <div class="w-96">
+                <h4>Realtime execution</h4>
+                <p>Instant, remote execution over WebSocket that feels like running on a local machine.</p>
+            </div>
+            <div class="preview-img img-realtime-execution h-60 w-full border border-gray-300 shadow rounded-lg"></div>
+        </div>
+        <div class="flex gap-8 items-center">
+            <div class="w-96">
+                <h4>Rick keybindings</h4>
+                <p>VIM or Emacs keybindings and other shortcuts make it a native editor-like experience.</p>
+            </div>
+            <div class="preview-img img-key-bindings h-60 w-full border border-gray-300 shadow rounded-lg"></div>
         </div>
     </div>
 </main>
