@@ -1,10 +1,9 @@
 import {ReactNode} from "react";
-import {
-    ACTIVE_ICON_BUTTON_CLASS,
-    ACTIVE_ICON_BUTTON_CLASS_2,
-    BUTTON_INACTIVE,
-    ICON_BUTTON_CLASS
-} from "../constants.ts";
+
+export const ACTIVE_ICON_BUTTON_CLASS = "cursor-pointer text-cyan-500 dark:text-cyan-400"
+export const ACTIVE_ICON_BUTTON_CLASS_2 = "cursor-pointer text-gray-400 text-sm hover:opacity-60"
+export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
+export const BUTTON_INACTIVE = "cursor-not-allowed text-gray-300 dark:text-gray-700";
 
 export function IconButton(props: {
     icon: ReactNode
