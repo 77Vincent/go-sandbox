@@ -447,8 +447,8 @@ export default function Component() {
                         minHeight={isLayoutVertical ? `${EDITOR_SIZE_MIN}%` : "100%"}
                         maxHeight={isLayoutVertical && showTerminal ? `${EDITOR_SIZE_MAX}%` : "100%"}
                         enable={{
-                            right: !isLayoutVertical,
-                            bottom: isLayoutVertical,
+                            right: showTerminal ? !isLayoutVertical : false,
+                            bottom: showTerminal ? isLayoutVertical : false,
                         }}
                         defaultSize={{
                             width: isLayoutVertical ? "100%" : `${editorSize}%`,
