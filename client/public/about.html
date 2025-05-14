@@ -1,12 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="author" content="WEN Tianqi"/>
     <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>About | Go Sandbox</title>
+
+    <!-- PNG 格式 favicon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="https://www.go-sandbox.org/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="https://www.go-sandbox.org/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="https://www.go-sandbox.org/favicon-48x48.png" />
+
+    <!-- 基础 favicon（兼容旧浏览器） -->
+    <link rel="shortcut icon" href="https://www.go-sandbox.org/favicon.ico" />
+
+    <!-- iOS 主屏图标 -->
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.go-sandbox.org/favicon-180x180.png">
+
+    <!-- Windows 磁贴图标 -->
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/mstile-150x150.png">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
+    <title>About | Go Sandbox - An Advanced Online Golang Playground</title>
+
+    <!-- Meta Description -->
+    <meta name="description"
+          content="About | Go Sandbox - an advanced online IDE for Go programming with LSP-backed tools, and real-time code execution, ideal for developers and learners!"/>
+
+    <!-- Meta Keywords -->
+    <meta name="keywords"
+          content="about, Golang sandbox, playground go, Go programming online, Golang IDE, online Go compiler, free Golang playground, learn Go programming, online coding platform for Golang, best Golang editor for developers, interactive Go development tools"/>
+    <!-- Robots -->
+    <meta name="robots" content="index, follow"/>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:site_name" content="Go Sandbox"/>
+    <meta property="og:title" content="About | Go Sandbox - An Advanced Online Golang Playground"/>
+    <meta property="og:locale" content="en_US"/>
+    <meta property="og:description"
+          content="Go Sandbox - an advanced online IDE for Go programming with LSP-backed tools, and real-time code execution, ideal for developers and learners!"/>
+    <meta property="og:image" content="https://www.go-sandbox.org/favicon-192x192.png"/>
+    <meta property="og:url" content="https://www.go-sandbox.org/about.html"/>
+    <meta property="og:type" content="website"/>
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="About | Go Sandbox - An Advanced Online Golang Playground"/>
+    <meta name="twitter:description"
+          content="Go Sandbox - an advanced online IDE for Go programming with LSP-backed tools, and real-time code execution, ideal for developers and learners!"/>
+    <meta name="twitter:image" content="https://www.go-sandbox.org/favicon-192x192.png"/>
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.go-sandbox.org/about.html"/>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "About Go Sandbox",
+            "url": "https://www.go-sandbox.org/about.html",
+            "description": "Details about Go Sandbox: an advanced online playground for Go with IDE-like features."
+        }
+    </script>
+
     <script src="./js/tailwindcss.min.js"></script>
     <link rel="stylesheet" href="./css/about.css"/>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9B0H8MYB6J"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-9B0H8MYB6J');
+</script>
+
 <body>
 
 <div class="fixed z-10 bottom-3 right-4 flex gap-4 shadow hover:to-green-300 transition-colors bg-gradient-to-tr from-teal-400 to-green-800 rounded-lg py-1.5 px-3 items-center text-white/90 text-sm">
@@ -91,6 +160,15 @@
             <div class="preview-img img-key-bindings h-60 w-full border border-gray-300 shadow rounded-lg"></div>
         </div>
     </div>
+
+    <div class="divider mt-12 mb-8"></div>
+
+    <p class="text-center my-8">This project is inspired by the official
+        <a href="https://go.dev/play/" class="text-green-600 hover:text-blue-700 transition-colors">Go Playground</a>
+        and the
+        <a href="https://goplay.tools/" class="text-green-600 hover:text-blue-700 transition-colors">Better Go
+            Playground</a>
+    </p>
 </main>
 </body>
 </html>
