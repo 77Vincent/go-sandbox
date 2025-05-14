@@ -1,6 +1,6 @@
 import Main from "./modules/Main.tsx";
 import {ReactNode, useCallback, useState} from "react";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter} from "react-router-dom";
 import {MyToast} from "./modules/Common.tsx";
 import {Flowbite} from "flowbite-react";
 import {
@@ -116,11 +116,7 @@ function App() {
                         <MyToast type={"error"} show={!!toastError} setShowToast={setToastError}>{toastError}</MyToast>
                         <MyToast type={"info"} show={!!toastInfo} setShowToast={setToastInfo}>{toastInfo}</MyToast>
 
-                        <Routes>
-                            <Route path="*" element={
-                                <Main/>
-                            }/>
-                        </Routes>
+                        <Main/>
                     </main>
                 </Flowbite>
             </BrowserRouter>
