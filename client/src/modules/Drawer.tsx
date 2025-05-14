@@ -1,6 +1,5 @@
 import {LSPDocumentSymbol} from "../types";
 import {
-    ACTIVE_ICON_BUTTON_CLASS_2,
     DRAWER_DOCUMENT_SYMBOLS, DRAWER_LIBRARY,
     DRAWER_STATS,
     INACTIVE_TEXT_CLASS,
@@ -9,10 +8,11 @@ import {
 } from "../constants.ts";
 import {countSymbols, SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {Divider, IconButton, Row} from "./Common.tsx";
+import {Divider, Row} from "./Common.tsx";
 import {CloseIcon, FoldIcon, UnfoldIcon} from "./Icons.tsx";
 import {useCallback, useContext, useState} from "react";
 import {AppCtx, isUserCode} from "../utils.ts";
+import {IconButton} from "./IconButton.tsx";
 
 const symbolStyle = (kind: number): string => {
     switch (kind) {
@@ -99,7 +99,7 @@ export default function Component(props: {
                 <div
                     className={"flex items-center justify-between px-2 text-xs font-semibold text-gray-900 dark:text-gray-100"}>
                     {openedDrawer && TRANSLATE[openedDrawer][lan]}
-                    <CloseIcon size={14} className={ACTIVE_ICON_BUTTON_CLASS_2} onClick={closeDrawer}/>
+                    <IconButton icon={<CloseIcon size={14}/>} variant={"secondary"} onClick={closeDrawer}/>
                 </div>
             </div>
 
@@ -157,10 +157,12 @@ export default function Component(props: {
                                 Object.keys(SNIPPETS).map(key => {
                                     return (
                                         <div key={key}>
-                                            <Row onClick={foldSection(key)} className={"cursor-pointer border-b p-2 pr-1.5 shadow-sm dark:border-b-gray-700"}>
+                                            <Row onClick={foldSection(key)}
+                                                 className={"cursor-pointer border-b p-2 pr-1.5 shadow-sm dark:border-b-gray-700"}>
                                                 <div key={key}
                                                      className={"text-sm font-semibold text-black  dark:text-white"}>{key}</div>
-                                                <IconButton icon={foldedSnippetSections[key] ? <UnfoldIcon/> : <FoldIcon/>}/>
+                                                <IconButton
+                                                    icon={foldedSnippetSections[key] ? <UnfoldIcon/> : <FoldIcon/>}/>
                                             </Row>
 
                                             <div

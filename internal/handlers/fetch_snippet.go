@@ -2,9 +2,7 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/db"
 	"net/http"
 )
@@ -12,18 +10,20 @@ import (
 func FetchSnippet(c *gin.Context) {
 	// FetchSnippet the snippet id from the URL parameter.
 	id := c.Param("id")
-	// FetchSnippet the snippet from Redis.
-	code, err := db.Redis().Get(c, id).Result()
-
-	if errors.Is(err, redis.Nil) {
-		c.AbortWithStatusJSON(http.StatusNotFound, response{Error: fmt.Sprintf("snippet %s not found", id)})
-		return
-	}
+	// fetch snippets from s3
+	snippet, err := db.S3().GetObject(c, id)
 
 	if err != nil {
+		if errors.Is(err, db.ErrObjectNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, response{
+				Error:   err.Error(),
+				Message: "Snippet not found",
+			})
+			return
+		}
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: err.Error()})
 		return
 	}
 
-	c.String(http.StatusOK, code)
+	c.String(http.StatusOK, string(snippet))
 }

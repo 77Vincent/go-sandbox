@@ -11,7 +11,7 @@ import {
 } from "../constants.ts";
 import {AppCtx, displayFileUri, getCursorPos, isUserCode, posToHead} from "../utils.ts";
 import MiniEditor from "./MiniEditor.tsx";
-import {useCallback, useContext, useEffect, useRef, useState} from "react";
+import {MutableRefObject, useCallback, useContext, useEffect, useState} from "react";
 import {Divider} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
 
@@ -23,48 +23,45 @@ export function Usages(props: {
     seeing: SeeingType
     usages: LSPReferenceResult[],
     setUsages: (v: LSPReferenceResult[]) => void
-    value: string,
-    view: EditorView | null,
+    view: MutableRefObject<EditorView | null>,
 }) {
-    const {view, usages, setUsages, seeing, value} = props;
+    const {view, usages, setUsages, seeing} = props;
     const {lan} = useContext(AppCtx);
     const [lookAt, setLookAt] = useState<number>(0);
-    const [displayUsages, setDisplayUsages] = useState<LSPReferenceResult[]>(usages);
+    const [displayUsages, setDisplayUsages] = useState<LSPReferenceResult[]>(usages.filter(v => isUserCode(v.uri)));
     const [previewFrom, setPreviewFrom] = useState<number>(0);
     const [previewTo, setPreviewTo] = useState<number>(0);
 
-    // useRef to store the lines of the code without re-rendering
-    const lines = useRef<string[]>(value.split("\n"));
-
     useEffect(() => {
-        if (!view) return;
+        if (!view.current) return;
 
-        // only show usages in user code
-        const displayed = usages.filter(v => isUserCode(v.uri))
-        setDisplayUsages(displayed);
-        // find the current lookAt index
+        const displayUsages = usages.filter(v => isUserCode(v.uri));
+        setDisplayUsages(displayUsages);
 
         // find the usage index to look at
-        const usageIndex = displayed.findIndex(v => v.range.start.line + 1 === getCursorPos(view).row);
+        const usageIndex = displayUsages.findIndex(v => v.range.start.line + 1 === getCursorPos(view.current as EditorView).row);
         setLookAt(usageIndex === -1 ? 0 : usageIndex)
     }, [usages, view]);
 
+
     useEffect(() => {
+        if (!view.current) return;
+
         const u = displayUsages[lookAt];
         if (u) {
             const {range: {start, end}} = u;
-            const head = posToHead(view as EditorView, start.line + 1, start.character + 1);
+            const head = posToHead(view.current, start.line + 1, start.character + 1);
             setPreviewFrom(head);
             setPreviewTo(head + end.character - start.character);
         }
     }, [displayUsages, lookAt, view]);
 
     const jumpToUsage = useCallback((row: number, col: number) => {
-        if (!view) return;
+        if (!view.current) return;
 
-        const line = view.state.doc.line(row);
+        const line = view.current.state.doc.line(row);
         const pos = line.from + col;
-        view.dispatch({
+        view.current.dispatch({
             selection: {anchor: pos, head: pos},
             scrollIntoView: true,
         });
@@ -114,6 +111,12 @@ export function Usages(props: {
         }
     }, [handleKeyDown]);
 
+    if (!usages.length || !view.current) {
+        return null;
+    }
+
+    const lines = view.current.state.doc.toString().split("\n")
+
     return (
         <Modal size={"5xl"} dismissible show={!!usages.length} onClose={() => setUsages([])}>
             <Modal.Header className={"flex items-center gap-2"}>
@@ -132,20 +135,20 @@ export function Usages(props: {
             <Modal.Body className={"relative"}>
                 <MiniEditor
                     from={previewFrom} to={previewTo}
-                    className={"sticky top-0 mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
-                    value={value}/>
+                    className={"mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
+                    value={view.current.state.doc.toString()}/>
 
-                <div className="flex flex-col">
+                <div className="flex max-h-52 flex-col overflow-auto">
                     {displayUsages.map(({uri, range: {start, end}}, index) => {
                         const lineIndex = start.line;
                         const fromCol = start.character;
                         const toCol = end.character;
                         const previewStart = Math.max(0, lineIndex);
-                        const previewEnd = Math.min(lines.current.length, lineIndex + 1);
+                        const previewEnd = Math.min(lines.length, lineIndex + 1);
 
-                        const contextLines = lines.current.slice(
+                        const contextLines = lines.slice(
                             Math.max(0, previewStart),
-                            Math.min(lines.current.length, previewEnd)
+                            Math.min(lines.length, previewEnd)
                         );
 
                         const annotatedLines = [...contextLines];

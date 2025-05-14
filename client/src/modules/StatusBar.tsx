@@ -1,10 +1,11 @@
 import {AppCtx, displayFileUri, isUserCode} from "../utils.ts";
 import {BadIcon, GoodIcon, MetaKey, NextIcon, OptionKey, PrevIcon} from "./Icons.tsx";
-import {IconButton, Row, Typography} from "./Common.tsx";
+import {Row, Typography} from "./Common.tsx";
 import {SessionI} from "./Sessions.tsx";
 import {useContext, useEffect, useState} from "react";
 import {Tooltip} from "flowbite-react";
 import {TRANSLATE} from "../lib/i18n.ts";
+import {IconButton} from "./IconButton.tsx";
 
 const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";

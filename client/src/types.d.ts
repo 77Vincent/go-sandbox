@@ -111,6 +111,9 @@ export interface AppContextI {
     isMobile: boolean;
     sourceId: string;
     snippetId: string;
+    // show terminal
+    showTerminal: boolean;
+    updateShowTerminal: (show: boolean) => void;
     // opened drawer
     openedDrawer: selectableDrawers;
     updateOpenedDrawer: (id: selectableDrawers) => void;

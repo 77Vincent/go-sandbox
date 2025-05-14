@@ -43,6 +43,7 @@ export {
 
 export {
     RiSettings5Fill as SettingsIcon,
+    RiTerminalBoxFill as TerminalIcon,
 } from "react-icons/ri";
 
 export {

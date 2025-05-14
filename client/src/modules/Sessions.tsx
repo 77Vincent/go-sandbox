@@ -1,8 +1,8 @@
 import {useThemeMode} from "flowbite-react";
 import {displayFileUri} from "../utils.ts";
 import {MouseEventHandler} from "react";
-import {ACTIVE_ICON_BUTTON_CLASS_2} from "../constants.ts";
 import {CloseIcon} from "./Icons.tsx";
+import {ACTIVE_ICON_BUTTON_CLASS_2} from "./IconButton.tsx";
 
 const activeClasses = "border-b-cyan-500 border-b-2 bg-white dark:bg-neutral-800 dark:text-white"
 const inactiveClasses = "opacity-70"

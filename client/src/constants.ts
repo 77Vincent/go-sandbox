@@ -30,6 +30,7 @@ export const DRAWER_SIZE_KEY = "drawerSize";
 export const OPENED_DRAWER_KEY = "openedDrawer";
 export const FONT_SIZE_KEY = "fontSize";
 export const CURSOR_HEAD_KEY = "cursorHead";
+export const SHOW_TERMINAL_KEY = "showTerminal";
 
 export const NO_OPENED_DRAWER: selectableDrawers = ""; // no drawer opened
 export const DEFAULT_MAIN_FILE_PATH = "/main.go"
@@ -40,6 +41,7 @@ export const DEFAULT_GO_VERSION = "1";
 export const DEFAULT_KEY_BINDINGS: KeyBindingsType = "";
 export const DEFAULT_LINT_ON = "true";
 export const DEFAULT_AUTOCOMPLETION_ON = "true";
+export const DEFAULT_SHOW_TERMINAL = "true";
 
 export const RESIZABLE_HANDLER_WIDTH = 5;
 
@@ -64,14 +66,9 @@ export const KEEP_ALIVE_INTERVAL = 30000;
 export const DEBOUNCE_TIME_SHORT = 25;
 export const DEBOUNCE_TIME = 75;
 export const DEBOUNCE_TIME_LONG = 150;
-export const ACTIVE_COLOR = "cyan"
+
+// styles
 export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
-
-export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
-export const BUTTON_INACTIVE = "cursor-not-allowed text-gray-300 dark:text-gray-700";
-export const ACTIVE_ICON_BUTTON_CLASS = "cursor-pointer text-cyan-500 dark:text-cyan-400"
-export const ACTIVE_ICON_BUTTON_CLASS_2 = "cursor-pointer text-gray-400 text-sm hover:opacity-60"
-
 export const INACTIVE_TEXT_CLASS = "text-gray-400 dark:text-gray-600"
 
 export const SNIPPET_REGEX = /\/snippets\/([a-zA-Z0-9-_]+)/g; // url base64 encoded

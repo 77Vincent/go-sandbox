@@ -253,6 +253,7 @@ export default function Component(props: {
         setToastError, goVersion, fontSize, openedDrawer,
         file, setFile,
         value, updateValue,
+        showTerminal, updateShowTerminal,
     } = useContext(AppCtx)
 
     // local state
@@ -267,6 +268,7 @@ export default function Component(props: {
     const [seeing, setSeeing] = useState<SeeingType>(SEEING_USAGES);
 
     // ref
+    const showTerminalRef = useRef<boolean>(showTerminal);
     const editor = useRef<HTMLDivElement>(null);
     const view = useRef<EditorView | null>(null);
     const lsp = useRef<LSPClient | null>(null);
@@ -275,6 +277,10 @@ export default function Component(props: {
     const sessions = useRef<SessionI[]>([]);
     const metaKey = useRef<boolean>(false);
     const ready = useRef<boolean>(false); // initially not ready
+
+    useEffect(() => {
+        showTerminalRef.current = showTerminal;
+    }, [showTerminal]);
 
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
@@ -481,6 +487,15 @@ export default function Component(props: {
     }, []);
 
     const [focusedKeymap] = useState(() => [
+        {
+            key: "Mod-Ctrl-l",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                updateShowTerminal(!showTerminalRef.current);
+                v.focus();
+                return true;
+            },
+        },
         {
             key: "Mod--",
             preventDefault: true,
@@ -725,6 +740,11 @@ export default function Component(props: {
             view.current?.focus();
             return false
         });
+        Mousetrap.bind('mod+ctrl+l', function () {
+            updateShowTerminal(false);
+            view.current?.focus();
+            return false
+        });
         Mousetrap.bind(`mod+,`, function () {
             setShowSettings(true);
             return false
@@ -880,7 +900,7 @@ export default function Component(props: {
                         run={debouncedRun} format={debouncedFormat} share={debouncedShare}/>
 
                 <Usages
-                    seeing={seeing} view={view.current} value={value}
+                    seeing={seeing} view={view}
                     usages={usages} setUsages={setUsages}/>
 
                 <div className={"h-full overflow-auto"} ref={editor} onContextMenu={handleContextMenu}>

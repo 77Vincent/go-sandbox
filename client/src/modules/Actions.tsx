@@ -1,10 +1,11 @@
 import {Tooltip} from "flowbite-react";
 
-import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "../constants.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {EnterKey, FormatIcon, MetaKey, OptionKey, RunIcon, ShareIcon, ShiftKey} from "./Icons.tsx";
 import {useContext} from "react";
 import {AppCtx, isUserCode} from "../utils.ts";
+
+import {IconButton} from "./IconButton.tsx";
 
 const COMMON_CLASSES = "z-20 text-xs font-light";
 
@@ -30,8 +31,11 @@ export default function Component(props: {
                     </div>
                 </div>
             }>
-                <RunIcon className={executable ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
-                         onClick={executable ? run : undefined} size={isMobile ? 18 : 20}/>
+                <IconButton
+                    disabled={!executable}
+                    icon={<RunIcon size={isMobile ? 18 : 20}/>}
+                    onClick={executable ? run : undefined}
+                />
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={
@@ -42,8 +46,11 @@ export default function Component(props: {
                     </div>
                 </div>
             }>
-                <FormatIcon className={executable ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
-                            onClick={executable ? format : undefined} size={isMobile ? 18 : 20}/>
+                <IconButton
+                    disabled={!executable}
+                    icon={<FormatIcon size={isMobile ? 18 : 20}/>}
+                    onClick={executable ? format : undefined}
+                />
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={
@@ -54,8 +61,7 @@ export default function Component(props: {
                     </div>
                 </div>
             }>
-                <ShareIcon className={sharable ? ICON_BUTTON_CLASS : BUTTON_INACTIVE}
-                           onClick={sharable ? share : undefined} size={isMobile ? 17 : 19}/>
+                <IconButton icon={<ShareIcon size={isMobile ? 17 : 19}/>} onClick={sharable ? share : undefined}/>
             </Tooltip>
         </>
     );

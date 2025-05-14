@@ -25,8 +25,20 @@
 .img-realtime-execution {
     background-image: url("../image/realtime-execution.png");
 }
+.img-language-support {
+    background-image: url("../image/language-support.png");
+}
 .img-key-bindings {
     background-image: url("../image/key-bindings.png");
+}
+.img-code-navigation {
+    background-image: url("../image/code-navigation.png");
+}
+.img-snippet-library {
+    background-image: url("../image/snippet-library.png");
+}
+.img-share-code {
+    background-image: url("../image/share-code.png");
 }
 
 h2 {
@@ -41,9 +53,9 @@ h4 {
     font-size: 1.3rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    color: #777;
 }
 
 p {
+    font-weight: 300;
     font-size: 0.95rem;
 }

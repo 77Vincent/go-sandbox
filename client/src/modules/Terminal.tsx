@@ -25,7 +25,7 @@ export default function Component(props: {
                 result.map(item => item.content).join("\n")
             }/>
 
-            <div className={"terminal-info flex flex-col justify-center border-b border-neutral-300 p-2 font-light dark:border-neutral-700"}>
+            <div className={"terminal-info flex flex-col justify-center whitespace-nowrap border-b border-neutral-300 p-2 font-light dark:border-neutral-700"}>
                 {
                     (!error && !info) &&
                     <div className={`text-neutral-400 dark:text-neutral-500`}>

@@ -1,9 +1,8 @@
 import {mySandboxes} from "../types";
 import {
-    BUTTON_INACTIVE,
     DEFAULT_SANDBOX_ID,
     HELLO_WORLD,
-    ICON_BUTTON_CLASS, INACTIVE_TEXT_CLASS,
+    INACTIVE_TEXT_CLASS,
     MY_SANDBOXES, SANDBOX_NAMES_KEY,
     SELECTED_COLOR_CLASS
 } from "../constants.ts";
@@ -13,6 +12,7 @@ import {MouseEventHandler, useContext, useEffect, useRef, useState} from "react"
 import {AppCtx, getSandboxes, getSandboxesNames} from "../utils.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {AddIcon, EditIcon, RemoveIcon} from "./Icons.tsx";
+import {BUTTON_INACTIVE, ICON_BUTTON_CLASS} from "./IconButton.tsx";
 
 const MY_SANDBOX_PREFIX = "my-sandbox-";
 
