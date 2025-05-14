@@ -1,11 +1,12 @@
 import {ICON_BUTTON_CLASS} from "../constants.ts";
 
 import {Tooltip} from "flowbite-react";
-import {Divider, IconButton} from "./Common.tsx";
+import {Divider} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {AboutIcon, CtrlKey, ManualIcon, MetaKey, SettingsIcon, TerminalIcon} from "./Icons.tsx";
 import {AppCtx} from "../utils.ts";
 import {useContext} from "react";
+import {IconButton} from "./IconButton.tsx";
 
 export default function Component(props: {
     setShowSettings: (show: boolean) => void;

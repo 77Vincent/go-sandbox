@@ -8,7 +8,8 @@ import {
 import {LibraryIcon, OutlineIcon, StatsIcon} from "./Icons.tsx";
 import {useContext} from "react";
 import {AppCtx} from "../utils.ts";
-import {IconButton} from "./Common.tsx";
+
+import {IconButton} from "./IconButton.tsx";
 
 export default function Component() {
     const {isMobile, lan, openedDrawer, updateOpenedDrawer} = useContext(AppCtx)

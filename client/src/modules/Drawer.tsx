@@ -8,10 +8,11 @@ import {
 } from "../constants.ts";
 import {countSymbols, SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {Divider, IconButton, Row} from "./Common.tsx";
+import {Divider, Row} from "./Common.tsx";
 import {CloseIcon, FoldIcon, UnfoldIcon} from "./Icons.tsx";
 import {useCallback, useContext, useState} from "react";
 import {AppCtx, isUserCode} from "../utils.ts";
+import {IconButton} from "./IconButton.tsx";
 
 const symbolStyle = (kind: number): string => {
     switch (kind) {

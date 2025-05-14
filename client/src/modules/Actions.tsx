@@ -4,7 +4,8 @@ import {TRANSLATE} from "../lib/i18n.ts";
 import {EnterKey, FormatIcon, MetaKey, OptionKey, RunIcon, ShareIcon, ShiftKey} from "./Icons.tsx";
 import {useContext} from "react";
 import {AppCtx, isUserCode} from "../utils.ts";
-import {IconButton} from "./Common.tsx";
+
+import {IconButton} from "./IconButton.tsx";
 
 const COMMON_CLASSES = "z-20 text-xs font-light";
 

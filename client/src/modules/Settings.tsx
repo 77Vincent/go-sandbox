@@ -7,11 +7,12 @@ import {
     SELECTED_COLOR_CLASS
 } from "../constants.ts";
 import {KeyBindingsType, languages} from "../types";
-import {Divider, Grid, IconButton, Row, ToggleSwitch} from "./Common.tsx";
+import {Divider, Grid, Row, ToggleSwitch} from "./Common.tsx";
 import {LANGUAGES, TRANSLATE} from "../lib/i18n.ts";
 import {LayoutHorizontalIcon, LayoutVerticalIcon} from "./Icons.tsx";
 import {useContext} from "react";
 import {AppCtx} from "../utils.ts";
+import {IconButton} from "./IconButton.tsx";
 
 export default function Component(props: {
     show: boolean;

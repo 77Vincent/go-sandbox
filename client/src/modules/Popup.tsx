@@ -1,7 +1,8 @@
 import {ReactNode, useState} from "react";
 import {Rnd} from "react-rnd";
-import {Divider, IconButton, Row, Typography} from "./Common.tsx";
+import {Divider, Row, Typography} from "./Common.tsx";
 import {CloseIcon} from "./Icons.tsx";
+import {IconButton} from "./IconButton.tsx";
 
 const initSize = {width: 600, height: 400}
 const initPos = {
