@@ -1,19 +1,17 @@
 import {DarkThemeToggle, Dropdown, Label, Modal, useThemeMode} from "flowbite-react";
 
 import {
-    ACTIVE_COLOR, AVAILABLE_FONT_SIZES,
+    AVAILABLE_FONT_SIZES,
     GO_VERSION_KEY, GO_VERSION_MAP, INACTIVE_TEXT_CLASS,
     keyBindingsMap,
     SELECTED_COLOR_CLASS
 } from "../constants.ts";
 import {KeyBindingsType, languages} from "../types";
-import {Divider, Grid, Row, ToggleSwitch} from "./Common.tsx";
+import {Divider, Grid, IconButton, Row, ToggleSwitch} from "./Common.tsx";
 import {LANGUAGES, TRANSLATE} from "../lib/i18n.ts";
 import {LayoutHorizontalIcon, LayoutVerticalIcon} from "./Icons.tsx";
 import {useContext} from "react";
 import {AppCtx} from "../utils.ts";
-
-const activeClasses = "cursor-pointer hover:opacity-50";
 
 export default function Component(props: {
     show: boolean;
@@ -129,10 +127,16 @@ export default function Component(props: {
                         <Row>
                             <Label value={TRANSLATE.layout[lan]}/>
                             <div className={"flex items-center gap-3"}>
-                                <LayoutHorizontalIcon color={!isVerticalLayout ? ACTIVE_COLOR : ""}
-                                                      onClick={setIsVerticalLayout} className={activeClasses}/>
-                                <LayoutVerticalIcon color={isVerticalLayout ? ACTIVE_COLOR : ""}
-                                                    onClick={setIsVerticalLayout} className={activeClasses}/>
+                                <IconButton
+                                    active={!isVerticalLayout}
+                                    onClick={setIsVerticalLayout}
+                                    icon={<LayoutHorizontalIcon/>}
+                                />
+                                <IconButton
+                                    active={isVerticalLayout}
+                                    onClick={setIsVerticalLayout}
+                                    icon={<LayoutVerticalIcon/>}
+                                />
                             </div>
                         </Row>
                     </Grid>
