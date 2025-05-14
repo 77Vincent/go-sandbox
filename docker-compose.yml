@@ -20,9 +20,10 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - redis
       - gopls
       - init-copier
+    environment:
+      - LOCALSTACK_ENDPOINT=http://localstack:4566
     restart: always
     volumes:
       - go-sandboxes:/app/sandboxes  # Shared volume for /app
@@ -38,13 +39,6 @@ services:
     restart: always
     volumes:
       - ./config/aws:/etc/localstack/init/ready.d
-
-  redis:
-    image: redis:7
-    container_name: go-sandbox-redis
-    ports:
-      - "6379:6379"
-    restart: always
 
   gopls:
     build:
