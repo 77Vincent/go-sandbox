@@ -22,8 +22,7 @@ services:
     depends_on:
       - gopls
       - init-copier
-    environment:
-      - LOCALSTACK_ENDPOINT=http://localstack:4566
+    env_file: .env
     restart: always
     volumes:
       - go-sandboxes:/app/sandboxes  # Shared volume for /app
