@@ -216,7 +216,9 @@ export function getSourceId(): string {
 }
 
 export function getSnippetId(): string {
-    const path = window.location.pathname;
+    let path = window.location.pathname;
+    // trim the tailing slash if exists, this happens on production, weird
+    path = path.endsWith("/") ? path.slice(0, -1) : path;
     const matches = path.match(SNIPPET_REGEX);
     if (matches) {
         const id = path.split("/").pop();
