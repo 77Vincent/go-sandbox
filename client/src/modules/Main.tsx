@@ -52,18 +52,7 @@ import {
 import Manual from "./Manual.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
-
-function ShareSuccessMessage(props: {
-    url: string,
-}): ReactNode {
-    const {url} = props
-    return (
-        <div>
-            <p className={"dark:text-gray-300"}>The link to share:</p>
-            <Link target={"_blank"} to={url} className={"text-cyan-500 underline"}>{url}</Link>
-        </div>
-    )
-}
+import ShareModal from "./ShareModal.tsx";
 
 function FetchErrorMessage(props: {
     error: string
@@ -95,12 +84,13 @@ export default function Component() {
         showTerminal,
         isRunning, setIsRunning,
         openedDrawer,
-        setToastError, setToastInfo,
+        setToastError,
         value, file,
     } = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
+    const [showShareUrl, setShowShareUrl] = useState<string>("");
 
     // settings
     const [editorSize, setEditorSize] = useState<number>(initialEditorSize);
@@ -163,8 +153,8 @@ export default function Component() {
             navigator.clipboard.writeText(url);
         }, 0);
 
-        setToastInfo(<ShareSuccessMessage url={url}/>)
-    }, [setToastInfo, setToastError]), DEBOUNCE_TIME);
+        setShowShareUrl(url)
+    }, [setToastError, setShowShareUrl]), DEBOUNCE_TIME);
 
     const debouncedFormat = debounce(useCallback(async () => {
         if (shouldAbort()) {
@@ -365,6 +355,7 @@ export default function Component() {
 
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
+            <ShareModal url={showShareUrl} setUrl={setShowShareUrl}/>
             <Manual show={showManual} setShow={setShowManual}/>
 
             <Settings
