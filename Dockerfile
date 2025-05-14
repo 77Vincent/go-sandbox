@@ -56,7 +56,7 @@ WORKDIR /go/src/app
 
 # 拷贝 go.mod 和 go.sum（如果有）并下载依赖
 COPY go.mod go.sum ./
-RUN go mod download
+RUN go mod download && go mod tidy
 
 # 拷贝项目其余所有源码（包括 main.go、internal/ 等）
 COPY . .

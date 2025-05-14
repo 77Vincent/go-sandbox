@@ -27,6 +27,18 @@ services:
     volumes:
       - go-sandboxes:/app/sandboxes  # Shared volume for /app
 
+  localstack:
+    image: localstack/localstack
+    container_name: go-sandbox-localstack
+    ports:
+      - "4566:4566" # LocalStack Gateway
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+    restart: always
+    volumes:
+      - ./config/aws:/etc/localstack/init/ready.d
+
   redis:
     image: redis:7
     container_name: go-sandbox-redis
