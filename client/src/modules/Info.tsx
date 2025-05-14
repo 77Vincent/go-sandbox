@@ -7,8 +7,6 @@ import {AboutIcon, CtrlKey, ManualIcon, MetaKey, SettingsIcon, TerminalIcon} fro
 import {AppCtx} from "../utils.ts";
 import {useContext} from "react";
 
-const commonClasses = `${ICON_BUTTON_CLASS} max-md:mx-0 max-md:text-lg`
-
 export default function Component(props: {
     setShowSettings: (show: boolean) => void;
     setShowAbout: (show: boolean) => void;
@@ -45,10 +43,10 @@ export default function Component(props: {
                     </div>
                 </div>
             }>
-                <SettingsIcon
+                <IconButton
                     onClick={() => setShowSettings(true)}
-                    size={isMobile ? 18 : 20}
-                    className={commonClasses}/>
+                    icon={<SettingsIcon size={isMobile ? 18 : 20}/>}
+                />
             </Tooltip>
 
             <Tooltip className={"z-20 text-xs"} content={
@@ -59,10 +57,10 @@ export default function Component(props: {
                     </div>
                 </div>
             }>
-                <ManualIcon
-                    size={isMobile ? 18 : 20}
+                <IconButton
+                    icon={<ManualIcon size={isMobile ? 18 : 20}/>}
                     onClick={() => setShowManual(true)}
-                    className={commonClasses}/>
+                />
             </Tooltip>
 
             <Tooltip className={"text-xs"} content={TRANSLATE.about[lan]}>
