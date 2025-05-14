@@ -34,25 +34,25 @@ const (
 
 func S3() S3Client {
 	s3Once.Do(func() {
-		// use the production s3 setup by default
 		var (
-			forcePathStyle bool
-			endpoint       = aws.String(cfg.RealS3Endpoint)
+			sess   *session.Session
+			region = aws.String(defaultRegion)
 		)
 
 		// it is a local environment
 		if v := os.Getenv(cfg.EnvLocalStackEndpoint); v != "" {
-			endpoint = aws.String(v)
-			forcePathStyle = true
+			sess, _ = session.NewSession(&aws.Config{
+				Region:           region,
+				Credentials:      credentials.AnonymousCredentials,
+				S3ForcePathStyle: aws.Bool(true),
+				Endpoint:         aws.String(v),
+			})
+		} else {
+			// production environment
+			sess, _ = session.NewSession(&aws.Config{
+				Region: region,
+			})
 		}
-
-		// Initialize a session
-		sess, _ := session.NewSession(&aws.Config{
-			Region:           aws.String(defaultRegion),
-			Credentials:      credentials.AnonymousCredentials,
-			S3ForcePathStyle: aws.Bool(forcePathStyle),
-			Endpoint:         endpoint,
-		})
 
 		s3c = &s3Client{
 			client: s3.New(sess),
