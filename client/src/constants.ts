@@ -66,7 +66,6 @@ export const KEEP_ALIVE_INTERVAL = 30000;
 export const DEBOUNCE_TIME_SHORT = 25;
 export const DEBOUNCE_TIME = 75;
 export const DEBOUNCE_TIME_LONG = 150;
-export const ACTIVE_COLOR = "cyan"
 export const SELECTED_COLOR_CLASS = "font-semibold bg-gray-100 dark:bg-gray-600"
 
 export const ICON_BUTTON_CLASS = "cursor-pointer hover:text-cyan-500 text-gray-600 dark:hover:text-cyan-400 dark:text-gray-300"
