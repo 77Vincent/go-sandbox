@@ -8,7 +8,6 @@ import {ICON_BUTTON_CLASS, IconButton} from "./IconButton.tsx";
 
 export default function Component(props: {
     setShowSettings: (show: boolean) => void;
-    setShowAbout: (show: boolean) => void;
     setShowManual: (show: boolean) => void;
 }) {
     const {setShowSettings, setShowManual} = props

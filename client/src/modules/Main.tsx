@@ -49,7 +49,6 @@ import {
     patchI,
     resultI,
 } from "../types";
-import About from "./About.tsx";
 import Manual from "./Manual.tsx";
 import {SSE} from "sse.js";
 import {Link} from "react-router-dom";
@@ -101,7 +100,6 @@ export default function Component() {
     } = useContext(AppCtx)
 
     const [showSettings, setShowSettings] = useState<boolean>(false);
-    const [showAbout, setShowAbout] = useState<boolean>(false);
     const [showManual, setShowManual] = useState<boolean>(false);
 
     // settings
@@ -164,6 +162,7 @@ export default function Component() {
         setTimeout(() => {
             navigator.clipboard.writeText(url);
         }, 0);
+
         setToastInfo(<ShareSuccessMessage url={url}/>)
     }, [setToastInfo, setToastError]), DEBOUNCE_TIME);
 
@@ -366,7 +365,6 @@ export default function Component() {
 
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
-            <About show={showAbout} setShow={setShowAbout}/>
             <Manual show={showManual} setShow={setShowManual}/>
 
             <Settings
@@ -413,8 +411,7 @@ export default function Component() {
                         </>
                     }
 
-                    <Info setShowAbout={setShowAbout}
-                          setShowSettings={setShowSettings} setShowManual={setShowManual}/>
+                    <Info setShowSettings={setShowSettings} setShowManual={setShowManual}/>
                 </div>
             </div>
 
