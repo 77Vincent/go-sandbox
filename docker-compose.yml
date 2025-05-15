@@ -8,7 +8,8 @@ services:
     platform: linux/arm64
     container_name: go-sandbox-init
     command: >
-      sh -c "cp -r /app/sandboxes/go1 /shared"
+      sh -c "cp -r /app/sandboxes/go1 /shared
+        && cp -r /app/sandboxes/go2 /shared"
     volumes:
       - go-sandboxes:/shared
     restart: "no"
