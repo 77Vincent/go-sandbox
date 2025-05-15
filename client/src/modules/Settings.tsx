@@ -2,7 +2,7 @@ import {DarkThemeToggle, Dropdown, Label, Modal, useThemeMode} from "flowbite-re
 
 import {
     AVAILABLE_FONT_SIZES,
-    GO_VERSION_KEY, GO_VERSION_MAP, INACTIVE_TEXT_CLASS,
+    GO_VERSION_MAP,
     keyBindingsMap,
     SELECTED_COLOR_CLASS
 } from "../constants.ts";
@@ -32,9 +32,10 @@ export default function Component(props: {
     onAutoCompletion: () => void;
 }) {
     const {
+        isRunning,
         lan, updateLan,
         fontSize, updateFontSize,
-        goVersion,
+        goVersion, updateGoVersion,
     } = useContext(AppCtx)
     const {mode} = useThemeMode()
     const {
@@ -70,11 +71,10 @@ export default function Component(props: {
         }
     }
 
-    function onGoVersion(id: string) {
+    function onGoVersion(v: string) {
         return () => {
-            if (id !== goVersion) {
-                localStorage.setItem(GO_VERSION_KEY, goVersion);
-                location.reload()
+            if (v !== goVersion) {
+                updateGoVersion(v);
             }
         }
     }
@@ -178,8 +178,7 @@ export default function Component(props: {
                     <Grid>
                         <Row>
                             <Label htmlFor="language" value={TRANSLATE.goVersion[lan]}/>
-                            <span className={`text-xs ${INACTIVE_TEXT_CLASS}`}> {TRANSLATE.comingSoon[lan]} </span>
-                            <Dropdown disabled={true} color={"light"} size={"xs"}
+                            <Dropdown disabled={isRunning} color={"light"} size={"xs"}
                                       label={<span className={"text-xs"}> {GO_VERSION_MAP[goVersion]} </span>}
                             >
                                 {

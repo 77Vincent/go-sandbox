@@ -81,7 +81,7 @@ export const HTTP_NOT_FOUND = 404
 export const GO_VERSION_MAP: Record<string, string> = {
     "1": "Go 1.24",
     "2": "Go 1.23",
-    "4": "Go dev branch",
+    // "4": "Go dev branch",
 }
 
 export const keyDownEvent = "keydown"

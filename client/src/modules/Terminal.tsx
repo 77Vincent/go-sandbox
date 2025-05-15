@@ -9,13 +9,12 @@ const errorColor = "text-red-700 dark:text-red-500"
 const infoColor = "text-green-600 dark:text-green-300"
 
 export default function Component(props: {
-    running: boolean,
     result: resultI[],
     info: string,
     error: string,
 }) {
-    const {result, info, error, running} = props
-    const {lan, fontSize} = useContext(AppCtx)
+    const {result, info, error} = props
+    const {lan, isRunning, fontSize} = useContext(AppCtx)
 
     const textSize = `text-size-${fontSize}`
     return (
@@ -25,11 +24,11 @@ export default function Component(props: {
                 result.map(item => item.content).join("\n")
             }/>
 
-            <div className={"terminal-info flex flex-col justify-center whitespace-nowrap border-b border-neutral-300 p-2 font-light dark:border-neutral-700"}>
+            <div className={"terminal-info hide-scrollbar flex flex-col justify-center overflow-x-auto overflow-y-hidden whitespace-nowrap border-b border-neutral-300 p-2 font-light dark:border-neutral-700"}>
                 {
                     (!error && !info) &&
                     <div className={`text-neutral-400 dark:text-neutral-500`}>
-                        {running ? TRANSLATE.running[lan] : TRANSLATE.hintManual[lan]}
+                        {isRunning ? TRANSLATE.running[lan] : TRANSLATE.hintManual[lan]}
                     </div>
                 }
                 {error && <pre className={errorColor}>{error}</pre>}

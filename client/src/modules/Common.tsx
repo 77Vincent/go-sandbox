@@ -141,7 +141,7 @@ export function ClickBoard(props: {
 export function Grid(props: {
     children: ReactNode;
 }) {
-    return <div className={"grid grid-cols-2 gap-x-10 gap-y-4"}>
+    return <div className={"grid grid-cols-2 gap-x-10 gap-y-4 max-md:grid-cols-1"}>
         {props.children}
     </div>
 }
