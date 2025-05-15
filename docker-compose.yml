@@ -22,6 +22,7 @@ services:
       - "3000:3000"
     depends_on:
       - gopls
+      - gopls2
       - init-copier
     env_file: .env
     restart: always
@@ -46,6 +47,19 @@ services:
     container_name: go-sandbox-gopls
     ports:
       - "4389:4389"
+    restart: always
+    depends_on:
+      - init-copier
+    volumes:
+      - go-sandboxes:/workspace  # Mount same volume at different path
+
+  gopls2:
+    build:
+      context: ./gopls
+      dockerfile: Dockerfile2
+    container_name: go-sandbox-gopls2
+    ports:
+      - "4388:4388"
     restart: always
     depends_on:
       - init-copier
