@@ -2,7 +2,6 @@ import {DarkThemeToggle, Dropdown, Label, Modal, useThemeMode} from "flowbite-re
 
 import {
     AVAILABLE_FONT_SIZES,
-    GO_VERSION_MAP,
     keyBindingsMap,
     SELECTED_COLOR_CLASS
 } from "../constants.ts";
@@ -32,10 +31,8 @@ export default function Component(props: {
     onAutoCompletion: () => void;
 }) {
     const {
-        isRunning,
         lan, updateLan,
         fontSize, updateFontSize,
-        goVersion, updateGoVersion,
     } = useContext(AppCtx)
     const {mode} = useThemeMode()
     const {
@@ -67,14 +64,6 @@ export default function Component(props: {
         return () => {
             if (id !== lan) {
                 updateLan(id)
-            }
-        }
-    }
-
-    function onGoVersion(v: string) {
-        return () => {
-            if (v !== goVersion) {
-                updateGoVersion(v);
             }
         }
     }
@@ -176,23 +165,6 @@ export default function Component(props: {
                     <Divider horizontal={true} className={"my-4"}/>
 
                     <Grid>
-                        <Row>
-                            <Label htmlFor="language" value={TRANSLATE.goVersion[lan]}/>
-                            <Dropdown disabled={isRunning} color={"light"} size={"xs"}
-                                      label={<span className={"text-xs"}> {GO_VERSION_MAP[goVersion]} </span>}
-                            >
-                                {
-                                    Object.keys(GO_VERSION_MAP).map((id) => (
-                                        <Dropdown.Item className={goVersion === id ? SELECTED_COLOR_CLASS : ""}
-                                                       key={id}
-                                                       onClick={onGoVersion(id)}>
-                                            {GO_VERSION_MAP[id]}
-                                        </Dropdown.Item>
-                                    ))
-                                }
-                            </Dropdown>
-                        </Row>
-
                         <Row>
                             <Label value={`${TRANSLATE.theme[lan]} / ${mode}`}/>
                             <DarkThemeToggle/>
