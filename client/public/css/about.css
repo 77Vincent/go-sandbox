@@ -1,5 +1,5 @@
 body.dark {
-    background-color: #161c1b;
+    background-color: #07100e;
     color: #ffffff;
 }
 
@@ -23,8 +23,14 @@ body.dark {
 }
 
 .divider {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    width: 100%;
+    height: 1px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
+.dark .divider {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
 .divider-vertical {
     width: 1px;
     height: 80%;
@@ -36,17 +42,30 @@ body.dark {
     background-position: center;
 }
 
+.dark .border {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.border {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
 .img-realtime-execution {
     background-image: url("../image/realtime-execution.png");
 }
 .img-language-support {
     background-image: url("../image/language-support.png");
 }
+.dark .img-language-support {
+    background-image: url("../image/language-support-dark.png");
+}
 .img-key-bindings {
     background-image: url("../image/key-bindings.png");
 }
 .img-code-navigation {
     background-image: url("../image/code-navigation.png");
+}
+.dark .img-code-navigation {
+    background-image: url("../image/code-navigation-dark.png");
 }
 .img-snippet-library {
     background-image: url("../image/snippet-library.png");
