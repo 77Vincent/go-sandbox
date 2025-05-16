@@ -762,8 +762,20 @@ export default function Component(props: {
             id: fileRef.current, cursor: cursorHead, data: value
         })
 
+        let path: string = ""
+        switch (goVersion) {
+            case "1":
+                path = "/ws"
+                break
+            case "2":
+                path = "/ws2"
+                break
+            default:
+                path = "/ws" // use the latest go version by default
+        }
+
         lsp.current = new LSPClient(
-            getWsUrl("/ws"), goVersion, view.current,
+            getWsUrl(path), goVersion, view.current,
             fileRef, sessions,
             handleDiagnostics, handleError, handleFileChange, ready,
         );

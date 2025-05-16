@@ -41,7 +41,8 @@ func main() {
 	r.POST("/execute", handlers.Execute)
 	r.GET("/source", handlers.FetchSource)
 
-	r.GET("/ws", handlers.LSP)
+	r.GET("/ws", handlers.LspHandler("1"))
+	r.GET("/ws2", handlers.LspHandler("2"))
 
 	r.Run(config.ApiServerPort)
 }

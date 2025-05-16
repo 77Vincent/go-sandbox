@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   init-copier:
     build:
@@ -59,7 +57,7 @@ services:
       dockerfile: Dockerfile2
     container_name: go-sandbox-gopls2
     ports:
-      - "4388:4388"
+      - "4388:4389"
     restart: always
     depends_on:
       - init-copier
