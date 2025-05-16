@@ -5,12 +5,12 @@
     <meta charset="UTF-8"/>
 
     <!-- PNG 格式 favicon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="https://www.go-sandbox.org/favicon-16x16.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="https://www.go-sandbox.org/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="48x48" href="https://www.go-sandbox.org/favicon-48x48.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="https://www.go-sandbox.org/favicon-16x16.png"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="https://www.go-sandbox.org/favicon-32x32.png"/>
+    <link rel="icon" type="image/png" sizes="48x48" href="https://www.go-sandbox.org/favicon-48x48.png"/>
 
     <!-- 基础 favicon（兼容旧浏览器） -->
-    <link rel="shortcut icon" href="https://www.go-sandbox.org/favicon.ico" />
+    <link rel="shortcut icon" href="https://www.go-sandbox.org/favicon.ico"/>
 
     <!-- iOS 主屏图标 -->
     <link rel="apple-touch-icon" sizes="180x180" href="https://www.go-sandbox.org/favicon-180x180.png">
@@ -70,7 +70,11 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9B0H8MYB6J"></script>
 <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
     gtag('js', new Date());
 
     gtag('config', 'G-9B0H8MYB6J');
@@ -78,97 +82,95 @@
 
 <body>
 
-<div class="fixed z-10 bottom-3 right-4 flex gap-4 shadow hover:to-green-300 transition-colors bg-gradient-to-tr from-teal-400 to-green-800 rounded-lg py-1.5 px-3 items-center text-white/90 text-sm">
-    <a href="mailto:wentianqi77@outlook.com">Contact</a>
-</div>
-
-<header class="bg-gradient-to-br from-blue-950 via-teal-900 to-orange-950 py-14">
-    <div class="container mx-auto flex justify-between text-white gap-12">
-        <div class="min-w-96 flex flex-1 flex-col items-center justify-center gap-2">
-            <div class="flex items-center gap-6 justify-center">
-                <img class="w-12" src="https://www.go-sandbox.org/favicon-192x192.png" alt="Go Sandbox Logo"
+<header class="bg-gradient-to-br transition-colors duration-500 from-blue-950 via-teal-950 hover:via-teal-900 to-orange-950 py-14">
+    <div class="container mx-auto flex justify-center text-white gap-16 max-md:gap-8">
+        <div class="flex flex-col items-center justify-center gap-2">
+            <div class="min-w-96 max-lg:min-w-60 flex items-center gap-6 justify-center">
+                <img class="w-12 max-md:w-8" src="https://www.go-sandbox.org/favicon-192x192.png" alt="Go Sandbox Logo"
                      width="100"/>
-                <h1 class="text-5xl my-5">Go Sandbox</h1>
+                <h1 class="text-5xl max-lg:text-3xl max-md:text-xl my-5 max-md:my-2">Go Sandbox</h1>
             </div>
 
             <a href="https://www.go-sandbox.org"
-               class="font-semibold tracking-wide bg-white/10 hover:bg-white/20 transition-colors rounded-2xl border border-white/20 text-white text-lg py-2 px-5"
+               class="font-semibold tracking-wide bg-white/10 hover:bg-white/20 transition-colors rounded-2xl border border-white/20 text-white text-lg max-lg:text-base max-md:text-sm py-2 px-5 max-md:py-1 max-md:px-3"
             >
-                Try it now
+                <span class="en"> Try it now </span>
+                <span class="zh"> 立即体验 </span>
             </a>
         </div>
 
-        <div class="flex flex-col justify-center">
-            <h2 class="font-light break-words">
+        <div class="flex flex-col gap-4 items-center justify-center">
+            <h2 class="en font-light break-words text-3xl max-lg:text-2xl max-md:text-lg">
                 A lightweight and advanced online IDE-like playground for Go
             </h2>
+            <h2 class="zh font-light break-words text-4xl max-lg:text-2xl max-md:text-lg">
+                轻量又健全的在线 Go 沙盒
+            </h2>
+            <div class="flex gap-4 justify-center items-center opacity-75 font-light">
+                <a href="mailto:wentianqi77@outlook.com" target="_blank" class="hover:opacity-60">Contact</a>
+                <div class="divider-vertical"></div>
+                <button id="language-switch" class="hover:opacity-60"></button>
+                <div class="divider-vertical"></div>
+                <button id="mode-switch" class="cursor-pointer hover:opacity-60"></button>
+            </div>
         </div>
     </div>
 </header>
 
-<main class="container mx-auto">
-    <h3 class="text-center my-12">IDE-Level Language Support</h3>
-    <div class="my-4 grid grid-cols-2 gap-16">
-        <div class="flex gap-8 items-center">
-            <div class="w-96">
-                <h4>Completion & linting</h4>
-                <p>Auto-completions, hints, diagnostics — just like in an IDE.</p>
-            </div>
-            <div class="preview-img img-language-support h-60 w-full border border-gray-300 shadow rounded-lg"></div>
-        </div>
-        <div class="flex gap-8 items-center">
-            <div class="w-96">
+<main class="container max-md:px-4 mx-auto">
+    <div class="my-10 mb-20 max-md:my-6 max-md:mb-10 flex gap-32 max-lg:gap-16 max-md:gap-8">
+        <div class="flex flex-col justify-center">
+            <div class="en text-3xl max-lg:text-2xl max-md:text-xl font-bold">
+                <h4>Auto-Completion</h4>
+                <h4>Linting</h4>
                 <h4>Code navigation</h4>
-                <p>Explore definitions, references, and external source code</p>
             </div>
-            <div class="preview-img img-code-navigation h-60 w-full border border-gray-300 shadow rounded-lg"></div>
+            <div class="zh text-3xl max-lg:text-2xl max-md:text-xl font-bold">
+                <h4>代码补全</h4>
+                <h4>语法检查</h4>
+                <h4>代码导航</h4>
+            </div>
+        </div>
+        <div class="flex flex-1 items-center max-md:w-50">
+            <div class="preview-img img-language-support h-72 max-lg:h-56 max-md:h-36 w-full border border-gray-300 shadow-lg rounded-lg"></div>
+            <div class="-ml-30 mt-20 max-lg:-ml-20 max-md:-ml-10 preview-img img-code-navigation h-72 max-lg:h-56 max-md:h-36 w-full border border-gray-300 shadow-lg rounded-lg"></div>
         </div>
     </div>
 
-    <h3 class="text-center my-12">Ideal for learning</h3>
-    <div class="my-4 grid grid-cols-2 gap-16">
-        <div class="flex gap-8 items-center">
-            <div class="w-96">
-                <h4>Snippet library</h4>
-                <p>Browse and share runnable Go snippets—curated for learning, reuse, and collaboration.</p>
+    <div class="flex flex-col gap-10 my-16 max-lg:my-12 max-md:my-8 max-md:gap-8">
+        <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-16 max-md:gap-8">
+            <div class="grid grid-cols-2 gap-8 items-center">
+                <h4 class="text-2xl max-md:text-xl font-semibold">Rich snippet library, ideal for learning</h4>
+                <div class="preview-img img-snippet-library h-50 max-lg:h-40 max-md:h-30 w-full border border-gray-300 shadow rounded-lg"></div>
             </div>
-            <div class="preview-img img-snippet-library h-60 w-full border border-gray-300 shadow rounded-lg"></div>
+            <div class="grid grid-cols-2 gap-8 items-center">
+                <h4 class="text-2xl max-md:text-xl font-semibold">Share any code</h4>
+                <div class="preview-img img-share-code h-50 max-lg:h-40 max-md:h-30 w-full border border-gray-300 shadow rounded-lg"></div>
+            </div>
         </div>
-        <div class="flex gap-8 items-center">
-            <div class="w-96">
-                <h4>Share any code</h4>
-                <p>Share your code snippet or standard libraries' source code with a single link</p>
+
+        <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-16 max-md:gap-8">
+            <div class="grid grid-cols-2 gap-8 items-center">
+                <h4 class="text-2xl max-md:text-xl font-semibold">Realtime execution using Web Socket</h4>
+                <div class="preview-img img-realtime-execution h-50 max-lg:h-40 max-md:h-30 w-full border border-gray-300 shadow rounded-lg"></div>
             </div>
-            <div class="preview-img img-share-code h-60 w-full border border-gray-300 shadow rounded-lg"></div>
+            <div class="grid grid-cols-2 gap-8 items-center">
+                <h4 class="text-2xl max-md:text-xl font-semibold">Rick keybindings for a local editor-like
+                    experience</h4>
+                <div class="preview-img img-key-bindings h-50 max-lg:h-40 max-md:h-30 w-full border border-gray-300 shadow rounded-lg"></div>
+            </div>
         </div>
     </div>
 
-    <h3 class="text-center my-12">Seamless Interaction</h3>
-    <div class="my-4 grid grid-cols-2 gap-16">
-        <div class="flex gap-8 items-center">
-            <div class="w-96">
-                <h4>Realtime execution</h4>
-                <p>Instant, remote execution over WebSocket that feels like running on a local machine.</p>
-            </div>
-            <div class="preview-img img-realtime-execution h-60 w-full border border-gray-300 shadow rounded-lg"></div>
-        </div>
-        <div class="flex gap-8 items-center">
-            <div class="w-96">
-                <h4>Rick keybindings</h4>
-                <p>VIM or Emacs keybindings and other shortcuts make it a native editor-like experience.</p>
-            </div>
-            <div class="preview-img img-key-bindings h-60 w-full border border-gray-300 shadow rounded-lg"></div>
-        </div>
-    </div>
+    <div class="border-b border-b-gray-200 my-8"></div>
 
-    <div class="divider mt-12 mb-8"></div>
-
-    <p class="text-center my-8">This project is inspired by the official
-        <a href="https://go.dev/play/" class="text-green-600 hover:text-blue-700 transition-colors">Go Playground</a>
+    <p class="text-center text-base max-md:text-sm my-8 max-md:my-4">This project is inspired by the official
+        <a href="https://go.dev/play/" class="text-teal-600 hover:text-blue-700 transition-colors">Go Playground</a>
         and the
-        <a href="https://goplay.tools/" class="text-green-600 hover:text-blue-700 transition-colors">Better Go
+        <a href="https://goplay.tools/" class="text-teal-600 hover:text-blue-700 transition-colors">Better Go
             Playground</a>
     </p>
 </main>
+<script src="./js/about.js"></script>
 </body>
 </html>
