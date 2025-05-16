@@ -10,7 +10,7 @@ import (
 var allowed = map[string]bool{
 	"go1": true,
 	"go2": true,
-	//"go4": true,
+	"go4": true,
 }
 
 // CleanupWorkspace scans the given directory and removes any file or directory
