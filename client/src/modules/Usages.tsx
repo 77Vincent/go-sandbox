@@ -99,7 +99,9 @@ export function Usages(props: {
         }
         if (e.key === enterEvent) {
             e.preventDefault();
-            const {range: {start: {line, character}}} = displayUsages[lookAt];
+            const v = displayUsages[lookAt]
+            if (!v) return;
+            const {range: {start: {line, character}}} = v;
             onJumpClick(line, character)();
         }
     }, [displayUsages, lookAt, onJumpClick]);
