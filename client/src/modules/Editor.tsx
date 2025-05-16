@@ -770,6 +770,9 @@ export default function Component(props: {
             case "2":
                 path = "/ws2"
                 break
+            case "4":
+                path = "/ws4"
+                break
             default:
                 path = "/ws" // use the latest go version by default
         }

@@ -34,6 +34,8 @@ func LspHandler(version string) func(c *gin.Context) {
 			url = "gopls:4389"
 		case "2":
 			url = "gopls2:4389"
+		case "4":
+			url = "gopls4:4389"
 		default:
 			url = "gopls:4389" // use the latest go version by default
 		}

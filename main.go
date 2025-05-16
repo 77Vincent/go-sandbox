@@ -43,6 +43,7 @@ func main() {
 
 	r.GET("/ws", handlers.LspHandler("1"))
 	r.GET("/ws2", handlers.LspHandler("2"))
+	r.GET("/ws4", handlers.LspHandler("4"))
 
 	r.Run(config.ApiServerPort)
 }
