@@ -147,12 +147,13 @@ export function Grid(props: {
 }
 
 export function Row(props: {
+    key?: string;
     children: ReactNode;
     onClick?: () => void;
     className?: string;
 }) {
-    const {children, className, onClick} = props
-    return <div onClick={onClick} className={`flex items-center justify-between ${className}`}>
+    const {children, className, onClick, key} = props
+    return <div key={key} onClick={onClick} className={`flex items-center justify-between ${className}`}>
         {children}
     </div>
 }
@@ -173,6 +174,9 @@ export function Typography(props: {
             break
         case "h5":
             classes = "text-base text-gray-800 dark:text-gray-300"
+            break
+        case "h6":
+            classes = "text-sm font-semibold text-gray-800 dark:text-gray-300"
             break
         case "body1":
             classes = "text-base font-normal text-gray-800 dark:text-gray-300"

@@ -49,9 +49,9 @@ export const DEFAULT_EDITOR_SIZE = 50;
 export const EDITOR_SIZE_MAX = 90
 export const EDITOR_SIZE_MIN = 10
 
-export const DEFAULT_DRAWER_SIZE = 240;
+export const DEFAULT_DRAWER_SIZE = 300;
 export const DRAWER_SIZE_MAX = 360
-export const DRAWER_SIZE_MIN = 180
+export const DRAWER_SIZE_MIN = 240
 
 export const AVAILABLE_FONT_SIZES = [10, 11, 12, 13, 14, 15, 16]
 
@@ -101,56 +101,191 @@ func main() {
 	fmt.Println("Hello, Go Sandbox!")
 }`
 
-export const SNIPPETS: Record<string, Record<string, string>> = {
+export const SNIPPETS: Record<string, Record<string, {
+    title: string,
+    description?: string,
+}>> = {
     Basic: {
-        helloWorld: "Hello World",
-        sleep: "Sleep",
-        defer: "Defer",
-        switchCase: "Switch-case",
-        goroutine: "Goroutine",
-        channel: "Channel",
-        assertion: "Assertion",
-        fileIO: "File I/O",
-        contextCancel: "Context",
-        json: "JSON",
-        mutex: "Mutex",
-        ticker: "Ticker",
+        helloWorld: {
+            title: "Hello World",
+            description: "The default hello world program",
+        },
+        sleep: {
+            title: "Sleep",
+            description: "Demonstrate the synchronous nature of Go with sleep",
+        },
+        defer: {
+            title: "Defer",
+            description: "How defer works in Go",
+        },
+        switchCase: {
+            title: "Switch case",
+            description: "A simple switch case program",
+        },
+        goroutine: {
+            title: "Goroutine",
+            description: "Concurrent programming with goroutines and wait groups",
+        },
+        channel: {
+            title: "Channel",
+            description: "Concurrent programming with channels and select",
+        },
+        assertion: {
+            title: "Assertion",
+            description: "Type assertion in Go",
+        },
+        fileIO: {
+            title: "File IO",
+            description: "Open, read and write files",
+        },
+        contextCancel: {
+            title: "Context cancel",
+            description: "Context timeout and cancel",
+        },
+        json: {
+            title: "JSON",
+            description: "JSON marshalling and unmarshalling in Go",
+        },
+        mutex: {
+            title: "Mutex",
+            description: "Mutex concurrent programming",
+        },
+        ticker: {
+            title: "Ticker",
+            description: "Ticker for periodic tasks",
+        },
     },
     Advanced: {
-        spinner: "Spinner",
-        progressBar: "Progress bar",
-        httpServer: "HTTP server",
-        gameOfLife: "Game of Life",
-        concurrentPrime: "Concurrent prime",
-        diningPhilosophers: "Dining philosophers",
-        fibonacci: "Fibonacci",
-        quickSort: "Quick sort",
-        mergeSort: "Merge sort",
-        binarySearch: "Binary search",
-        sudoku: "Sudoku",
-        maze: "Maze",
-        bfs: "BFS",
-        dfs: "DFS",
-        lru: "LRU",
-        lcs: "LCS",
+        spinner: {
+            title: "Spinner",
+            description: "A spinner in Terminal",
+        },
+        progressBar: {
+            title: "Progress bar",
+            description: "A progress bar in Terminal",
+        },
+        httpServer: {
+            title: "HTTP server",
+            description: "A simple HTTP server",
+        },
+        gameOfLife: {
+            title: "Game of life",
+            description: "Konway's game of life",
+        },
+        concurrentPrime: {
+            title: "Concurrent prime",
+            description: "Find prime numbers concurrently",
+        },
+        diningPhilosophers: {
+            title: "Dining philosophers",
+            description: "The dining philosophers problem simulation",
+        },
+        fibonacci: {
+            title: "Fibonacci",
+            description: "Fibonacci sequence with goroutines",
+        },
+        quickSort: {
+            title: "Quick sort",
+            description: "Quick sort algorithm",
+        },
+        mergeSort: {
+            title: "Merge sort",
+            description: "Merge sort algorithm",
+        },
+        binarySearch: {
+            title: "Binary search",
+            description: "Binary search algorithm",
+        },
+        sudoku: {
+            title: "Sudoku",
+            description: "Sudoku generator and solver",
+        },
+        maze: {
+            title: "Maze",
+            description: "Maze generator and solver",
+        },
+        bfs: {
+            title: "BFS",
+            description: "Breadth-first search algorithm",
+        },
+        dfs: {
+            title: "DFS",
+            description: "Depth-first search algorithm",
+        },
+        lru: {
+            title: "LRU",
+            description: "Least recently used cache implementation",
+        },
+        lcs: {
+            title: "LCS",
+            description: "Longest common subsequence algorithm",
+        },
     },
     "Design Patterns": {
-        singleton: "Singleton",
-        factory: "Factory",
-        strategy: "Strategy",
-        template: "Template",
-        prototype: "Prototype",
-        adaptor: "Adaptor",
-        decorator: "Decorator",
-        facade: "Facade",
-        observer: "Observer",
-        bridge: "Bridge",
-        composite: "Composite",
-        proxy: "Proxy",
-        command: "Command",
-        state: "State",
-        iterator: "Iterator",
-        visitor: "Visitor",
+        singleton: {
+            title: "Singleton",
+            description: "Useful for creating a single instance of a class",
+        },
+        factory: {
+            title: "Factory",
+            description: "Useful for creating objects without specifying the exact class",
+        },
+        strategy: {
+            title: "Strategy",
+            description: "Useful for defining a family of algorithms, encapsulating each one, and making them interchangeable",
+        },
+        template: {
+            title: "Template",
+            description: "Useful for defining the skeleton of an algorithm in a method, deferring some steps to subclasses",
+        },
+        prototype: {
+            title: "Prototype",
+            description: "Useful for creating new objects by copying an existing object",
+        },
+        adaptor: {
+            title: "Adaptor",
+            description: "Useful for converting the interface of a class into another interface that clients expect",
+        },
+        decorator: {
+            title: "Decorator",
+            description: "Useful for adding new functionality to an object without altering its structure",
+        },
+        facade: {
+            title: "Facade",
+            description: "Useful for providing a simplified interface to a complex subsystem",
+        },
+        observer: {
+            title: "Observer",
+            description: "Useful for defining a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically",
+        },
+        bridge: {
+            title: "Bridge",
+            description: "Useful for separating an object’s interface from its implementation so that the two can vary independently",
+        },
+        composite: {
+            title: "Composite",
+            description: "Useful for composing objects into tree structures to represent part-whole hierarchies",
+        },
+        proxy: {
+            title: "Proxy",
+            description: "Useful for providing a surrogate or placeholder for another object to control access to it",
+        },
+        command: {
+            title: "Command",
+            description: "Useful for encapsulating a request as an object, thereby allowing for parameterization of clients with queues, requests, and operations",
+        },
+        state: {
+            title: "State",
+            description: "Useful for allowing an object to alter its behavior when its internal state changes",
+        },
+        iterator: {
+            title: "Iterator",
+            description: "Useful for providing a way to access the elements of an aggregate object sequentially without exposing its underlying representation",
+        },
+        visitor: {
+            title: "Visitor",
+            description: "Useful for representing an operation to be performed on the elements of an object structure, allowing you to define a new operation without changing the classes of the elements on which it operates",
+        },
     },
 }
 

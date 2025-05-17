@@ -8,12 +8,12 @@ import {
 } from "../constants.ts";
 import {countSymbols, SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {Divider, Row} from "./Common.tsx";
+import {Divider, Row, Typography} from "./Common.tsx";
 import {CloseIcon, FoldIcon, SearchIcon, UnfoldIcon} from "./Icons.tsx";
 import {ChangeEvent, useCallback, useContext, useState} from "react";
 import {AppCtx, isUserCode} from "../utils.ts";
 import {IconButton} from "./IconButton.tsx";
-import {TextInput} from "flowbite-react";
+import {TextInput, Tooltip} from "flowbite-react";
 
 function SearchIconWrapper() {
     return (
@@ -42,7 +42,7 @@ const symbolStyle = (kind: number): string => {
     }
 }
 
-const LINE_STYLE = "flex cursor-pointer items-center justify-between gap-2 px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs"
+const LINE_STYLE = "flex cursor-pointer items-center justify-between gap-3 max-md:gap-1 px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs"
 
 export default function Component(props: {
     documentSymbols: LSPDocumentSymbol[],
@@ -108,7 +108,7 @@ export default function Component(props: {
 
     return (
         <div
-            className={"relative z-10 flex h-full flex-col overflow-y-auto border-r border-r-gray-400 dark:border-gray-600"}>
+            className={"relative z-10 flex h-full flex-col overflow-hidden border-r border-r-gray-400 dark:border-gray-600"}>
 
             <div
                 className={"sticky top-0 border-b border-b-gray-300 bg-gray-100 py-2.5 shadow dark:border-b-gray-700 dark:bg-neutral-900"}>
@@ -210,8 +210,14 @@ export default function Component(props: {
                                                                         className={`${LINE_STYLE} ${isRunning || !isUserCode(file) ? "opacity-50" : ""}`}
                                                                         onClick={onSnippetClick(subkey)}
                                                                     >
-
-                                                                        {value}
+                                                                        <div className={"min-w-12 truncate"}>
+                                                                            {value.title}
+                                                                        </div>
+                                                                        <Tooltip className={"text-xs"} content={value.description}>
+                                                                            <Typography className={"max-w-40 truncate italic"} variant={"caption"}>
+                                                                                {value.description}
+                                                                            </Typography>
+                                                                        </Tooltip>
                                                                     </div>
                                                                 )
                                                             })
