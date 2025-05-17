@@ -1,5 +1,5 @@
 body.dark {
-    background-color: #07100e;
+    background-color: #101c1a;
     color: #ffffff;
 }
 
@@ -51,23 +51,40 @@ body.dark {
 .img-realtime-execution {
     background-image: url("../image/realtime-execution.png");
 }
+.dark .img-realtime-execution {
+    background-image: url("../image/realtime-execution-dark.png");
+}
+
 .img-language-support {
     background-image: url("../image/language-support.png");
 }
 .dark .img-language-support {
     background-image: url("../image/language-support-dark.png");
 }
+
 .img-key-bindings {
     background-image: url("../image/key-bindings.png");
 }
+.dark .img-key-bindings {
+    background-image: url("../image/key-bindings-dark.png");
+}
+
 .img-code-navigation {
     background-image: url("../image/code-navigation.png");
 }
 .dark .img-code-navigation {
     background-image: url("../image/code-navigation-dark.png");
 }
+
+.dark .img-snippet-library {
+    background-image: url("../image/snippet-library-dark.png");
+}
 .img-snippet-library {
     background-image: url("../image/snippet-library.png");
+}
+
+.dark .img-share-code {
+    background-image: url("../image/share-code-dark.png");
 }
 .img-share-code {
     background-image: url("../image/share-code.png");
