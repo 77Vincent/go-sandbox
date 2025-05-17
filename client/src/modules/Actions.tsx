@@ -6,6 +6,7 @@ import {useContext} from "react";
 import {AppCtx, isUserCode} from "../utils.ts";
 
 import {IconButton} from "./IconButton.tsx";
+import {Row} from "./Common.tsx";
 
 const COMMON_CLASSES = "z-20 text-xs font-light";
 
@@ -24,12 +25,10 @@ export default function Component(props: {
     return (
         <>
             <Tooltip className={COMMON_CLASSES} content={
-                <div className={"flex items-center gap-1.5"}>
+                <Row className={"gap-1.5"}>
                     {TRANSLATE.run[lan]}
-                    <div className={"flex items-center"}>
-                        <MetaKey/><EnterKey/>
-                    </div>
-                </div>
+                    <Row> <MetaKey/><EnterKey/> </Row>
+                </Row>
             }>
                 <IconButton
                     disabled={!executable}
@@ -39,12 +38,12 @@ export default function Component(props: {
             </Tooltip>
 
             <Tooltip className={COMMON_CLASSES} content={
-                <div className={"flex items-center gap-1.5"}>
+                <Row className={"gap-1.5"}>
                     {TRANSLATE.format[lan]}
-                    <div className={"flex items-center"}>
+                    <Row>
                         <MetaKey/><OptionKey/>L<span>&#160;</span><span>&#160;</span>or<span>&#160;</span><span>&#160;</span><ShiftKey/><OptionKey/>F
-                    </div>
-                </div>
+                    </Row>
+                </Row>
             }>
                 <IconButton
                     disabled={!executable}
@@ -55,10 +54,12 @@ export default function Component(props: {
 
             <Tooltip className={COMMON_CLASSES} content={
                 <div className={"flex items-center gap-1.5"}>
-                    {TRANSLATE.share[lan]}
-                    <div className={"flex items-center"}>
-                        <MetaKey/>S
-                    </div>
+                    <Row className={"gap-1.5"}>
+                        {TRANSLATE.share[lan]}
+                        <Row>
+                            <MetaKey/>S
+                        </Row>
+                    </Row>
                 </div>
             }>
                 <IconButton icon={<ShareIcon size={isMobile ? 17 : 19}/>} onClick={sharable ? share : undefined}/>

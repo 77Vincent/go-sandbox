@@ -86,7 +86,7 @@ import {
     NONE,
     SEEING_IMPLEMENTATIONS,
     SEEING_USAGES,
-    VIM, DRAWER_STATS, EDITOR_MENU_ID, DEBOUNCE_TIME_SHORT, NO_OPENED_DRAWER,
+    VIM, DRAWER_STATS, EDITOR_MENU_ID, DEBOUNCE_TIME_SHORT, NO_OPENED_DRAWER, DRAWER_LIBRARY,
 } from "../constants.ts";
 import {
     AppCtx,
@@ -250,9 +250,10 @@ export default function Component(props: {
     } = props;
     const {mode} = useThemeMode();
     const {
-        setToastError, goVersion, fontSize, openedDrawer,
+        setToastError, goVersion, fontSize,
         file, setFile,
         value, updateValue,
+        openedDrawer, updateOpenedDrawer,
         showTerminal, updateShowTerminal,
     } = useContext(AppCtx)
 
@@ -277,10 +278,12 @@ export default function Component(props: {
     const sessions = useRef<SessionI[]>([]);
     const metaKey = useRef<boolean>(false);
     const ready = useRef<boolean>(false); // initially not ready
+    const openedDrawerRef = useRef<string>(openedDrawer);
 
     useEffect(() => {
         showTerminalRef.current = showTerminal;
-    }, [showTerminal]);
+        openedDrawerRef.current = openedDrawer;
+    }, [showTerminal, openedDrawer]);
 
     // manage cursor
     const onCursorChange = debounce(useCallback((v: ViewUpdate) => {
@@ -487,6 +490,45 @@ export default function Component(props: {
     }, []);
 
     const [focusedKeymap] = useState(() => [
+        {
+            key: "Mod-Alt-1",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                if (openedDrawerRef.current === DRAWER_DOCUMENT_SYMBOLS) {
+                    updateOpenedDrawer(NO_OPENED_DRAWER);
+                } else {
+                    updateOpenedDrawer(DRAWER_DOCUMENT_SYMBOLS);
+                }
+                v.focus();
+                return true;
+            },
+        },
+        {
+            key: "Mod-Alt-2",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                if (openedDrawerRef.current === DRAWER_STATS) {
+                    updateOpenedDrawer(NO_OPENED_DRAWER);
+                } else {
+                    updateOpenedDrawer(DRAWER_STATS);
+                }
+                v.focus();
+                return true;
+            },
+        },
+        {
+            key: "Mod-Alt-3",
+            preventDefault: true,
+            run: (v: EditorView) => {
+                if (openedDrawerRef.current === DRAWER_LIBRARY) {
+                    updateOpenedDrawer(NO_OPENED_DRAWER);
+                } else {
+                    updateOpenedDrawer(DRAWER_LIBRARY);
+                }
+                v.focus();
+                return true;
+            },
+        },
         {
             key: "Mod-Ctrl-l",
             preventDefault: true,
@@ -720,8 +762,23 @@ export default function Component(props: {
             id: fileRef.current, cursor: cursorHead, data: value
         })
 
+        let path: string = ""
+        switch (goVersion) {
+            case "1":
+                path = "/ws"
+                break
+            case "2":
+                path = "/ws2"
+                break
+            case "4":
+                path = "/ws4"
+                break
+            default:
+                path = "/ws" // use the latest go version by default
+        }
+
         lsp.current = new LSPClient(
-            getWsUrl("/ws"), goVersion, view.current,
+            getWsUrl(path), goVersion, view.current,
             fileRef, sessions,
             handleDiagnostics, handleError, handleFileChange, ready,
         );
@@ -755,6 +812,31 @@ export default function Component(props: {
         });
         Mousetrap.bind(`mod+enter`, function () {
             debouncedRun()
+            return false
+        });
+        // for drawers
+        Mousetrap.bind(`mod+option+1`, function () {
+            if (openedDrawerRef.current === DRAWER_DOCUMENT_SYMBOLS) {
+                updateOpenedDrawer(NO_OPENED_DRAWER);
+            } else {
+                updateOpenedDrawer(DRAWER_DOCUMENT_SYMBOLS);
+            }
+            return false
+        });
+        Mousetrap.bind(`mod+option+2`, function () {
+            if (openedDrawerRef.current === DRAWER_STATS) {
+                updateOpenedDrawer(NO_OPENED_DRAWER);
+            } else {
+                updateOpenedDrawer(DRAWER_STATS);
+            }
+            return false
+        });
+        Mousetrap.bind(`mod+option+3`, function () {
+            if (openedDrawerRef.current === DRAWER_LIBRARY) {
+                updateOpenedDrawer(NO_OPENED_DRAWER);
+            } else {
+                updateOpenedDrawer(DRAWER_LIBRARY);
+            }
             return false
         });
         // for intellij

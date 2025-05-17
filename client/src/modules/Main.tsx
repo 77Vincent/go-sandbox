@@ -484,7 +484,6 @@ export default function Component() {
                     {
                         showTerminal &&
                         <Terminal
-                            running={isRunning}
                             result={result}
                             info={info}
                             error={error}
