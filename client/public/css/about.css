@@ -33,7 +33,6 @@ body.dark {
 
 .divider-vertical {
     width: 1px;
-    height: 80%;
     border-right: 1px solid rgba(255, 255, 255, 0.3);
 }
 
@@ -42,10 +41,10 @@ body.dark {
     background-position: center;
 }
 
-.dark .border {
+.dark .my-border {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
-.border {
+.my-border {
     border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
