@@ -17,7 +17,7 @@ import {TextInput} from "flowbite-react";
 
 function SearchIconWrapper() {
     return (
-        <SearchIcon className={"opacity-50"}/>
+        <SearchIcon className={"opacity-50 dark:text-white"}/>
     )
 }
 
