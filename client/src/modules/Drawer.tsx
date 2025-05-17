@@ -9,7 +9,14 @@ import {
 import {countSymbols, SYMBOL_KIND_MAP} from "../lib/lsp.ts";
 import {TRANSLATE} from "../lib/i18n.ts";
 import {Divider, Row, Typography} from "./Common.tsx";
-import {CloseIcon, FoldIcon, SearchIcon, UnfoldIcon} from "./Icons.tsx";
+import {
+    CloseIcon,
+    FoldIcon,
+    PrivateIcon,
+    PublicIcon,
+    SearchIcon,
+    UnfoldIcon,
+} from "./Icons.tsx";
 import {ChangeEvent, useCallback, useContext, useState} from "react";
 import {AppCtx, isUserCode} from "../utils.ts";
 import {IconButton} from "./IconButton.tsx";
@@ -40,6 +47,13 @@ const symbolStyle = (kind: number): string => {
         default:
             return "text-gray-500 dark:text-gray-400";
     }
+}
+
+function SymbolIcon({name}: { name: string }) {
+    if (name[0].toLowerCase() === name[0]) {
+        return <PrivateIcon/>
+    }
+    return <PublicIcon/>
 }
 
 const LINE_STYLE = "flex cursor-pointer items-center justify-between gap-3 max-md:gap-1 px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs"
@@ -143,6 +157,7 @@ export default function Component(props: {
                                      className={LINE_STYLE}
                                 >
                                     <div className={`flex items-center gap-1 truncate ${symbolStyle(kind)}`}>
+                                        <SymbolIcon name={name}/>
                                         {name}
                                     </div>
 
@@ -213,8 +228,11 @@ export default function Component(props: {
                                                                         <div className={"min-w-12 truncate"}>
                                                                             {value.title}
                                                                         </div>
-                                                                        <Tooltip className={"text-xs"} content={value.description}>
-                                                                            <Typography className={"max-w-40 truncate italic"} variant={"caption"}>
+                                                                        <Tooltip className={"text-xs"}
+                                                                                 content={value.description}>
+                                                                            <Typography
+                                                                                className={"max-w-40 truncate italic"}
+                                                                                variant={"caption"}>
                                                                                 {value.description}
                                                                             </Typography>
                                                                         </Tooltip>
