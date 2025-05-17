@@ -20,7 +20,7 @@ export default function Component(props: {
         <>
             <Divider/>
 
-            <Tooltip className={"z-20 text-xs"} content={
+            <Tooltip className={"z-20"} content={
                 <div className={"flex items-center gap-1"}>
                     {TRANSLATE.terminal[lan]}
                     <div className={"flex items-center"}>
@@ -33,7 +33,7 @@ export default function Component(props: {
                 />
             </Tooltip>
 
-            <Tooltip className={"z-20 text-xs"} content={
+            <Tooltip className={"z-20"} content={
                 <div className={"flex items-center gap-1"}>
                     {TRANSLATE.settings[lan]}
                     <div className={"flex items-center"}>
@@ -47,7 +47,7 @@ export default function Component(props: {
                 />
             </Tooltip>
 
-            <Tooltip className={"z-20 text-xs"} content={
+            <Tooltip className={"z-20"} content={
                 <div className={"flex items-center gap-1"}>
                     {TRANSLATE.manual[lan]}
                     <div className={"flex items-center"}>
@@ -61,7 +61,7 @@ export default function Component(props: {
                 />
             </Tooltip>
 
-            <Tooltip className={"text-xs"} content={TRANSLATE.about[lan]}>
+            <Tooltip className={"z-20"} content={TRANSLATE.about[lan]}>
                 <IconButton icon={<AboutIcon size={isMobile ? 18.5 : 20.5}/>} className={ICON_BUTTON_CLASS}
                             onClick={() => window.open("/about.html", "_blank")}
                 />
