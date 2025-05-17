@@ -10,7 +10,7 @@ import {IconButton} from "./IconButton.tsx";
 const errorClasses = "text-orange-800 dark:text-orange-700";
 const infoClasses = "text-cyan-700 dark:text-cyan-500";
 const warningClasses = "text-cyan-700 dark:text-cyan-500";
-const textClasses = "text-xs font-light text-gray-800 dark:text-gray-400";
+const textClasses = "text-xs text-gray-800 dark:text-gray-400";
 const commonClasses = `${textClasses} cursor-pointer hover:opacity-70`;
 
 function chooseColor(errors: number, warnings: number, info: number) {

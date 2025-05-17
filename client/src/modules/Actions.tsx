@@ -8,7 +8,7 @@ import {AppCtx, isUserCode} from "../utils.ts";
 import {IconButton} from "./IconButton.tsx";
 import {Row} from "./Common.tsx";
 
-const COMMON_CLASSES = "z-20 text-xs font-light";
+const COMMON_CLASSES = "z-20";
 
 export default function Component(props: {
     run: () => void;

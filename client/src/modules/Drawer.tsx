@@ -127,7 +127,7 @@ export default function Component(props: {
             <div
                 className={"sticky top-0 border-b border-b-gray-300 bg-gray-100 py-2.5 shadow dark:border-b-gray-700 dark:bg-neutral-900"}>
                 <div
-                    className={"flex items-center justify-between px-2 text-xs font-semibold text-gray-900 dark:text-gray-100"}>
+                    className={"flex items-center justify-between px-2 text-base font-bold text-black dark:text-white"}>
                     {openedDrawer && TRANSLATE[openedDrawer][lan]}
                     <IconButton icon={<CloseIcon size={14}/>} variant={"secondary"} onClick={closeDrawer}/>
                 </div>
@@ -156,7 +156,7 @@ export default function Component(props: {
                                 <div key={name} onClick={onSymbolClick(index)}
                                      className={LINE_STYLE}
                                 >
-                                    <div className={`flex items-center gap-1 truncate ${symbolStyle(kind)}`}>
+                                    <div className={`flex items-center gap-1 truncate text-sm ${symbolStyle(kind)}`}>
                                         <SymbolIcon name={name}/>
                                         {name}
                                     </div>
@@ -175,10 +175,9 @@ export default function Component(props: {
                                 displaySymbols.map(([key, value]) => {
                                     return (
                                         <div key={key} className={LINE_STYLE}>
-                                            <div
-                                                className={`${value ? "text-black dark:text-white" : INACTIVE_TEXT_CLASS} italic`}>
+                                            <Typography variant={"body1"}>
                                                 {key}
-                                            </div>
+                                            </Typography>
 
                                             <div
                                                 className={`${value ? "font-semibold text-black dark:text-white" : INACTIVE_TEXT_CLASS}`}>{value}</div>
@@ -214,7 +213,7 @@ export default function Component(props: {
                                                 </Row>
 
                                                 <div
-                                                    className={`border-b text-gray-900 dark:border-b-gray-700 dark:text-gray-200 ${foldedSnippetSections[key] ? "hidden" : ""}`}>
+                                                    className={`border-b text-black dark:border-b-gray-700 dark:text-white ${foldedSnippetSections[key] ? "hidden" : ""}`}>
                                                     {
                                                         Object.entries(SNIPPETS[key])
                                                             .filter(([subkey]) => subkey.toLowerCase().includes(searchSnippet.toLowerCase()))
@@ -225,9 +224,9 @@ export default function Component(props: {
                                                                         className={`${LINE_STYLE} ${isRunning || !isUserCode(file) ? "opacity-50" : ""}`}
                                                                         onClick={onSnippetClick(subkey)}
                                                                     >
-                                                                        <div className={"min-w-12 truncate"}>
+                                                                        <Typography variant={"body1"} className={"min-w-12 truncate"}>
                                                                             {value.title}
-                                                                        </div>
+                                                                        </Typography>
                                                                         <Tooltip className={"text-xs"}
                                                                                  content={value.description}>
                                                                             <Typography

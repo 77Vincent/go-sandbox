@@ -27,7 +27,7 @@ export default function Component() {
 
     return (
         <>
-            <Tooltip className={"text-xs font-light"} content={
+            <Tooltip content={
                 <Row className={"gap-1.5"}>
                     {TRANSLATE.documentSymbols[lan]}
                     <Row> <MetaKey/><OptionKey/>1 </Row>
@@ -40,7 +40,7 @@ export default function Component() {
                 />
             </Tooltip>
 
-            <Tooltip className={"text-xs font-light"} content={
+            <Tooltip content={
                 <Row className={"gap-1.5"}>
                     {TRANSLATE.stats[lan]}
                     <Row> <MetaKey/><OptionKey/>2 </Row>
@@ -53,7 +53,7 @@ export default function Component() {
                 />
             </Tooltip>
 
-            <Tooltip className={"text-xs font-light"} content={
+            <Tooltip content={
                 <Row className={"gap-1.5"}>
                     {TRANSLATE.library[lan]}
                     <Row> <MetaKey/><OptionKey/>3 </Row>

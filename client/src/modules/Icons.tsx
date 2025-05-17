@@ -9,13 +9,13 @@ import {Tooltip} from "flowbite-react";
 
 export function PrivateIcon() {
     return <Tooltip className={"text-xs"} content={"Private"}>
-        <LockIcon size={10} className="text-gray-500 dark:text-gray-300"/>
+        <LockIcon size={12} className="text-gray-500 dark:text-gray-300"/>
     </Tooltip>
 }
 
 export function PublicIcon() {
     return <Tooltip className={"text-xs"} content={"Public"}>
-        <UnlockIcon size={10} className="text-green-600 dark:text-green-300"/>
+        <UnlockIcon size={12} className="text-green-600 dark:text-green-300"/>
     </Tooltip>
 }
 
