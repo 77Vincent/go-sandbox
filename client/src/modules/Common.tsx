@@ -179,7 +179,7 @@ export function Typography(props: {
             classes = "text-sm font-semibold text-gray-800 dark:text-gray-300"
             break
         case "body1":
-            classes = "text-base font-normal text-gray-800 dark:text-gray-300"
+            classes = "text-sm font-normal text-gray-950 dark:text-gray-50"
             break
         case "body2":
             classes = "text-sm font-normal text-gray-700 dark:text-gray-300"
