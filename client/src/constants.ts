@@ -147,6 +147,10 @@ export const SNIPPETS: Record<string, Record<string, string>> = {
         bridge: "Bridge",
         composite: "Composite",
         proxy: "Proxy",
+        command: "Command",
+        state: "State",
+        iterator: "Iterator",
+        visitor: "Visitor",
     },
 }
 

@@ -814,7 +814,8 @@ export default function Component(props: {
             debouncedRun()
             return false
         });
-        Mousetrap.bind(`shift+option+1`, function () {
+        // for drawers
+        Mousetrap.bind(`mod+option+1`, function () {
             if (openedDrawerRef.current === DRAWER_DOCUMENT_SYMBOLS) {
                 updateOpenedDrawer(NO_OPENED_DRAWER);
             } else {
@@ -822,7 +823,7 @@ export default function Component(props: {
             }
             return false
         });
-        Mousetrap.bind(`shift+option+2`, function () {
+        Mousetrap.bind(`mod+option+2`, function () {
             if (openedDrawerRef.current === DRAWER_STATS) {
                 updateOpenedDrawer(NO_OPENED_DRAWER);
             } else {
@@ -830,7 +831,7 @@ export default function Component(props: {
             }
             return false
         });
-        Mousetrap.bind(`shift+option+3`, function () {
+        Mousetrap.bind(`mod+option+3`, function () {
             if (openedDrawerRef.current === DRAWER_LIBRARY) {
                 updateOpenedDrawer(NO_OPENED_DRAWER);
             } else {

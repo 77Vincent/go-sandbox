@@ -53,6 +53,10 @@ const (
 	bridgeCase    = "bridge"
 	proxyCase     = "proxy"
 	compositeCase = "composite"
+	commandCase   = "command"
+	stateCase     = "state"
+	iteratorCase  = "iterator"
+	visitorCase   = "visitor"
 )
 
 func GetTemplate(c *gin.Context) {
@@ -145,6 +149,14 @@ func GetTemplate(c *gin.Context) {
 		output = design_pattern.Facade
 	case adaptorCase:
 		output = design_pattern.Adaptor
+	case commandCase:
+		output = design_pattern.Command
+	case stateCase:
+		output = design_pattern.State
+	case iteratorCase:
+		output = design_pattern.Iterator
+	case visitorCase:
+		output = design_pattern.Visitor
 
 	default:
 		c.String(http.StatusNotFound, notFoundError)
