@@ -16,7 +16,9 @@ function querySetter(language, mode) {
 }
 querySetter(currentLanguage, currentMode);
 
-modeSwitch.innerText = currentMode === 'light' ? '🌙' : '☀️';
+modeSwitch.innerHTML = currentMode === 'light'
+    ? `<img alt="moon-icon" class="w-5" src="/svg/moon.svg"/>`
+    : `<img alt="sun-icon" class="w-5" src="/svg/sun.svg"/>`;
 languageSwitch.innerText = currentLanguage === 'en' ? '中文' : 'English';
 
 languageSwitch.addEventListener('click', (e) => {
@@ -29,5 +31,7 @@ modeSwitch.addEventListener('click', (e) => {
     e.preventDefault();
     const newMode = currentMode === 'light' ? 'dark' : 'light';
     window.location.href = `?${querySetter(currentLanguage, newMode)}`;
-    modeSwitch.innerText = newMode === 'light' ? '🌙' : '☀️';
+    modeSwitch.innerHTML = currentMode === 'light'
+        ? `<img alt="moon-icon" class="w-5" src="/svg/moon.svg"/>`
+        : `<img alt="sun-icon" class="w-5" src="/svg/sun.svg"/>`;
 })
