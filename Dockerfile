@@ -91,7 +91,8 @@ COPY --from=build-runner-1 /usr/local/go /go1
 COPY --from=build-runner-2 /usr/local/go /go2
 COPY --from=build-runner-4 /usr/local/go /go4
 
-ENV PATH="/go1/bin:${PATH}"
+# Set the default PATH to include all Go toolchains
+ENV PATH="/go1/bin:/go2/bin:/go4/bin:${PATH}"
 
 EXPOSE 3000
 
