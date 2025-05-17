@@ -1,4 +1,4 @@
-FROM golang:1.24-alpine AS build-runner-1
+FROM golang:1.24.3-alpine AS build-runner-1
 
 ENV CGO_ENABLED=1
 ENV GOOS=linux
@@ -43,7 +43,7 @@ COPY sandbox .
 
 RUN go build -o sandbox-runner .
 
-FROM golang:1.24-alpine AS build-backend
+FROM golang:1.24.3-alpine AS build-backend
 
 # 设置 CGO_ENABLED=1，以支持 seccomp
 ENV CGO_ENABLED=1
