@@ -3,7 +3,7 @@ import {Modal} from "flowbite-react";
 import {
     Row,
     Grid,
-    Divider,
+    Divider, Typography,
 } from "./Common.tsx";
 import {ReactNode, useContext} from "react";
 import {TRANSLATE} from "../lib/i18n.ts";
@@ -31,9 +31,9 @@ function SubRow(props: {
 function Title(props: {
     children: ReactNode,
 }) {
-    return <div className={"flex items-center gap-2 text-sm max-md:text-xs"}>
+    return <Typography variant={"body1"} className={"flex items-center gap-2 max-md:text-xs"}>
         {props.children}
-    </div>
+    </Typography>
 }
 
 const SUB_TEXT = "text-xs text-gray-400"
@@ -55,48 +55,48 @@ export default function Component(props: {
         <Modal.Body className={"text-gray-900 dark:text-gray-100"}>
             <Grid>
                 <Row>
-                    <Title> <SettingsIcon size={16} color={"gray"}/>{TRANSLATE.settings[lan]} </Title>
+                    <Title> <SettingsIcon size={16} opacity={0.8} color={"gray"}/>{TRANSLATE.settings[lan]} </Title>
                     <SubRow> <MetaKey/>, </SubRow>
                 </Row>
                 <Row>
-                    <Title> <ManualIcon size={18} color={"gray"}/>{TRANSLATE.manual[lan]} </Title>
+                    <Title> <ManualIcon size={18} opacity={0.8} color={"gray"}/>{TRANSLATE.manual[lan]} </Title>
                     <SubRow> F12 </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> <FoldIcon size={16} color={"gray"}/>{TRANSLATE.foldCode[lan]} </Title>
+                    <Title> <FoldIcon size={16} opacity={0.8} color={"gray"}/>{TRANSLATE.foldCode[lan]} </Title>
                     <SubRow> <MetaKey/>- </SubRow>
                 </Row>
                 <Row>
-                    <Title> <UnfoldIcon size={16} color={"gray"}/>{TRANSLATE.unfoldCode[lan]} </Title>
+                    <Title> <UnfoldIcon size={16} opacity={0.8} color={"gray"}/>{TRANSLATE.unfoldCode[lan]} </Title>
                     <SubRow> <MetaKey/>+ </SubRow>
                 </Row>
                 <Row>
-                    <Title> <FoldAllIcon size={16} color={"gray"}/>{TRANSLATE.foldAll[lan]} </Title>
+                    <Title> <FoldAllIcon size={16} opacity={0.8} color={"gray"}/>{TRANSLATE.foldAll[lan]} </Title>
                     <SubRow> <CtrlKey/><OptionKey/>[ </SubRow>
                 </Row>
                 <Row>
-                    <Title> <UnfoldAllIcon color={"gray"}/>{TRANSLATE.unfoldAll[lan]} </Title>
+                    <Title> <UnfoldAllIcon opacity={0.8} color={"gray"}/>{TRANSLATE.unfoldAll[lan]} </Title>
                     <SubRow> <CtrlKey/><OptionKey/>] </SubRow>
                 </Row>
             </Grid>
             <Divider horizontal={true} className={"my-3"}/>
             <Grid>
                 <Row>
-                    <Title> <RunIcon size={16} color={"gray"}/>{TRANSLATE.run[lan]} </Title>
+                    <Title> <RunIcon size={16} opacity={0.7} color={"gray"}/>{TRANSLATE.run[lan]} </Title>
                     <SubRow> <MetaKey/><EnterKey/> </SubRow>
                 </Row>
                 <Row>
-                    <Title> <FormatIcon size={16} color={"gray"}/>{TRANSLATE.format[lan]} </Title>
+                    <Title> <FormatIcon size={16} opacity={0.7} color={"gray"}/>{TRANSLATE.format[lan]} </Title>
                     <SubRow>
                         <span className={`mr-2 flex items-center ${SUB_TEXT}`}><MetaKey/><OptionKey/>L</span>
                         <ShiftKey/><OptionKey/>F
                     </SubRow>
                 </Row>
                 <Row>
-                    <Title> <ShareIcon size={16} color={"gray"}/>{TRANSLATE.share[lan]} </Title>
+                    <Title> <ShareIcon size={16} opacity={0.7} color={"gray"}/>{TRANSLATE.share[lan]} </Title>
                     <SubRow> <MetaKey/>S </SubRow>
                 </Row>
                 <Row>
