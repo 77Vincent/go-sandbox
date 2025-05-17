@@ -1,4 +1,4 @@
-FROM golang:1.24-alpine
+FROM golang:1.24.3-alpine
 
 RUN go install golang.org/x/tools/gopls@latest
 
