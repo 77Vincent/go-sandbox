@@ -85,14 +85,14 @@
 <header class="bg-gradient-to-br transition-colors duration-500 from-blue-950 via-teal-950 hover:via-teal-900 to-orange-950 py-14 max-md:py-10">
     <div class="max-md:px-8 container mx-auto flex max-md:flex-col justify-center text-white gap-16 max-md:gap-4">
         <div class="flex flex-col max-md:flex-row items-center justify-center gap-2">
-            <div class="min-w-96 max-lg:min-w-60 flex items-center gap-6 justify-center">
-                <img class="w-12 max-md:w-8" src="https://www.go-sandbox.org/favicon-192x192.png" alt="Go Sandbox Logo"
+            <div class="min-w-96 max-lg:min-w-60 max-md:min-w-48 flex items-center gap-6 max-lg:gap-4 max-md:gap-2 justify-center">
+                <img class="w-12 max-lg:w-10 max-md:w-8" src="https://www.go-sandbox.org/favicon-192x192.png" alt="Go Sandbox Logo"
                      width="100"/>
                 <h1 class="text-5xl max-lg:text-3xl  my-5 max-md:my-2">Go Sandbox</h1>
             </div>
 
             <a href="https://www.go-sandbox.org"
-               class="font-semibold tracking-wide bg-white/10 hover:bg-white/20 transition-colors rounded-2xl border border-white/20 text-white text-lg max-lg:text-base max-md:text-sm py-2 px-5 max-md:py-1 max-md:px-3"
+               class="font-semibold tracking-wide bg-white/10 hover:bg-white/20 transition-colors rounded-2xl border border-white/20 text-white text-lg max-lg:text-base max-md:text-sm py-2 px-5 max-md:px-2"
             >
                 <span class="en"> Try it now </span>
                 <span class="zh"> 立即体验 </span>
@@ -120,10 +120,14 @@
 <main class="container max-md:px-4 mx-auto">
     <div class="my-10 mb-20 max-md:my-6 max-md:mb-10 flex gap-48 max-xl:gap-32 max-lg:gap-16 max-md:gap-8">
         <div class="flex flex-col justify-center">
-            <div class="en text-3xl max-lg:text-2xl max-md:text-xl font-bold">
-                <h4>Auto-Completion</h4>
-                <h4>Linting</h4>
-                <h4>Code navigation</h4>
+            <div class="flex gap-6 items-center max-lg:gap-3 max-md:gap-1">
+                <img alt="code-navigation-icon" class="light w-20 max-lg:w-15 max-md:hidden" src="/svg/navigation.svg"/>
+                <img alt="code-navigation-icon" class="dark w-20 max-lg:w-15 max-md:hidden" src="/svg/navigation-white.svg"/>
+                <div class="en text-3xl max-lg:text-2xl max-md:text-xl font-bold">
+                    <h4>Auto-Completion</h4>
+                    <h4>Linting</h4>
+                    <h4>Code navigation</h4>
+                </div>
             </div>
             <div class="zh text-3xl max-lg:text-2xl max-md:text-xl font-bold">
                 <h4>代码补全</h4>
@@ -140,27 +144,27 @@
     <div class="flex flex-col gap-10 my-16 max-lg:my-12 max-md:my-8 max-md:gap-8">
         <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-16 max-md:gap-8">
             <div class="grid grid-cols-2 gap-8 items-center">
-                <h4 class="en text-2xl max-md:text-xl font-semibold">Rich snippet library<br/>ideal for learning</h4>
-                <h4 class="zh text-2xl max-md:text-xl font-semibold">丰富的代码片段库<br/>适合学习使用</h4>
+                <h4 class="en text-2xl max-lg:text-xl max-md:text-lg font-semibold">Rich snippet library<br/>ideal for learning</h4>
+                <h4 class="zh text-2xl max-lg:text-xl max-md:text-lg font-semibold">丰富的代码片段库<br/>适合学习使用</h4>
                 <div class="preview-img img-snippet-library h-50 max-lg:h-40 max-md:h-30 w-full my-border darl:border-gray-500 shadow-lg rounded-lg"></div>
             </div>
             <div class="grid grid-cols-2 gap-8 items-center">
-                <h4 class="en text-2xl max-md:text-xl font-semibold">Share any code</h4>
-                <h4 class="zh text-2xl max-md:text-xl font-semibold">分享任何代码</h4>
+                <h4 class="en text-2xl max-lg:text-xl max-md:text-lg font-semibold">Share any code</h4>
+                <h4 class="zh text-2xl max-lg:text-xl max-md:text-lg font-semibold">分享任何代码</h4>
                 <div class="preview-img img-share-code h-50 max-lg:h-40 max-md:h-30 w-full my-border shadow-lg rounded-lg"></div>
             </div>
         </div>
 
         <div class="grid grid-cols-2 max-lg:grid-cols-1 gap-16 max-md:gap-8">
             <div class="grid grid-cols-2 gap-8 items-center">
-                <h4 class="en text-2xl max-md:text-xl font-semibold">Realtime execution<br/>using Web Socket</h4>
-                <h4 class="zh text-2xl max-md:text-xl font-semibold">实时执行<br/>使用 Web Socket</h4>
+                <h4 class="en text-2xl max-lg:text-xl max-md:text-lg font-semibold">Realtime execution<br/>using Web Socket</h4>
+                <h4 class="zh text-2xl max-lg:text-xl max-md:text-lg font-semibold">实时执行<br/>使用 Web Socket</h4>
                 <div class="preview-img img-realtime-execution h-50 max-lg:h-40 max-md:h-30 w-full my-border shadow-lg rounded-lg"></div>
             </div>
             <div class="grid grid-cols-2 gap-8 items-center">
-                <h4 class="en text-2xl max-md:text-xl font-semibold">Rick keybindings for a local editor-like
+                <h4 class="en text-2xl max-lg:text-xl max-md:text-lg font-semibold">Rick keybindings for a local editor-like
                     experience</h4>
-                <h4 class="zh text-2xl max-md:text-xl font-semibold">丰富的快捷键，类似本地编辑器的体验</h4>
+                <h4 class="zh text-2xl max-lg:text-xl max-md:text-lg font-semibold">丰富的快捷键，类似本地编辑器的体验</h4>
                 <div class="preview-img img-key-bindings h-50 max-lg:h-40 max-md:h-30 w-full my-border shadow-lg rounded-lg"></div>
             </div>
         </div>
