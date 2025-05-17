@@ -26,7 +26,7 @@ export function Usages(props: {
     view: MutableRefObject<EditorView | null>,
 }) {
     const {view, usages, setUsages, seeing} = props;
-    const {lan} = useContext(AppCtx);
+    const {lan, value} = useContext(AppCtx);
     const [lookAt, setLookAt] = useState<number>(0);
     const [displayUsages, setDisplayUsages] = useState<LSPReferenceResult[]>(usages.filter(v => isUserCode(v.uri)));
     const [previewFrom, setPreviewFrom] = useState<number>(0);
@@ -117,7 +117,7 @@ export function Usages(props: {
         return null;
     }
 
-    const lines = view.current.state.doc.toString().split("\n")
+    const lines = value.split("\n")
 
     return (
         <Modal size={"5xl"} dismissible show={!!usages.length} onClose={() => setUsages([])}>
@@ -138,7 +138,7 @@ export function Usages(props: {
                 <MiniEditor
                     from={previewFrom} to={previewTo}
                     className={"mb-2 max-h-52 overflow-auto border border-gray-200 dark:border-gray-600"}
-                    value={view.current.state.doc.toString()}/>
+                    value={value}/>
 
                 <div className="flex max-h-52 flex-col overflow-auto">
                     {displayUsages.map(({uri, range: {start, end}}, index) => {

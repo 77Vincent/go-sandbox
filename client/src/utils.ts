@@ -296,3 +296,8 @@ export const pushSession = (sessions: SessionI[], session: SessionI) => {
         sessions.push(session)
     }
 }
+
+// sleep for a given number of milliseconds, a helper function
+export const sleep = (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+}

@@ -26,6 +26,7 @@ const SEVERITY_MAP: Record<number, string> = {
     4: "hint",
 }
 
+const SKIP_ERROR_NO_VIEW = "no views"
 const SKIP_ERROR_NO_IDENTIFIER = "no identifier found"
 const SKIP_NO_METADATA_FOUND = "no package metadata for file"
 const SKIP_INVALID_LINE_NUMBER = "Invalid line number"
@@ -387,6 +388,9 @@ export class LSPClient {
                 // skip these errors since they are trivial
                 // this is for getting usages
                 if (error.message === SKIP_ERROR_NO_IDENTIFIER) {
+                    return;
+                }
+                if (error.message === SKIP_ERROR_NO_VIEW) {
                     return;
                 }
                 if (error.message.includes(SKIP_NO_METADATA_FOUND)) {
