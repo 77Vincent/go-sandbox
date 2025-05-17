@@ -69,6 +69,13 @@ body.dark {
     background-image: url("../image/language-support-dark.png");
 }
 
+.img-document-symbols {
+    background-image: url("../image/document-symbols.png");
+}
+.dark .img-document-symbols {
+    background-image: url("../image/document-symbols-dark.png");
+}
+
 .img-key-bindings {
     background-image: url("../image/key-bindings.png");
 }
