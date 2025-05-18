@@ -56,7 +56,7 @@ function SymbolIcon({name}: { name: string }) {
     return <PublicIcon/>
 }
 
-const LINE_STYLE = "flex cursor-pointer items-center justify-between gap-3 max-md:gap-1 px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs"
+const LINE_STYLE = "flex cursor-pointer items-center justify-between gap-3 max-md:gap-1 px-2.5 py-1 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs"
 
 export default function Component(props: {
     documentSymbols: LSPDocumentSymbol[],
@@ -127,7 +127,7 @@ export default function Component(props: {
             <div
                 className={"sticky top-0 border-b border-b-gray-300 bg-gray-100 py-2.5 shadow dark:border-b-gray-700 dark:bg-neutral-900"}>
                 <div
-                    className={"flex items-center justify-between px-2 text-base font-bold text-black dark:text-white"}>
+                    className={"flex items-center justify-between px-2.5 text-base font-bold text-black dark:text-white"}>
                     {openedDrawer && TRANSLATE[openedDrawer][lan]}
                     <IconButton icon={<CloseIcon size={14}/>} variant={"secondary"} onClick={closeDrawer}/>
                 </div>
