@@ -1,4 +1,3 @@
-const languageSwitch = document.querySelector('#language-switch');
 const modeSwitch = document.querySelector('#mode-switch');
 const body = document.getElementsByTagName('body')[0];
 
@@ -19,14 +18,7 @@ querySetter(currentLanguage, currentMode);
 modeSwitch.innerHTML = currentMode === 'light'
     ? `<img alt="moon-icon" class="w-5" src="/svg/moon.svg"/>`
     : `<img alt="sun-icon" class="w-5" src="/svg/sun.svg"/>`;
-languageSwitch.innerText = currentLanguage === 'en' ? '中文' : 'English';
 
-languageSwitch.addEventListener('click', (e) => {
-    e.preventDefault();
-    const newLanguage = currentLanguage === 'en' ? 'zh' : 'en';
-    window.location.href = `?${querySetter(newLanguage, currentMode)}`;
-    languageSwitch.innerText = newLanguage === 'en' ? '中文' : 'English';
-})
 modeSwitch.addEventListener('click', (e) => {
     e.preventDefault();
     const newMode = currentMode === 'light' ? 'dark' : 'light';

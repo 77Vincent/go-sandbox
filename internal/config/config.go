@@ -15,4 +15,5 @@ const (
 	LocalStackEndpoint  = "http://localstack:4566"
 	DefaultRegion       = "ap-northeast-1"
 	ProdModeValue       = "release"
+	ExecuteMaxEvents    = 10000 // max events to send to the client
 )
