@@ -1,4 +1,4 @@
-# Go Sandbox - A Minimalist and Advanced Online Golang Editor
+# ![go sandbox logo](https://www.go-sandbox.org/favicon-32x32.png) Go Sandbox - An IDE-level Go playground
 
 https://www.go-sandbox.org/
 
@@ -33,6 +33,8 @@ Backend is a `Go` server using `Gin`. Storage is S3-compatible, using `localstac
 ```bash
 sh ./deploy.sh
 ```
+
+> Please refer to the `.env.production.example` file for the environment variables required for production.
 
 Need to set up the environment variable below for production so that the server will not use the localstack but the real AWS S3.
 

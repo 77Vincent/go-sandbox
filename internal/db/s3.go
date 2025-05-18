@@ -28,16 +28,12 @@ var (
 	ErrObjectNotFound = errors.New("object not found")
 )
 
-const (
-	defaultRegion = "ap-northeast-1"
-)
-
 func S3() S3Client {
 	s3Once.Do(func() {
 		var (
 			sess   *session.Session
 			region = os.Getenv(cfg.AwsRegionKey)
-			isProd = os.Getenv(cfg.EnvKey) == ""
+			isProd = os.Getenv(cfg.EnvKey) == cfg.ProdModeValue
 		)
 		if region == "" {
 			region = cfg.DefaultRegion

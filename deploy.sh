@@ -6,7 +6,7 @@ echo "Pulling latest code..."
 git pull origin main
 
 echo "Building API service..."
-docker compose build server
+docker compose build
 
 echo "Stopping old server container..."
 docker compose stop server

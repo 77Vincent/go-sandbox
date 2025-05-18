@@ -14,4 +14,5 @@ const (
 	ApiServerPort       = ":3000"
 	LocalStackEndpoint  = "http://localstack:4566"
 	DefaultRegion       = "ap-northeast-1"
+	ProdModeValue       = "release"
 )
