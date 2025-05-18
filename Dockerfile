@@ -45,7 +45,7 @@ RUN go build -o sandbox-runner .
 
 FROM golang:1.24.3-alpine AS build-backend
 
-# 设置 CGO_ENABLED=1，以支持 seccomp
+# enable CGO_ENABLED=1 to support seccomp
 ENV CGO_ENABLED=1
 ENV GOOS=linux
 ENV GOARCH=arm64
@@ -54,26 +54,24 @@ RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
 
 WORKDIR /go/src/app
 
-# 拷贝 go.mod 和 go.sum（如果有）并下载依赖
 COPY go.mod go.sum ./
 RUN go mod download && go mod tidy
 
-# 拷贝项目其余所有源码（包括 main.go、internal/ 等）
+# copy the rest of the project source code
 COPY . .
 
-# 编译生成可执行文件
+# compile the backend server
 RUN go build -o server main.go
 
-# =========== 3. 最终镜像阶段 =============
+# =========== 3. final stage ===========
 FROM alpine:3.16
 
-# 运行时只需 libseccomp
+# libseccomp is needed for seccomp support
 RUN apk add --no-cache libseccomp
 
-# 工作目录
 WORKDIR /app
 
-# 创建沙箱目录
+# workdir for the sandbox runners
 RUN mkdir -p /app/sandboxes/go1
 RUN mkdir -p /app/sandboxes/go2
 RUN mkdir -p /app/sandboxes/go4
@@ -96,5 +94,4 @@ ENV PATH="/go1/bin:/go2/bin:/go4/bin:${PATH}"
 
 EXPOSE 3000
 
-# 启动可执行文件
 CMD ["./server"]
