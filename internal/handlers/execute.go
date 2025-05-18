@@ -30,7 +30,7 @@ const (
 	timeoutError    = "exit status 124"
 )
 
-func send(line []byte, event string, c *gin.Context, lock *sync.Mutex) {
+func send(line []byte, event string, c *gin.Context, lock *sync.Mutex, counter *int) {
 	// skip sending if no data
 	if len(line) == 0 {
 		return
@@ -55,6 +55,8 @@ func send(line []byte, event string, c *gin.Context, lock *sync.Mutex) {
 		return
 	}
 	c.Writer.Flush()
+
+	*counter++
 }
 
 // Execute 实现 SSE 流式输出
@@ -214,8 +216,9 @@ func stream(r io.ReadCloser, event string, c *gin.Context, wg *sync.WaitGroup, l
 	defer wg.Done()
 
 	var (
-		buf  = make([]byte, chunkSize)
-		line []byte
+		buf     = make([]byte, chunkSize)
+		line    []byte
+		counter = 0
 	)
 
 	for {
@@ -227,6 +230,10 @@ func stream(r io.ReadCloser, event string, c *gin.Context, wg *sync.WaitGroup, l
 			return
 		default:
 		}
+		if counter > config.ExecuteMaxEvents {
+			log.Printf("too many events, stop sending: %d", counter)
+			return
+		}
 
 		n, e := r.Read(buf)
 
@@ -236,7 +243,7 @@ func stream(r io.ReadCloser, event string, c *gin.Context, wg *sync.WaitGroup, l
 					// just a double check, if context is not done, send remaining data
 					if c.Request.Context().Err() == nil {
 						// send remaining data if any
-						send(line, event, c, lock)
+						send(line, event, c, lock, &counter)
 					}
 					return
 				}
@@ -250,11 +257,11 @@ func stream(r io.ReadCloser, event string, c *gin.Context, wg *sync.WaitGroup, l
 
 		switch b {
 		case '\r', '\n':
-			send(line, event, c, lock)
+			send(line, event, c, lock, &counter)
 			line = []byte{} // reset
 		case '\x0c':
 			// send remaining data first
-			send(line, event, c, lock)
+			send(line, event, c, lock, &counter)
 
 			// send clear event
 			lock.Lock()
