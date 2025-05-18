@@ -5,11 +5,16 @@ https://www.go-sandbox.org/
 ## Features
 
 - Realtime execution using websocket
-- LSP-backed linting and autocompletion
+- LSP-backed language support
 - Multiple sandboxes
 - Share code snippet
 - Rich snippet library
 - Rich keybinding support
+- Dark mode and more...
+
+## Motivation
+
+Go Sandbox started as a personal project, with a clear goal: to fill the gap in the Go ecosystem for a modern, IDE-like online coding experience that can foster learning and spread the Go language.
 
 ## Deployment
 
