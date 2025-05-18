@@ -26,4 +26,6 @@ build:
 down:
 	docker-compose down --volumes --remove-orphans
 
+# for test
+
 .PHONY: client server down build
