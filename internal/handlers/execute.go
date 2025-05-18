@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
-	"github.com/tianqi-wen_frgr/go-sandbox/internal"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/config"
 	"io"
 	"log"
 	"net/http"
@@ -155,7 +155,7 @@ func Execute(c *gin.Context) {
 		// timeout case
 		if err.Error() == timeoutError {
 			c.Render(-1, render.Data{
-				Data: []byte(fmt.Sprintf("event:error\ndata:Execution timed out(%ds).\n\n", internal.SandboxCPUTimeLimit)),
+				Data: []byte(fmt.Sprintf("event:error\ndata:Execution timed out(%ds).\n\n", config.SandboxCPUTimeLimit)),
 			})
 			c.Writer.Flush()
 			return

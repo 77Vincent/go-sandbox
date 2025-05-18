@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
-	cfg "github.com/tianqi-wen_frgr/go-sandbox/internal"
+	cfg "github.com/tianqi-wen_frgr/go-sandbox/internal/config"
 	"io"
 	"os"
 	"sync"
