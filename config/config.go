@@ -2,8 +2,8 @@ package config
 
 // env keys
 const (
-	// EnvLocalStackEndpoint is the environment variable for a localstack endpoint
-	EnvLocalStackEndpoint = "LOCALSTACK_ENDPOINT"
+	EnvKey       = "GIN_MODE"
+	AwsRegionKey = "AWS_REGION"
 )
 
 const (
@@ -12,4 +12,6 @@ const (
 	SandboxCPUTimeLimit = 7  // seconds
 	CodeSnippetBucket   = "go-sandbox-snippets"
 	ApiServerPort       = ":3000"
+	LocalStackEndpoint  = "http://localstack:4566"
+	DefaultRegion       = "ap-northeast-1"
 )

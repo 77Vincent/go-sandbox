@@ -36,21 +36,25 @@ func S3() S3Client {
 	s3Once.Do(func() {
 		var (
 			sess   *session.Session
-			region = aws.String(defaultRegion)
+			region = os.Getenv(cfg.AwsRegionKey)
+			isProd = os.Getenv(cfg.EnvKey) == ""
 		)
+		if region == "" {
+			region = cfg.DefaultRegion
+		}
 
 		// it is a local environment
-		if v := os.Getenv(cfg.EnvLocalStackEndpoint); v != "" {
-			sess, _ = session.NewSession(&aws.Config{
-				Region:           region,
-				Credentials:      credentials.AnonymousCredentials,
-				S3ForcePathStyle: aws.Bool(true),
-				Endpoint:         aws.String(v),
-			})
-		} else {
+		if isProd {
 			// production environment
 			sess, _ = session.NewSession(&aws.Config{
-				Region: region,
+				Region: aws.String(region),
+			})
+		} else {
+			sess, _ = session.NewSession(&aws.Config{
+				Region:           aws.String(region),
+				Credentials:      credentials.AnonymousCredentials,
+				S3ForcePathStyle: aws.Bool(true),
+				Endpoint:         aws.String(cfg.LocalStackEndpoint),
 			})
 		}
 
