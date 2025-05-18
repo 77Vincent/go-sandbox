@@ -48,6 +48,10 @@ GIN_MODE=release
 - Frontend: React, Vite, Tailwind, Flowbite
 - Backend: Go, Gin, Websocket, Golsp, Localstack
 
+### Structure
+
+The root directory directly serves the Golang server code. The React app is in the `client` directory. The `dev` directory is for local development setups.
+
 ### Client
 
 ```bash
