@@ -1,4 +1,4 @@
-package config
+package internal
 
 // env keys
 const (

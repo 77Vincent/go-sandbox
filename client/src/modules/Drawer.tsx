@@ -190,7 +190,7 @@ export default function Component(props: {
                                 displaySymbols.length > 0 && <Divider horizontal={true} className={"my-1"}/>
                             }
                             <div className={`${LINE_STYLE} text-black dark:text-white`}>
-                                <div>Lines</div>
+                                <Typography variant={"body1"}>Lines</Typography>
                                 <div className={"font-semibold"}>{lines}</div>
                             </div>
                         </>

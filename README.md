@@ -14,8 +14,8 @@ https://www.go-sandbox.org/
 ## Deployment
 
 ### Frontend
-Front-end is a `React app` powered by Vite, using `Tailwind` and `Flowbite`.
-It is recommended to use static hosting service like AWS S3 or Amplify.
+Front-end is a React app powered by `Vite`, using `Tailwind` and `Flowbite`.
+It is recommended to use static hosting service like `AWS S3` or `Amplify`.
 
 ```bash
 cd client && npm install && npm run build
@@ -43,6 +43,10 @@ GIN_MODE=release
 ```
 
 ## Development
+
+### Tech-stack
+- Frontend: React, Vite, Tailwind, Flowbite
+- Backend: Go, Gin, Websocket, Golsp, Localstack
 
 ### Client
 

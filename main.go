@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tianqi-wen_frgr/go-sandbox/config"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/handlers"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/worker"
 	"time"
@@ -16,7 +16,7 @@ func init() {
 		for {
 			select {
 			case <-ticker.C:
-				if err := worker.CleanupWorkspace(config.WorkspacePath); err != nil {
+				if err := worker.CleanupWorkspace(internal.WorkspacePath); err != nil {
 					panic(err)
 				}
 			}
@@ -28,7 +28,7 @@ func main() {
 	r := gin.Default()
 
 	// a global timeout middleware as a safety net
-	timeout := handlers.Timeout(config.APIGlobalTimeout * time.Second)
+	timeout := handlers.Timeout(internal.APIGlobalTimeout * time.Second)
 
 	r.Use(gin.CustomRecovery(handlers.PanicRecovery))
 
@@ -45,5 +45,5 @@ func main() {
 	r.GET("/ws2", handlers.LspHandler("2"))
 	r.GET("/ws4", handlers.LspHandler("4"))
 
-	r.Run(config.ApiServerPort)
+	r.Run(internal.ApiServerPort)
 }

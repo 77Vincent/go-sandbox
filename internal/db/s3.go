@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	cfg "github.com/tianqi-wen_frgr/go-sandbox/internal"
 	"io"
 	"os"
 	"sync"
@@ -14,7 +15,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	cfg "github.com/tianqi-wen_frgr/go-sandbox/config"
 )
 
 type S3Client interface {
