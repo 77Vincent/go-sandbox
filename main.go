@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tianqi-wen_frgr/go-sandbox/config"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/config"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/handlers"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/worker"
 	"time"

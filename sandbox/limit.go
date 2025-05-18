@@ -5,7 +5,6 @@ import (
 	"syscall"
 )
 
-// SetLimits 限制 CPU 时间和内存（这里 CPU 限制为 2 秒，内存限制为 256MB）
 func SetLimits() error {
 	// CPU 限制（秒）
 	rlimCPU := &syscall.Rlimit{Cur: sandboxCPUTimeLimit, Max: sandboxCPUTimeLimit}
@@ -21,15 +20,15 @@ func SetLimits() error {
 	return nil
 }
 
-// SetupSeccomp 加载一个最小的 seccomp 筛选规则，只允许基本的 I/O 和退出相关系统调用
+// SetupSeccomp loads a minimal seccomp filter that only allows basic I/O and exit-related syscalls
 func SetupSeccomp() error {
-	// 默认允许所有调用
+	// allow all system calls by default
 	filter, err := seccomp.NewFilter(seccomp.ActAllow)
 	if err != nil {
 		return err
 	}
 
-	// 要阻止的网络相关系统调用列表
+	// the list of syscalls to deny
 	disallowed := []string{
 		// should allow them in order to run and access http server on localhost in the sandbox
 		// "socket", "bind", "listen", "accept", "accept4", "connect",

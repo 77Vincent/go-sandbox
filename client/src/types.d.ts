@@ -58,6 +58,14 @@ export type languages =
     | "nl"
     | "he"
     | "ar"
+    | "ro"
+    | "hu"
+    | "da"
+    | "fi"
+    | "sv"
+    | "no"
+    | "cs"
+    | "sk"
 
 export type resultType = "stdout" | "stderr"
 

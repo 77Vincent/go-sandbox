@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	cfg "github.com/tianqi-wen_frgr/go-sandbox/internal/config"
 	"io"
 	"os"
 	"sync"
@@ -14,7 +15,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	cfg "github.com/tianqi-wen_frgr/go-sandbox/config"
 )
 
 type S3Client interface {
@@ -28,29 +28,29 @@ var (
 	ErrObjectNotFound = errors.New("object not found")
 )
 
-const (
-	defaultRegion = "ap-northeast-1"
-)
-
 func S3() S3Client {
 	s3Once.Do(func() {
 		var (
 			sess   *session.Session
-			region = aws.String(defaultRegion)
+			region = os.Getenv(cfg.AwsRegionKey)
+			isProd = os.Getenv(cfg.EnvKey) == cfg.ProdModeValue
 		)
+		if region == "" {
+			region = cfg.DefaultRegion
+		}
 
 		// it is a local environment
-		if v := os.Getenv(cfg.EnvLocalStackEndpoint); v != "" {
-			sess, _ = session.NewSession(&aws.Config{
-				Region:           region,
-				Credentials:      credentials.AnonymousCredentials,
-				S3ForcePathStyle: aws.Bool(true),
-				Endpoint:         aws.String(v),
-			})
-		} else {
+		if isProd {
 			// production environment
 			sess, _ = session.NewSession(&aws.Config{
-				Region: region,
+				Region: aws.String(region),
+			})
+		} else {
+			sess, _ = session.NewSession(&aws.Config{
+				Region:           aws.String(region),
+				Credentials:      credentials.AnonymousCredentials,
+				S3ForcePathStyle: aws.Bool(true),
+				Endpoint:         aws.String(cfg.LocalStackEndpoint),
 			})
 		}
 

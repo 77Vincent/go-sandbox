@@ -39,7 +39,7 @@ services:
       - DEBUG=1
     restart: always
     volumes:
-      - ./config/aws:/etc/localstack/init/ready.d
+      - ./dev/aws:/etc/localstack/init/ready.d
 
   gopls:
     build:

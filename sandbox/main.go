@@ -37,7 +37,7 @@ func main() {
 	}
 
 	// normal code flow
-	// 1. 编译用户代码，生成可执行文件
+	// 1. compile user code, generate an executable file
 	tmpDir, err := os.MkdirTemp("", "sandbox-build-")
 	if err != nil {
 		log.Fatalf("Failed to create temp directory: %v", err)
@@ -73,12 +73,12 @@ func main() {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 
-		// 先设置 seccomp 筛选规则（必须在设置内存限制之前完成）
+		// first set seccomp filter rules (must be done before setting memory limits)
 		if err = SetupSeccomp(); err != nil {
 			log.Fatalf("Failed to setup seccomp: %v", err)
 		}
 
-		// 然后设置资源限制（CPU 和内存）
+		// then set resource limits (CPU and memory)
 		if err = SetLimits(); err != nil {
 			log.Fatalf("Failed to set resource limits: %v", err)
 		}
@@ -99,12 +99,10 @@ func main() {
 		log.Fatalf("Build error: %v", err)
 	}
 
-	// 先设置 seccomp 筛选规则（必须在设置内存限制之前完成）
 	if err = SetupSeccomp(); err != nil {
 		log.Fatalf("Failed to setup seccomp: %v", err)
 	}
 
-	// 然后设置资源限制（CPU 和内存）
 	if err = SetLimits(); err != nil {
 		log.Fatalf("Failed to set resource limits: %v", err)
 	}
@@ -131,7 +129,7 @@ func main() {
 
 	duration := time.Since(start)
 
-	// 获取子进程的资源使用情况
+	// get the resource usage of the child process
 	if ps := cmd.ProcessState; ps != nil {
 		if ru, ok := ps.SysUsage().(*syscall.Rusage); ok {
 			if _, err = fmt.Fprintf(os.Stderr, "STATS_INFO:%s;%d", duration, ru.Maxrss); err != nil {
