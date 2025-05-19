@@ -59,7 +59,7 @@ func send(line []byte, event string, c *gin.Context, lock *sync.Mutex, counter *
 	*counter++
 }
 
-// Execute 实现 SSE 流式输出
+// Execute uses SSE to stream the output of the command
 func Execute(c *gin.Context) {
 	var req request
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -125,12 +125,12 @@ func Execute(c *gin.Context) {
 	}
 	defer stderr.Close()
 
-	// 4) 设置 SSE 响应头
+	// setting headers for SSE
 	c.Writer.Header().Set("Content-Type", "text/event-stream")
 	c.Writer.Header().Set("Cache-Control", "no-cache")
 	c.Writer.Header().Set("Connection", "keep-alive")
 
-	// 创建一个互斥锁，保护 c.Writer 写入
+	// a lock to protect c.Writer
 	var (
 		lock sync.Mutex
 		wg   sync.WaitGroup
