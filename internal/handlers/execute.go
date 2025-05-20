@@ -92,6 +92,11 @@ func Execute(c *gin.Context) {
 	case "4":
 		sandboxVersion = sandboxRunner4
 		env = append(env, "PATH=/go4/bin:"+path)
+	default:
+		c.AbortWithStatusJSON(http.StatusBadRequest, response{
+			Error: "Invalid version",
+		})
+		return
 	}
 
 	// create a tmp dir
