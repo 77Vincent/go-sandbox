@@ -5,7 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
+)
+
+var (
+	validPath = regexp.MustCompile(`^file://[0-9A-Za-z._\-/:]+$`)
 )
 
 type fetchSourceRes struct {
@@ -26,16 +31,27 @@ func FetchSource(c *gin.Context) {
 		return
 	}
 
-	// remove "file://" prefix if present
-	path = strings.Replace(path, "file://", "", 1)
-
-	if strings.Contains(path, "/usr/local/go") {
-		path = strings.Replace(path, "/usr/local/go", "/go"+version, 1)
+	if !validPath.MatchString(path) {
+		c.JSON(http.StatusBadRequest, fetchSourceRes{Error: "invalid path"})
+		return
 	}
-	if strings.Contains(path, "/workspace/go") {
+
+	path = strings.TrimPrefix(path, "file://")
+
+	// check if it is the main file
+	if strings.HasPrefix(path, "/workspace/go") {
 		c.JSON(http.StatusOK, fetchSourceRes{IsMain: true})
 		return
 	}
+
+	if !strings.HasPrefix(path, "/usr/local/go") {
+		c.JSON(http.StatusBadRequest, fetchSourceRes{Error: "path must be in /usr/local/go"})
+		return
+	}
+
+	// choose the correct version
+	path = strings.Replace(path, "/usr/local/go", "/go"+version, 1)
+
 	content, err := os.ReadFile(path)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("failed to read file: %s", err.Error()))
