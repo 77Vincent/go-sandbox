@@ -106,7 +106,7 @@ func main() {
 	if err = SetLimits(); err != nil {
 		log.Fatalf("Failed to set resource limits: %v", err)
 	}
-	if err := syscall.Setuid(65534); err != nil { // 65534 is typically 'nobody'
+	if err = syscall.Setuid(65534); err != nil { // 65534 is typically 'nobody'
 		log.Fatalf("Failed to drop privileges: %v", err)
 	}
 
