@@ -92,9 +92,9 @@ COPY --from=build-runner-4 /usr/local/go /go4
 # Set the default PATH to include all Go toolchains
 ENV PATH="/go1/bin:/go2/bin:/go4/bin:${PATH}"
 
+# no need to create nobody
+USER nobody:nobody
+
 EXPOSE 3000
 
 CMD ["./server"]
-RUN adduser -D -u 65534 nobody
-USER nobody
-
