@@ -95,3 +95,6 @@ ENV PATH="/go1/bin:/go2/bin:/go4/bin:${PATH}"
 EXPOSE 3000
 
 CMD ["./server"]
+RUN adduser -D -u 65534 nobody
+USER nobody
+
