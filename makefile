@@ -23,6 +23,8 @@ server:
 	docker-compose up -d
 build:
 	docker-compose build --progress=plain
+build-server:
+	docker-compose build --progress=plain server --no-cache
 down:
 	docker-compose down --volumes --remove-orphans
 

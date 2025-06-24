@@ -99,15 +99,16 @@ func main() {
 		log.Fatalf("Build error: %v", err)
 	}
 
+	//if err = syscall.Setuid(65534); err != nil { // 65534 is typically 'nobody'
+	//	log.Fatalf("Failed to drop privileges: %v", err)
+	//}
+
 	if err = SetupSeccomp(); err != nil {
 		log.Fatalf("Failed to setup seccomp: %v", err)
 	}
 
 	if err = SetLimits(); err != nil {
 		log.Fatalf("Failed to set resource limits: %v", err)
-	}
-	if err = syscall.Setuid(65534); err != nil { // 65534 is typically 'nobody'
-		log.Fatalf("Failed to drop privileges: %v", err)
 	}
 
 	// the execution timeout is same as the CPU timeout limit

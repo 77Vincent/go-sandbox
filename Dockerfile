@@ -69,12 +69,13 @@ FROM alpine:3.16
 # libseccomp is needed for seccomp support
 RUN apk add --no-cache libseccomp
 
-WORKDIR /app
+## create non-root user and group, own /app
+RUN addgroup -S appgroup \
+    && adduser -S appuser -G appgroup \
+    && mkdir -p /app/sandboxes/go1 /app/sandboxes/go2 /app/sandboxes/go4 \
+    && chown -R appuser:appgroup /app
 
-# workdir for the sandbox runners
-RUN mkdir -p /app/sandboxes/go1
-RUN mkdir -p /app/sandboxes/go2
-RUN mkdir -p /app/sandboxes/go4
+WORKDIR /app
 
 # copy the backend server
 COPY --from=build-backend /go/src/app/server ./
@@ -91,6 +92,9 @@ COPY --from=build-runner-4 /usr/local/go /go4
 
 # Set the default PATH to include all Go toolchains
 ENV PATH="/go1/bin:/go2/bin:/go4/bin:${PATH}"
+
+# switch to non-root user
+USER appuser
 
 EXPOSE 3000
 
