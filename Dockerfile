@@ -75,6 +75,10 @@ RUN addgroup -S appgroup \
     && mkdir -p /app/sandboxes/go1 /app/sandboxes/go2 /app/sandboxes/go4 \
     && chown -R appuser:appgroup /app
 
+## for sandbox temp files
+RUN mkdir -p /app/sandbox-temp \
+    && chown -R appuser:appgroup /app/sandbox-temp
+
 WORKDIR /app
 
 # copy the backend server

@@ -24,7 +24,7 @@ server:
 build:
 	docker-compose build --progress=plain
 build-server:
-	docker-compose build --progress=plain server --no-cache
+	docker-compose build --progress=plain server
 down:
 	docker-compose down --volumes --remove-orphans
 
