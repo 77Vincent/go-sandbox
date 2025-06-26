@@ -1,6 +1,6 @@
 FROM golang:1.23-alpine
 
-RUN go install golang.org/x/tools/gopls@latest
+RUN go install golang.org/x/tools/gopls@v0.18.1
 
 ## Create the workspace directory
 WORKDIR /workspace

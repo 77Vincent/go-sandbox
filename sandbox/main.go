@@ -19,6 +19,7 @@ const (
 	sandboxMemoryLimit  = 2 * 1024 * 1024 * 1024 // bytes
 	tmpFileName         = "main.go"
 	tmpTestFileName     = "main_test.go"
+	tmpOutputDir        = "/app/sandbox-temp"
 )
 
 func main() {
@@ -38,7 +39,7 @@ func main() {
 
 	// normal code flow
 	// 1. compile user code, generate an executable file
-	tmpDir, err := os.MkdirTemp("", "sandbox-build-")
+	tmpDir, err := os.MkdirTemp(tmpOutputDir, "sandbox-build-")
 	if err != nil {
 		log.Fatalf("Failed to create temp directory: %v", err)
 	}
@@ -99,15 +100,16 @@ func main() {
 		log.Fatalf("Build error: %v", err)
 	}
 
+	//if err = syscall.Setuid(65534); err != nil { // 65534 is typically 'nobody'
+	//	log.Fatalf("Failed to drop privileges: %v", err)
+	//}
+
 	if err = SetupSeccomp(); err != nil {
 		log.Fatalf("Failed to setup seccomp: %v", err)
 	}
 
 	if err = SetLimits(); err != nil {
 		log.Fatalf("Failed to set resource limits: %v", err)
-	}
-	if err = syscall.Setuid(65534); err != nil { // 65534 is typically 'nobody'
-		log.Fatalf("Failed to drop privileges: %v", err)
 	}
 
 	// the execution timeout is same as the CPU timeout limit
