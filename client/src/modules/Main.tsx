@@ -23,6 +23,7 @@ import {
     DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER, DEBOUNCE_TIME_LONG,
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
+import Maintenance from "./Maintenance.tsx";
 import {Divider, Wrapper} from "./Common.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
@@ -355,6 +356,7 @@ export default function Component() {
 
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
+                        <Maintenance/>
             <ShareModal url={showShareUrl} setUrl={setShowShareUrl}/>
             <Manual show={showManual} setShow={setShowManual}/>
 
