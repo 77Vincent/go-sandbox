@@ -1,6 +1,11 @@
 services:
   server:
     build: .
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2G
     container_name: go-sandbox-server
     platform: linux/arm64
     ports:
