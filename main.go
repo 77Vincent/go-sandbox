@@ -4,21 +4,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/config"
 	"github.com/tianqi-wen_frgr/go-sandbox/internal/handlers"
-	"github.com/tianqi-wen_frgr/go-sandbox/internal/worker"
+	// "github.com/tianqi-wen_frgr/go-sandbox/internal/worker"
 	"time"
 )
 
 func init() {
 	// do not stop the ticker throughout the lifecycle of the application
-	ticker := time.NewTicker(1 * time.Minute)
+	// ticker := time.NewTicker(1 * time.Minute)
 
-	go func() {
-		for range ticker.C {
-			if err := worker.CleanupWorkspace(config.WorkspacePath); err != nil {
-				panic(err)
-			}
-		}
-	}()
+	// go func() {
+	// 	for range ticker.C {
+	// 		if err := worker.CleanupWorkspace(config.WorkspacePath); err != nil {
+	// 			panic(err)
+	// 		}
+	// 	}
+	// }()
 }
 
 func main() {
