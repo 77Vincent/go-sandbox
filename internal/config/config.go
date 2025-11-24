@@ -7,7 +7,7 @@ const (
 )
 
 const (
-	WorkspacePath       = "/app/sandboxes"
+	WorkspacePath       = "/app"
 	APIGlobalTimeout    = 10 // seconds
 	SandboxCPUTimeLimit = 7  // seconds
 	CodeSnippetBucket   = "go-sandbox-snippets"

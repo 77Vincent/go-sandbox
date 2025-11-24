@@ -18,7 +18,6 @@ const (
 	sandboxCPUTimeLimit = 7                      // seconds
 	sandboxMemoryLimit  = 2 * 1024 * 1024 * 1024 // bytes
 	tmpFileName         = "main.go"
-	tmpTestFileName     = "main_test.go"
 	tmpOutputDir        = "/app/sandbox-temp"
 )
 
@@ -29,13 +28,8 @@ func main() {
 	var (
 		codeFile   = os.Args[1]
 		arr        = strings.Split(codeFile, "/")
-		fileName   = tmpFileName
-		isTestFlow = strings.Contains(codeFile, tmpTestFileName)
 		moduleDir  = fmt.Sprintf("%s/%s", arr[0], arr[1])
 	)
-	if isTestFlow {
-		fileName = tmpTestFileName
-	}
 
 	// normal code flow
 	// 1. compile user code, generate an executable file
@@ -56,7 +50,7 @@ func main() {
 	}
 
 	// move the source code to the module dir
-	if err = os.Rename(codeFile, filepath.Join(moduleDir, fileName)); err != nil {
+	if err = os.Rename(codeFile, filepath.Join(moduleDir, tmpFileName)); err != nil {
 		log.Fatalf("Failed to move code file: %v", err)
 	}
 
@@ -67,30 +61,6 @@ func main() {
 		log.Fatalf("Failed to tidy module: %v", err)
 	}
 
-	// test file flow
-	if isTestFlow {
-		cmd = exec.Command("go", "test", ".")
-		cmd.Dir = moduleDir
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-
-		// first set seccomp filter rules (must be done before setting memory limits)
-		if err = SetupSeccomp(); err != nil {
-			log.Fatalf("Failed to setup seccomp: %v", err)
-		}
-
-		// then set resource limits (CPU and memory)
-		if err = SetLimits(); err != nil {
-			log.Fatalf("Failed to set resource limits: %v", err)
-		}
-
-		if err = cmd.Run(); err != nil {
-			// handle test failures or build errors
-			os.Exit(1)
-		}
-	}
-
-	// build the code
 	binPath := filepath.Join(tmpDir, "userprog")
 	cmd = exec.Command("go", "build", "-o", binPath, ".")
 	cmd.Dir = moduleDir
