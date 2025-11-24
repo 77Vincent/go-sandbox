@@ -23,11 +23,10 @@ import {
     DRAWER_SIZE_MIN, DRAWER_SIZE_MAX, NO_OPENED_DRAWER, DEBOUNCE_TIME_LONG,
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
-import {Divider, Wrapper} from "./Common.tsx";
+import {Divider, Typography, Wrapper} from "./Common.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import Actions from "./Actions.tsx";
-import VersionSelector from "./VersionSelector.tsx";
 import SandboxSelector from "./SandboxSelector.tsx";
 import Features from "./Features.tsx";
 import Drawer from "./Drawer.tsx";
@@ -398,7 +397,9 @@ export default function Component() {
                             <Divider/>
                             <SandboxSelector/>
                             <Divider/>
-                            <VersionSelector/>
+                            <Typography variant={"body2"}>
+                                Go 1.24
+                            </Typography>
                         </>
                     }
 

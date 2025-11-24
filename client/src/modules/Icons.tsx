@@ -22,6 +22,7 @@ export function PublicIcon() {
 export {
     IoMdRemoveCircleOutline as RemoveIcon,
     IoMdInformationCircle as AboutIcon,
+    IoLogoGithub as GitHubIcon,
 } from "react-icons/io";
 
 export {BsDiagram3Fill as OutlineIcon} from "react-icons/bs";

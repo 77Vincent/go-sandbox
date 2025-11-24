@@ -185,7 +185,6 @@ export function getDefaultFileUri(): string {
 }
 
 export function displayFileUri(file: string): string {
-    // return file
     return file.includes(DEFAULT_MAIN_FILE_PATH) ? file.substring(24) : file.substring(14)
 }
 
