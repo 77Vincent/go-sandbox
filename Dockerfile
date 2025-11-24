@@ -32,9 +32,11 @@ COPY . .
 
 # compile the backend server
 
-# Install gopls
-RUN go install golang.org/x/tools/gopls@latest \
-    && go build -o server main.go
+# Install gopls (cached unless go.mod changes)
+RUN go install golang.org/x/tools/gopls@latest
+
+# Build the backend server
+RUN go build -o server main.go
 
 # =========== 3. final stage ===========
 FROM alpine:3.16
