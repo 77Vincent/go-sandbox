@@ -8,8 +8,6 @@ services:
       - "4389:4389"
     env_file: .env
     restart: always
-    volumes:
-      - go-sandboxes:/app/sandboxes # Shared volume for /app
 
   localstack:
     image: localstack/localstack
@@ -22,6 +20,3 @@ services:
     restart: always
     volumes:
       - ./dev/aws:/etc/localstack/init/ready.d
-
-volumes:
-  go-sandboxes:
