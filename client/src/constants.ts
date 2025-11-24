@@ -309,7 +309,7 @@ export const MY_SANDBOXES: Record<mySandboxes, string> = {
     "my-sandbox-temp": "Temporary",
 }
 
-export const WORKSPACE = "workspace";
+export const WORKSPACE = "app/sandboxes";
 export const URI_BASE = `file:///${WORKSPACE}`
 
 export const SEEING_USAGES: SeeingType = "usages"

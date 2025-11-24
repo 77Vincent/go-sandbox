@@ -1,34 +1,4 @@
-FROM golang:1.24.3-alpine AS build-runner-1
-
-ENV CGO_ENABLED=1
-ENV GOOS=linux
-ENV GOARCH=arm64
-
-RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
-
-WORKDIR /go/src/app
-COPY sandbox/go.mod sandbox/go.sum ./
-RUN go mod download
-COPY sandbox .
-
-RUN go build -o sandbox-runner .
-
-FROM golang:1.23-alpine AS build-runner-2
-
-ENV CGO_ENABLED=1
-ENV GOOS=linux
-ENV GOARCH=arm64
-
-RUN apk update && apk add --no-cache pkgconfig libseccomp-dev gcc musl-dev
-
-WORKDIR /go/src/app
-COPY sandbox/go.mod sandbox/go.sum ./
-RUN go mod download
-COPY sandbox .
-
-RUN go build -o sandbox-runner .
-
-FROM golang:tip-alpine AS build-runner-4
+FROM golang:1.24.3-alpine AS build-runner
 
 ENV CGO_ENABLED=1
 ENV GOOS=linux
@@ -61,7 +31,10 @@ RUN go mod download && go mod tidy
 COPY . .
 
 # compile the backend server
-RUN go build -o server main.go
+
+# Install gopls
+RUN go install golang.org/x/tools/gopls@latest \
+    && go build -o server main.go
 
 # =========== 3. final stage ===========
 FROM alpine:3.16
@@ -72,7 +45,7 @@ RUN apk add --no-cache libseccomp
 ## create non-root user and group, own /app
 RUN addgroup -S appgroup \
     && adduser -S appuser -G appgroup \
-    && mkdir -p /app/sandboxes/go1 /app/sandboxes/go2 /app/sandboxes/go4 \
+    && mkdir -p /app/sandboxes/go \
     && chown -R appuser:appgroup /app
 
 ## for sandbox temp files
@@ -84,22 +57,27 @@ WORKDIR /app
 # copy the backend server
 COPY --from=build-backend /go/src/app/server ./
 
-# Copy the sandbox runner from each runner stage into separate directories
-COPY --from=build-runner-1 /go/src/app/sandbox-runner /app/sandboxes/go1
-COPY --from=build-runner-2 /go/src/app/sandbox-runner /app/sandboxes/go2
-COPY --from=build-runner-4 /go/src/app/sandbox-runner /app/sandboxes/go4
+# Copy gopls binary
+COPY --from=build-backend /go/bin/gopls /usr/local/bin/gopls
 
-# Copy the go toolchain from each runner stage into separate directories
-COPY --from=build-runner-1 /usr/local/go /go1
-COPY --from=build-runner-2 /usr/local/go /go2
-COPY --from=build-runner-4 /usr/local/go /go4
+# Copy the sandbox runner from the runner stage into the sandbox directory
+COPY --from=build-runner /go/src/app/sandbox-runner /app/sandboxes/go
 
+# Copy the go toolchain from the runner stage into the go directory
+COPY --from=build-runner /usr/local/go /go
 # Set the default PATH to include all Go toolchains
-ENV PATH="/go1/bin:/go2/bin:/go4/bin:${PATH}"
+ENV PATH="/go/bin:${PATH}"
+
+# Entrypoint script to run both server and gopls
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 # switch to non-root user
 USER appuser
 
 EXPOSE 3000
 
-CMD ["./server"]
+# Expose gopls port
+EXPOSE 4389
+
+CMD ["/app/entrypoint.sh"]

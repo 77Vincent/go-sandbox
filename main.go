@@ -13,12 +13,9 @@ func init() {
 	ticker := time.NewTicker(1 * time.Minute)
 
 	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				if err := worker.CleanupWorkspace(config.WorkspacePath); err != nil {
-					panic(err)
-				}
+		for range ticker.C {
+			if err := worker.CleanupWorkspace(config.WorkspacePath); err != nil {
+				panic(err)
 			}
 		}
 	}()
@@ -41,9 +38,7 @@ func main() {
 	r.POST("/execute", handlers.Execute)
 	r.GET("/source", handlers.FetchSource)
 
-	r.GET("/ws", handlers.LspHandler("1"))
-	r.GET("/ws2", handlers.LspHandler("2"))
-	r.GET("/ws4", handlers.LspHandler("4"))
+	r.GET("/ws", handlers.LspHandler())
 
 	r.Run(config.ApiServerPort)
 }
