@@ -7,9 +7,9 @@ const (
 )
 
 const (
-	WorkspacePath       = "/app/sandboxes"
+	WorkspacePath       = "/app"
 	APIGlobalTimeout    = 10 // seconds
-	SandboxCPUTimeLimit = 7  // seconds
+	SandboxCPUTimeLimit = 5  // seconds
 	CodeSnippetBucket   = "go-sandbox-snippets"
 	ApiServerPort       = ":3000"
 	LocalStackEndpoint  = "http://localstack:4566"
