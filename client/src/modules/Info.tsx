@@ -1,7 +1,7 @@
 import {Tooltip} from "flowbite-react";
 import {Divider} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {AboutIcon, GitHubIcon, CtrlKey, ManualIcon, MetaKey, SettingsIcon, TerminalIcon} from "./Icons.tsx";
+import {GitHubIcon, CtrlKey, ManualIcon, MetaKey, SettingsIcon, TerminalIcon} from "./Icons.tsx";
 import {AppCtx} from "../utils.ts";
 import {useContext} from "react";
 import {ICON_BUTTON_CLASS, IconButton} from "./IconButton.tsx";

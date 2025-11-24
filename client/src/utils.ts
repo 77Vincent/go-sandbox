@@ -168,7 +168,7 @@ export function isUserCode(filePath: string): boolean {
     return filePath.includes(DEFAULT_MAIN_FILE_PATH)
 }
 
-export function getFileUri(sandboxVersion: string): string {
+export function getFileUri(_: string): string {
     return `${URI_BASE}/go${DEFAULT_MAIN_FILE_PATH}`
 }
 
