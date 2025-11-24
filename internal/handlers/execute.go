@@ -2,9 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/render"
-	"github.com/tianqi-wen_frgr/go-sandbox/internal/config"
 	"io"
 	"log"
 	"net/http"
@@ -14,6 +11,10 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/render"
+	"github.com/tianqi-wen_frgr/go-sandbox/internal/config"
 )
 
 const (
@@ -22,9 +23,7 @@ const (
 	stdoutKey       = "stdout"
 	stderrKey       = "stderr"
 	tmpDirName      = "sandbox-"
-	sandboxRunner1  = baseDir + "/go1/sandbox-runner"
-	sandboxRunner2  = baseDir + "/go2/sandbox-runner"
-	sandboxRunner4  = baseDir + "/go4/sandbox-runner"
+	sandboxRunner   = baseDir + "/go/sandbox-runner"
 	tmpFileName     = "main.go"
 	tmpTestFileName = "main_test.go"
 	timeoutError    = "exit status 124"
@@ -70,37 +69,17 @@ func Execute(c *gin.Context) {
 		return
 	}
 
-	var (
-		fileName       = tmpFileName
-		sandboxVersion = sandboxRunner1
-	)
+	var fileName = tmpFileName
 	if isTestCode(req.Code) {
 		fileName = tmpTestFileName
 	}
 
-	var (
-		env  = os.Environ()
-		path = os.Getenv("PATH")
-	)
-	switch req.Version {
-	case "1":
-		sandboxVersion = sandboxRunner1
-		env = append(env, "PATH=/go1/bin:"+path)
-	case "2":
-		sandboxVersion = sandboxRunner2
-		env = append(env, "PATH=/go2/bin:"+path)
-	case "4":
-		sandboxVersion = sandboxRunner4
-		env = append(env, "PATH=/go4/bin:"+path)
-	default:
-		c.AbortWithStatusJSON(http.StatusBadRequest, response{
-			Error: "Invalid version",
-		})
-		return
-	}
+	env := os.Environ()
+	path := os.Getenv("PATH")
+	env = append(env, "PATH=/go/bin:"+path)
 
 	// create a tmp dir
-	tmpDir, err := os.MkdirTemp(fmt.Sprintf("%s/go%s", baseDir, req.Version), tmpDirName)
+	tmpDir, err := os.MkdirTemp(baseDir+"/go", tmpDirName)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response{Error: fmt.Sprintf("Failed to create temp directory: %v", err)})
 		return
@@ -114,7 +93,7 @@ func Execute(c *gin.Context) {
 		return
 	}
 
-	cmd := exec.Command(sandboxVersion, codeFile)
+	cmd := exec.Command(sandboxRunner, codeFile)
 	cmd.Env = env
 
 	stdout, err := cmd.StdoutPipe()

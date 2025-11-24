@@ -16,7 +16,7 @@ export default function Component() {
 
     return (
         <Dropdown
-            inline={true} className={"z-20"} disabled={isRunning} color={"light"} size={"xs"}
+            inline={true} className={"z-20"} disabled={true} color={"light"} size={"xs"}
             label={
                 <span className={`text-sm ${isRunning ? INACTIVE_TEXT_CLASS : ""}`}>
                     {GO_VERSION_MAP[goVersion]}

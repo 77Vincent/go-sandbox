@@ -1,33 +1,18 @@
 services:
-  init-copier:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    platform: linux/arm64
-    container_name: go-sandbox-init
-    command: >
-      sh -c "cp -r /app/sandboxes/go1 /shared
-        && cp -r /app/sandboxes/go2 /shared
-        && cp -r /app/sandboxes/go4 /shared"
-    volumes:
-      - go-sandboxes:/shared
-    restart: "no"
-
   server:
     build: .
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2G
     container_name: go-sandbox-server
     platform: linux/arm64
     ports:
       - "3000:3000"
-    depends_on:
-      - gopls
-      - gopls2
-      - gopls4
-      - init-copier
+      - "4389:4389"
     env_file: .env
     restart: always
-    volumes:
-      - go-sandboxes:/app/sandboxes  # Shared volume for /app
 
   localstack:
     image: localstack/localstack
@@ -40,44 +25,3 @@ services:
     restart: always
     volumes:
       - ./dev/aws:/etc/localstack/init/ready.d
-
-  gopls:
-    build:
-      context: ./gopls
-    container_name: go-sandbox-gopls
-    ports:
-      - "4389:4389"
-    restart: always
-    depends_on:
-      - init-copier
-    volumes:
-      - go-sandboxes:/workspace  # Mount same volume at different path
-
-  gopls2:
-    build:
-      context: ./gopls
-      dockerfile: Dockerfile2
-    container_name: go-sandbox-gopls2
-    ports:
-      - "4388:4389"
-    restart: always
-    depends_on:
-      - init-copier
-    volumes:
-      - go-sandboxes:/workspace  # Mount same volume at different path
-
-  gopls4:
-    build:
-      context: ./gopls
-      dockerfile: Dockerfile4
-    container_name: go-sandbox-gopls4
-    ports:
-      - "4386:4389"
-    restart: always
-    depends_on:
-      - init-copier
-    volumes:
-      - go-sandboxes:/workspace  # Mount same volume at different path
-
-volumes:
-  go-sandboxes:

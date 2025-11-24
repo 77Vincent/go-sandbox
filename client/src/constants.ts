@@ -80,8 +80,6 @@ export const HTTP_NOT_FOUND = 404
 
 export const GO_VERSION_MAP: Record<string, string> = {
     "1": "Go 1.24",
-    "2": "Go 1.23",
-    "4": "Dev branch",
 }
 
 export const keyDownEvent = "keydown"
@@ -309,7 +307,7 @@ export const MY_SANDBOXES: Record<mySandboxes, string> = {
     "my-sandbox-temp": "Temporary",
 }
 
-export const WORKSPACE = "workspace";
+export const WORKSPACE = "app/sandboxes";
 export const URI_BASE = `file:///${WORKSPACE}`
 
 export const SEEING_USAGES: SeeingType = "usages"

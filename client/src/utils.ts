@@ -169,7 +169,7 @@ export function isUserCode(filePath: string): boolean {
 }
 
 export function getFileUri(sandboxVersion: string): string {
-    return `${URI_BASE}/go${sandboxVersion}${DEFAULT_MAIN_FILE_PATH}`
+    return `${URI_BASE}/go${DEFAULT_MAIN_FILE_PATH}`
 }
 
 export function getDefaultFileUri(): string {
@@ -185,7 +185,7 @@ export function getDefaultFileUri(): string {
 }
 
 export function displayFileUri(file: string): string {
-    return file.includes(DEFAULT_MAIN_FILE_PATH) ? file.substring(21) : file.substring(24)
+    return file.includes(DEFAULT_MAIN_FILE_PATH) ? file.substring(24) : file.substring(14)
 }
 
 export function getCursorPos(v: ViewUpdate | EditorView) {

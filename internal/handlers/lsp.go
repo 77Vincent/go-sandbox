@@ -3,13 +3,14 @@ package handlers
 import (
 	"bufio"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"io"
 	"log"
 	"net"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 // -- Upgrade HTTP to WebSocket --
@@ -17,7 +18,7 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
-func LspHandler(version string) func(c *gin.Context) {
+func LspHandler() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		// Upgrade connection
 		ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -27,20 +28,8 @@ func LspHandler(version string) func(c *gin.Context) {
 		}
 		defer ws.Close()
 
-		// Connect to gopls TCP
-		var url string
-		switch version {
-		case "1":
-			url = "gopls:4389"
-		case "2":
-			url = "gopls2:4389"
-		case "4":
-			url = "gopls4:4389"
-		default:
-			url = "gopls:4389" // use the latest go version by default
-		}
-
-		conn, err := net.Dial("tcp", url)
+		// Always connect to local gopls
+		conn, err := net.Dial("tcp", "localhost:4389")
 		if err != nil {
 			log.Println("TCP connect to gopls failed:", err)
 			return

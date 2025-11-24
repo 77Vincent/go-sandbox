@@ -1,7 +1,7 @@
 import {Tooltip} from "flowbite-react";
 import {Divider} from "./Common.tsx";
 import {TRANSLATE} from "../lib/i18n.ts";
-import {AboutIcon, CtrlKey, ManualIcon, MetaKey, SettingsIcon, TerminalIcon} from "./Icons.tsx";
+import {AboutIcon, GitHubIcon, CtrlKey, ManualIcon, MetaKey, SettingsIcon, TerminalIcon} from "./Icons.tsx";
 import {AppCtx} from "../utils.ts";
 import {useContext} from "react";
 import {ICON_BUTTON_CLASS, IconButton} from "./IconButton.tsx";
@@ -62,8 +62,8 @@ export default function Component(props: {
             </Tooltip>
 
             <Tooltip className={"z-20"} content={TRANSLATE.about[lan]}>
-                <IconButton icon={<AboutIcon size={isMobile ? 18.5 : 20.5}/>} className={ICON_BUTTON_CLASS}
-                            onClick={() => window.open("/about.html", "_blank")}
+                <IconButton icon={<GitHubIcon size={isMobile ? 18 : 20}/>} className={ICON_BUTTON_CLASS}
+                            onClick={() => window.open("https://github.com/77Vincent/go-sandbox", "_blank")}
                 />
             </Tooltip>
         </>

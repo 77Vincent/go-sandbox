@@ -23,7 +23,7 @@ type fetchSourceRes struct {
 func FetchSource(c *gin.Context) {
 	var (
 		path    = c.Query("path")
-		version = c.Query("version")
+		// version = c.Query("version")
 	)
 
 	if path == "" {
@@ -39,18 +39,15 @@ func FetchSource(c *gin.Context) {
 	path = strings.TrimPrefix(path, "file://")
 
 	// check if it is the main file
-	if strings.HasPrefix(path, "/workspace/go") {
+	if strings.HasPrefix(path, "/app/sandboxes/go") {
 		c.JSON(http.StatusOK, fetchSourceRes{IsMain: true})
 		return
 	}
 
-	if !strings.HasPrefix(path, "/usr/local/go") {
-		c.JSON(http.StatusBadRequest, fetchSourceRes{Error: "path must be in /usr/local/go"})
-		return
-	}
-
-	// choose the correct version
-	path = strings.Replace(path, "/usr/local/go", "/go"+version, 1)
+	// if !strings.HasPrefix(path, "/go/src") {
+	// 	c.JSON(http.StatusBadRequest, fetchSourceRes{Error: "path must be in /usr/local/go"})
+	// 	return
+	// }
 
 	content, err := os.ReadFile(path)
 	if err != nil {
