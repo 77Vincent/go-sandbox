@@ -24,6 +24,7 @@ import {
 } from "../constants.ts";
 import Editor from "./Editor.tsx";
 import {Divider, Typography, Wrapper} from "./Common.tsx";
+import Maintenance from "./Maintenance.tsx";
 import ProgressBar from "./ProgressBar.tsx";
 import Terminal from "./Terminal.tsx"
 import Actions from "./Actions.tsx";
@@ -354,6 +355,7 @@ export default function Component() {
 
     return (
         <div className="relative flex h-screen flex-col dark:bg-neutral-900">
+            <Maintenance />
             <ShareModal url={showShareUrl} setUrl={setShowShareUrl}/>
             <Manual show={showManual} setShow={setShowManual}/>
 
