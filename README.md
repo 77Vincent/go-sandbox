@@ -1,3 +1,5 @@
+> This project is stopped as the author needs to focus on other area (LLM and a little cute newborn baby), thank you for your interests.
+
 # ![go sandbox logo](https://www.go-sandbox.org/favicon-32x32.png) Go Sandbox - An IDE-level Go playground
 
 https://www.go-sandbox.org/
